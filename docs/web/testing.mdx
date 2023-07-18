@@ -1,0 +1,49 @@
+---
+title: Testing
+sidebar_position: 20
+---
+
+## Testing a client application
+
+Testing a client application can be a crucial part of ensuring its functionality and performance. When it comes to TypeScript projects, you can utilize the `createRouterTransport` method from `@bufbuild/connect` to create a mock transport that can be used in both backend and frontend applications.
+
+For frontend applications, it may not always be feasible or desirable to test against an actual API. In such cases, you can utilize a mocked Connect backend to test your application.
+
+### A simple mock for Eliza
+
+To illustrate, let's write a test for ELIZA that uses `createRouterTransport`:
+
+```ts
+import { createRouterTransport } from '@bufbuild/connect';
+import { ElizaService } from '@buf/bufbuild_eliza.bufbuild_connect-es/buf/connect/demo/eliza/v1/eliza_connect';
+import { SayResponse } from '@buf/bufbuild_eliza.bufbuild_connect-es/buf/connect/demo/eliza/v1/eliza_pb';
+
+export const mockElizaTransport = () =>
+  createRouterTransport(({ service }) => {
+    service(ElizaService, {
+      say: () => new SayResponse({ sentence: 'I feel happy.' })
+    });
+  });
+```
+
+In your client testing code, you can then use `createPromiseClient` from `@bufbuild/connect` with `mockElizaTransport`:
+
+```ts
+import { createPromiseClient } from '@bufbuild/connect';
+
+describe('your client test suite', () => {
+  it('tests a simple client call', async () => {
+    const client = createPromiseClient(ElizaService, mockElizaTransport());
+    const { sentence } = await client.say({ sentence: 'how do you feel?' });
+    expect(sentence).toEqual('I feel happy');
+  });
+});
+```
+
+### Learning more about client testing
+
+See the Connect-Node documentation to learn about:
+- [how to mock a stateful server interaction](../node/testing.md#using-stateful-mocks-to-test-a-client)
+- [the motivations for not mocking fetch itself](../node/testing.md#what-about-mocking-fetch-itself)
+- [adding headers and trailers to your mock](../node/testing.md#adding-headers-interceptors-more)
+- [using (or testing) your interceptors](../node/testing.md#adding-headers-interceptors-more)

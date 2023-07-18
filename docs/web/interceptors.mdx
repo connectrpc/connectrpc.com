@@ -1,0 +1,72 @@
+---
+title: Interceptors
+sidebar_position: 7
+---
+
+An interceptor can add logic to clients, similar to the decorators
+or middleware you may have seen in other libraries. Interceptors may
+mutate the request and response, catch errors and retry/recover, emit
+logs, or do nearly anything else.
+
+For a simple example, this interceptor logs all requests:
+
+```ts
+import { Interceptor } from "@bufbuild/connect";
+import { createConnectTransport } from "@bufbuild/connect-web";
+
+const logger: Interceptor = (next) => async (req) => {
+  console.log(`sending message to ${req.url}`);
+  return await next(req);
+};
+
+createConnectTransport({
+  baseUrl: "https://demo.connect.build",
+  interceptors: [logger],
+});
+```
+
+You can think of interceptors like a layered onion. A request initiated
+by a client goes through the outermost layer first. Each call to `next()`
+traverses to the next layer. In the center, the actual HTTP request is
+run by the transport. The response then comes back through all layers and
+is returned to the client. In the array of interceptors passed to the
+transport, the interceptor at the end of the array is applied first.
+
+To intercept responses, we simply look at the return value of `next()`:
+
+```ts
+const logger: Interceptor = (next) => async (req) => {
+  console.log(`sending message to ${req.url}`);
+  const res = await next(req);
+  if (!res.stream) {
+    console.log("message:", res.message);
+  }
+  return res;
+};
+```
+
+The `stream` property of the response tells us whether this is a streaming
+response. A streaming response has not fully arrived yet when we intercept it
+— we have to wrap it to see individual messages:
+
+```ts
+const logger: Interceptor = (next) => async (req) => {
+  const res = await next(req);
+  if (res.stream) {
+    // to intercept streaming response messages, we wrap
+    // the AsynchronousIterable with a generator function
+    return {
+      ...res,
+      message: logEach(res.message)
+    }
+  }
+  return res;
+};
+
+async function* logEach(stream: AsyncIterable<any>) {
+  for await (const m of stream) {
+    console.log("message received", m);
+    yield m;
+  }
+}
+```

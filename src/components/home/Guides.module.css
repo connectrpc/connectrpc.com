@@ -1,0 +1,171 @@
+:root {
+  --cards-neg-margin: -13rem;
+  --card-gap: 1.5rem;
+  --card-padding-x: 1.75rem;
+  --card-padding-y: 1.75rem;
+  --card-title-font-size: 24px;
+  --card-description-font-size: 14px;
+  --card-logo-height: 48px;
+}
+
+.guideList {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.guideCard {
+  padding: var(--card-padding-y) var(--card-padding-x) var(--card-padding-y) var(--card-padding-x);
+  width: 100%;
+  height: 100%;
+  position: relative;
+  box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.06);
+  border-radius: 6px;
+  background-color: #fff;
+  height: 180px;
+  display: flex;
+  flex-direction: column;
+}
+
+.logoContainer {
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logoContainer > img {
+  height: var(--card-logo-height);
+}
+
+.mainTitle {
+  font-family: var(--ifm-font-family-base);
+  font-weight: 200;
+  font-size: 32px;
+  margin: 0;
+  padding-bottom: 33px;
+}
+
+.title {
+  font-size: var(--card-title-font-size);
+  font-family: var(--ifm-font-family-base);
+  line-height: 100%;
+  margin: 0;
+}
+
+.description {
+  font-size: var(--card-description-font-size);
+  margin-top: 5px;
+  margin-bottom: 0;
+}
+
+.divider {
+  border: 1px solid #eef3f4;
+}
+
+.goto {
+  text-transform: uppercase;
+  font-family: var(--buf-mono-font);
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 18px;
+  letter-spacing: 0.08em;
+  width: 100%;
+}
+
+.guideBackground > :global(.container) {
+  padding-top: 70px;
+  padding-bottom: 40px;
+  gap: 36px;
+}
+
+.comingSoonCard {
+  background-color: transparent;
+  border: 1px solid var(--buf-ink-blue-01);
+  position: relative;
+  box-shadow: none;
+}
+
+.comingSoonCard > .titleAndIcon {
+  align-items: center;
+  position: relative;
+}
+
+.comingSoonCard > .titleAndIcon > .logoContainer {
+  gap: 10px;
+  height: 46px;
+  flex-shrink: 0;
+}
+
+.comingSoonTag {
+  font-family: var(--buf-mono-font);
+  position: absolute;
+  background-color: #e8e8f2;
+  text-transform: uppercase;
+  font-size: 10px;
+  line-height: 13px;
+  padding: 0.25rem 0.5rem;
+  color: #8d8da9;
+  top: 0;
+  transform: translateY(-50%);
+}
+
+.titleAndIcon {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.goto:hover {
+  text-decoration: none;
+}
+
+.logo {
+  height: 48px;
+}
+
+@media screen and (max-width: 650px) {
+  .guideList {
+    flex-direction: column;
+    gap: 40px;
+    margin-bottom: 40px;
+  }
+
+  .guideCard {
+    height: auto;
+  }
+
+  .comingSoonCard > .titleAndIcon {
+    align-items: center;
+    flex-direction: row;
+  }
+
+  .comingSoonCard > .titleAndIcon > .logoContainer {
+    position: absolute;
+    /* 48px is height of logo */
+    top: calc(-1 * (var(--card-padding-y) + (48px / 2)));
+    right: 0;
+  }
+
+  .goto {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .comingSoonCard {
+    position: relative;
+  }
+
+  .guideBackground > :global(.container) {
+    padding-top: 45px;
+  }
+
+  .mainTitle {
+    text-align: center;
+  }
+}

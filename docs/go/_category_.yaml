@@ -1,0 +1,8 @@
+position: 10
+label: "Connect for Go"
+collapsible: true
+collapsed: true
+# customProps:
+#   badge:
+#     label: "alpha"
+#     severity: "info"

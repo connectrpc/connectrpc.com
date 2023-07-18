@@ -1,0 +1,70 @@
+{
+  "trailingSlash": true,
+  "redirects": [
+    {
+      "source": "/docs/",
+      "destination": "/docs/introduction",
+      "permanent": true
+    },
+    {
+      "source": "/docs/go/",
+      "destination": "/docs/go/getting-started",
+      "permanent": true
+    },
+    {
+      "source": "/go/",
+      "destination": "/docs/go/getting-started",
+      "permanent": true
+    },
+    {
+      "source": "/node/",
+      "destination": "/docs/node/getting-started",
+      "permanent": true
+    },
+    {
+      "source": "/docs/node/",
+      "destination": "/docs/node/getting-started",
+      "permanent": true
+    },
+    {
+      "source": "/kotlin/",
+      "destination": "/docs/kotlin/getting-started",
+      "permanent": true
+    },
+    {
+      "source": "/docs/kotlin/",
+      "destination": "/docs/kotlin/getting-started",
+      "permanent": true
+    },
+    {
+      "source": "/swift/",
+      "destination": "/docs/swift/getting-started",
+      "permanent": true
+    },
+    {
+      "source": "/docs/swift/",
+      "destination": "/docs/swift/getting-started",
+      "permanent": true
+    },
+    {
+      "source": "/web/",
+      "destination": "/docs/web/getting-started",
+      "permanent": true
+    },
+    {
+      "source": "/docs/web/",
+      "destination": "/docs/web/getting-started",
+      "permanent": true
+    },
+    {
+      "source": "/web/query/",
+      "destination": "/docs/web/query/getting-started",
+      "permanent": true
+    },
+    {
+      "source": "/docs/web/query/",
+      "destination": "/docs/web/query/getting-started",
+      "permanent": true
+    }
+  ]
+}

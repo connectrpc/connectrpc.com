@@ -1,0 +1,4 @@
+.item {
+  font-family: var(--ifm-font-family-base);
+  text-transform: capitalize;
+}

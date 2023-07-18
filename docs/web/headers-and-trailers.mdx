@@ -1,0 +1,112 @@
+---
+title: Headers & trailers
+sidebar_position: 6
+---
+
+
+To integrate with other systems, you may need to send or read HTTP headers
+with your RPCs. A common example would be to set a token for authentication
+in a request header. Connect also supports trailers, which serve a similar
+purpose but can be written _after_ the response body.
+
+
+## Headers
+
+Headers in Connect are just HTTP headers, and they are represented with the
+`Headers` interface of the [fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Headers)
+in Connect. To send a request header, you create a new Headers object, and
+pass it in the second argument of the client method, the call options:
+
+```ts
+const headers = new Headers();
+headers.set("Authorization", "Bearer AbCdEf123456");
+
+await client.say(
+  {sentence: "Hello"},
+  {headers: headers}
+);
+```
+
+Note that you do not need to create a `Headers` object. The `headers` property
+accepts all inputs that the constructor `new Headers()` accepts. For example,
+you can also provide simple object literal with string values:
+
+```ts
+await client.say(
+  {sentence: "Hello"},
+  {headers: {"Authorization": "Bearer AbCdEf123456"}}
+);
+```
+
+To receive response headers, you can provide a callback:
+
+```ts
+await client.say(
+  {sentence: "Hello"},
+  {onHeader: (headers) => console.log(headers)}
+);
+```
+
+
+## Binary headers
+
+To send non-ASCII values in headers, the gRPC-web and Connect protocols
+require base64 encoding. Suffix your key with "-Bin" and use the function
+`encodeBinaryHeader()`:
+
+```ts
+import { encodeBinaryHeader } from "@bufbuild/connect-web";
+
+const data = new Uint8Array([0xde, 0xad, 0xbe, 0xef]);
+const headers = new Headers();
+headers.set(
+  "Data-Bin",
+  encodeBinaryHeader(data),
+);
+```
+
+For convenience, the function also accepts a protobuf message or UTF-8 text:
+
+```ts
+import { MyMessage } from "./my_message_pb.js";
+
+headers.set(
+  "My-Message-Bin",
+  encodeBinaryHeader(new MyMessage()),
+);
+headers.set(
+  "Greet-Emoji-Bin",
+  encodeBinaryHeader("👋"),
+);
+```
+
+To decode response headers, use the function `decodeBinaryHeader()`:
+
+```ts
+import { decodeBinaryHeader } from "@bufbuild/connect-web";
+
+const value = headers.get("My-Message-Bin");
+if (value != null) {
+  const message: MyMessage = decodeBinaryHeader(value, MyMessage);
+}
+```
+
+
+## Trailers
+
+Trailers are sometimes useful in streaming RPCs, which need to send some
+metadata to the client after sending a few messages. To receive response
+trailers, you can provide a callback:
+
+```ts
+await client.say(
+  {sentence: "Hello"},
+  {onTrailer: (trailers) => console.log(trailers)}
+);
+```
+
+This works for the Connect protocol as well as the gRPC-web protocol, for
+both unary and server-streaming RPCs, even though they encode trailers
+differently. The trailers are represented with the same collection type as
+headers, by the `Headers` interface of the [fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Headers).
+

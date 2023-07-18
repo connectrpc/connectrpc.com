@@ -1,0 +1,65 @@
+{
+  "name": "connect-docs",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "docusaurus start",
+    "build": "docusaurus build",
+    "clear": "docusaurus clear",
+    "serve": "docusaurus serve",
+    "swizzle": "docusaurus swizzle",
+    "check:types": "tsc",
+    "format": "prettier --write .",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix",
+    "prose": "vale docs",
+    "write:translations": "docusaurus write-translations",
+    "write:heading-ids": "docusaurus write-heading-ids"
+  },
+  "dependencies": {
+    "@bufbuild/connect-web": "^0.0.9",
+    "@bufbuild/protobuf": "^0.0.7",
+    "@docusaurus/core": "^2.4.1",
+    "@docusaurus/plugin-google-gtag": "^2.4.1",
+    "@docusaurus/preset-classic": "^2.4.1",
+    "@docusaurus/theme-search-algolia": "^2.4.1",
+    "@mdx-js/react": "^1.6.21",
+    "@react-hookz/web": "^23.0.1",
+    "@stackql/docusaurus-plugin-hubspot": "^1.1.0",
+    "clsx": "^1.2.1",
+    "crt-terminal": "^1.0.13",
+    "prism-react-renderer": "^2.0.6",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
+  },
+  "devDependencies": {
+    "@bufbuild/protoc-gen-connect-web": "^0.0.9",
+    "@bufbuild/protoc-gen-es": "^0.0.7",
+    "@docusaurus/module-type-aliases": "^2.4.1",
+    "@ocular-d/vale-bin": "^1.10.49",
+    "@tsconfig/docusaurus": "^2.0.0",
+    "@types/react": "^17.0.39",
+    "@typescript-eslint/eslint-plugin": "^5.60.1",
+    "@typescript-eslint/parser": "^5.60.1",
+    "eslint": "^8.43.0",
+    "eslint-plugin-jsx-a11y": "^6.7.1",
+    "eslint-plugin-react": "^7.32.2",
+    "prettier": "^2.8.8",
+    "typescript": "^5.1.6"
+  },
+  "browserslist": {
+    "production": [
+      ">0.5%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}

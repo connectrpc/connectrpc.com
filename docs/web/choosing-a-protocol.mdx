@@ -1,0 +1,79 @@
+---
+title: Choosing a protocol
+sidebar_position: 16
+---
+
+In addition to the [Connect protocol](/docs/protocol), [@bufbuild/connect-web](https://www.npmjs.com/package/@bufbuild/connect-web)
+ships with support for the gRPC-web protocol. If your backend does not support
+the Connect protocol, you can still use Connect clients to interface with it.
+
+
+## Connect
+
+The function `createConnectTransport()` creates a transport for the [Connect
+protocol](/docs/protocol). It uses the [fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
+for the actual network operations, which is widely supported in web browsers.
+The most important options for the Connect transport are as follows:
+
+```ts
+import { createConnectTransport } from "@bufbuild/connect-web";
+
+const transport = createConnectTransport({
+  // Requests will be made to <baseUrl>/<package>.<service>/method
+  baseUrl: "https://demo.connect.build",
+
+  // By default, this transport uses the JSON format.
+  // Set this option to true to use the binary format.
+  useBinaryFormat: false,
+
+  // Controls what the fetch client will do with credentials, such as
+  // Cookies. The default value is "same-origin", which will not
+  // transmit Cookies in cross-origin requests.
+  credentials: "same-origin",
+
+  // Interceptors apply to all calls running through this transport.
+  interceptors: [],
+
+  // By default, all requests use POST. Set this option to true to use GET
+  // for side-effect free RPCs.
+  useGet: false,
+});
+```
+
+We generally recommend the JSON format for web browsers, because it makes it
+trivial to follow what exactly is sent over the wire with the browser's network
+inspector.
+
+Connect supports optionally using HTTP GET requests for side-effect free RPC
+calls, to enable easy use of request caching and more. For more information on
+HTTP GET requests, see [Get Requests](./get-requests-and-caching.md).
+
+
+## gRPC-web
+
+The function `createGrpcWebTransport()` creates a Transport for the gRPC-web
+protocol. Any gRPC service can be made available to gRPC-web with the
+[Envoy Proxy](https://www.envoyproxy.io/). ASP.NET Core supports gRPC-web with
+a [middleware](https://docs.microsoft.com/en-us/aspnet/core/grpc/browser?view=aspnetcore-6.0).
+Connect for Node and `connect-go` support gRCP-web out of the box.
+
+```ts
+import { createGrpcWebTransport } from "@bufbuild/connect-web";
+
+const transport = createGrpcWebTransport({
+  // Requests will be made to <baseUrl>/<package>.<service>/method
+  baseUrl: "https://demo.connect.build",
+
+  // By default, this transport uses the binary format, because
+  // not all gRPC-web implementations support JSON.
+  useBinaryFormat: true,
+
+  // Controls what the fetch client will do with credentials, such as
+  // Cookies. The default value is "same-origin", which will not
+  // transmit Cookies in cross-origin requests.
+  credentials: "include",
+
+  // Interceptors apply to all calls running through this transport.
+  interceptors: [],
+});
+```

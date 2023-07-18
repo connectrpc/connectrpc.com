@@ -1,0 +1,203 @@
+---
+title: Custom transports
+sidebar_position: 20
+draft: true
+---
+
+A Transport is responsible for communication with a service over the wire.
+Usually, it constructs a URL using the service and method name, serializes
+the request message, and runs an HTTP request. It then deserializes the
+response and returns it to the caller. Transports typically provide
+configuration options for the server address, serialization, and related
+concerns.
+
+## Using a Transport directly
+
+Transports are objects with a method for every RPC type. Because web browsers
+only support unary and server streaming RPCs, Connect's [Transport interface](https://github.com/bufbuild/connect-web/blob/614cf0b8278df83e4af22cd70201fd848d9d3ba4/packages/connect-web/src/transport.ts#L24)
+only defines the two methods `unary()` and `serverStream()`. Typically, you
+would not want to call these methods directly. A [Client](/docs/web/using-clients)
+binds a service definition to a Transport, and provides more convenient and
+idiomatic access to the methods defined by the service.
+
+There may be rare cases where direct access to this layer is desirable, and
+when implementing your own Transports or Clients, it is important to
+understand how to interface with them.
+
+The following example shows how to call the RPC `Say` directly on the
+Transport, without a Client in between:
+
+```ts
+const abortSignal = undefined; // We do not use cancellation in this example
+const timeoutMs = undefined; // We do not use timeouts in this example
+const response = await transport.unary(
+  ElizaService,
+  ElizaService.methods.say,
+  abortSignal,
+  timeoutMs,
+  new Headers(),
+  new SayRequest({ sentence: "I feel happy." }),
+);
+console.log(response.message.sentence);
+```
+
+## Implementing a Transport
+
+Connect comes with Transports for two protocols, but depending on your
+use case, you may want to implement your own Transport. For example, you
+could implement a stub-transport for your test suite, to let all clients
+respond with pre-defined messages without hitting the network.
+
+In the following example, we are going to implement a very simple variant
+of such a Transport - it simply returns the default response message with
+default field values.
+
+But we have to make a short excursion to Interceptors first, to understand
+some underlying primitives. Any Transport that accepts Interceptors needs to
+provide a function to execute an RPC, which the Interceptors can then wrap
+to observe or change behavior. There are two distinct function types:
+
+- [`UnaryFn`](https://github.com/bufbuild/connect-es/blob/755dda7fdb9b9a70e70dd64e08771fa87c253fa9/packages/connect-core/src/interceptor.ts#L58) -
+  a function that executes a unary RPC
+- [`StreamingFn`](https://github.com/bufbuild/connect-es/blob/755dda7fdb9b9a70e70dd64e08771fa87c253fa9/packages/connect-core/src/interceptor.ts#L70) -
+  a function that executes a server-streaming RPC
+
+There are also four distinct request and response types used as arguments
+or return types respectively by the two function types:
+
+- [`UnaryRequest`](https://github.com/bufbuild/connect-es/blob/755dda7fdb9b9a70e70dd64e08771fa87c253fa9/packages/connect-core/src/interceptor.ts#L82) -
+  a request with a single message
+- [`UnaryResponse`](https://github.com/bufbuild/connect-es/blob/755dda7fdb9b9a70e70dd64e08771fa87c253fa9/packages/connect-core/src/interceptor.ts#L102) -
+  a response with a single messages
+- [`StreamRequst`](https://github.com/bufbuild/connect-es/blob/755dda7fdb9b9a70e70dd64e08771fa87c253fa9/packages/connect-core/src/interceptor.ts#L122) -
+  a request with zero or more messages
+- [`StreamResponse`](https://github.com/bufbuild/connect-es/blob/755dda7fdb9b9a70e70dd64e08771fa87c253fa9/packages/connect-core/src/interceptor.ts#L146) -
+  a response with zero or more messages
+
+For a start, let us create three helper functions to create request and
+response stubs:
+
+```ts
+// stub-transport.ts
+import type { UnaryRequest, UnaryResponse, StreamResponse } from "@bufbuild/connect";
+import type { AnyMessage, Message, MethodInfo, ServiceType, PartialMessage } from "@bufbuild/protobuf";
+
+/**
+ * Create a request with a single message.
+ */
+function createUnaryRequest<T extends Message<T>>(
+  service: ServiceType,
+  method: MethodInfo<T, AnyMessage>,
+  signal: AbortSignal | undefined,
+  header: HeadersInit | undefined,
+  message: PartialMessage<T>
+): UnaryRequest<T> {
+  signal = signal ?? new AbortController().signal;
+  return {
+    stream: false,
+    service,
+    method,
+    url: "fake",
+    init: {},
+    signal,
+    header: new Headers(header),
+    message: new method.I(message),
+  };
+}
+
+/**
+ * Create a response with a single message with default values.
+ */
+function createUnaryResponse<T extends Message<T>>(
+  service: ServiceType,
+  method: MethodInfo<AnyMessage, T>
+): UnaryResponse<T> {
+  return {
+    stream: false,
+    service,
+    method,
+    header: new Headers(),
+    message: new method.O(),
+    trailer: new Headers(),
+  };
+}
+
+/**
+ * Create a streaming response with three messages with default values.
+ */
+function createStreamResponse<T extends Message<T>>(
+  service: ServiceType,
+  method: MethodInfo<AnyMessage, T>
+): StreamResponse<T> {
+  const responses = [new method.O(), new method.O(), new method.O()];
+  return {
+    stream: true,
+    service,
+    method,
+    header: new Headers(),
+    read() {
+      const value = responses.pop();
+      return Promise.resolve(value ? { done: false, value } : { done: true });
+    },
+    trailer: new Headers(),
+  };
+}
+```
+
+Now that we can easily stub responses, the Transport implementation is very
+simple:
+
+```ts
+// stub-transport.ts
+import type { Interceptor, runUnary, runServerStream } from "@bufbuild/connect-web";
+
+/**
+ * Create a stub transport that only returns default response messages.
+ */
+function createStubTransport(interceptors?: Interceptor[]): Transport {
+  return {
+    unary(service, method, signal, timeoutMs, header, message) {
+      return runUnary(
+        createUnaryRequest(service, method, signal, header, message),
+        // This is the UnaryFn that will be wrapped by interceptors:
+        (_req) => Promise.resolve(createUnaryResponse(service, method)),
+        interceptors
+      );
+    },
+    serverStream(service, method, signal, timeoutMs, header, message) {
+      signal = signal ?? new AbortController().signal;
+      return runServerStream(
+        createUnaryRequest(service, method, signal, header, message),
+        // This is the ServerStreamFn that will be wrapped by interceptors:
+        (_req) => Promise.resolve(createStreamResponse(service, method)),
+        interceptors
+      );
+    },
+  };
+}
+```
+
+Using the new Transport:
+
+```ts
+import { createPromiseClient } from "@bufbuild/connect";
+import { createStubTransport } from "./stub-transport.js";
+import { ElizaService } from "@buf/bufbuild_eliza.bufbuild_connect-es/buf/connect/demo/eliza/v1/eliza_connect";
+
+const transport = createStubTransport();
+const client = createPromiseClient(ElizaService, transport);
+const res = await client.say({sentence: "I feel happy."});
+console.log(res.sentence); // Will print an empty string
+```
+
+As you can see, the new Transport is interchangeable with other transports.
+
+As it is, it has limited use in tests, because it does not give you control
+over the stubs it responds with. You could extend its capabilities, but we
+hope we were able to give you some insight into the inner workings of a
+Transport. To recap, we learned:
+- Transports are simple objects with just two methods.
+- They create a request object, and an executing `UnaryFn` or `ServerStreamFn`.
+- They call `runUnary()` or `runServerStreaming()` to let interceptors wrap the executing function.
+- They are independent of [Clients](/docs/web/using-clients).
+

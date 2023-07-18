@@ -1,0 +1,122 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+.codeBlockContainer {
+  margin-bottom: var(--ifm-leading);
+  border-radius: var(--ifm-global-radius);
+  box-shadow: var(--ifm-global-shadow-lw);
+}
+
+.codeBlockContent {
+  position: relative;
+  /* rtl:ignore */
+  direction: ltr;
+}
+
+.codeBlockTitle {
+  border-bottom: 1px solid var(--ifm-color-emphasis-300);
+  font-size: var(--ifm-code-font-size);
+  font-weight: 500;
+  padding: 0.75rem var(--ifm-pre-padding);
+  border-top-left-radius: var(--ifm-global-radius);
+  border-top-right-radius: var(--ifm-global-radius);
+}
+
+.codeBlock {
+  margin: 0;
+  padding: 0;
+  border-radius: var(--ifm-global-radius);
+}
+
+.codeBlockTitle + .codeBlockContent .codeBlock {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.codeBlockStandalone {
+  padding: 0;
+  border-radius: var(--ifm-global-radius);
+}
+
+.copyButton {
+  background: rgb(0 0 0 / 30%);
+  border-radius: var(--ifm-global-radius);
+  color: var(--ifm-color-white);
+  opacity: 0;
+  user-select: none;
+  padding: 0.4rem 0.5rem;
+  position: absolute;
+  right: calc(var(--ifm-pre-padding) / 2);
+  top: calc(var(--ifm-pre-padding) / 2);
+  transition: opacity 200ms ease-in-out;
+}
+
+.copyButton:focus,
+.codeBlockContent:hover > .copyButton,
+.codeBlockTitle:hover + .codeBlockContent .copyButton {
+  opacity: 1;
+}
+
+.codeBlockLines {
+  font: inherit;
+  /* rtl:ignore */
+  float: left;
+  min-width: 100%;
+  padding: var(--ifm-pre-padding);
+}
+
+.codeBlockLines :global(.token-linetheme-code-block-highlighted-line) {
+  background-color: var(--docusaurus-highlighted-code-line-bg);
+  display: block;
+  margin: 0 calc(var(--ifm-pre-padding)*-1);
+  padding: 0 var(--ifm-pre-padding);
+}
+
+@media print {
+  .codeBlockLines {
+    white-space: pre-wrap;
+  }
+}
+
+.bufTerminalOutput {
+  color: #6f7377;
+}
+
+.bufTerminalOutputSeparator {
+  float: left;
+  width: 100%;
+  font-size: var(--ifm-code-font-size);
+  font-weight: 500;
+  color: rgb(57, 58, 52);
+  font-family: var(--ifm-font-family-base);
+  display: flex;
+  flex-direction: row;
+  margin-top: -0.4rem;
+  margin-bottom: -0.3rem;
+}
+
+.bufTerminalOutputSeparator > span {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  color: #6f7377;
+}
+
+.bufTerminalOutputSeparator::before,
+.bufTerminalOutputSeparator::after {
+  content: " ";
+  flex-grow: 0;
+  display: inline;
+  width: 1rem;
+  height: 1px;
+  border-radius: 0;
+  border-bottom: 1px solid var(--ifm-color-emphasis-300);
+  padding-top: 0.5rem;
+}
+
+.bufTerminalOutputSeparator::after {
+  width: 100%;
+}

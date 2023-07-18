@@ -1,0 +1,66 @@
+.container > :global(.crt-terminal) {
+  font-family: var(--ifm-font-family-monospace);
+  background: #f4f5fe;
+  color: black;
+  padding-left: 40px;
+  padding-right: 40px;
+  border-radius: 2px;
+  box-shadow: none;
+  text-shadow: none;
+  /* 0 0 1px #42dffb, 0 0 4px #42dffb;*/
+  border: none;
+}
+
+.container > :global(.crt-terminal) ::selection {
+  color: black;
+  background: white;
+}
+
+.container :global(.crt-cursor-symbol) {
+  background-color: black;
+}
+
+.container :global(.crt-scanner) {
+  background: linear-gradient(180deg, transparent 0, #fffcfc 85%, #42dffb 0, transparent);
+}
+
+.container :global(.crt-terminal__overflow-container)::-webkit-scrollbar-thumb {
+  border-color: white;
+  background-color: white;
+}
+
+.elizaResponse {
+  color: var(--buf-ink-blue-02);
+  padding: 0 20px !important;
+}
+
+.container {
+  height: 240px;
+  position: relative;
+}
+
+.container :global(.crt-command-line) {
+  padding: 10px 0;
+}
+
+.fakeBrowserBar {
+  background-color: var(--buf-grey-01);
+  border-radius: 4px;
+  width: 50%;
+  padding: 4px 10px;
+  display: flex;
+  color: var(--buf-ink-blue-03);
+  gap: 6px;
+}
+
+.prefix {
+  color: var(--buf-grey-03);
+}
+
+@media screen and (max-width: 966px) {
+  .container > :global(.crt-terminal) {
+    padding-left: 20px;
+    padding-right: 20px;
+    font-size: 14px;
+  }
+}

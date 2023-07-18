@@ -1,0 +1,32 @@
+
+.expandAllControls {
+  display: flex;
+  margin: 0.5rem 1rem 0px 1rem;
+  font-size: 16px;
+}
+.expandAllControls > button {
+  color: var(--ifm-menu-color);
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 0.75em;
+  font-weight: 400;
+  text-transform: uppercase;
+  padding: 0.4rem;
+}
+.expandAllControls > button:hover {
+  color: var(--ifm-color-emphasis-800);
+}
+.expandAllControls > button:active {
+  color: var(--ifm-color-emphasis-900);
+}
+
+/* Show / hide controls in sync with the menu */
+@media (max-width: 996px) {
+  .expandAllControls {
+    display: none;
+  }
+  :global(.menu--show) .expandAllControls {
+    display: flex !important;
+  }
+}

@@ -1,0 +1,96 @@
+.footer {
+  display: flex;
+  align-content: center;
+  justify-content: center;
+
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  padding-top: 2.5rem;
+  padding-bottom: 5rem;
+  border-top: 1px solid #D8E9EE;
+}
+
+.socialGroup {
+  display: flex;
+  flex-direction: row;
+  gap: 2.7rem;
+}
+
+.socialGroup a {
+  color: #93B4BE;
+}
+
+.legalGroup {
+  display: flex;
+  flex-direction: row;
+  padding: 32px 20px;
+  gap: 1.8rem;
+}
+
+
+.copyright {
+  font-size: 0.875rem;
+  color: var(--buf-footer-color);
+  font-family: var(--buf-sans-font);
+}
+
+.socialLink {
+  transition: color 0.2s ease-in-out, opacity 0.2s ease-in-out, background-size 0.2s ease-in-out,
+    background 0.2s ease-in-out, background-color 0.2s ease-in-out, border-color 0.2s ease-in-out,
+    width 0.2s ease-in-out, height 0.2s ease-in-out;
+  transition-property: color, opacity, background-size, background, background-color, border-color,
+    width, height;
+  transition-duration: 0.2s, 0.2s, 0.2s, 0.2s, 0.2s, 0.2s, 0.2s, 0.2s;
+  transition-timing-function: ease-in-out, ease-in-out, ease-in-out, ease-in-out, ease-in-out,
+    ease-in-out, ease-in-out, ease-in-out;
+  transition-delay: 0s, 0s, 0s, 0s, 0s, 0s, 0s, 0s;
+}
+.socialLink:hover {
+  opacity: 0.75;
+}
+
+.legalLink {
+  text-transform: uppercase;
+  color: var(--buf-footer-color);
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
+  font-family: var(--buf-mono-font);
+  background-image: linear-gradient(0deg, currentColor 1px, transparent 0);
+  background-repeat: no-repeat;
+  background-size: 0 100%;
+  padding-bottom: 0.125rem;
+  text-decoration: none;
+  transition: background-size 0.4s ease-in-out, opacity 0.4s ease-in-out;
+}
+.legalLink:hover {
+  text-decoration: none;
+  background-size: 100% 100%;
+  color: var(--buf-footer-color);
+}
+
+@media (min-width: 1200px) {
+  .container {
+    flex-direction: row;
+    max-width: 1320px;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .legalGroup {
+    position: absolute;
+    left: 0;
+    padding: 0;
+    color: var(--buf-footer-color-light);
+  }
+  .copyright {
+    color: var(--buf-footer-color-light);
+    position: absolute;
+    right: 0;
+  }
+}

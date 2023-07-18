@@ -1,0 +1,67 @@
+---
+title: Patterns for error handling
+sidebar_position: 20
+draft: true
+---
+
+## Patterns for error handling
+
+The `async` and `await` keywords make asynchronous code in ECMAScript as
+readable as procedural code. In TypeScript however, Promise rejections and
+errors caught in try-catch blocks lack type information. This is why we
+needed to use additional if-statements in the examples to verify `err` is a
+`ConnectError` before we use it as one.
+
+A sensible pattern to avoid this boilerplate is to use centralized error handling,
+for example [error boundaries](https://reactjs.org/docs/error-boundaries.html)
+in React. This will allow you to omit try-catch blocks in most call sites, and
+you will only need a try-catch where you want to add behaviour to a specific
+error code. Let's write a short [assertion function](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html#assertion-functions)
+that helps us to implement this pattern:
+
+```ts
+// assert-connect-error.ts
+import { ConnectError, Code } from "@bufbuild/connect";
+
+/**
+ * Asserts that the given reason is a ConnectError.
+ * If the reason is not a ConnectError, or does not
+ * have the wanted Code, rethrow it.
+ */
+export function assertConnectError(
+  reason: unknown,
+  ...codes: Code[]
+): asserts reason is ConnectError {
+  if (reason instanceof ConnectError) {
+    if (codes.length == 0) {
+      return;
+    }
+    if (codes.includes(reason.code)) {
+      return;
+    }
+  }
+  // reason is not a ConnectError, or does
+  // not have the wanted Code - rethrow it.
+  throw reason;
+}
+```
+
+Assuming we already have centralized error handling in place, we can now
+easily add behavior for a specific error code:
+
+```ts
+import { Code } from "@bufbuild/connect-web";
+import { assertConnectError } from "./assert-connect-error.js";
+
+try {
+  await client.say({sentence: ""});
+} catch (reason) {
+  const error = assertConnectError(reason, Code.InvalidArgument);
+  console.error("Oh no:", error.rawMessage);
+}
+```
+
+There is no silver bullet for error handling. In general, the most simple and
+most direct approach that suits your needs is the best one. We hope we were
+able to give you some insight into what is possible if you feel your
+application has outgrown the most simple approach.

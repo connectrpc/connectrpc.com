@@ -1,0 +1,51 @@
+/*
+Hide color mode toggle in small viewports
+ */
+@media (max-width: 996px) {
+  .colorModeToggle, .linkList {
+    display: none !important;
+  }
+}
+
+.linkList {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.linkList :global(.navbar__link):hover {
+  color: var(--buf-ink-blue-02);
+}
+
+.linkList > :global(.navbar__item.dropdown) > :global(.navbar__item),
+.linkList > :global(.navbar__item.dropdown) > :global(.navbar__link),
+.linkList > :global(.navbar__item) {
+  font-family: var(--buf-mono-font);
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  position: relative;
+  text-transform: uppercase;
+}
+
+.linkList > :global(.navbar__link--active) {
+  color: var(--ifm-navbar-link-color);
+}
+
+.linkList > :global(.navbar__item.dropdown) > :global(.navbar__link) > svg {
+  left: 50%;
+  position: absolute;
+  top: 100%;
+  transform: translate(-50%, 50%);
+}
+
+.rightWrapper {
+  display: flex;
+  gap: 8px;
+}
+
+@media (max-width: 997px) {
+  .searchWrapper > * {
+    position: static !important;
+  }
+}

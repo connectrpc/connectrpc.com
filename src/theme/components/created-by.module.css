@@ -1,0 +1,36 @@
+:root {
+  --logo-img-h: 2.75rem;
+  --buf-button-border-color: #d0e3e8;
+  --buf-button-border-color-dark: #1a8870;
+}
+
+.bufLogo {
+  height: 23px;
+  width: 51.12px;
+}
+
+.bufButton {
+  padding: 0.5rem 0.8rem;
+  background-color: white;
+  box-shadow: none;
+  border: 1px solid var(--buf-button-border-color);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 2px;
+  font-size: 12px;
+}
+
+.bufButton span {
+  font-family: var(--buf-mono-font);
+  text-transform: uppercase;
+  letter-spacing: 0.075rem;
+  color: #090a3a;
+}
+
+.bufButton:hover {
+  cursor: pointer;
+  text-decoration: none;
+  border: 1px solid var(--buf-ink-blue-01-active);
+  background-color: var(--buf-ink-blue-00);
+}
