@@ -21,7 +21,7 @@ In this guide, we'll use Connect-Swift to create a chat app for
 a very simple natural language processor built in the 1960s to represent a
 psychotherapist. **The ELIZA service is
 [implemented using Connect-Go][go-demo], is
-[already up and running](https://connect.build/demo) in production, and
+[already up and running](https://connectrpc.com/demo) in production, and
 supports both the [gRPC-Web][grpc-web] and [Connect](../protocol.md)
 protocols - both of which can be used with Connect-Swift for this tutorial.**
 The APIs we'll be using are defined in a Protobuf schema that we'll use
@@ -324,7 +324,7 @@ struct ElizaApp: App {
     @State private var client = ProtocolClient(
         httpClient: URLSessionHTTPClient(),
         config: ProtocolClientConfig(
-            host: "https://demo.connect.build",
+            host: "https://demo.connectrpc.com",
             networkProtocol: .connect, // Or .grpcWeb
             codec: ProtoCodec() // Or JSONCodec()
         )
@@ -368,7 +368,7 @@ we'd only need to make a simple 2 line change:
 private var client = ProtocolClient(
     httpClient: URLSessionHTTPClient(),
     config: ProtocolClientConfig(
-        host: "https://demo.connect.build",
+        host: "https://demo.connectrpc.com",
         networkProtocol: .connect,
         //highlight-next-line
         codec: JSONCodec(),
@@ -400,9 +400,9 @@ import ConnectNIO
 
 private var client = ProtocolClient(
     //highlight-next-line
-    httpClient: NIOHTTPClient(host: "https://demo.connect.build"),
+    httpClient: NIOHTTPClient(host: "https://demo.connectrpc.com"),
     config: ProtocolClientConfig(
-        host: "https://demo.connect.build",
+        host: "https://demo.connectrpc.com",
         //highlight-next-line
         networkProtocol: .grpc,
         codec: JSONCodec(),

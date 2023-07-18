@@ -41,7 +41,7 @@ meaningful HTTP status codes. For example:
 
 ```
 > POST /buf.greet.v1.GreetService/Greet HTTP/1.1
-> Host: demo.connect.build
+> Host: demo.connectrpc.com
 > Content-Type: application/json
 >
 > {"name": "Buf"}
@@ -56,7 +56,7 @@ For RPCs that have no side effects, it is possible to use GET requests instead:
 
 ```
 > GET /buf.greet.v1.GreetService/Greet?encoding=json&msg=%7B%22name%22%3A%22Buf%22%7D HTTP/1.1
-> Host: demo.connect.build
+> Host: demo.connectrpc.com
 
 < HTTP/1.1 200 OK
 < Content-Type: application/json
@@ -90,7 +90,7 @@ streaming call might look like this:
 
 ```
 > POST /buf.greet.v1.GreetService/GreetGroup HTTP/1.1
-> Host: demo.connect.build
+> Host: demo.connectrpc.com
 > Content-Type: application/connect+json
 >
 > <binary framing: standard message>{"name": "Buf"}
@@ -339,7 +339,7 @@ Using HTTP/1.1 notation, a simple request and successful response:
 
 ```
 > POST /buf.greet.v1.GreetService/Greet HTTP/1.1
-> Host: demo.connect.build
+> Host: demo.connectrpc.com
 > Content-Type: application/json
 >
 > {"name": "Buf"}
@@ -354,7 +354,7 @@ The same RPC, but sent as a unary GET request instead:
 
 ```
 > GET /buf.greet.v1.GreetService/Greet?message=%7B%22name%22%3A%22Buf%22%7D&encoding=json&connect=v1 HTTP/1.1
-> Host: demo.connect.build
+> Host: demo.connectrpc.com
 
 < HTTP/1.1 200 OK
 < Content-Type: application/json
@@ -370,7 +370,7 @@ custom leading and trailing metadata.
 
 ```
 > POST /buf.greet.v1.GreetService/Greet HTTP/1.1
-> Host: demo.connect.build
+> Host: demo.connectrpc.com
 > Content-Type: application/json
 > Accept-Encoding: gzip, br
 > Connect-Timeout-Ms: 5000
@@ -390,7 +390,7 @@ The same RPC again, but with a Protobuf-encoded request and an error response:
 
 ```
 > POST /buf.greet.v1.GreetService/Greet HTTP/1.1
-> Host: demo.connect.build
+> Host: demo.connectrpc.com
 > Content-Type: application/proto
 >
 > <uncompressed binary Protobuf>
@@ -469,7 +469,7 @@ line for readability, a successful client streaming RPC:
 
 ```
 > POST /buf.greet.v1.GreetService/GreetGroup HTTP/1.1
-> Host: demo.connect.build
+> Host: demo.connectrpc.com
 > Content-Type: application/connect+json
 >
 > <flags: 0><length: 15>{"name": "Buf"}
@@ -486,7 +486,7 @@ A failed server streaming RPC:
 
 ```
 > POST /buf.greet.v1.GreetService/GreetIndividuals HTTP/1.1
-> Host: demo.connect.build
+> Host: demo.connectrpc.com
 > Content-Type: application/connect+proto
 >
 > <flags: 0><length: 8><binary proto>

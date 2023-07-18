@@ -12,20 +12,20 @@ Each closure provides the ability for the interceptor to observe and store
 state, as well as the option to mutate the outbound or inbound content.
 
 For example, here is an interceptor that adds an `Authorization` header to
-all outbound requests that are destined for the `demo.connect.build` host:
+all outbound requests that are destined for the `demo.connectrpc.com` host:
 
 ```swift
 import Connect
 
 /// Interceptor that adds an `Authorization` header to outbound
-/// requests to `demo.connect.build`.
+/// requests to `demo.connectrpc.com`.
 final class ExampleAuthInterceptor: Interceptor {
     init(config: ProtocolClientConfig) {}
 
     func unaryFunction() -> UnaryFunction {
         return UnaryFunction(
             requestFunction: { request in
-                if request.url.host != "demo.connect.build" {
+                if request.url.host != "demo.connectrpc.com" {
                     return request
                 }
 
@@ -55,7 +55,7 @@ Interceptors are registered with the `ProtocolClient` on initialization:
 let client = ProtocolClient(
     httpClient: URLSessionHTTPClient(),
     config: ProtocolClientConfig(
-        host: "https://demo.connect.build",
+        host: "https://demo.connectrpc.com",
         networkProtocol: .connect,
         codec: ProtoCodec(),
         //highlight-next-line

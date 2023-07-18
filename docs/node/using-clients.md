@@ -17,7 +17,7 @@ const transport = createConnectTransport({
 // highlight-next-line
   httpVersion: "1.1",
 // highlight-next-line
-  baseUrl: "http://demo.connect.build",
+  baseUrl: "http://demo.connectrpc.com",
 // highlight-next-line
 });
 
@@ -51,7 +51,7 @@ import { createConnectTransport } from "@bufbuild/connect-node";
 
 const transport = createConnectTransport({
   // Requests will be made to <baseUrl>/<package>.<service>/method
-  baseUrl: "https://demo.connect.build",
+  baseUrl: "https://demo.connectrpc.com",
 
   // You have to tell the Node.js http API which HTTP version to use.
   httpVersion: "2",
@@ -72,7 +72,7 @@ import { createGrpcTransport } from "@bufbuild/connect-node";
 
 const transport = createGrpcTransport({
   // Requests will be made to <baseUrl>/<package>.<service>/method
-  baseUrl: "https://demo.connect.build",
+  baseUrl: "https://demo.connectrpc.com",
 
   // You have to tell the Node.js http API which HTTP version to use.
   httpVersion: "2",
@@ -97,7 +97,7 @@ import { createGrpcWebTransport } from "@bufbuild/connect-node";
 
 const transport = createGrpcWebTransport({
   // Requests will be made to <baseUrl>/<package>.<service>/method
-  baseUrl: "https://demo.connect.build",
+  baseUrl: "https://demo.connectrpc.com",
 
   // You have to tell the Node.js http API which HTTP version to use.
   httpVersion: "2",

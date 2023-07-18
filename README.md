@@ -49,7 +49,7 @@ In general, the site follows the standard Docusaurus structure, with swizzled co
 - Components specific to the front page are in [`src/components/home`](./src/components/home)
 - All text for the front page is defined in [`src/components/home/text.tsx`](./src/components/home/text.tsx)
 
-[connect]: https://connect.build
+[connect]: https://connectrpc.com
 [docusaurus]: https://docusaurus.io
 [eslint]: https://eslint.org
 [vercel]: https://vercel.com

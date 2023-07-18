@@ -7,7 +7,7 @@ const gaTrackingID = process.env.GOOGLE_ANALYTICS_GTAG ?? "";
 const config = {
   title: "Connect",
   tagline: "Simple, reliable, interoperable. A better gRPC.", // Used for description metadata
-  url: "https://connect.build",
+  url: "https://connectrpc.com",
   baseUrl: "/",
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
@@ -43,12 +43,12 @@ const config = {
     "@stackql/docusaurus-plugin-hubspot",
     gaTrackingID !== ""
       ? [
-          "@docusaurus/plugin-google-gtag",
-          {
-            trackingID: gaTrackingID,
-            anonymizeIP: true
-          }
-        ]
+        "@docusaurus/plugin-google-gtag",
+        {
+          trackingID: gaTrackingID,
+          anonymizeIP: true
+        }
+      ]
       : null
   ],
   themeConfig:
@@ -87,9 +87,8 @@ const config = {
       footer: {
         style: "dark",
         links: [],
-        copyright: `Copyright © ${
-          new Date().getFullYear() != 2022 ? "2022&ndash;" : ""
-        }${new Date().getFullYear()} Buf Technologies, Inc.`
+        copyright: `Copyright © ${new Date().getFullYear() != 2022 ? "2022&ndash;" : ""
+          }${new Date().getFullYear()} Buf Technologies, Inc.`
       },
       prism: {
         theme: lightCodeTheme,

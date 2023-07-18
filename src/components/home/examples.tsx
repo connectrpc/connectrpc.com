@@ -18,7 +18,7 @@ const plainHttpTerminalContent = `
 $ curl \\
     --header 'Content-Type: application/json' \\
     --data '{"sentence": "I feel happy."}' \\
-    https://demo.connect.build/buf.connect.demo.eliza.v1.ElizaService/Say
+    https://demo.connectrpc.com/buf.connect.demo.eliza.v1.ElizaService/Say
 ---
 {"sentence": "Feeling happy? Tell me more."}
 `;
@@ -26,7 +26,7 @@ $ curl \\
 const grpbContent = `
 $ grpcurl \\
     -d '{"sentence": "I feel happy."}' \\
-    demo.connect.build:443 \\
+    demo.connectrpc.com:443 \\
     buf.connect.demo.eliza.v1.ElizaService/Say
 ---
 {"sentence": "Feeling happy? Tell me more."}

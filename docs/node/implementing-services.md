@@ -152,7 +152,7 @@ function say() {
 ## Streaming
 
 Before showing the various handlers for streaming endpoints, we'd like to
-reference the [Streaming](https://connect.build/docs/go/streaming/) page from
+reference the [Streaming](https://connectrpc.com/docs/go/streaming/) page from
 Connect-Go as a caveat.  Because while Connect for Node.js does support all
 three variations of streaming endpoints, there are tradeoffs that should be
 considered before diving in.
