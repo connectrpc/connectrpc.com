@@ -2,6 +2,22 @@
   "trailingSlash": true,
   "redirects": [
     {
+      "source": "/connect/",
+      "destination": "/connect.html"
+    },
+    {
+      "source": "/grpchealth/",
+      "destination": "/grpchealth.html"
+    },
+    {
+      "source": "/grpcreflect/",
+      "destination": "/grpcreflect.html"
+    },
+    {
+      "source": "/otelconnect/",
+      "destination": "/otelconnect.html"
+    },
+    {
       "source": "/docs/",
       "destination": "/docs/introduction",
       "permanent": true
