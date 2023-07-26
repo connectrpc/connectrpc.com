@@ -2,19 +2,19 @@
   "trailingSlash": true,
   "redirects": [
     {
-      "source": "/connect",
+      "source": "/connect/",
       "destination": "/connect.html"
     },
     {
-      "source": "/grpchealth",
+      "source": "/grpchealth/",
       "destination": "/grpchealth.html"
     },
     {
-      "source": "/grpcreflect",
+      "source": "/grpcreflect/",
       "destination": "/grpcreflect.html"
     },
     {
-      "source": "/otelconnect",
+      "source": "/otelconnect/",
       "destination": "/otelconnect.html"
     },
     {
