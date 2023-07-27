@@ -1,19 +1,28 @@
-import { ElizaService } from "./gen/buf/connect/demo/eliza/v1/eliza_connectweb";
+import { ElizaService } from "@buf/bufbuild_eliza.bufbuild_connect-es/buf/connect/demo/eliza/v1/eliza_connect";
 import React, { useCallback, useEffect, useRef } from "react";
-import { Terminal, useEventQueue, textLine, textWord, commandLine } from "crt-terminal";
-import { createConnectTransport, createPromiseClient } from "@bufbuild/connect-web";
+import {
+  Terminal,
+  useEventQueue,
+  textLine,
+  textWord,
+  commandLine,
+} from "crt-terminal";
+import { createPromiseClient } from "@bufbuild/connect";
+import { createConnectTransport } from "@bufbuild/connect-web";
 import styles from "./styles.module.css";
 import { TerminalHeader } from "../home/examples";
 
 const host = "https://demo.connect.build";
 
 const transport = createConnectTransport({
-  baseUrl: host
+  baseUrl: host,
 });
 
 const elizaServicePromiseClient = createPromiseClient(ElizaService, transport);
 
-export const ElizaDemo: React.FC<{ focusOnMount?: boolean }> = ({ focusOnMount = false }) => {
+export const ElizaDemo: React.FC<{ focusOnMount?: boolean }> = ({
+  focusOnMount = false,
+}) => {
   const eventQueue = useEventQueue();
   const { print, focus } = eventQueue.handlers;
 
@@ -24,15 +33,15 @@ export const ElizaDemo: React.FC<{ focusOnMount?: boolean }> = ({ focusOnMount =
     }
     print([
       commandLine({
-        words: [textWord({ characters: "> Meet Eliza, our psychotherapist." })]
+        words: [textWord({ characters: "> Meet Eliza, our psychotherapist." })],
       }),
       textLine({
         words: [
           textWord({ characters: "Eliza: " }),
-          textWord({ characters: "Hi! How are you feeling?" })
+          textWord({ characters: "Hi! How are you feeling?" }),
         ],
-        className: styles.elizaResponse
-      })
+        className: styles.elizaResponse,
+      }),
     ]);
     callbackRef.current = true;
   }, []);
@@ -40,13 +49,16 @@ export const ElizaDemo: React.FC<{ focusOnMount?: boolean }> = ({ focusOnMount =
   const handleCommand = useCallback(
     async (str: string) => {
       const response = await elizaServicePromiseClient.say({
-        sentence: str
+        sentence: str,
       });
       print([
         textLine({
-          words: [textWord({ characters: "Eliza: " }), textWord({ characters: response.sentence })],
-          className: styles.elizaResponse
-        })
+          words: [
+            textWord({ characters: "Eliza: " }),
+            textWord({ characters: response.sentence }),
+          ],
+          className: styles.elizaResponse,
+        }),
       ]);
     },
     [elizaServicePromiseClient, print]
@@ -61,7 +73,7 @@ export const ElizaDemo: React.FC<{ focusOnMount?: boolean }> = ({ focusOnMount =
         effects={{
           pixels: false,
           screenEffects: true,
-          textEffects: false
+          textEffects: false,
         }}
         focusOnMount={focusOnMount}
       />

@@ -39,7 +39,3 @@ npmchecktypes:
 npmprose:
 	npm run prose
 
-.PHONY: bufgenerate
-bufgenerate:
-	npm run buf:generate
-
