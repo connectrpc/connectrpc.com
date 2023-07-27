@@ -28,4 +28,4 @@ handler := cors.New(cors.Options{
 
 For examples of working with a CORS setup in Connect for Node.js, see the [CORS](../node/server-plugins.md#cors) documentation.
 
-For more information on the `Connect-Protocol-Version` header, see [this PR](https://github.com/bufbuild/connect-go/pull/416).
+For more information on the `Connect-Protocol-Version` header, see [this PR](https://github.com/connectrpc/connect-go/pull/416).

@@ -32,7 +32,7 @@ $ go mod init example
 $ go install github.com/bufbuild/buf/cmd/buf@latest
 $ go install github.com/fullstorydev/grpcurl/cmd/grpcurl@latest
 $ go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-$ go install github.com/bufbuild/connect-go/cmd/protoc-gen-connect-go@latest
+$ go install connectrpc.com/connect/cmd/protoc-gen-connect-go@latest
 ```
 
 You'll need `buf`, `protoc-gen-go` and `protoc-gen-connect-go` on your `PATH`. If
@@ -148,7 +148,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/bufbuild/connect-go"
+	"connectrpc.com/connect"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 
@@ -195,7 +195,7 @@ server:
 
 ```bash
 $ go get golang.org/x/net/http2
-$ go get github.com/bufbuild/connect-go
+$ go get connectrpc.com/connect
 $ go run ./cmd/server/main.go
 ```
 
@@ -248,7 +248,7 @@ import (
 	greetv1 "example/gen/greet/v1"
 	"example/gen/greet/v1/greetv1connect"
 
-	"github.com/bufbuild/connect-go"
+	"connectrpc.com/connect"
 )
 
 func main() {
@@ -337,7 +337,7 @@ client without *any* extra work on your part.
 [buf.yaml]: https://buf.build/docs/configuration/v1/buf-yaml
 [buf-cli]: https://github.com/bufbuild/buf
 [cURL]: https://curl.se/
-[godoc]: https://pkg.go.dev/github.com/bufbuild/connect-go
+[godoc]: https://pkg.go.dev/connectrpc.com/connect
 [go-releases]: https://golang.org/doc/devel/release
 [grpc-web]: https://github.com/grpc/grpc-web
 [install-go]: https://golang.org/doc/install

@@ -20,7 +20,7 @@ import { createConnectTransport } from "@bufbuild/connect-web";
 
 const transport = createConnectTransport({
   // Requests will be made to <baseUrl>/<package>.<service>/method
-  baseUrl: "https://demo.connect.build",
+  baseUrl: "https://demo.connectrpc.com",
 
   // By default, this transport uses the JSON format.
   // Set this option to true to use the binary format.
@@ -62,7 +62,7 @@ import { createGrpcWebTransport } from "@bufbuild/connect-web";
 
 const transport = createGrpcWebTransport({
   // Requests will be made to <baseUrl>/<package>.<service>/method
-  baseUrl: "https://demo.connect.build",
+  baseUrl: "https://demo.connectrpc.com",
 
   // By default, this transport uses the binary format, because
   // not all gRPC-web implementations support JSON.

@@ -34,7 +34,7 @@ import Connect
 let protocolClient = ProtocolClient(
     httpClient: URLSessionHTTPClient(),
     config: ProtocolClientConfig(
-        host: "https://demo.connect.build",
+        host: "https://demo.connectrpc.com",
         //highlight-next-line
         networkProtocol: .connect, // Or .grpcWeb
         codec: ProtoCodec()
@@ -50,7 +50,7 @@ import Connect
 //highlight-next-line
 import ConnectNIO
 
-let host = "https://demo.connect.build"
+let host = "https://demo.connectrpc.com"
 let protocolClient = ProtocolClient(
     //highlight-next-line
     httpClient: NIOHTTPClient(host: host),
@@ -118,7 +118,7 @@ import Connect
 let protocolClient = ProtocolClient(
     httpClient: URLSessionHTTPClient(),
     config: ProtocolClientConfig(
-        host: "https://demo.connect.build", // Base URL for APIs
+        host: "https://demo.connectrpc.com", // Base URL for APIs
         networkProtocol: .connect, // Or .grpcWeb
         codec: ProtoCodec() // Or JSONCodec()
     )
@@ -171,7 +171,7 @@ import Connect
 let protocolClient = ProtocolClient(
     httpClient: URLSessionHTTPClient(),
     config: ProtocolClientConfig(
-        host: "https://demo.connect.build", // Base URL for APIs
+        host: "https://demo.connectrpc.com", // Base URL for APIs
         networkProtocol: .connect, // Or .grpcWeb
         codec: ProtoCodec() // Or JSONCodec()
     )

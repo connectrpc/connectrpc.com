@@ -177,7 +177,7 @@ import fastifyCors from "@fastify/cors";
 import { cors } from "@bufbuild/connect";
 
 await server.register(fastifyCors, {
-  origin: "https://demo.connect.build",
+  origin: "https://demo.connectrpc.com",
   methods: cors.allowedMethods,
   allowedHeaders: [
     ...cors.allowedHeaders,

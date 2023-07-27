@@ -12,7 +12,7 @@ In this guide, we'll use Connect-Kotlin to create a chat app for
 a very simple natural language processor built in the 1960s to represent a
 psychotherapist. **The ELIZA service is
 [implemented using Connect-Go][go-demo], is
-[already up and running](https://connect.build/demo) in production, and
+[already up and running](https://connectrpc.com/demo) in production, and
 supports the [gRPC][grpc], [gRPC-Web][grpc-web], and [Connect](../protocol.md)
 protocols - all of which can be used with Connect-Kotlin for this tutorial.**
 The APIs we'll be using are defined in a Protobuf schema that we'll use
@@ -87,7 +87,7 @@ proto
 ```
 
 Open the newly created `eliza.proto` file in the editor.
-This file declares a `buf.connect.demo.eliza.v1` Protobuf package,
+This file declares a `connectrpc.eliza.v1` Protobuf package,
 a service called `ElizaService`, and a single method
 called `Say`. Under the hood, these components will be used to form the path
 of the API's HTTP URL.
@@ -531,8 +531,8 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
-import buf.connect.demo.eliza.v1.Eliza
-import buf.connect.demo.eliza.v1.ElizaServiceClient
+import connectrpc.eliza.v1.Eliza
+import connectrpc.eliza.v1.ElizaServiceClient
 import build.buf.connect.ProtocolClientConfig
 import build.buf.connect.extensions.GoogleJavaProtobufStrategy
 import build.buf.connect.impl.ProtocolClient
@@ -564,7 +564,7 @@ class MainActivity : AppCompatActivity() {
     val client = ProtocolClient(
       httpClient = ConnectOkHttpClient(),
       ProtocolClientConfig(
-        host = "https://demo.connect.build",
+        host = "https://demo.connectrpc.com",
         serializationStrategy = GoogleJavaProtobufStrategy(), // Or GoogleJavaJSONStrategy for JSON.
         networkProtocol = NetworkProtocol.CONNECT,
       ),
@@ -675,13 +675,13 @@ the Connect-Kotlin repository on GitHub. These examples demonstrate:
 
 [buf.yaml]: https://buf.build/docs/configuration/v1/buf-yaml
 
-[connect-go]: https://github.com/bufbuild/connect-go
+[connect-go]: https://github.com/connectrpc/connect-go
 
 [connect-kotlin]: https://github.com/bufbuild/connect-kotlin
 
 [connect-kotlin-releases]: https://github.com/bufbuild/connect-kotlin/releases
 
-[eliza-proto]: https://buf.build/bufbuild/eliza/file/main:buf/connect/demo/eliza/v1/eliza.proto
+[eliza-proto]: https://buf.build/bufbuild/eliza/file/main:connectrpc.eliza.v1/eliza.proto
 
 [go-demo]: https://github.com/bufbuild/connect-demo
 

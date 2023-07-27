@@ -157,7 +157,7 @@ import (
   greetv1 "example/gen/greet/v1"
   "example/gen/greet/v1/greetv1connect"
 
-  "github.com/bufbuild/connect-go"
+  "connectrpc.com/connect"
   "golang.org/x/net/http2"
   "golang.org/x/net/http2/h2c"
 )

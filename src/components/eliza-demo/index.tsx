@@ -12,7 +12,7 @@ import { createConnectTransport } from "@bufbuild/connect-web";
 import styles from "./styles.module.css";
 import { TerminalHeader } from "../home/examples";
 
-const host = "https://demo.connect.build";
+const host = "https://demo.connectrpc.com";
 
 const transport = createConnectTransport({
   baseUrl: host,

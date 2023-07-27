@@ -12,7 +12,7 @@ Each closure provides the ability for the interceptor to observe and store
 state, as well as the option to mutate the outbound or inbound content.
 
 For example, here is an interceptor that adds an `Authorization` header to
-all outbound requests that are destined for the `demo.connect.build` host:
+all outbound requests that are destined for the `demo.connectrpc.com` host:
 
 ```kotlin
 import build.buf.connect.Interceptor
@@ -21,12 +21,12 @@ import build.buf.connect.UnaryFunction
 import build.buf.connect.http.HTTPRequest
 
 /// Interceptor that adds an `Authorization` header to outbound
-/// requests to `demo.connect.build`.
+/// requests to `demo.connectrpc.com`.
 class AuthorizationInterceptor : Interceptor {
   override fun unaryFunction(): UnaryFunction {
     return UnaryFunction(
       requestFunction = { request ->
-        if (request.url.host != "demo.connect.build") {
+        if (request.url.host != "demo.connectrpc.com") {
           return@UnaryFunction request
         }
 
@@ -57,7 +57,7 @@ Interceptors are registered with the `ProtocolClient` on initialization:
 val client = ProtocolClient(
   httpClient = ConnectOkHttpClient(OkHttpClient()),
   ProtocolClientConfig(
-    host = "https://demo.connect.build",
+    host = "https://demo.connectrpc.com",
     serializationStrategy = GoogleJavaProtobufStrategy(),
     protocol = Protocol.CONNECT,
     interceptors = listOf({ AuthorizationInterceptor() })

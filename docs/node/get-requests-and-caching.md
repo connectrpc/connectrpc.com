@@ -40,7 +40,7 @@ the Connect transport:
 
 ```js
 const transport = createConnectTransport({
-  baseUrl: "https://demo.connect.build",
+  baseUrl: "https://demo.connectrpc.com",
   useHttpGet: true,
 });
 const client = createPromiseClient(ElizaService, transport);

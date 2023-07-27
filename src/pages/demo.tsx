@@ -21,7 +21,7 @@ export default function Demo(): JSX.Element {
           </div>
           <p>
             You are chatting with the <a href="https://github.com/bufbuild/connect-demo">ELIZA demo service</a>,
-            which is implemented in <a href="https://github.com/bufbuild/connect-go">connect-go</a>.
+            which is implemented in <a href="https://github.com/connectrpc/connect-go">connect-go</a>.
             <br /><br />
             This front-end client was built using <a href="https://github.com/bufbuild/connect-web">connect-web</a>,
             and you can follow <a href="/docs/web/getting-started">this guide</a> to implement it yourself.

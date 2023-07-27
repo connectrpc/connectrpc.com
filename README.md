@@ -1,6 +1,7 @@
 # The Connect docs
 
-This repo houses the assets used to build the website and documentation for the [Connect] project, which is built using [Docusaurus].
+This repo houses the assets used to build the website and documentation for the
+[Connect] project, which is built using [Docusaurus].
 
 ## Running the site
 
@@ -21,7 +22,9 @@ make run
 
 ## Publishing
 
-The Connect site is published automatically on [Netlify]. Any time changes are pushed/merged to `main`, Netlify's CI automatically builds and deploys the most recent commit.
+The Connect site is published automatically on [Vercel][vercel]. Any time
+changes are pushed/merged to `main`, Vercel's CI automatically builds and
+deploys the most recent commit.
 
 ## Custom theme components
 
@@ -49,7 +52,7 @@ In general, the site follows the standard Docusaurus structure, with swizzled co
 - Components specific to the front page are in [`src/components/home`](./src/components/home)
 - All text for the front page is defined in [`src/components/home/text.tsx`](./src/components/home/text.tsx)
 
-[connect]: https://connect.build
+[connect]: https://connectrpc.com
 [docusaurus]: https://docusaurus.io
 [eslint]: https://eslint.org
 [vercel]: https://vercel.com
