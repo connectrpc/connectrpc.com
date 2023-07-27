@@ -3,19 +3,23 @@
   "redirects": [
     {
       "source": "/connect/",
-      "destination": "/connect.html"
+      "destination": "/connect.html",
+      "permanent": true
     },
     {
       "source": "/grpchealth/",
-      "destination": "/grpchealth.html"
+      "destination": "/grpchealth.html",
+      "permanent": true
     },
     {
       "source": "/grpcreflect/",
-      "destination": "/grpcreflect.html"
+      "destination": "/grpcreflect.html",
+      "permanent": true
     },
     {
       "source": "/otelconnect/",
-      "destination": "/otelconnect.html"
+      "destination": "/otelconnect.html",
+      "permanent": true
     },
     {
       "source": "/docs/",
