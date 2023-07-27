@@ -1,4 +1,4 @@
-import { ElizaService } from "@buf/bufbuild_eliza.bufbuild_connect-es/buf/connect/demo/eliza/v1/eliza_connect";
+import { ElizaService } from "@buf/connectrpc_eliza.bufbuild_connect-es/connectrpc/eliza/v1/eliza_connect";
 import React, { useCallback, useEffect, useRef } from "react";
 import {
   Terminal,
