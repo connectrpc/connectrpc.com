@@ -152,15 +152,14 @@ function say() {
 ## Streaming
 
 Before showing the various handlers for streaming endpoints, we'd like to
-reference the [Streaming](https://connect.build/docs/go/streaming/) page from
-Connect-Go as a caveat.  Because while Connect for Node.js does support all
-three variations of streaming endpoints, there are tradeoffs that should be
-considered before diving in.
+reference the [Streaming](../go/streaming.md) page from Connect-Go as a caveat.
+Because while Connect for Node.js does support all three variations of
+streaming endpoints, there are tradeoffs that should be considered before
+diving in.
 
 Streaming can be a very powerful approach to APIs in the right circumstances,
 but it also requires great care. Remember, with great power comes great
 responsibility.
-
 
 In **_client streaming_**, the client sends multiple messages. Once the server
 receives all the messages, it responds with a single message. In Protobuf
@@ -205,7 +204,6 @@ send multiple messages. Often, the exchange is structured like a conversation:
 the client sends a message, the server responds, the client sends another
 message, and so on. Keep in mind that this always requires end-to-end HTTP/2
 support (regardless of RPC protocol)!
-
 
 
 ## Helper Types

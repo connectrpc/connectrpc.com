@@ -7,16 +7,16 @@ const gaTrackingID = process.env.GOOGLE_ANALYTICS_GTAG ?? "";
 const config = {
   title: "Connect",
   tagline: "Simple, reliable, interoperable. A better gRPC.", // Used for description metadata
-  url: "https://connect.build",
+  url: "https://connectrpc.com",
   baseUrl: "/",
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
   favicon: "img/fav@2x.png",
-  organizationName: "bufbuild",
+  organizationName: "connectrpc",
   projectName: "connect",
   scripts: [
     {
-      src: "https://legendary-protected.connect.build/script.js",
+      src: "https://legendary-protected.connectrpc.com/script.js",
       "data-site": "BWSMOXXQ",
       "data-spa": "auto",
       defer: true
@@ -72,7 +72,7 @@ const config = {
         items: [
           { to: "/docs/introduction", label: "Docs", position: "left" },
           {
-            to: "https://github.com/search?q=org%3Abufbuild+connect&type=Repositories",
+            to: "https://github.com/connectrpc",
             label: "GitHub",
             position: "left"
           },

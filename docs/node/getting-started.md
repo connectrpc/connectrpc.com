@@ -53,7 +53,7 @@ Open up the above file and add the following service definition:
 ```protobuf
 syntax = "proto3";
 
-package buf.connect.demo.eliza.v1;
+package connectrpc.eliza.v1;
 
 message SayRequest {
   string sentence = 1;
@@ -131,7 +131,7 @@ import { ConnectRouter } from "@bufbuild/connect";
 import { ElizaService } from "./gen/eliza_connect";
 
 export default (router: ConnectRouter) =>
-  // registers buf.connect.demo.eliza.v1.ElizaService
+  // registers connectrpc.eliza.v1.ElizaService
   router.service(ElizaService, {
     // implements rpc Say
     async say(req) {
@@ -196,7 +196,7 @@ If you have a recent version of cURL installed, it's a one-liner:
 $ curl \
   --header 'Content-Type: application/json' \
   --data '{"sentence": "I feel happy."}' \
-   http://localhost:8080/buf.connect.demo.eliza.v1.ElizaService/Say
+   http://localhost:8080/connectrpc.eliza.v1.ElizaService/Say
 ---
 {"sentence":"You said: I feel happy."}
 ```
@@ -333,7 +333,7 @@ using `buf curl`:
 
 ```shell
 npx buf curl --protocol grpc --schema . -d '{"sentence": "I feel happy."}' \
-   https://localhost:8443/buf.connect.demo.eliza.v1.ElizaService/Say
+   https://localhost:8443/connectrpc.eliza.v1.ElizaService/Say
 ```
 
 In your `client.ts`, update the URL and use HTTP version `2` and you're set. It

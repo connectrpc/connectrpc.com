@@ -93,4 +93,4 @@ if request.HTTPMethod() == http.MethodGet {
 [connect-grpc-bridge-docs]: https://www.envoyproxy.io/docs/envoy/v1.26.0/configuration/http/http_filters/connect_grpc_bridge_filter#config-http-filters-connect-grpc-bridge
 [cache-control-response-directives]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#response_directives
 [idempotency-level]: https://github.com/protocolbuffers/protobuf/blob/e5679c01e8f47e8a5e7172444676bda1c2ada875/src/google/protobuf/descriptor.proto#L795
-[request-httpmethod]: https://pkg.go.dev/github.com/bufbuild/connect-go#Request.HTTPMethod
+[request-httpmethod]: https://pkg.go.dev/connectrpc.com/connect#Request.HTTPMethod

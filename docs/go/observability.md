@@ -17,7 +17,7 @@ OpenTelemetry can be quite complex, so this guide assumes that readers are famil
 - A basic understanding of [OpenTelemetry metrics and tracing](https://opentelemetry.io/docs/reference/specification/).
 - How [TextMapPropagators](https://opentelemetry.io/docs/reference/specification/context/api-propagators/), [MeterProviders](https://opentelemetry.io/docs/reference/specification/metrics/sdk/), and [TraceProviders](https://opentelemetry.io/docs/concepts/signals/traces/) are initialized and used.
 
-## Enabling OpenTelemetry on connect-go
+## Enabling OpenTelemetry for Connect
 
 Once you have OpenTelemetry set up in your application, enabling OpenTelemetry in a Connect project is as simple as adding the [otelconnect.NewInterceptor] option on Connect handler and client constructors. If you do not have OpenTelemetry in your application, you can refer to the [OpenTelemetry Go getting started guide](https://opentelemetry.io/docs/instrumentation/go/getting-started/).
 
@@ -88,14 +88,14 @@ If your server is deployed as an internal microservice, configure [otelconnect] 
 
 By default, the [OpenTelemetry RPC conventions](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/rpc.md) produce high-cardinality server-side metric and tracing output. In particular, servers tag all metrics and trace data with the server's IP address and the remote port number. To drop these attributes, use [otelconnect.WithoutServerPeerAttributes]. For more customizable attribute filtering, use [otelconnect.WithFilter].
 
-[otelconnect]: https://pkg.go.dev/github.com/bufbuild/connect-opentelemetry-go
-[connect-go]: https://github.com/bufbuild/connect-go
+[otelconnect]: https://pkg.go.dev/connectrpc.com/otelconnect
+[connect-go]: https://github.com/connectrpc/connect-go
 [OpenTelemetry]: https://opentelemetry.io/
 [trace.Link]: https://pkg.go.dev/go.opentelemetry.io/otel/trace#Link
-[otelconnect.WithTracerProvider]: https://pkg.go.dev/github.com/bufbuild/connect-opentelemetry-go#WithTracerProvider
-[otelconnect.WithMeterProvider]: https://pkg.go.dev/github.com/bufbuild/connect-opentelemetry-go#WithMeterProvider
-[otelconnect.WithPropagator]: https://pkg.go.dev/github.com/bufbuild/connect-opentelemetry-go#WithPropagator
-[otelconnect.NewInterceptor]: https://pkg.go.dev/github.com/bufbuild/connect-opentelemetry-go#NewInterceptor
-[otelconnect.WithTrustRemote]: https://pkg.go.dev/github.com/bufbuild/connect-opentelemetry-go#WithTrustRemote
-[otelconnect.WithFilter]: https://pkg.go.dev/github.com/bufbuild/connect-opentelemetry-go#WithFilter
-[otelconnect.WithoutServerPeerAttributes]: https://pkg.go.dev/github.com/bufbuild/connect-opentelemetry-go#WithoutServerPeerAttributes
+[otelconnect.WithTracerProvider]: https://pkg.go.dev/connectrpc.com/otelconnect#WithTracerProvider
+[otelconnect.WithMeterProvider]: https://pkg.go.dev/connectrpc.com/otelconnect#WithMeterProvider
+[otelconnect.WithPropagator]: https://pkg.go.dev/connectrpc.com/otelconnect#WithPropagator
+[otelconnect.NewInterceptor]: https://pkg.go.dev/connectrpc.com/otelconnect#NewInterceptor
+[otelconnect.WithTrustRemote]: https://pkg.go.dev/connectrpc.com/otelconnect#WithTrustRemote
+[otelconnect.WithFilter]: https://pkg.go.dev/connectrpc.com/otelconnect#WithFilter
+[otelconnect.WithoutServerPeerAttributes]: https://pkg.go.dev/connectrpc.com/otelconnect#WithoutServerPeerAttributes

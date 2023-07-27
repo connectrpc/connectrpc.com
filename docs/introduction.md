@@ -50,7 +50,7 @@ Connect's own protocol.
   curl \
       --header "Content-Type: application/json" \
       --data '{"sentence": "I feel happy."}' \
-      https://demo.connect.build/buf.connect.demo.eliza.v1.ElizaService/Say
+      https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say
   ```
 
 By default, Connect servers support ingress from all three protocols. Clients
@@ -92,12 +92,12 @@ You shouldn't have to choose between these productive toolkits and
 Protocol Buffers &mdash; they should work seamlessly together.
 
 [connect-crosstest]: https://github.com/bufbuild/connect-crosstest
-[connect-go]: https://github.com/bufbuild/connect-go
+[connect-go]: https://github.com/connectrpc/connect-go
 [connect-kotlin]: https://github.com/bufbuild/connect-kotlin
 [connect-swift]: https://github.com/bufbuild/connect-swift
 [swift-launch-blog-post]: https://buf.build/blog/announcing-connect-swift
-[connect-protocol]: https://connect.build/docs/protocol
-[demo]: https://github.com/bufbuild/connect-demo
+[connect-protocol]: /docs/protocol
+[demo]: https://github.com/bufbuild/examples-go
 [go-getting-started]: /docs/go/getting-started
 [kotlin-getting-started]: /docs/kotlin/getting-started
 [swift-getting-started]: /docs/swift/getting-started

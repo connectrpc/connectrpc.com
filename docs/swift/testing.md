@@ -49,7 +49,7 @@ As an example, consider this Protobuf file:
 ```protobuf
 syntax = "proto3";
 
-package buf.connect.demo.eliza.v1;
+package connectrpc.eliza.v1;
 
 service ElizaService {
     rpc Say(SayRequest) returns (SayResponse) {}

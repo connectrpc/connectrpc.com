@@ -19,7 +19,7 @@ one-liner:
 ```bash
 $ curl --header "Content-Type: application/json" \
     --data '{"sentence": "I feel happy."}' \
-    https://demo.connect.build/buf.connect.demo.eliza.v1.ElizaService/Say
+    https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say
 ```
 
 The response is:
@@ -39,7 +39,7 @@ browsers can easily make unary calls to Connect APIs with just the fetch
 API. Right in your developer tools, try this:
 
 ```javascript
-fetch("https://demo.connect.build/buf.connect.demo.eliza.v1.ElizaService/Say", {
+fetch("https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say", {
   "method": "POST",
   "headers": {"Content-Type": "application/json"},
   "body": JSON.stringify({"sentence": "I feel happy."})
@@ -50,7 +50,7 @@ fetch("https://demo.connect.build/buf.connect.demo.eliza.v1.ElizaService/Say", {
 
 ## Buf Studio
 
-If you prefer a graphical user interface to explore an API, take a look at [Buf Studio](https://buf.build/studio/bufbuild/eliza/buf.connect.demo.eliza.v1.ElizaService/Say?target=https%3A%2F%2Fdemo.connect.build&demo=true&share=s1Ks5lJQUCpOzStJzUtOVbJSUPJUSEtNzVHISCwoqNRT4qoFAA).
+If you prefer a graphical user interface to explore an API, take a look at [Buf Studio](https://buf.build/studio/bufbuild/eliza/connectrpc.eliza.v1.ElizaService/Say?target=https%3A%2F%2Fdemo.connectrpc.com&demo=true&share=s1Ks5lJQUCpOzStJzUtOVbJSUPJUSEtNzVHISCwoqNRT4qoFAA).
 Buf Studio is an interactive web UI for all your Protobuf services stored on the
 [Buf Schema Registry](https://buf.build/product/bsr/).
 

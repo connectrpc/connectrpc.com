@@ -9,7 +9,7 @@ service, its methods (APIs), and their request/response types:
 ```protobuf
 syntax = "proto3";
 
-package buf.connect.demo.eliza.v1;
+package connectrpc.eliza.v1;
 
 message SayRequest {
     string sentence = 1;
@@ -25,7 +25,7 @@ service ElizaService {
 ```
 
 A fully documented version of the above definition can be seen
-[in the Buf Schema Registry](https://buf.build/bufbuild/eliza/tree/main:buf/connect/demo/eliza/v1/eliza.proto)
+[in the Buf Schema Registry](https://buf.build/bufbuild/eliza/tree/main:connectrpc.eliza.v1/eliza.proto)
 (BSR).
 
 The `rpc` keyword stands for Remote Procedure Call — an API method that can be

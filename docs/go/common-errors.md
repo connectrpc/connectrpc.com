@@ -14,7 +14,7 @@ option, you'll see a long error that looks like this:
 
 ```
 unavailable: possible missing connect.WithGRPC() client option when talking to
-gRPC server, see https://connect.build/docs/go/common-errors: Post
+gRPC server, see https://connectrpc.com/docs/go/common-errors: Post
 "http://0.0.0.0:3000/buf.ping.v1alpha1.PingService/Ping": http2: Transport:
 cannot retry err [stream error: stream ID 3; PROTOCOL_ERROR; received from
 peer] after Request.Body was written; define Request.GetBody to avoid this
@@ -39,7 +39,7 @@ TLS, you'll probably see this error:
 
 ```
 unavailable: possible h2c configuration issue when talking to gRPC server, see
-https://connect.build/docs/go/common-errors: Post
+https://connectrpc.com/docs/go/common-errors: Post
 "http://0.0.0.0:3000/buf.ping.v1alpha1.PingService/Ping": net/http: HTTP/1.x
 transport connection broken: malformed HTTP response
 "\x00\x00\x06\x04\x00\x00\x00\x00\x00\x00\x05\x00\x00@\x00"
@@ -49,7 +49,7 @@ In some cases, you'll see a more generic error instead:
 
 ```
 unavailable: possible h2c configuration issue when talking to gRPC server, see
-https://connect.build/docs/go/common-errors: Post
+https://connectrpc.com/docs/go/common-errors: Post
 "http://0.0.0.0:3000/buf.ping.v1alpha1.PingService/Ping": write tcp
 127.0.0.1:64657->127.0.0.1:3000: write: broken pipe
 ```

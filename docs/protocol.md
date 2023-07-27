@@ -40,8 +40,8 @@ Protobuf or JSON (without gRPC-style binary framing), and responses have
 meaningful HTTP status codes. For example:
 
 ```
-> POST /buf.greet.v1.GreetService/Greet HTTP/1.1
-> Host: demo.connect.build
+> POST /connectrpc.greet.v1.GreetService/Greet HTTP/1.1
+> Host: demo.connectrpc.com
 > Content-Type: application/json
 >
 > {"name": "Buf"}
@@ -55,8 +55,8 @@ meaningful HTTP status codes. For example:
 For RPCs that have no side effects, it is possible to use GET requests instead:
 
 ```
-> GET /buf.greet.v1.GreetService/Greet?encoding=json&msg=%7B%22name%22%3A%22Buf%22%7D HTTP/1.1
-> Host: demo.connect.build
+> GET /connectrpc.greet.v1.GreetService/Greet?encoding=json&msg=%7B%22name%22%3A%22Buf%22%7D HTTP/1.1
+> Host: demo.connectrpc.com
 
 < HTTP/1.1 200 OK
 < Content-Type: application/json
@@ -89,8 +89,8 @@ OK, with any errors sent in the last portion of the body. For example, a client
 streaming call might look like this:
 
 ```
-> POST /buf.greet.v1.GreetService/GreetGroup HTTP/1.1
-> Host: demo.connect.build
+> POST /connectrpc.greet.v1.GreetService/GreetGroup HTTP/1.1
+> Host: demo.connectrpc.com
 > Content-Type: application/connect+json
 >
 > <binary framing: standard message>{"name": "Buf"}
@@ -338,8 +338,8 @@ is missing or malformed.
 Using HTTP/1.1 notation, a simple request and successful response:
 
 ```
-> POST /buf.greet.v1.GreetService/Greet HTTP/1.1
-> Host: demo.connect.build
+> POST /connectrpc.greet.v1.GreetService/Greet HTTP/1.1
+> Host: demo.connectrpc.com
 > Content-Type: application/json
 >
 > {"name": "Buf"}
@@ -353,8 +353,8 @@ Using HTTP/1.1 notation, a simple request and successful response:
 The same RPC, but sent as a unary GET request instead:
 
 ```
-> GET /buf.greet.v1.GreetService/Greet?message=%7B%22name%22%3A%22Buf%22%7D&encoding=json&connect=v1 HTTP/1.1
-> Host: demo.connect.build
+> GET /connectrpc.greet.v1.GreetService/Greet?message=%7B%22name%22%3A%22Buf%22%7D&encoding=json&connect=v1 HTTP/1.1
+> Host: demo.connectrpc.com
 
 < HTTP/1.1 200 OK
 < Content-Type: application/json
@@ -369,8 +369,8 @@ The same RPC, but with a 5s timeout, asymmetric compression, and some
 custom leading and trailing metadata.
 
 ```
-> POST /buf.greet.v1.GreetService/Greet HTTP/1.1
-> Host: demo.connect.build
+> POST /connectrpc.greet.v1.GreetService/Greet HTTP/1.1
+> Host: demo.connectrpc.com
 > Content-Type: application/json
 > Accept-Encoding: gzip, br
 > Connect-Timeout-Ms: 5000
@@ -389,8 +389,8 @@ custom leading and trailing metadata.
 The same RPC again, but with a Protobuf-encoded request and an error response:
 
 ```
-> POST /buf.greet.v1.GreetService/Greet HTTP/1.1
-> Host: demo.connect.build
+> POST /connectrpc.greet.v1.GreetService/Greet HTTP/1.1
+> Host: demo.connectrpc.com
 > Content-Type: application/proto
 >
 > <uncompressed binary Protobuf>
@@ -400,7 +400,7 @@ The same RPC again, but with a Protobuf-encoded request and an error response:
 <
 < {
 <   "code": "unimplemented",
-<   "message": "buf.greet.v1.GreetService/Greet is not implemented"
+<   "message": "connectrpc.greet.v1.GreetService/Greet is not implemented"
 < }
 ```
 
@@ -468,8 +468,8 @@ Using HTTP/1.1 notation and putting each **Enveloped-Message** on a separate
 line for readability, a successful client streaming RPC:
 
 ```
-> POST /buf.greet.v1.GreetService/GreetGroup HTTP/1.1
-> Host: demo.connect.build
+> POST /connectrpc.greet.v1.GreetService/GreetGroup HTTP/1.1
+> Host: demo.connectrpc.com
 > Content-Type: application/connect+json
 >
 > <flags: 0><length: 15>{"name": "Buf"}
@@ -485,8 +485,8 @@ line for readability, a successful client streaming RPC:
 A failed server streaming RPC:
 
 ```
-> POST /buf.greet.v1.GreetService/GreetIndividuals HTTP/1.1
-> Host: demo.connect.build
+> POST /connectrpc.greet.v1.GreetService/GreetIndividuals HTTP/1.1
+> Host: demo.connectrpc.com
 > Content-Type: application/connect+proto
 >
 > <flags: 0><length: 8><binary proto>

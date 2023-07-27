@@ -47,7 +47,7 @@ import (
   "context"
   "errors"
 
-  "github.com/bufbuild/connect-go"
+  "connectrpc.com/connect"
 )
 
 const tokenHeader = "Acme-Token"

@@ -22,7 +22,7 @@ binary payloads, Connect doesn't support gRPC-Web's text mode: if you're using
 
 Many gRPC-specific tools depend on server reflection, which lets callers
 access your service's Protobuf schema at runtime. Connect supports server
-reflection with the `github.com/bufbuild/connect-grpcreflect-go` package. Keep
+reflection with the `connectrpc.com/grpcreflect` package. Keep
 in mind that there are two versions of the gRPC server reflection API, and many
 tools (including `grpcurl`) still use the older one &mdash; most services
 should mount handlers from both `grpcreflect.NewHandlerV1` and
@@ -30,7 +30,7 @@ should mount handlers from both `grpcreflect.NewHandlerV1` and
 
 Container orchestration and health-checking systems often support the gRPC
 health checking API. If you'd prefer gRPC-style health checks instead of more
-traditional HTTP checks, use `github.com/bufbuild/connect-grpchealth-go`.
+traditional HTTP checks, use `connectrpc.com/grpchealth`.
 
 ## Clients
 

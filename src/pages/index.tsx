@@ -67,7 +67,7 @@ const CommunityLinks = () => {
       {divider}
       <CommunityLinkItem
         text="Github"
-        href="https://github.com/search?q=org%3Abufbuild+connect&type=Repositories"
+        href="https://github.com/connectrpc"
       />
       {divider}
       <CommunityLinkItem text="Twitter" href="https://twitter.com/bufbuild" />

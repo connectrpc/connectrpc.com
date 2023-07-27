@@ -17,7 +17,7 @@
     "write:heading-ids": "docusaurus write-heading-ids"
   },
   "dependencies": {
-    "@buf/bufbuild_eliza.bufbuild_connect-es": "^0.12.0-20230726230109-bf1eaaff2a44.1",
+    "@buf/connectrpc_eliza.bufbuild_connect-es": "^0.12.0-20230727062025-d8fbf2620c60.1",
     "@bufbuild/connect": "^0.12.0",
     "@bufbuild/connect-web": "^0.12.0",
     "@bufbuild/protobuf": "^1.2.1",

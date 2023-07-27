@@ -86,7 +86,7 @@ package example
 import (
   "errors"
 
-  "github.com/bufbuild/connect-go"
+  "connectrpc.com/connect"
   "google.golang.org/genproto/googleapis/rpc/errdetails"
   "google.golang.org/protobuf/types/known/durationpb"
 )
@@ -115,7 +115,7 @@ package example
 import (
   "errors"
 
-  "github.com/bufbuild/connect-go"
+  "connectrpc.com/connect"
   "google.golang.org/genproto/googleapis/rpc/errdetails"
   "google.golang.org/protobuf/types/known/durationpb"
 )
