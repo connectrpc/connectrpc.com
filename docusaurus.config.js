@@ -16,7 +16,7 @@ const config = {
   projectName: "connect",
   scripts: [
     {
-      src: "https://legendary-protected.connectrpc.com/script.js",
+      src: "https://cdn.usefathom.com/script.js",
       "data-site": "BWSMOXXQ",
       "data-spa": "auto",
       defer: true
