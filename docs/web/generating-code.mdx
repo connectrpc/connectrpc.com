@@ -99,7 +99,7 @@ for a buf.gen.yaml which uses remote plugins.
 Finally, tell Buf to generate code for the ELIZA schema:
 
 ```bash
-$ npx buf generate buf.build/bufbuild/eliza
+$ npx buf generate buf.build/connectrpc/eliza
 ```
 
 If you prefer, you can use `protoc` instead of Buf — the plugins behave like
@@ -145,6 +145,6 @@ To learn more about `protoc-gen-es`, head over to the documentation for the
 To use the locally generated files in the tutorial, update the import path:
 
 ```diff
-- import { ElizaService } from "@buf/bufbuild_eliza.bufbuild_connect-es/connectrpc/eliza/v1/eliza_connect";
+- import { ElizaService } from "@buf/connectrpc_eliza.bufbuild_connect-es/connectrpc/eliza/v1/eliza_connect";
 + import { ElizaService } from "../gen/connectrpc/eliza/v1/eliza_connect";
 ```

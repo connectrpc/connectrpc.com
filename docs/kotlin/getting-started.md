@@ -70,7 +70,7 @@ it [hosted on the Buf Schema Registry][eliza-proto] to use in this example.
 Export the Protobuf schema to use in our project.
 
 ```bash title="~/.../Eliza/proto"
-$ buf export buf.build/bufbuild/eliza -o .
+$ buf export buf.build/connectrpc/eliza -o .
 ```
 
 Our new `proto` directory should look like this:
@@ -681,7 +681,7 @@ the Connect-Kotlin repository on GitHub. These examples demonstrate:
 
 [connect-kotlin-releases]: https://github.com/bufbuild/connect-kotlin/releases
 
-[eliza-proto]: https://buf.build/bufbuild/eliza/file/main:connectrpc.eliza.v1/eliza.proto
+[eliza-proto]: https://buf.build/connectrpc/eliza/file/main:connectrpc.eliza.v1/eliza.proto
 
 [go-demo]: https://github.com/bufbuild/connect-demo
 
