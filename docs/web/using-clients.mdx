@@ -18,7 +18,7 @@ code in a natural and easily readable way:
 
 ```ts
 import { createPromiseClient } from "@bufbuild/connect";
-import { ElizaService } from "@buf/bufbuild_eliza.bufbuild_connect-es/buf/connect/demo/eliza/v1/eliza_connect";
+import { ElizaService } from "@buf/connectrpc_eliza.bufbuild_connect-es/connectrpc/eliza/v1/eliza_connect";
 
 const client = createPromiseClient(ElizaService, transport);
 
@@ -45,7 +45,7 @@ If you prefer a callback-based approach, the client returned by the function
 
 ```ts
 import { createCallbackClient } from "@bufbuild/connect-web";
-import { ElizaService } from "@buf/bufbuild_eliza.bufbuild_connect-es/buf/connect/demo/eliza/v1/eliza_connect";
+import { ElizaService } from "@buf/connectrpc_eliza.bufbuild_connect-es/connectrpc/eliza/v1/eliza_connect";
 
 const client = createCallbackClient(ElizaService, transport);
 

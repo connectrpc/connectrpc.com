@@ -36,7 +36,7 @@ export const { say } = createQueryService({
         O: SayResponse,
       },
     },
-    typeName: "buf.connect.demo.eliza.v1.ElizaService",
+    typeName: "connectrpc.eliza.v1.ElizaService",
   },
 });
 
@@ -275,7 +275,7 @@ For example, a query key might look like this:
 
 ```ts
 [
-  "buf.connect.demo.example.v1.ExampleService",
+  "example.v1.ExampleService",
   "GetTodos",
   { id: "0fdf2ebe-9a0c-4366-9772-cfb21346c3f9" },
 ]
@@ -296,7 +296,7 @@ For example, a partial query key might look like this:
 
 ```ts
 [
-  "buf.connect.demo.example.v1.ExampleService",
+  "example.v1.ExampleService",
   "GetTodos",
 ]
 ```
