@@ -199,7 +199,7 @@ and response headers in the exposed headers. If your application uses trailers,
 they will be sent as header fields with a `Trailer-` prefix for Connect unary RPCs.
 
 For additional examples using CORS with the various flavors of Node.js servers,
-see the [Express](https://github.com/bufbuild/connect-es-integration/tree/main/express)
-and [Vanilla Node](https://github.com/bufbuild/connect-es-integration/tree/main/vanilla-node)
-examples in the [Connect ES Integration](https://github.com/bufbuild/connect-es-integration)
+see the [Express](https://github.com/connectrpc/examples-es/tree/main/express)
+and [Vanilla Node](https://github.com/connectrpc/examples-es/tree/main/vanilla-node)
+examples in the [examples-es](https://github.com/connectrpc/examples-es)
 repository.
