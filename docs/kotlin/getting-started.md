@@ -681,7 +681,7 @@ the Connect-Kotlin repository on GitHub. These examples demonstrate:
 
 [connect-kotlin-releases]: https://github.com/bufbuild/connect-kotlin/releases
 
-[eliza-proto]: https://buf.build/bufbuild/eliza/file/main:connectrpc.eliza.v1/eliza.proto
+[eliza-proto]: https://buf.build/connectrpc/eliza/file/main:connectrpc/eliza/v1/eliza.proto
 
 [go-demo]: https://github.com/bufbuild/connect-demo
 
