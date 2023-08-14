@@ -25,7 +25,7 @@ service ElizaService {
 ```
 
 A fully documented version of the above definition can be seen
-[in the Buf Schema Registry](https://buf.build/bufbuild/eliza/tree/main:connectrpc.eliza.v1/eliza.proto)
+[in the Buf Schema Registry](https://buf.build/connectrpc/eliza/tree/main:connectrpc.eliza.v1/eliza.proto)
 (BSR).
 
 The `rpc` keyword stands for Remote Procedure Call — an API method that can be
