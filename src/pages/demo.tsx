@@ -20,10 +20,10 @@ export default function Demo(): JSX.Element {
             <ElizaDemo focusOnMount />
           </div>
           <p>
-            You are chatting with the <a href="https://github.com/bufbuild/connect-demo">ELIZA demo service</a>,
+            You are chatting with the <a href="https://github.com/connectrpc/examples-go">ELIZA demo service</a>,
             which is implemented in <a href="https://github.com/connectrpc/connect-go">connect-go</a>.
             <br /><br />
-            This front-end client was built using <a href="https://github.com/bufbuild/connect-web">connect-web</a>,
+            This front-end client was built using <a href="https://github.com/connectrpc/connect-es">connect-web</a>,
             and you can follow <a href="/docs/web/getting-started">this guide</a> to implement it yourself.
             <br /><br />
             There is also a <a href="/docs/swift/getting-started">guide</a> to creating a similar ELIZA chat app

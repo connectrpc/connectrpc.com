@@ -683,7 +683,7 @@ the Connect-Kotlin repository on GitHub. These examples demonstrate:
 
 [eliza-proto]: https://buf.build/connectrpc/eliza/file/main:connectrpc/eliza/v1/eliza.proto
 
-[go-demo]: https://github.com/bufbuild/connect-demo
+[go-demo]: https://github.com/connectrpc/examples-go
 
 [google-java-protobuf]: https://buf.build/protocolbuffers/java
 

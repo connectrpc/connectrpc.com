@@ -14,7 +14,7 @@ concerns.
 ## Using a Transport directly
 
 Transports are objects with a method for every RPC type. Because web browsers
-only support unary and server streaming RPCs, Connect's [Transport interface](https://github.com/bufbuild/connect-web/blob/614cf0b8278df83e4af22cd70201fd848d9d3ba4/packages/connect-web/src/transport.ts#L24)
+only support unary and server streaming RPCs, Connect's [Transport interface](https://github.com/connectrpc/connect-es/blob/614cf0b8278df83e4af22cd70201fd848d9d3ba4/packages/connect-web/src/transport.ts#L24)
 only defines the two methods `unary()` and `serverStream()`. Typically, you
 would not want to call these methods directly. A [Client](/docs/web/using-clients)
 binds a service definition to a Transport, and provides more convenient and
@@ -57,21 +57,21 @@ some underlying primitives. Any Transport that accepts Interceptors needs to
 provide a function to execute an RPC, which the Interceptors can then wrap
 to observe or change behavior. There are two distinct function types:
 
-- [`UnaryFn`](https://github.com/bufbuild/connect-es/blob/755dda7fdb9b9a70e70dd64e08771fa87c253fa9/packages/connect-core/src/interceptor.ts#L58) -
+- [`UnaryFn`](https://github.com/connectrpc/connect-es/blob/755dda7fdb9b9a70e70dd64e08771fa87c253fa9/packages/connect-core/src/interceptor.ts#L58) -
   a function that executes a unary RPC
-- [`StreamingFn`](https://github.com/bufbuild/connect-es/blob/755dda7fdb9b9a70e70dd64e08771fa87c253fa9/packages/connect-core/src/interceptor.ts#L70) -
+- [`StreamingFn`](https://github.com/connectrpc/connect-es/blob/755dda7fdb9b9a70e70dd64e08771fa87c253fa9/packages/connect-core/src/interceptor.ts#L70) -
   a function that executes a server-streaming RPC
 
 There are also four distinct request and response types used as arguments
 or return types respectively by the two function types:
 
-- [`UnaryRequest`](https://github.com/bufbuild/connect-es/blob/755dda7fdb9b9a70e70dd64e08771fa87c253fa9/packages/connect-core/src/interceptor.ts#L82) -
+- [`UnaryRequest`](https://github.com/connectrpc/connect-es/blob/755dda7fdb9b9a70e70dd64e08771fa87c253fa9/packages/connect-core/src/interceptor.ts#L82) -
   a request with a single message
-- [`UnaryResponse`](https://github.com/bufbuild/connect-es/blob/755dda7fdb9b9a70e70dd64e08771fa87c253fa9/packages/connect-core/src/interceptor.ts#L102) -
+- [`UnaryResponse`](https://github.com/connectrpc/connect-es/blob/755dda7fdb9b9a70e70dd64e08771fa87c253fa9/packages/connect-core/src/interceptor.ts#L102) -
   a response with a single messages
-- [`StreamRequst`](https://github.com/bufbuild/connect-es/blob/755dda7fdb9b9a70e70dd64e08771fa87c253fa9/packages/connect-core/src/interceptor.ts#L122) -
+- [`StreamRequst`](https://github.com/connectrpc/connect-es/blob/755dda7fdb9b9a70e70dd64e08771fa87c253fa9/packages/connect-core/src/interceptor.ts#L122) -
   a request with zero or more messages
-- [`StreamResponse`](https://github.com/bufbuild/connect-es/blob/755dda7fdb9b9a70e70dd64e08771fa87c253fa9/packages/connect-core/src/interceptor.ts#L146) -
+- [`StreamResponse`](https://github.com/connectrpc/connect-es/blob/755dda7fdb9b9a70e70dd64e08771fa87c253fa9/packages/connect-core/src/interceptor.ts#L146) -
   a response with zero or more messages
 
 For a start, let us create three helper functions to create request and
