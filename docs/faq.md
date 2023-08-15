@@ -135,7 +135,7 @@ from the browser, but only server-streaming.
 
 Yes, generated code does affect bundle size, but the browser implementation is a
 slim library using standard Web APIs, and deliberately generates [very little code](/docs/web/generating-code#output).
-For an ELIZA client, the compressed bundle size is [just around 13KiB](https://github.com/bufbuild/connect-es/tree/main/packages/connect-web-bench).
+For an ELIZA client, the compressed bundle size is [just around 13KiB](https://github.com/connectrpc/connect-es/tree/main/packages/connect-web-bench).
 
 ### How does Connect compare to gRPC-web?
 
@@ -158,7 +158,7 @@ visit the [Protobuf-ES FAQ page](https://github.com/bufbuild/protobuf-es/blob/ma
 
 If a RPC in your schema uses `google.protobuf.Any` in a request or response
 message, you can provide a type registry so that they can be parsed from or
-serialized to JSON. See [this GitHub discussion](https://github.com/bufbuild/connect-es/discussions/689#discussioncomment-6280653)
+serialized to JSON. See [this GitHub discussion](https://github.com/connectrpc/connect-es/discussions/689#discussioncomment-6280653)
 for a detailed explanation and an example.
 
 ## Deployment

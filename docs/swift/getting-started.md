@@ -494,7 +494,7 @@ enabling you to use Connect-Swift without the SwiftNIO dependency.
 [connect-go]: https://github.com/connectrpc/connect-go
 [connect-swift]: https://github.com/bufbuild/connect-swift
 [envoy-grpc-bridge]: https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_filters/connect_grpc_bridge_filter
-[go-demo]: https://github.com/bufbuild/connect-demo
+[go-demo]: https://github.com/connectrpc/examples-go
 [grpc]: https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md
 [grpc-swift]: https://github.com/grpc/grpc-swift
 [grpc-web]: https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-WEB.md
