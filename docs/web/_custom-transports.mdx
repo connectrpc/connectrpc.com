@@ -182,7 +182,7 @@ Using the new Transport:
 ```ts
 import { createPromiseClient } from "@connectrpc/connect";
 import { createStubTransport } from "./stub-transport.js";
-import { ElizaService } from "@buf/connectrpc_eliza.bufbuild_connect-es/connectrpc/eliza/v1/eliza_connect";
+import { ElizaService } from "@buf/connectrpc_eliza.connectrpc_es/connectrpc/eliza/v1/eliza_connect";
 
 const transport = createStubTransport();
 const client = createPromiseClient(ElizaService, transport);
