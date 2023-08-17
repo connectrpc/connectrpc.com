@@ -7,8 +7,8 @@ import {
   textWord,
   commandLine,
 } from "crt-terminal";
-import { createPromiseClient } from "@connectrpc/connect";
-import { createConnectTransport } from "@connectrpc/connect-web";
+import { createPromiseClient } from "@bufbuild/connect";
+import { createConnectTransport } from "@bufbuild/connect-web";
 import styles from "./styles.module.css";
 import { TerminalHeader } from "../home/examples";
 
