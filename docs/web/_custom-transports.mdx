@@ -79,7 +79,7 @@ response stubs:
 
 ```ts
 // stub-transport.ts
-import type { UnaryRequest, UnaryResponse, StreamResponse } from "@bufbuild/connect";
+import type { UnaryRequest, UnaryResponse, StreamResponse } from "@connectrpc/connect";
 import type { AnyMessage, Message, MethodInfo, ServiceType, PartialMessage } from "@bufbuild/protobuf";
 
 /**
@@ -149,7 +149,7 @@ simple:
 
 ```ts
 // stub-transport.ts
-import type { Interceptor, runUnary, runServerStream } from "@bufbuild/connect-web";
+import type { Interceptor, runUnary, runServerStream } from "@connectrpc/connect-web";
 
 /**
  * Create a stub transport that only returns default response messages.
@@ -180,7 +180,7 @@ function createStubTransport(interceptors?: Interceptor[]): Transport {
 Using the new Transport:
 
 ```ts
-import { createPromiseClient } from "@bufbuild/connect";
+import { createPromiseClient } from "@connectrpc/connect";
 import { createStubTransport } from "./stub-transport.js";
 import { ElizaService } from "@buf/connectrpc_eliza.bufbuild_connect-es/connectrpc/eliza/v1/eliza_connect";
 

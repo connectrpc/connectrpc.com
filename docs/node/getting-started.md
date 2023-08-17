@@ -34,7 +34,7 @@ $ cd connect-example
 $ npm init -y
 $ npm install typescript tsx
 $ npx tsc --init
-$ npm install @bufbuild/buf @bufbuild/protoc-gen-es @bufbuild/protobuf @bufbuild/protoc-gen-connect-es @bufbuild/connect
+$ npm install @bufbuild/buf @bufbuild/protoc-gen-es @bufbuild/protobuf @bufbuild/protoc-gen-connect-es @connectrpc/connect
 ```
 
 ## Define a service
@@ -127,7 +127,7 @@ implementation:
 Create a new file `connect.ts` with the following contents:
 
 ```ts
-import { ConnectRouter } from "@bufbuild/connect";
+import { ConnectRouter } from "@connectrpc/connect";
 import { ElizaService } from "./gen/eliza_connect";
 
 export default (router: ConnectRouter) =>
@@ -154,14 +154,14 @@ or [Fastify](https://www.fastify.io/). We are going to use Fastify here.
 Let's install it, along with our plugin for Fastify:
 
 ```bash
-$ npm install fastify @bufbuild/connect-fastify
+$ npm install fastify @connectrpc/connect-fastify
 ```
 
 Create a new file `server.ts` with the following contents:
 
 ```ts
 import { fastify } from "fastify";
-import { fastifyConnectPlugin } from "@bufbuild/connect-fastify";
+import { fastifyConnectPlugin } from "@connectrpc/connect-fastify";
 import routes from "./connect";
 
 async function main() {
@@ -205,9 +205,9 @@ You can also make requests using a Connect client. Create a new file `client.ts`
 with the following contents:
 
 ```ts
-import { createPromiseClient } from "@bufbuild/connect";
+import { createPromiseClient } from "@connectrpc/connect";
 import { ElizaService } from "./gen/eliza_connect";
-import { createConnectTransport } from "@bufbuild/connect-node";
+import { createConnectTransport } from "@connectrpc/connect-node";
 
 const transport = createConnectTransport({
   baseUrl: "http://localhost:8080",
@@ -239,10 +239,10 @@ You can run the same client from a web browser, just by swapping out the
 Transport:
 
 ```ts
-import { createPromiseClient } from "@bufbuild/connect";
+import { createPromiseClient } from "@connectrpc/connect";
 import { ElizaService } from "./gen/eliza_connect";
 // highlight-next-line
-import { createConnectTransport } from "@bufbuild/connect-web";
+import { createConnectTransport } from "@connectrpc/connect-web";
 
 const transport = createConnectTransport({
   baseUrl: "http://localhost:8080",
@@ -301,7 +301,7 @@ Let's update our `server.ts` to use this certificate:
 
 ```ts
 import { fastify } from "fastify";
-import { fastifyConnectPlugin } from "@bufbuild/connect-fastify";
+import { fastifyConnectPlugin } from "@connectrpc/connect-fastify";
 import routes from "./connect";
 // highlight-next-line
 import { readFileSync } from "fs";

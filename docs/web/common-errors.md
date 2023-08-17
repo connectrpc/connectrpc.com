@@ -11,7 +11,7 @@ The basics of CORS apply with Connect from a browser and any resource it is atte
 information, please view the [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) documentation.
 
 However, one specific gotcha to be aware of involves a new header `Connect-Protocol-Version`.  With the
-[v0.6.0 release](https://github.com/connectrpc/connect-es/releases/tag/v0.6.0) of `@bufbuild/connect-web`, this header was added to all requests sent via the
+[v0.6.0 release](https://github.com/connectrpc/connect-es/releases/tag/v0.6.0) of `@connectrpc/connect-web`, this header was added to all requests sent via the
 library. As a result, Connect clients that were working prior may start experiencing CORS errors upon upgrading to
 `v0.6.0`.  Note that this also only affects Connect traffic.  gRPC-Web traffic is unaffected.
 

@@ -42,7 +42,7 @@ a subtype of the built-in `Error` class. Using a try-catch block, we can catch
 any error that occurred during a call:
 
 ```ts
-import { ConnectError } from "@bufbuild/connect";
+import { ConnectError } from "@connectrpc/connect";
 
 try {
   await client.say({sentence: ""});
@@ -71,7 +71,7 @@ Note that a code is an integer value, but can easily be converted to and
 from a string value.
 
 ```ts
-import { Code } from "@bufbuild/connect";
+import { Code } from "@connectrpc/connect";
 
 let code = Code.InvalidArgument;
 code; // 3
@@ -123,7 +123,7 @@ This example looks up a localized error message in the users preferred
 language:
 
 ```ts
-import { ConnectError } from "@bufbuild/connect";
+import { ConnectError } from "@connectrpc/connect";
 import { LocalizedMessage } from "./error_details_pb.js";
 
 function handle(err: ConnectError) {
@@ -153,7 +153,7 @@ Connect converts those errors into a `ConnectError` with code `Canceled`,
 so that you can handle cancellation appropriately:
 
 ```ts
-import { createPromiseClient, ConnectError, Code } from "@bufbuild/connect";
+import { createPromiseClient, ConnectError, Code } from "@connectrpc/connect";
 
 const client = createPromiseClient(ElizaService, ...);
 

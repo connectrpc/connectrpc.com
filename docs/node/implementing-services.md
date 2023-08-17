@@ -10,7 +10,7 @@ You always register your implementation on the `ConnectRouter`. We recommend to
 create a file `connect.ts` with a registration function in your project:
 
 ```ts
-import { ConnectRouter } from "@bufbuild/connect";
+import { ConnectRouter } from "@connectrpc/connect";
 
 export default (router: ConnectRouter) => {}
 ```
@@ -34,7 +34,7 @@ service ElizaService {
 To register this service, call `router.service()`:
 
 ```ts
-import { ConnectRouter, HandlerContext } from "@bufbuild/connect";
+import { ConnectRouter, HandlerContext } from "@connectrpc/connect";
 import { ElizaService } from "./gen/eliza_connect";
 import { SayRequest, SayResponse } from "./gen/eliza_pb";
 
@@ -81,7 +81,7 @@ You can register any of these functions for the ElizaService.
 The context argument gives you access to headers and service metadata:
 
 ```ts
-import { HandlerContext } from "@bufbuild/connect";
+import { HandlerContext } from "@connectrpc/connect";
 import { SayRequest } from "./gen/eliza_pb";
 
 function say(req: SayRequest, context: HandlerContext) {
@@ -98,7 +98,7 @@ function say(req: SayRequest, context: HandlerContext) {
 Instead of returning a response, your method can also raise an error:
 
 ```ts
-import { Code, ConnectError } from "@bufbuild/connect";
+import { Code, ConnectError } from "@connectrpc/connect";
 
 function say() {
   throw new ConnectError("I have no words anymore.", Code.ResourceExhausted);
@@ -121,7 +121,7 @@ $ buf generate buf.build/googleapis/googleapis
 ```
 
 ```ts
-import { Code, ConnectError } from "@bufbuild/connect";
+import { Code, ConnectError } from "@connectrpc/connect";
 import { ElizaService } from "./gen/eliza_connect";
 import { LocalizedMessage } from "./gen/google/rpc/error_details_pb";
 
@@ -217,7 +217,7 @@ You can use these types to compose your service without registering it right
 away:
 
 ```typescript
-import type { MethodImpl, ServiceImpl } from "@bufbuild/connect";
+import type { MethodImpl, ServiceImpl } from "@connectrpc/connect";
 
 export const say: MethodImpl<typeof ElizaService.methods.say> = ...
 
@@ -237,7 +237,7 @@ export class Eliza implements ServiceImpl<typeof ElizaService> {
 Registering the examples above:
 
 ```typescript
-import { ConnectRouter } from "@bufbuild/connect";
+import { ConnectRouter } from "@connectrpc/connect";
 import { ElizaService } from "./gen/eliza_connect";
 import { say, eliza, Eliza } from "./other-file";
 

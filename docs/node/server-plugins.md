@@ -13,12 +13,12 @@ project. See [Implementing services](./implementing-services.md) for more inform
 ## Vanilla Node.js
 
 Run your Connect RPCs on the Node.js built in HTTP modules with the function
-`connectNodeAdapter()` from [@bufbuild/connect-node](https://www.npmjs.com/package/@bufbuild/connect-node):
+`connectNodeAdapter()` from [@connectrpc/connect-node](https://www.npmjs.com/package/@connectrpc/connect-node):
 
 ```ts
 import * as http from "http";
 import routes from "./connect";
-import { connectNodeAdapter } from "@bufbuild/connect-node";
+import { connectNodeAdapter } from "@connectrpc/connect-node";
 
 http.createServer(
   connectNodeAdapter({ routes }) // responds with 404 for other requests
@@ -41,13 +41,13 @@ ones:
 
 [Fastify](https://www.fastify.io/) is a fast and low overhead web framework,
 for Node.js. We highly recommend it if you want to serve anything else along
-with your Connect RPCs. Use the plugin from [@bufbuild/connect-fastify](https://www.npmjs.com/package/@bufbuild/connect-fastify)
+with your Connect RPCs. Use the plugin from [@connectrpc/connect-fastify](https://www.npmjs.com/package/@connectrpc/connect-fastify)
 with Fastify:
 
 ```ts
 import { fastify } from "fastify";
 import routes from "./connect";
-import { fastifyConnectPlugin } from "@bufbuild/connect-fastify";
+import { fastifyConnectPlugin } from "@connectrpc/connect-fastify";
 
 const server = fastify();
 
@@ -66,13 +66,13 @@ The plugin accepts all common options.
 ## Next.js
 
 [Next.js](https://nextjs.org/) is a framework supported by Vercel that enables creating full-stack web applications
-using the latest React features. With [@bufbuild/connect-next](https://www.npmjs.com/package/@bufbuild/connect-next),
+using the latest React features. With [@connectrpc/connect-next](https://www.npmjs.com/package/@connectrpc/connect-next),
 you can serve your Connect RPCs via Next.js API Routes.
 
 To enable the server plugin, create the file `pages/api/[[...connect]].ts` in your project:
 
 ```ts
-import { nextJsApiRouter } from "@bufbuild/connect-next";
+import { nextJsApiRouter } from "@connectrpc/connect-next";
 import routes from "./connect";
 
 const {handler, config} = nextJsApiRouter({ routes });
@@ -88,14 +88,14 @@ Note that Next.js does not support the http2 module.
 ## Express
 
 [Express](https://expressjs.com/) has been around for a long time, and it's still
-popular because of its simplicity. Use the middleware provided by [@bufbuild/connect-express](https://www.npmjs.com/package/@bufbuild/connect-express)
+popular because of its simplicity. Use the middleware provided by [@connectrpc/connect-express](https://www.npmjs.com/package/@connectrpc/connect-express)
 to add your Connect RPCs to Express:
 
 ```ts
 import http from "http";
 import express from "express";
 import routes from "./connect";
-import { expressConnectMiddleware } from "@bufbuild/connect-express";
+import { expressConnectMiddleware } from "@connectrpc/connect-express";
 
 const app = express();
 
@@ -168,13 +168,13 @@ If your server is not set up to handle CORS preflight requests, you will see an
 error like `Failed to fetch` in the browser, or response headers sent by your
 server will be invisible to your client.
 
-The `cors` object from [`@bufbuild/connect`](https://www.npmjs.com/package/@bufbuild/connect)
+The `cors` object from [`@connectrpc/connect`](https://www.npmjs.com/package/@connectrpc/connect)
 helps to configure common middleware packages. The following example shows how
 to use it with [Fastify](#fastify):
 
 ```ts
 import fastifyCors from "@fastify/cors";
-import { cors } from "@bufbuild/connect";
+import { cors } from "@connectrpc/connect";
 
 await server.register(fastifyCors, {
   origin: "https://demo.connectrpc.com",

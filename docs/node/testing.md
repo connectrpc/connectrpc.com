@@ -5,7 +5,7 @@ sidebar_position: 5
 
 ## Testing a client application
 
-Testing a client application can be a crucial part of ensuring its functionality and performance. When it comes to TypeScript projects, you can utilize the `createRouterTransport` method from `@bufbuild/connect` to create a mock transport that can be used in both backend and frontend applications.
+Testing a client application can be a crucial part of ensuring its functionality and performance. When it comes to TypeScript projects, you can utilize the `createRouterTransport` method from `@connectrpc/connect` to create a mock transport that can be used in both backend and frontend applications.
 
 For backend applications, it can be useful to create mock transports within the context of unit tests. By integrating the actual logic of your application and testing it incrementally, you can ensure that each part of your application is functioning as expected.
 
@@ -36,7 +36,7 @@ service BigIntService {
 With `createRouterTransport` and `BigIntService` from your generated code, you can create a simple mock:
 
 ```ts
-import { createRouterTransport } from '@bufbuild/connect';
+import { createRouterTransport } from '@connectrpc/connect';
 import { BigIntService } from 'my-generated-code/bigint_connectweb';
 
 export const mockBigIntTransport = () =>
@@ -47,10 +47,10 @@ export const mockBigIntTransport = () =>
   });
 ```
 
-In your client testing code, you can then use `createPromiseClient` from `@bufbuild/connect` with `mockBigIntTransport`:
+In your client testing code, you can then use `createPromiseClient` from `@connectrpc/connect` with `mockBigIntTransport`:
 
 ```ts
-import { createPromiseClient } from '@bufbuild/connect';
+import { createPromiseClient } from '@connectrpc/connect';
 
 describe('your client test suite', () => {
   it('tests a simple client call', async () => {
@@ -70,7 +70,7 @@ You can pass the `Transport` returned by `createRouterTransport` to any client t
 You can do all the same things with this mock as with any other transport, such as setting headers and trailers, using interceptors, and more. Here's an example:
 
 ```ts
-import { type HandlerContext } from '@bufbuild/connect';
+import { type HandlerContext } from '@connectrpc/connect';
 import { CountRequest } from 'my-generated-code/bigint_connectweb';
 
 export const mockBigIntTransport = () =>

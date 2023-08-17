@@ -5,7 +5,7 @@ sidebar_position: 20
 
 ## Testing a client application
 
-Testing a client application can be a crucial part of ensuring its functionality and performance. When it comes to TypeScript projects, you can utilize the `createRouterTransport` method from `@bufbuild/connect` to create a mock transport that can be used in both backend and frontend applications.
+Testing a client application can be a crucial part of ensuring its functionality and performance. When it comes to TypeScript projects, you can utilize the `createRouterTransport` method from `@connectrpc/connect` to create a mock transport that can be used in both backend and frontend applications.
 
 For frontend applications, it may not always be feasible or desirable to test against an actual API. In such cases, you can utilize a mocked Connect backend to test your application.
 
@@ -14,7 +14,7 @@ For frontend applications, it may not always be feasible or desirable to test ag
 To illustrate, let's write a test for ELIZA that uses `createRouterTransport`:
 
 ```ts
-import { createRouterTransport } from '@bufbuild/connect';
+import { createRouterTransport } from '@connectrpc/connect';
 import { ElizaService } from '@buf/connectrpc_eliza.bufbuild_connect-es/connectrpc/eliza/v1/eliza_connect';
 import { SayResponse } from '@buf/connectrpc_eliza.bufbuild_connect-es/connectrpc/eliza/v1/eliza_pb';
 
@@ -26,10 +26,10 @@ export const mockElizaTransport = () =>
   });
 ```
 
-In your client testing code, you can then use `createPromiseClient` from `@bufbuild/connect` with `mockElizaTransport`:
+In your client testing code, you can then use `createPromiseClient` from `@connectrpc/connect` with `mockElizaTransport`:
 
 ```ts
-import { createPromiseClient } from '@bufbuild/connect';
+import { createPromiseClient } from '@connectrpc/connect';
 
 describe('your client test suite', () => {
   it('tests a simple client call', async () => {

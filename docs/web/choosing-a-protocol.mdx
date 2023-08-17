@@ -3,7 +3,7 @@ title: Choosing a protocol
 sidebar_position: 16
 ---
 
-In addition to the [Connect protocol](/docs/protocol), [@bufbuild/connect-web](https://www.npmjs.com/package/@bufbuild/connect-web)
+In addition to the [Connect protocol](/docs/protocol), [@connectrpc/connect-web](https://www.npmjs.com/package/@connectrpc/connect-web)
 ships with support for the gRPC-web protocol. If your backend does not support
 the Connect protocol, you can still use Connect clients to interface with it.
 
@@ -16,7 +16,7 @@ for the actual network operations, which is widely supported in web browsers.
 The most important options for the Connect transport are as follows:
 
 ```ts
-import { createConnectTransport } from "@bufbuild/connect-web";
+import { createConnectTransport } from "@connectrpc/connect-web";
 
 const transport = createConnectTransport({
   // Requests will be made to <baseUrl>/<package>.<service>/method
@@ -58,7 +58,7 @@ a [middleware](https://docs.microsoft.com/en-us/aspnet/core/grpc/browser?view=as
 Connect for Node and `connect-go` support gRCP-web out of the box.
 
 ```ts
-import { createGrpcWebTransport } from "@bufbuild/connect-web";
+import { createGrpcWebTransport } from "@connectrpc/connect-web";
 
 const transport = createGrpcWebTransport({
   // Requests will be made to <baseUrl>/<package>.<service>/method

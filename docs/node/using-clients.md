@@ -4,13 +4,13 @@ sidebar_position: 4
 ---
 
 On Node.js, you use the same clients as you do with Connect for Web, but with
-a transport from [@bufbuild/connect-node](https://www.npmjs.com/package/@bufbuild/connect-node)
-instead of from [@bufbuild/connect-web](https://www.npmjs.com/package/@bufbuild/connect-web):
+a transport from [@connectrpc/connect-node](https://www.npmjs.com/package/@connectrpc/connect-node)
+instead of from [@connectrpc/connect-web](https://www.npmjs.com/package/@connectrpc/connect-web):
 
 ```typescript
-import { createPromiseClient } from "@bufbuild/connect";
+import { createPromiseClient } from "@connectrpc/connect";
 // highlight-next-line
-import { createConnectTransport } from "@bufbuild/connect-node";
+import { createConnectTransport } from "@connectrpc/connect-node";
 
 // highlight-next-line
 const transport = createConnectTransport({
@@ -34,7 +34,7 @@ void main();
 For details on clients (including error handling, interceptors, and accessing
 headers and trailers), please refer to the documentation for [Web](../web/using-clients).
 
-Under the hood, the transports from [@bufbuild/connect-node](https://www.npmjs.com/package/@bufbuild/connect-node)
+Under the hood, the transports from [@connectrpc/connect-node](https://www.npmjs.com/package/@connectrpc/connect-node)
 use the built-in Node modules `http`, `https`, and `http2` instead of the fetch
 API. The allows us to provide a transport for gRPC and bidi streaming. Node.js
 v18 comes with fetch(), but it is limited to HTTP 1.1.
@@ -47,7 +47,7 @@ protocol](/docs/protocol).
 The most important options for the Connect transport are as follows:
 
 ```ts
-import { createConnectTransport } from "@bufbuild/connect-node";
+import { createConnectTransport } from "@connectrpc/connect-node";
 
 const transport = createConnectTransport({
   // Requests will be made to <baseUrl>/<package>.<service>/method
@@ -68,7 +68,7 @@ The function `createGrpcTransport()` creates a transport for the gRPC protocol.
 The most important options for the gRPC transport are as follows:
 
 ```ts
-import { createGrpcTransport } from "@bufbuild/connect-node";
+import { createGrpcTransport } from "@connectrpc/connect-node";
 
 const transport = createGrpcTransport({
   // Requests will be made to <baseUrl>/<package>.<service>/method
@@ -93,7 +93,7 @@ a [middleware](https://docs.microsoft.com/en-us/aspnet/core/grpc/browser?view=as
 Connect for Node and `connect-go` support gRCP-web out of the box.
 
 ```ts
-import { createGrpcWebTransport } from "@bufbuild/connect-node";
+import { createGrpcWebTransport } from "@connectrpc/connect-node";
 
 const transport = createGrpcWebTransport({
   // Requests will be made to <baseUrl>/<package>.<service>/method
