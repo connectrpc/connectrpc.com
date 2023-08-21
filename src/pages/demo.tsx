@@ -5,10 +5,14 @@ import SkipToContent from "@theme/SkipToContent";
 import AnnouncementBar from "@theme/AnnouncementBar";
 import Footer from "@theme/Footer";
 import NavBar from "@theme/Navbar";
+import Head from "@docusaurus/Head";
 
 export default function Demo(): JSX.Element {
   return (
     <LayoutProviders>
+      <Head>
+        <title>Demo | Connect</title>
+      </Head>
       <SkipToContent />
       <AnnouncementBar />
       <NavBar />
