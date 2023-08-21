@@ -306,24 +306,27 @@ import routes from "./connect";
 // highlight-next-line
 import { readFileSync } from "fs";
 
-const server = fastify({
-// highlight-next-line
-  http2: true,
-// highlight-next-line
-  https: {
-// highlight-next-line
-    key: readFileSync("localhost+2-key.pem", "utf8"),
-// highlight-next-line
-    cert: readFileSync("localhost+2.pem", "utf8"),
-// highlight-next-line
-  }
-});
-
-// ...
-
-// highlight-next-line
-await server.listen({ host: "localhost", port: 8443 });
-console.log("server is listening at", server.addresses());
+async function main() {
+  const server = fastify({
+    // highlight-next-line
+    http2: true,
+    // highlight-next-line
+    https: {
+      // highlight-next-line
+      key: readFileSync("localhost+2-key.pem", "utf8"),
+      // highlight-next-line
+      cert: readFileSync("localhost+2.pem", "utf8"),
+      // highlight-next-line
+    }
+  });
+  await server.register(fastifyConnectPlugin, {
+    routes,
+  });
+  // highlight-next-line
+  await server.listen({ host: "localhost", port: 8443 });
+  console.log("server is listening at", server.addresses());
+}
+void main();
 ```
 
 That's it! After you restarted the server, you can still open
