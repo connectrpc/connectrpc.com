@@ -1,4 +1,4 @@
-import { ElizaService } from "@buf/connectrpc_eliza.bufbuild_connect-es/connectrpc/eliza/v1/eliza_connect";
+import { ElizaService } from "@buf/connectrpc_eliza.connectrpc_es/connectrpc/eliza/v1/eliza_connect";
 import React, { useCallback, useEffect, useRef } from "react";
 import {
   Terminal,
@@ -7,8 +7,8 @@ import {
   textWord,
   commandLine,
 } from "crt-terminal";
-import { createPromiseClient } from "@bufbuild/connect";
-import { createConnectTransport } from "@bufbuild/connect-web";
+import { createPromiseClient } from "@connectrpc/connect";
+import { createConnectTransport } from "@connectrpc/connect-web";
 import styles from "./styles.module.css";
 import { TerminalHeader } from "../home/examples";
 
