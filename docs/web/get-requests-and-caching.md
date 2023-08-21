@@ -13,7 +13,7 @@ to the documentation that corresponds to your server:
 * [Connect Go](../go/get-requests-and-caching.md)
 * [Connect Node](../node/get-requests-and-caching.md)
 
-Afterwards, ensure that a new enough version of `@bufbuild/connect-web` is set
+Afterwards, ensure that a new enough version of `@connectrpc/connect-web` is set
 up; HTTP GET support is available in Connect Web v0.9.0 or newer. Then, you can
 specify the `useHttpGet` option when creating the Connect transport:
 

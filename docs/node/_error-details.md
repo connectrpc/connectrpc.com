@@ -1,7 +1,7 @@
 
 
 ```ts
-import { Code, ConnectError } from "@bufbuild/connect";
+import { Code, ConnectError } from "@connectrpc/connect";
 import { ElizaService } from "./gen/eliza_connect";
 import { LocalizedMessage } from "./gen/google/rpc/error_details_pb";
 

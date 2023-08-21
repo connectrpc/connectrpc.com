@@ -43,7 +43,7 @@ the types we need on the fly:
 
 ```bash
 $ npm config set @buf:registry https://buf.build/gen/npm/v1
-$ npm install @buf/connectrpc_eliza.bufbuild_connect-es @bufbuild/connect @bufbuild/connect-web
+$ npm install @buf/connectrpc_eliza.connectrpc_es @connectrpc/connect @connectrpc/connect-web
 ```
 
 (You can generate code locally if you prefer. We'll explain remote and local
@@ -53,11 +53,11 @@ Now we can import the service from the package and set up a client. Add the
 following to `App.tsx`:
 
 ```tsx title="src/App.tsx"
-import { createPromiseClient } from "@bufbuild/connect";
-import { createConnectTransport } from "@bufbuild/connect-web";
+import { createPromiseClient } from "@connectrpc/connect";
+import { createConnectTransport } from "@connectrpc/connect-web";
 
 // Import service definition that you want to connect to.
-import { ElizaService } from "@buf/connectrpc_eliza.bufbuild_connect-es/connectrpc/eliza/v1/eliza_connect";
+import { ElizaService } from "@buf/connectrpc_eliza.connectrpc_es/connectrpc/eliza/v1/eliza_connect";
 
 // The transport defines what type of endpoint we're hitting.
 // In our example we'll be communicating with a Connect endpoint.
@@ -233,7 +233,7 @@ We ran the following commands to build the app:
 $ npm create vite@latest -- connect-example --template react-ts
 $ cd connect-example
 $ npm config set @buf:registry https://buf.build/gen/npm/v1
-$ npm install @buf/connectrpc_eliza.bufbuild_connect-es @bufbuild/connect @bufbuild/connect-web
+$ npm install @buf/connectrpc_eliza.connectrpc_es @connectrpc/connect @connectrpc/connect-web
 $ npm run dev
 ```
 
@@ -243,11 +243,11 @@ And wrote the following source code:
 import { useState } from 'react'
 import './App.css'
 
-import { createPromiseClient } from "@bufbuild/connect";
-import { createConnectTransport } from "@bufbuild/connect-web";
+import { createPromiseClient } from "@connectrpc/connect";
+import { createConnectTransport } from "@connectrpc/connect-web";
 
 // Import service definition that you want to connect to.
-import { ElizaService } from "@buf/connectrpc_eliza.bufbuild_connect-es/connectrpc/eliza/v1/eliza_connect";
+import { ElizaService } from "@buf/connectrpc_eliza.connectrpc_es/connectrpc/eliza/v1/eliza_connect";
 
 // The transport defines what type of endpoint we're hitting.
 // In our example we'll be communicating with a Connect endpoint.

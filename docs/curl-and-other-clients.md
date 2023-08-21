@@ -34,7 +34,7 @@ prevent upgrading to HTTP/2.
 
 ## fetch API
 
-We recommend `@bufbuild/connect-web` so that the compiler can type-check your code, but
+We recommend `@connectrpc/connect-web` so that the compiler can type-check your code, but
 browsers can easily make unary calls to Connect APIs with just the fetch
 API. Right in your developer tools, try this:
 

@@ -6,7 +6,7 @@ the `http2` package in Node would look as follows:
 ```typescript
 import http2 from "http2";
 
-import { createHandlers, Handler, mergeHandlers } from "@bufbuild/connect-node";
+import { createHandlers, Handler, mergeHandlers } from "@connectrpc/connect-node";
 import { ElizaService } from "./gen/proto/eliza_service_connectweb.js";
 import type { ConverseRequest, IntroduceRequest, SayRequest, VentRequest } from "./gen/proto/eliza_service_pb.js";
 import { ConverseResponse, IntroduceResponse, SayResponse, VentResponse } from "./gen/proto/eliza_service_pb.js";

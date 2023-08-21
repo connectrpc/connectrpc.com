@@ -21,7 +21,7 @@ that helps us to implement this pattern:
 
 ```ts
 // assert-connect-error.ts
-import { ConnectError, Code } from "@bufbuild/connect";
+import { ConnectError, Code } from "@connectrpc/connect";
 
 /**
  * Asserts that the given reason is a ConnectError.
@@ -50,7 +50,7 @@ Assuming we already have centralized error handling in place, we can now
 easily add behavior for a specific error code:
 
 ```ts
-import { Code } from "@bufbuild/connect-web";
+import { Code } from "@connectrpc/connect-web";
 import { assertConnectError } from "./assert-connect-error.js";
 
 try {

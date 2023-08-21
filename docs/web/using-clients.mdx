@@ -17,8 +17,8 @@ In combination with the `await` keyword, this lets you write asynchronous
 code in a natural and easily readable way:
 
 ```ts
-import { createPromiseClient } from "@bufbuild/connect";
-import { ElizaService } from "@buf/connectrpc_eliza.bufbuild_connect-es/connectrpc/eliza/v1/eliza_connect";
+import { createPromiseClient } from "@connectrpc/connect";
+import { ElizaService } from "@buf/connectrpc_eliza.connectrpc_es/connectrpc/eliza/v1/eliza_connect";
 
 const client = createPromiseClient(ElizaService, transport);
 
@@ -44,8 +44,8 @@ If you prefer a callback-based approach, the client returned by the function
 `createCallbackClient` should suit you:
 
 ```ts
-import { createCallbackClient } from "@bufbuild/connect-web";
-import { ElizaService } from "@buf/connectrpc_eliza.bufbuild_connect-es/connectrpc/eliza/v1/eliza_connect";
+import { createCallbackClient } from "@connectrpc/connect-web";
+import { ElizaService } from "@buf/connectrpc_eliza.connectrpc_es/connectrpc/eliza/v1/eliza_connect";
 
 const client = createCallbackClient(ElizaService, transport);
 
@@ -61,7 +61,7 @@ callback functions: one that is called every time a response message arrives,
 and one that is called at the end of the stream.
 
 ```ts
-import {ConnectError} from "@bufbuild/connect-web";
+import {ConnectError} from "@connectrpc/connect-web";
 
 client.introduce({name: "Joseph"}, (res) => {
   console.log(res);
@@ -92,7 +92,7 @@ import {
   createConnectTransport,
   createPromiseClient,
   PromiseClient,
-} from "@bufbuild/connect-web";
+} from "@connectrpc/connect-web";
 
 // This transport is going to be used throughout the app
 const transport = createConnectTransport({

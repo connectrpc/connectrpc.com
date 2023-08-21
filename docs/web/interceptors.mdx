@@ -11,8 +11,8 @@ logs, or do nearly anything else.
 For a simple example, this interceptor logs all requests:
 
 ```ts
-import { Interceptor } from "@bufbuild/connect";
-import { createConnectTransport } from "@bufbuild/connect-web";
+import { Interceptor } from "@connectrpc/connect";
+import { createConnectTransport } from "@connectrpc/connect-web";
 
 const logger: Interceptor = (next) => async (req) => {
   console.log(`sending message to ${req.url}`);
