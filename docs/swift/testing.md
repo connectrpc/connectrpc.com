@@ -86,19 +86,19 @@ import Connect
 import Foundation
 import SwiftProtobuf
 
-public protocol Buf_Connect_Demo_Eliza_V1_ElizaServiceClientInterface {
+public protocol Connectrpc_Eliza_V1_ElizaServiceClientInterface {
     @discardableResult
-    func `say`(request: Buf_Connect_Demo_Eliza_V1_SayRequest, headers: Headers, completion: @escaping (ResponseMessage<Buf_Connect_Demo_Eliza_V1_SayResponse>) -> Void) -> Cancelable
+    func `say`(request: Connectrpc_Eliza_V1_SayRequest, headers: Headers, completion: @escaping (ResponseMessage<Connectrpc_Eliza_V1_SayResponse>) -> Void) -> Cancelable
 
-    func `say`(request: Buf_Connect_Demo_Eliza_V1_SayRequest, headers: Headers) async -> ResponseMessage<Buf_Connect_Demo_Eliza_V1_SayResponse>
+    func `say`(request: Connectrpc_Eliza_V1_SayRequest, headers: Headers) async -> ResponseMessage<Connectrpc_Eliza_V1_SayResponse>
 
-    func `converse`(headers: Headers, onResult: @escaping (StreamResult<Buf_Connect_Demo_Eliza_V1_ConverseResponse>) -> Void) -> any BidirectionalStreamInterface<Buf_Connect_Demo_Eliza_V1_ConverseRequest>
+    func `converse`(headers: Headers, onResult: @escaping (StreamResult<Connectrpc_Eliza_V1_ConverseResponse>) -> Void) -> any BidirectionalStreamInterface<Connectrpc_Eliza_V1_ConverseRequest>
 
-    func `converse`(headers: Headers) -> any BidirectionalAsyncStreamInterface<Buf_Connect_Demo_Eliza_V1_ConverseRequest, Buf_Connect_Demo_Eliza_V1_ConverseResponse>
+    func `converse`(headers: Headers) -> any BidirectionalAsyncStreamInterface<Connectrpc_Eliza_V1_ConverseRequest, Connectrpc_Eliza_V1_ConverseResponse>
 }
 
-/// Concrete implementation of `Buf_Connect_Demo_Eliza_V1_ElizaServiceClientInterface`.
-public final class Buf_Connect_Demo_Eliza_V1_ElizaServiceClient: Buf_Connect_Demo_Eliza_V1_ElizaServiceClientInterface {
+/// Concrete implementation of `Connectrpc_Eliza_V1_ElizaServiceClientInterface`.
+public final class Connectrpc_Eliza_V1_ElizaServiceClient: Connectrpc_Eliza_V1_ElizaServiceClientInterface {
     private let client: ProtocolClientInterface
 
     public init(client: ProtocolClientInterface) {
@@ -106,20 +106,20 @@ public final class Buf_Connect_Demo_Eliza_V1_ElizaServiceClient: Buf_Connect_Dem
     }
 
     @discardableResult
-    public func `say`(request: Buf_Connect_Demo_Eliza_V1_SayRequest, headers: Headers = [:], completion: @escaping (ResponseMessage<Buf_Connect_Demo_Eliza_V1_SayResponse>) -> Void) -> Cancelable {
-        return self.client.unary(path: "buf.demo.eliza.v1.ElizaService/Say", request: request, headers: headers, completion: completion)
+    public func `say`(request: Connectrpc_Eliza_V1_SayRequest, headers: Headers = [:], completion: @escaping (ResponseMessage<Connectrpc_Eliza_V1_SayResponse>) -> Void) -> Cancelable {
+        return self.client.unary(path: "connectrpc.eliza.v1.ElizaService/Say", request: request, headers: headers, completion: completion)
     }
 
-    public func `say`(request: Buf_Connect_Demo_Eliza_V1_SayRequest, headers: Headers = [:]) async -> ResponseMessage<Buf_Connect_Demo_Eliza_V1_SayResponse> {
-        return await self.client.unary(path: "buf.demo.eliza.v1.ElizaService/Say", request: request, headers: headers)
+    public func `say`(request: Connectrpc_Eliza_V1_SayRequest, headers: Headers = [:]) async -> ResponseMessage<Connectrpc_Eliza_V1_SayResponse> {
+        return await self.client.unary(path: "connectrpc.eliza.v1.ElizaService/Say", request: request, headers: headers)
     }
 
-    public func `converse`(headers: Headers = [:], onResult: @escaping (StreamResult<Buf_Connect_Demo_Eliza_V1_ConverseResponse>) -> Void) -> any BidirectionalStreamInterface<Buf_Connect_Demo_Eliza_V1_ConverseRequest> {
-        return self.client.bidirectionalStream(path: "buf.demo.eliza.v1.ElizaService/Converse", headers: headers, onResult: onResult)
+    public func `converse`(headers: Headers = [:], onResult: @escaping (StreamResult<Connectrpc_Eliza_V1_ConverseResponse>) -> Void) -> any BidirectionalStreamInterface<Connectrpc_Eliza_V1_ConverseRequest> {
+        return self.client.bidirectionalStream(path: "connectrpc.eliza.v1.ElizaService/Converse", headers: headers, onResult: onResult)
     }
 
-    public func `converse`(headers: Headers = [:]) -> any BidirectionalAsyncStreamInterface<Buf_Connect_Demo_Eliza_V1_ConverseRequest, Buf_Connect_Demo_Eliza_V1_ConverseResponse> {
-        return self.client.bidirectionalStream(path: "buf.demo.eliza.v1.ElizaService/Converse", headers: headers)
+    public func `converse`(headers: Headers = [:]) -> any BidirectionalAsyncStreamInterface<Connectrpc_Eliza_V1_ConverseRequest, Connectrpc_Eliza_V1_ConverseResponse> {
+        return self.client.bidirectionalStream(path: "connectrpc.eliza.v1.ElizaService/Converse", headers: headers)
     }
 }
 ```
@@ -139,42 +139,42 @@ import ConnectMocks
 import Foundation
 import SwiftProtobuf
 
-/// Mock implementation of `Buf_Connect_Demo_Eliza_V1_ElizaServiceClientInterface`.
+/// Mock implementation of `Connectrpc_Eliza_V1_ElizaServiceClientInterface`.
 ///
 /// Production implementations can be substituted with instances of this
 /// class, allowing for mocking RPC calls. Behavior can be customized
 /// either through the properties on this class or by
 /// subclassing the class and overriding its methods.
-open class Buf_Connect_Demo_Eliza_V1_ElizaServiceClientMock: Buf_Connect_Demo_Eliza_V1_ElizaServiceClientInterface {
+open class Connectrpc_Eliza_V1_ElizaServiceClientMock: Connectrpc_Eliza_V1_ElizaServiceClientInterface {
     private var cancellables = [Combine.AnyCancellable]()
 
     /// Mocked for calls to `say()`.
-    public var mockSay = { (_: Buf_Connect_Demo_Eliza_V1_SayRequest) -> ResponseMessage<Buf_Connect_Demo_Eliza_V1_SayResponse> in .init(result: .success(.init())) }
+    public var mockSay = { (_: Connectrpc_Eliza_V1_SayRequest) -> ResponseMessage<Connectrpc_Eliza_V1_SayResponse> in .init(result: .success(.init())) }
     /// Mocked for async calls to `say()`.
-    public var mockAsyncSay = { (_: Buf_Connect_Demo_Eliza_V1_SayRequest) -> ResponseMessage<Buf_Connect_Demo_Eliza_V1_SayResponse> in .init(result: .success(.init())) }
+    public var mockAsyncSay = { (_: Connectrpc_Eliza_V1_SayRequest) -> ResponseMessage<Connectrpc_Eliza_V1_SayResponse> in .init(result: .success(.init())) }
     /// Mocked for calls to `converse()`.
-    public var mockConverse = MockBidirectionalStream<Buf_Connect_Demo_Eliza_V1_ConverseRequest, Buf_Connect_Demo_Eliza_V1_ConverseResponse>()
+    public var mockConverse = MockBidirectionalStream<Connectrpc_Eliza_V1_ConverseRequest, Connectrpc_Eliza_V1_ConverseResponse>()
     /// Mocked for async calls to `converse()`.
-    public var mockAsyncConverse = MockBidirectionalAsyncStream<Buf_Connect_Demo_Eliza_V1_ConverseRequest, Buf_Connect_Demo_Eliza_V1_ConverseResponse>()
+    public var mockAsyncConverse = MockBidirectionalAsyncStream<Connectrpc_Eliza_V1_ConverseRequest, Connectrpc_Eliza_V1_ConverseResponse>()
 
     public init() {}
 
     @discardableResult
-    open func `say`(request: Buf_Connect_Demo_Eliza_V1_SayRequest, headers: Headers = [:], completion: @escaping (ResponseMessage<Buf_Connect_Demo_Eliza_V1_SayResponse>) -> Void) -> Cancelable {
+    open func `say`(request: Connectrpc_Eliza_V1_SayRequest, headers: Headers = [:], completion: @escaping (ResponseMessage<Connectrpc_Eliza_V1_SayResponse>) -> Void) -> Cancelable {
         completion(self.mockSay(request))
         return Cancelable {}
     }
 
-    open func `say`(request: Buf_Connect_Demo_Eliza_V1_SayRequest, headers: Headers = [:]) async -> ResponseMessage<Buf_Connect_Demo_Eliza_V1_SayResponse> {
+    open func `say`(request: Connectrpc_Eliza_V1_SayRequest, headers: Headers = [:]) async -> ResponseMessage<Connectrpc_Eliza_V1_SayResponse> {
         return self.mockAsyncSay(request)
     }
 
-    open func `converse`(headers: Headers = [:], onResult: @escaping (StreamResult<Buf_Connect_Demo_Eliza_V1_ConverseResponse>) -> Void) -> any BidirectionalStreamInterface<Buf_Connect_Demo_Eliza_V1_ConverseRequest> {
+    open func `converse`(headers: Headers = [:], onResult: @escaping (StreamResult<Connectrpc_Eliza_V1_ConverseResponse>) -> Void) -> any BidirectionalStreamInterface<Connectrpc_Eliza_V1_ConverseRequest> {
         self.mockConverse.$inputs.first { !$0.isEmpty }.sink { _ in self.mockConverse.outputs.forEach(onResult) }.store(in: &self.cancellables)
         return self.mockConverse
     }
 
-    open func `converse`(headers: Headers = [:]) -> any BidirectionalAsyncStreamInterface<Buf_Connect_Demo_Eliza_V1_ConverseRequest, Buf_Connect_Demo_Eliza_V1_ConverseResponse> {
+    open func `converse`(headers: Headers = [:]) -> any BidirectionalAsyncStreamInterface<Connectrpc_Eliza_V1_ConverseRequest, Connectrpc_Eliza_V1_ConverseResponse> {
         return self.mockAsyncConverse
     }
 }
@@ -192,17 +192,17 @@ implementations with the generated mock implementations:
 ```swift
 final class MessagingViewModel: ObservableObject {
     //highlight-next-line
-    private let elizaClient: Buf_Connect_Demo_Eliza_V1_ElizaServiceClientInterface
+    private let elizaClient: Connectrpc_Eliza_V1_ElizaServiceClientInterface
 
     //highlight-next-line
-    init(elizaClient: Buf_Connect_Demo_Eliza_V1_ElizaServiceClientInterface) {
+    init(elizaClient: Connectrpc_Eliza_V1_ElizaServiceClientInterface) {
         self.elizaClient = elizaClient
     }
 
     @Published private(set) var messages: [Message] {...}
 
     func send(_ sentence: String) async {
-        let request = Buf_Connect_Demo_Eliza_V1_SayRequest.with { $0.sentence = sentence }
+        let request = Connectrpc_Eliza_V1_SayRequest.with { $0.sentence = sentence }
         let response = await self.elizaClient.say(request: request, headers: [:])
         ...
     }
@@ -235,7 +235,7 @@ final class ElizaAppTests: XCTestCase {
     /// Example test that injects a mock generated client into a unary view model.
     @MainActor
     func testUnaryMessagingViewModel() async {
-        let client = Buf_Connect_Demo_Eliza_V1_ElizaServiceClientMock()
+        let client = Connectrpc_Eliza_V1_ElizaServiceClientMock()
         client.mockAsyncSay = { request in
             XCTAssertEqual(request.sentence, "hello!")
             return ResponseMessage(message: .with { $0.sentence = "hi, i'm eliza!" })
@@ -261,7 +261,7 @@ version of the `converse()` streaming method:
 /// Example test that injects a mock generated client into a bidirectional stream view model.
 @MainActor
 func testBidirectionalStreamMessagingViewModel() async {
-    let client = Buf_Connect_Demo_Eliza_V1_ElizaServiceClientMock()
+    let client = Connectrpc_Eliza_V1_ElizaServiceClientMock()
     client.mockAsyncConverse.outputs = [.message(.with { $0.sentence = "hi, i'm eliza!" })]
 
     let viewModel = BidirectionalStreamingMessagingViewModel(elizaClient: client)
