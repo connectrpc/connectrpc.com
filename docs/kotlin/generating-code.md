@@ -112,26 +112,24 @@ generated files in the `generated` directory:
 
 ```
 generated
-└── buf
-    └── connect
-        └── demo
-            └── eliza
-                └── v1
-                    ├── ConverseRequest.java
-                    ├── ConverseRequestOrBuilder.java
-                    ├── ConverseResponse.java
-                    ├── ConverseResponseOrBuilder.java
-                    ├── ElizaProto.java
-                    ├── ElizaServiceClient.kt
-                    ├── ElizaServiceClientInterface.kt
-                    ├── IntroduceRequest.java
-                    ├── IntroduceRequestOrBuilder.java
-                    ├── IntroduceResponse.java
-                    ├── IntroduceResponseOrBuilder.java
-                    ├── SayRequest.java
-                    ├── SayRequestOrBuilder.java
-                    ├── SayResponse.java
-                    └── SayResponseOrBuilder.java
+└── connectrpc
+    └── eliza
+        └── v1
+            ├── ConverseRequest.java
+            ├── ConverseRequestOrBuilder.java
+            ├── ConverseResponse.java
+            ├── ConverseResponseOrBuilder.java
+            ├── ElizaProto.java
+            ├── ElizaServiceClient.kt
+            ├── ElizaServiceClientInterface.kt
+            ├── IntroduceRequest.java
+            ├── IntroduceRequestOrBuilder.java
+            ├── IntroduceResponse.java
+            ├── IntroduceResponseOrBuilder.java
+            ├── SayRequest.java
+            ├── SayRequestOrBuilder.java
+            ├── SayResponse.java
+            └── SayResponseOrBuilder.java
 ```
 
 ## Using generated code
