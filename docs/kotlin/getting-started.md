@@ -70,19 +70,17 @@ it [hosted on the Buf Schema Registry][eliza-proto] to use in this example.
 Export the Protobuf schema to use in our project.
 
 ```bash title="~/.../Eliza/proto"
-$ buf export buf.build/bufbuild/eliza -o .
+$ buf export buf.build/connectrpc/eliza -o .
 ```
 
 Our new `proto` directory should look like this:
 
 ```
 proto
-├── buf
-│   └── connect
-│       └── demo
-│           └── eliza
-│               └── v1
-│                   └── eliza.proto
+├── connectrpc
+│   └── eliza
+│       └── v1
+│           └── eliza.proto
 └── buf.yaml
 ```
 
@@ -143,14 +141,12 @@ In the `app/src/main/java` directory, there should now be some generated Java an
 
 ```
 app/src/main/java
-├── buf
-│   └── connect
-│       └── demo
-│           └── eliza
-│               └── v1
-│                   ├── Eliza.java
-│                   ├── ElizaServiceClient.kt
-│                   └── ElizaServiceClientInterface.kt
+├── connectrpc
+│   └── eliza
+│       └── v1
+│           ├── Eliza.java
+│           ├── ElizaServiceClient.kt
+│           └── ElizaServiceClientInterface.kt
 └── com
     └── example
         └── eliza
