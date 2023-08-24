@@ -210,16 +210,16 @@ struct Message: Identifiable {
 }
 
 final class MessagingViewModel: ObservableObject {
-    private let elizaClient: Buf_Connect_Demo_Eliza_V1_ElizaServiceClientInterface
+    private let elizaClient: Connectrpc_Eliza_V1_ElizaServiceClientInterface
 
     @MainActor @Published private(set) var messages = [Message]()
 
-    init(elizaClient: Buf_Connect_Demo_Eliza_V1_ElizaServiceClientInterface) {
+    init(elizaClient: Connectrpc_Eliza_V1_ElizaServiceClientInterface) {
         self.elizaClient = elizaClient
     }
 
     func send(_ sentence: String) async {
-        let request = Buf_Connect_Demo_Eliza_V1_SayRequest.with { $0.sentence = sentence }
+        let request = Connectrpc_Eliza_V1_SayRequest.with { $0.sentence = sentence }
         await self.addMessage(Message(message: sentence, author: .user))
 
         let response = await self.elizaClient.say(request: request, headers: [:])
@@ -333,7 +333,7 @@ struct ElizaApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView(viewModel: MessagingViewModel(
-                elizaClient: Buf_Connect_Demo_Eliza_V1_ElizaServiceClient(client: self.client)
+                elizaClient: Connectrpc_Eliza_V1_ElizaServiceClient(client: self.client)
             ))
         }
     }
@@ -417,16 +417,16 @@ private var client = ProtocolClient(
 
 Take a look at the `MessagingViewModel` class above. It is initialized with an
 instance of a type that conforms to
-`Buf_Connect_Demo_Eliza_V1_ElizaServiceClientInterface` - the Swift protocol
+`Connectrpc_Eliza_V1_ElizaServiceClientInterface` - the Swift protocol
 that was generated from the `ElizaService` Protobuf service definition.
 Accepting a protocol, rather than the
-generated `Buf_Connect_Demo_Eliza_V1_ElizaServiceClient`
+generated `Connectrpc_Eliza_V1_ElizaServiceClient`
 concrete type that conforms to the protocol, allows for injecting mock classes
 into the view model for testing. We won't get into mocks and testing here, but
 you can check out the [testing docs](testing.md) for details and examples.
 
 Whenever the `send(...)` function is invoked by the SwiftUI view, the
-view model creates a `Buf_Connect_Demo_Eliza_V1_SayRequest` and
+view model creates a `Connectrpc_Eliza_V1_SayRequest` and
 passes it to the `say(...)`
 function on the generated client before awaiting a response from the server.
 All of this is done using type-safe generated APIs from the Protobuf
