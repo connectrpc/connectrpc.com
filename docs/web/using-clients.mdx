@@ -44,7 +44,7 @@ If you prefer a callback-based approach, the client returned by the function
 `createCallbackClient` should suit you:
 
 ```ts
-import { createCallbackClient } from "@connectrpc/connect-web";
+import { createCallbackClient } from "@connectrpc/connect";
 import { ElizaService } from "@buf/connectrpc_eliza.connectrpc_es/connectrpc/eliza/v1/eliza_connect";
 
 const client = createCallbackClient(ElizaService, transport);
@@ -61,7 +61,7 @@ callback functions: one that is called every time a response message arrives,
 and one that is called at the end of the stream.
 
 ```ts
-import {ConnectError} from "@connectrpc/connect-web";
+import {ConnectError} from "@connectrpc/connect";
 
 client.introduce({name: "Joseph"}, (res) => {
   console.log(res);
@@ -88,11 +88,8 @@ For example, you can easily create a custom hook in React:
 // use-client.ts
 import { useMemo } from "react";
 import { ServiceType } from "@bufbuild/protobuf";
-import {
-  createConnectTransport,
-  createPromiseClient,
-  PromiseClient,
-} from "@connectrpc/connect-web";
+import { createConnectTransport } from "@connectrpc/connect-web";
+import { createPromiseClient, PromiseClient } from "@connectrpc/connect";
 
 // This transport is going to be used throughout the app
 const transport = createConnectTransport({

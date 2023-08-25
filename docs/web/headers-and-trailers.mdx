@@ -55,7 +55,7 @@ require base64 encoding. Suffix your key with "-Bin" and use the function
 `encodeBinaryHeader()`:
 
 ```ts
-import { encodeBinaryHeader } from "@connectrpc/connect-web";
+import { encodeBinaryHeader } from "@connectrpc/connect";
 
 const data = new Uint8Array([0xde, 0xad, 0xbe, 0xef]);
 const headers = new Headers();
@@ -83,7 +83,7 @@ headers.set(
 To decode response headers, use the function `decodeBinaryHeader()`:
 
 ```ts
-import { decodeBinaryHeader } from "@connectrpc/connect-web";
+import { decodeBinaryHeader } from "@connectrpc/connect";
 
 const value = headers.get("My-Message-Bin");
 if (value != null) {
