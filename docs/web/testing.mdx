@@ -109,19 +109,6 @@ be passed to `createRouterTransport` in the optional second argument, an object
 with the property `transport` for transport options.
 
 
-### Jest and the jsdom environment
-
-If you are using [jest-environment-jsdom](https://www.npmjs.com/package/jest-environment-jsdom),
-you will very likely see an error when you run tests with the router transport,
-the protobuf binary format, or any other code relying on the otherwise widely
-available [encoding API](https://developer.mozilla.org/en-US/docs/Web/API/Encoding_API):
-
-```
-ReferenceError: TextEncoder is not defined
-```
-
-If you see this error, consider to use [@bufbuild/jest-environment-jsdom](https://www.npmjs.com/package/@bufbuild/jest-environment-jsdom)
-instead.
 
 
 ### What about mocking `fetch` itself?
@@ -134,6 +121,140 @@ Mocking `fetch` itself is a common approach to testing network requests, but it 
 - With an in-memory transport, you can eliminate the need for [spy functions](https://jestjs.io/docs/jest-object#jestspyonobject-methodname) because you can implement any checks directly in your server implementation. This can simplify your testing code and make it easier to understand.
 - You can leverage `expect` directly within the code of your mock implementation to verify particular scenarios pertaining to the requests or responses.
 
+## Component Testing
+
+Unit testing components in isolation is also very beneficial. The popular [`@testing-library`](https://testing-library.com/docs/)
+family of packages provides APIs for various frameworks such as React, Vue, and Svelte that assist you with rendering
+your component and testing its behavior. Using the above `createRouterTransport` example, you can easily mock Connect
+calls in your components. Following are some helpful examples:
+
+### React
+
+The recommended approach for providing a transport to components in React is through the use of
+[React Context](https://react.dev/learn/passing-data-deeply-with-context). This way,
+you can easily mock the transport in your unit tests. For example, you can create a custom
+hook which reads the transport from Context and then your component can use this hook to create a Connect client:
+
+```typescript title="contexts.ts"
+import { createContext } from "react";
+import { Transport } from "@connectrpc/connect";
+
+export const TransportContext = createContext<Transport | null>(null);
+```
+
+```typescript title="use-client.ts"
+import { useContext, useMemo } from "react";
+import { ServiceType } from "@bufbuild/protobuf";
+import { createPromiseClient, PromiseClient } from "@connectrpc/connect";
+import { TransportContext } from "./contexts.js";
+
+/**
+ * Get a promise client for the given service.
+ */
+export function useClient<T extends ServiceType>(service: T): PromiseClient<T> {
+    const transport = useContext(TransportContext);
+
+    if (!transport) {
+        throw new Error("No transport specified in TransportContext");
+    }
+
+    // We memoize the client, so that we only create one instance per service.
+    return useMemo(
+        () => createPromiseClient(service, transport),
+        [service, transport],
+    );
+}
+```
+
+Using the above `mockTransport` example, you can provide the mock to your component in your unit test:
+
+```typescript title="foo-component.test.tsx"
+import { TransportContext } from "./contexts.js";
+import { FooComponent } from "./my-component.js";
+
+beforeEach(() => {
+    render(
+        <TransportContext.Provider value={mockTransport}>
+            <FooComponent />
+        </TransportContext.Provider>,
+    );
+});
+```
+
+For a working example of the above with Create React App, see the
+[Create React App project](https://github.com/connectrpc/examples-es/tree/main/react/cra) in the
+[examples-es](https://github.com/connectrpc/examples-es) repo.
+
+### Svelte
+
+The suggested method for providing transports to Svelte components is similar in that it makes use of Svelte's
+[Context API](https://learn.svelte.dev/tutorial/context-api). The one gotcha to be aware of is that `setContext` and
+`getContext` can only be called from within a component lifecycle, so utilizing this approach is a bit more complex.
+
+To view a working example of mocking transports in Svelte components, check out the
+[Svelte project](https://github.com/connectrpc/examples-es/tree/main/svelte) in the
+[examples-es](https://github.com/connectrpc/examples-es) repo.
+
+
+### Vue
+
+Structuring a Vue application to allow for easy component testing involves Vue's [Provide/Inject API](https://vuejs.org/guide/components/provide-inject.html).
+Using this approach, you can provide the transport to your app like so:
+
+```typescript title="main.ts"
+import { createApp } from "vue";
+import { createConnectTransport } from "@connectrpc/connect-web";
+
+import App from "./App.vue";
+import { transportKey } from "./keys";
+const app = createApp(App);
+
+// This transport is going to be used throughout the app
+const transport = createConnectTransport({
+    baseUrl: "https://demo.connectrpc.com",
+});
+app.provide(transportKey, transport);
+```
+
+Then, you can inject it in the `setup` of your component and create a Connect client when your component is mounted:
+
+```typescript title="FooView.vue"
+import { defineComponent, inject } from "vue";
+import { createPromiseClient } from "@connectrpc/connect";
+import type { Transport } from "@connectrpc/connect";
+
+export default defineComponent({
+    name: "FooView",
+    setup() {
+        const transport = inject<Transport>(transportKey);
+        if (!transport) {
+            throw new Error("No transport set by provider");
+        }
+        return { transport };
+    },
+    mounted() {
+        this.client = createPromiseClient(FooService, this.transport);
+    },
+    ...
+```
+
+With this in place, it is easy to mock the transport in your unit tests:
+
+```typescript title="FooView.spec.ts"
+beforeEach(() => {
+    wrapper = mount(FooView, {
+        global: {
+            provide: {
+                [transportKey]: mockTransport,
+            },
+        },
+    });
+});
+```
+
+For a working example of mocking transports in Vue components, see the
+[Vue project](https://github.com/connectrpc/examples-es/tree/main/vue) in the
+[examples-es](https://github.com/connectrpc/examples-es) repo.
 
 ## End-to-end testing
 
@@ -165,3 +286,19 @@ test.describe("mocking Eliza", () => {
 
 To get started, take a look at the [connect-playwright repository](https://github.com/connectrpc/connect-playwright-es),
 and the [example project](https://github.com/connectrpc/connect-playwright-es/tree/main/packages/connect-playwright-example).
+
+## Troubleshooting
+
+### Jest and the jsdom environment
+
+If you are using [jest-environment-jsdom](https://www.npmjs.com/package/jest-environment-jsdom),
+you will very likely see an error when you run tests with the router transport,
+the protobuf binary format, or any other code relying on the otherwise widely
+available [encoding API](https://developer.mozilla.org/en-US/docs/Web/API/Encoding_API):
+
+```
+ReferenceError: TextEncoder is not defined
+```
+
+If you see this error, consider to use [@bufbuild/jest-environment-jsdom](https://www.npmjs.com/package/@bufbuild/jest-environment-jsdom)
+instead.
