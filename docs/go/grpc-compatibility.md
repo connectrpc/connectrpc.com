@@ -5,7 +5,7 @@ sidebar_position: 90
 
 Connect fully supports the gRPC and gRPC-Web protocols, including streaming. We
 validate our implementation of these protocols using [an extended
-version][connect-crosstest] of Google's own interoperability tests.
+version][connect-conformance] of Google's own interoperability tests.
 
 ## Handlers
 
@@ -83,4 +83,4 @@ few common steps:
 1. You're done! Unless your service is in the same repository as its clients,
    you can stop generating code with `protoc-gen-go-grpc`.
 
-[connect-crosstest]: https://github.com/bufbuild/connect-crosstest
+[connect-conformance]: https://github.com/connectrpc/conformance
