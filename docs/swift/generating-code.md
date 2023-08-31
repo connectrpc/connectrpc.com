@@ -159,7 +159,7 @@ the `buf.gen.yaml` file as shown in the example above.
 [buf.gen.yaml]: https://buf.build/docs/configuration/v1/buf-gen-yaml
 [buf.yaml]: https://buf.build/docs/configuration/v1/buf-yaml
 [buf-cli]: https://buf.build/docs/installation
-[connect-swift]: https://github.com/bufbuild/connect-swift
+[connect-swift]: https://github.com/connectrpc/connect-swift
 [connect-swift-plugin]: https://buf.build/bufbuild/connect-swift
 [connect-swift-mocks-plugin]: https://buf.build/bufbuild/connect-swift-mocks
 [protobuf]: https://developers.google.com/protocol-buffers

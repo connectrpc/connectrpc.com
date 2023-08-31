@@ -31,7 +31,7 @@ export default function Demo(): JSX.Element {
             and you can follow <a href="/docs/web/getting-started">this guide</a> to implement it yourself.
             <br /><br />
             There is also a <a href="/docs/swift/getting-started">guide</a> to creating a similar ELIZA chat app
-            for iOS (or macOS) using <a href="https://github.com/bufbuild/connect-swift">connect-swift</a>.
+            for iOS (or macOS) using <a href="https://github.com/connectrpc/connect-swift">connect-swift</a>.
           </p>
         </div>
       </div>

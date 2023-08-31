@@ -279,6 +279,6 @@ func testBidirectionalStreamMessagingViewModel() async {
 }
 ```
 
-[connect-swift]: https://github.com/bufbuild/connect-swift
+[connect-swift]: https://github.com/connectrpc/connect-swift
 [connect-swift-plugin]: https://buf.build/bufbuild/connect-swift
 [connect-swift-mocks-plugin]: https://buf.build/bufbuild/connect-swift-mocks
