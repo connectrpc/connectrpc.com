@@ -24,14 +24,14 @@ plugins:
     opt: Visibility=Public
     out: Generated
   # Production generated services/methods
-  - plugin: buf.build/bufbuild/connect-swift
+  - plugin: buf.build/connectrpc/connect-swift
     opt: >
       GenerateAsyncMethods=true,
       GenerateCallbackMethods=true,
       Visibility=Public
     out: Generated
   # Mock generated services/methods
-  - plugin: buf.build/bufbuild/connect-swift-mocks
+  - plugin: buf.build/connectrpc/connect-swift-mocks
     opt: >
       GenerateAsyncMethods=true,
       GenerateCallbackMethods=true,
@@ -280,5 +280,5 @@ func testBidirectionalStreamMessagingViewModel() async {
 ```
 
 [connect-swift]: https://github.com/bufbuild/connect-swift
-[connect-swift-plugin]: https://buf.build/bufbuild/connect-swift
-[connect-swift-mocks-plugin]: https://buf.build/bufbuild/connect-swift-mocks
+[connect-swift-plugin]: https://buf.build/connectrpc/connect-swift
+[connect-swift-mocks-plugin]: https://buf.build/connectrpc/connect-swift-mocks
