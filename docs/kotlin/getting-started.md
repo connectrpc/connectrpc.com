@@ -20,10 +20,10 @@ to generate a Connect-Kotlin client.
 
 ## Prerequisites
 
-* [Android Studio][android-studio] installed.
-* [The Buf CLI][buf-cli] installed, and include it in the `$PATH`.
-* Set up [Virtual Device Configuration][android-studio-virtual-device] on Android Studio, or
-use a physical device.
+- [Android Studio][android-studio] installed.
+- [The Buf CLI][buf-cli] installed, and include it in the `$PATH`.
+- Set up [Virtual Device Configuration][android-studio-virtual-device] on Android Studio, or
+  use a physical device.
 
 ## Create a new Android project from Android Studio
 
@@ -35,17 +35,16 @@ import NewProjectScreenshot from './android-studio-new-project.png';
 
 1. Create a new project with Android Studio.
 2. Select an empty activity for the project and click "Next".<br/>
-<img src={SelectActivityScreenshot} width="800px" />
+   <img src={SelectActivityScreenshot} width="800px" />
 3. For the project name, name it `Eliza`.
 4. Make sure the package is `com.example.eliza`, and leave the rest as default.<br/>
-<img src={NewProjectScreenshot} width="800px" />
+   <img src={NewProjectScreenshot} width="800px" />
 
 :::note
 By default, Android Studio's project name is `My Application` and the package is `com.example.myapplication`. If that
 is not overridden, the rest of the example will need to replace `com.example.eliza` with
 `com.example.myapplication` within the code snippets.
 :::
-
 
 Create an Android application with Gradle and Android Studio. Now we can start
 defining a new API for talking with Eliza!
@@ -371,7 +370,7 @@ To view the raw code, click the button `Code` in the top right corner.
 :::
 
 Lastly, make sure the `AndroidManifest.xml` declares the right permissions to make a network request.
-Configure the application with network permissions by adding the following to  `AndroidManifest.xml`
+Configure the application with network permissions by adding the following to `AndroidManifest.xml`
 
 ```xml title="app/src/main/AndroidManifest.xml"
 <?xml version="1.0" encoding="utf-8"?>
@@ -658,49 +657,26 @@ the Connect-Kotlin repository on GitHub. These examples demonstrate:
 - Using the [gRPC-Web protocol][grpc-web].
 
 [android-studio]: https://developer.android.com/studio
-
 [android-studio-virtual-device]: https://developer.android.com/studio/run/managing-avds
-
 [bsr]: https://buf.build/docs/tutorials/getting-started-with-bsr
-
 [buf]: https://buf.build/docs/
-
 [buf-cli]: https://buf.build/docs/installation
-
 [buf.gen.yaml]: https://buf.build/docs/configuration/v1/buf-gen-yaml
-
 [buf.yaml]: https://buf.build/docs/configuration/v1/buf-yaml
-
 [connect-go]: https://github.com/connectrpc/connect-go
-
 [connect-kotlin]: https://github.com/bufbuild/connect-kotlin
-
 [connect-kotlin-releases]: https://github.com/bufbuild/connect-kotlin/releases
-
 [eliza-proto]: https://buf.build/connectrpc/eliza/file/main:connectrpc/eliza/v1/eliza.proto
-
 [go-demo]: https://github.com/connectrpc/examples-go
-
 [google-java-protobuf]: https://buf.build/protocolbuffers/java
-
 [grpc]: https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md
-
 [grpc-java]: https://github.com/grpc/grpc-java
-
 [grpc-web]: https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-WEB.md
-
 [more-examples]: https://github.com/bufbuild/connect-kotlin/tree/main/examples
-
 [okhttp]: https://github.com/square/okhttp
-
 [protobuf]: https://developers.google.com/protocol-buffers
-
 [protobuf-releases]: https://github.com/protocolbuffers/protobuf/releases
-
 [pgjava-example]: https://github.com/bufbuild/connect-kotlin/blob/main/examples/kotlin-google-java/src/main/kotlin/build/buf/connect/examples/kotlin/Main.kt
-
 [pgjavalite-example]: https://github.com/bufbuild/connect-kotlin/blob/main/examples/kotlin-google-javalite/src/main/kotlin/build/buf/connect/examples/kotlin/Main.kt
-
 [remote-plugins]: https://buf.build/docs/bsr/remote-plugins/usage
-
 [streaming-example-kotlin]: https://github.com/bufbuild/connect-kotlin/blob/main/examples/kotlin-google-java/src/main/kotlin/build/buf/connect/examples/kotlin/Main.kt#L55-L71

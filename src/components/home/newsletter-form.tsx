@@ -27,12 +27,12 @@ export const NewsletterForm = () => {
         setIsSubmittedForm(false);
       }, 5000);
     },
-    [email]
+    [email],
   );
   return isSubmitted ? (
     <span
       style={{
-        color: "var(--buf-ink-blue-02)"
+        color: "var(--buf-ink-blue-02)",
       }}
     >
       Thanks for signing up!
@@ -54,7 +54,7 @@ export const NewsletterForm = () => {
           <button
             type="submit"
             style={{
-              cursor: "pointer"
+              cursor: "pointer",
             }}
           >
             Join
@@ -65,7 +65,7 @@ export const NewsletterForm = () => {
             style={{
               color: "#e53238",
               fontSize: ".75rem",
-              marginTop: ".5rem"
+              marginTop: ".5rem",
             }}
           >
             {error}

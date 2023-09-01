@@ -4,7 +4,7 @@ import NavbarMobileSidebar from "@theme/Navbar/MobileSidebar";
 import {
   useThemeConfig,
   useHideableNavbar,
-  useNavbarMobileSidebar
+  useNavbarMobileSidebar,
 } from "@docusaurus/theme-common/internal";
 import styles from "./styles.module.css";
 import { useIsScrolled } from "../../utils/use-is-scrolled";
@@ -24,14 +24,14 @@ function NavbarBackdrop(props: ComponentProps<"div">) {
 
 export default function NavbarLayout({ children }: Props): JSX.Element {
   const {
-    navbar: { hideOnScroll, style }
+    navbar: { hideOnScroll, style },
   } = useThemeConfig();
   const mobileSidebar = useNavbarMobileSidebar();
   const { navbarRef, isNavbarVisible } = useHideableNavbar(hideOnScroll);
   const { pathname } = useLocation();
   const showBottomBorder =
     useIsScrolled({
-      threshold: 50
+      threshold: 50,
     }) || pathname !== "/";
   return (
     <>
@@ -41,12 +41,15 @@ export default function NavbarLayout({ children }: Props): JSX.Element {
           "navbar",
           "navbar--fixed-top",
           styles.hideBottomBorder,
-          hideOnScroll && [styles.navbarHideable, !isNavbarVisible && styles.navbarHidden],
+          hideOnScroll && [
+            styles.navbarHideable,
+            !isNavbarVisible && styles.navbarHidden,
+          ],
           {
             "navbar--dark": style === "dark",
             "navbar--primary": style === "primary",
-            "navbar-sidebar--show": mobileSidebar.shown
-          }
+            "navbar-sidebar--show": mobileSidebar.shown,
+          },
         )}
       >
         {children}
@@ -61,7 +64,7 @@ export default function NavbarLayout({ children }: Props): JSX.Element {
           marginLeft: "var(--ifm-navbar-padding-horizontal)",
           marginRight: "var(--ifm-navbar-padding-horizontal)",
           // using display since SSR makes rendering conditional elements nasty.
-          display: showBottomBorder ? undefined : "none"
+          display: showBottomBorder ? undefined : "none",
         }}
       />
     </>

@@ -71,7 +71,7 @@ in production for a while. We plan to release a stable v1 in early 2023. However
 you can [get started now][web-getting-started].
 
 Connect for Node is currently in beta. We plan to release a stable v1
-alongside Connect for Web.  You can [get started with `connect-node` now][node-getting-started].
+alongside Connect for Web. You can [get started with `connect-node` now][node-getting-started].
 
 ## Swift and Kotlin
 

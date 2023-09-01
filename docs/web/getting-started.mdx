@@ -11,15 +11,13 @@ a very simple natural language processor built in the 1960s to represent a
 psychotherapist. The ELIZA service is already up and running, and it defines
 a Protocol Buffer schema we'll use to generate a client.
 
-
 ## Prerequisites
 
-* You'll need [Node.js](https://nodejs.dev/download) - we recommend the
+- You'll need [Node.js](https://nodejs.dev/download) - we recommend the
   long-term support version (LTS).
-* We'll use the package manager `npm`, but we are also compatible with `yarn` and `pnpm`.
-* We'll use the `buf` CLI to generate code. See [the documentation](https://buf.build/docs/installation)
+- We'll use the package manager `npm`, but we are also compatible with `yarn` and `pnpm`.
+- We'll use the `buf` CLI to generate code. See [the documentation](https://buf.build/docs/installation)
   for installation instructions.
-
 
 ## Prepare
 
@@ -101,12 +99,14 @@ we'll have an input and a button to submit.
 ```tsx title="src/App.tsx"
 function App() {
   // highlight-start
-  return <>
-    <form>
-      <input />
-      <button type="submit">Send</button>
-    </form>
-  </>;
+  return (
+    <>
+      <form>
+        <input />
+        <button type="submit">Send</button>
+      </form>
+    </>
+  );
   // highlight-end
 }
 ```
@@ -118,18 +118,22 @@ few things to change that.
 First, let's capture the users input and store that as state. That will allow
 us to control it easily:
 
-
 ```tsx title="src/App.tsx"
 function App() {
   // highlight-next-line
   const [inputValue, setInputValue] = useState("");
-  return <>
-    <form>
-      {/* highlight-next-line */}
-      <input value={inputValue} onChange={e => setInputValue(e.target.value)} />
-      <button type="submit">Send</button>
-    </form>
-  </>;
+  return (
+    <>
+      <form>
+        {/* highlight-next-line */}
+        <input
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+        />
+        <button type="submit">Send</button>
+      </form>
+    </>
+  );
 }
 ```
 
@@ -143,19 +147,26 @@ Here we can also start to actually interact with our client created in the
 ```tsx title="src/App.tsx"
 function App() {
   const [inputValue, setInputValue] = useState("");
-  return <>
-    {/* highlight-start */}
-    <form onSubmit={async (e) => {
-      e.preventDefault();
-      await client.say({
-        sentence: inputValue,
-      });
-    }}>
-    {/* highlight-end */}
-      <input value={inputValue} onChange={e => setInputValue(e.target.value)} />
-      <button type="submit">Send</button>
-    </form>
-  </>;
+  return (
+    <>
+      {/* highlight-start */}
+      <form
+        onSubmit={async (e) => {
+          e.preventDefault();
+          await client.say({
+            sentence: inputValue,
+          });
+        }}
+      >
+        {/* highlight-end */}
+        <input
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+        />
+        <button type="submit">Send</button>
+      </form>
+    </>
+  );
 }
 ```
 
@@ -240,8 +251,8 @@ $ npm run dev
 And wrote the following source code:
 
 ```tsx title="src/App.tsx"
-import { useState } from 'react'
-import './App.css'
+import { useState } from "react";
+import "./App.css";
 
 import { createPromiseClient } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
@@ -262,50 +273,57 @@ const client = createPromiseClient(ElizaService, transport);
 function App() {
   const [inputValue, setInputValue] = useState("");
   const [messages, setMessages] = useState<
-      {
-        fromMe: boolean;
-        message: string;
-      }[]
-      >([]);
-  return <>
-    <ol>
-      {messages.map((msg, index) => (
+    {
+      fromMe: boolean;
+      message: string;
+    }[]
+  >([]);
+  return (
+    <>
+      <ol>
+        {messages.map((msg, index) => (
           <li key={index}>
             {`${msg.fromMe ? "ME:" : "ELIZA:"} ${msg.message}`}
           </li>
-      ))}
-    </ol>
-    <form onSubmit={async (e) => {
-      e.preventDefault();
-      // Clear inputValue since the user has submitted.
-      setInputValue("");
-      // Store the inputValue in the chain of messages and
-      // mark this message as coming from "me"
-      setMessages((prev) => [
-        ...prev,
-        {
-          fromMe: true,
-          message: inputValue,
-        },
-      ]);
-      const response = await client.say({
-        sentence: inputValue,
-      });
-      setMessages((prev) => [
-        ...prev,
-        {
-          fromMe: false,
-          message: response.sentence,
-        },
-      ]);
-    }}>
-      <input value={inputValue} onChange={e => setInputValue(e.target.value)} />
-      <button type="submit">Send</button>
-    </form>
-  </>;
+        ))}
+      </ol>
+      <form
+        onSubmit={async (e) => {
+          e.preventDefault();
+          // Clear inputValue since the user has submitted.
+          setInputValue("");
+          // Store the inputValue in the chain of messages and
+          // mark this message as coming from "me"
+          setMessages((prev) => [
+            ...prev,
+            {
+              fromMe: true,
+              message: inputValue,
+            },
+          ]);
+          const response = await client.say({
+            sentence: inputValue,
+          });
+          setMessages((prev) => [
+            ...prev,
+            {
+              fromMe: false,
+              message: response.sentence,
+            },
+          ]);
+        }}
+      >
+        <input
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+        />
+        <button type="submit">Send</button>
+      </form>
+    </>
+  );
 }
 
-export default App
+export default App;
 ```
 
 In case you mistype a request or response property — let's say you misspell

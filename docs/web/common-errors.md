@@ -7,15 +7,15 @@ This page explains how to fix common errors when using Connect from a web browse
 
 ## Access to fetch from origin has been blocked by CORS policy
 
-The basics of CORS apply with Connect from a browser and any resource it is attempting to access.  For detailed
+The basics of CORS apply with Connect from a browser and any resource it is attempting to access. For detailed
 information, please view the [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) documentation.
 
-However, one specific gotcha to be aware of involves a new header `Connect-Protocol-Version`.  With the
+However, one specific gotcha to be aware of involves a new header `Connect-Protocol-Version`. With the
 [v0.6.0 release](https://github.com/connectrpc/connect-es/releases/tag/v0.6.0) of `@connectrpc/connect-web`, this header was added to all requests sent via the
 library. As a result, Connect clients that were working prior may start experiencing CORS errors upon upgrading to
-`v0.6.0`.  Note that this also only affects Connect traffic.  gRPC-Web traffic is unaffected.
+`v0.6.0`. Note that this also only affects Connect traffic. gRPC-Web traffic is unaffected.
 
-The fix is to update your server configuration to add this header to the allowlist.  For example, if your backend is
+The fix is to update your server configuration to add this header to the allowlist. For example, if your backend is
 using the [Go CORS handler](https://github.com/rs/cors) library:
 
 ```diff

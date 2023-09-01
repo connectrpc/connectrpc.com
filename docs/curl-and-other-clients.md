@@ -40,12 +40,16 @@ API. Right in your developer tools, try this:
 
 ```javascript
 fetch("https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say", {
-  "method": "POST",
-  "headers": {"Content-Type": "application/json"},
-  "body": JSON.stringify({"sentence": "I feel happy."})
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ sentence: "I feel happy." }),
 })
-  .then(response => { return response.json() })
-  .then(data => { console.log(data) })
+  .then((response) => {
+    return response.json();
+  })
+  .then((data) => {
+    console.log(data);
+  });
 ```
 
 ## Buf Studio
@@ -53,4 +57,3 @@ fetch("https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say", {
 If you prefer a graphical user interface to explore an API, take a look at [Buf Studio](https://buf.build/studio/connectrpc/eliza/connectrpc.eliza.v1.ElizaService/Say?target=https%3A%2F%2Fdemo.connectrpc.com&demo=true&share=s1Ks5lJQUCpOzStJzUtOVbJSUPJUSEtNzVHISCwoqNRT4qoFAA).
 Buf Studio is an interactive web UI for all your Protobuf services stored on the
 [Buf Schema Registry](https://buf.build/product/bsr/).
-

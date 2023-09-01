@@ -12,13 +12,13 @@ create a file `connect.ts` with a registration function in your project:
 ```ts
 import { ConnectRouter } from "@connectrpc/connect";
 
-export default (router: ConnectRouter) => {}
+export default (router: ConnectRouter) => {};
 ```
 
 ## Register a service
 
-
 Let's say you have defined a simple service in Protobuf:
+
 ```protobuf
 message SayRequest {
   string sentence = 1;
@@ -44,13 +44,12 @@ export default (router: ConnectRouter) =>
       return new SayResponse({
         sentence: `You said ${req.sentence}`,
       });
-    }
+    },
   });
 ```
 
 Your method `say()` receives the request message and a context object, and
 returns a response message. It is a plain function!
-
 
 ## Plain functions
 
@@ -74,7 +73,6 @@ const say = (req: SayRequest) => ({ sentence: `You said ${req.sentence}` });
 ```
 
 You can register any of these functions for the ElizaService.
-
 
 ## Context
 
@@ -109,7 +107,6 @@ function say() {
 the code and a message, errors can also contain metadata (a Headers object)
 and error details.
 
-
 ## Error details
 
 Error details are a powerful feature. Any protobuf message can be transmitted as
@@ -137,17 +134,16 @@ function say() {
     }),
   ];
   const metadata = new Headers({
-    "words-left": "none"
+    "words-left": "none",
   });
   throw new ConnectError(
     "I have no words anymore.",
     Code.ResourceExhausted,
     metadata,
-    details
+    details,
   );
 }
 ```
-
 
 ## Streaming
 
@@ -193,7 +189,7 @@ asynchronous iterable of response messages, typically with a
 [generator function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*).
 
 ```ts
-async function *introduce(req: IntroduceRequest) {
+async function* introduce(req: IntroduceRequest) {
   yield { sentence: `Hi ${req.name}, I'm eliza` };
   yield { sentence: `How are you feeling today?` };
 }
@@ -204,7 +200,6 @@ send multiple messages. Often, the exchange is structured like a conversation:
 the client sends a message, the server responds, the client sends another
 message, and so on. Keep in mind that this always requires end-to-end HTTP/2
 support (regardless of RPC protocol)!
-
 
 ## Helper Types
 
@@ -246,17 +241,12 @@ export default (router: ConnectRouter) => {
   router.service(ElizaService, { say });
 
   // alternative for using const say
-  router.rpc(
-    ElizaService,
-    ElizaService.methods.say,
-    say
-  );
+  router.rpc(ElizaService, ElizaService.methods.say, say);
 
   // using const eliza
   router.service(ElizaService, eliza);
 
   // using class Eliza
   router.service(ElizaService, new Eliza());
-}
+};
 ```
-

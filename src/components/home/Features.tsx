@@ -15,7 +15,11 @@ function Feature({ title, description }: FeatureItem) {
           xmlns="http://www.w3.org/2000/svg"
         >
           <circle cx="10" cy="10" r="10" fill="currentColor" />
-          <path d="M5 9.32562L8.80071 13L15 7" stroke="white" strokeWidth="0.9375" />
+          <path
+            d="M5 9.32562L8.80071 13L15 7"
+            stroke="white"
+            strokeWidth="0.9375"
+          />
         </svg>
 
         {title}

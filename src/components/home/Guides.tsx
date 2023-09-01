@@ -12,12 +12,19 @@ const Guide = ({ title, description, logos, href }: GuideProps) => {
       <div
         className={styles.titleAndIcon}
         style={{
-          flexGrow: 1
+          flexGrow: 1,
         }}
       >
         <div className={styles.logoContainer}>
           {logos.map((logo) => {
-            return <img key={logo} alt={title} src={useBaseUrl(logo)} className={styles.logo} />;
+            return (
+              <img
+                key={logo}
+                alt={title}
+                src={useBaseUrl(logo)}
+                className={styles.logo}
+              />
+            );
           })}
         </div>
         <div>
@@ -26,7 +33,9 @@ const Guide = ({ title, description, logos, href }: GuideProps) => {
         </div>
       </div>
 
-      <Divider style={{ width: "100%", marginBottom: "1.5rem", marginTop: "1.5rem" }} />
+      <Divider
+        style={{ width: "100%", marginBottom: "1.5rem", marginTop: "1.5rem" }}
+      />
 
       <a className={styles.goto} href={href}>
         <span className={styles.gotoText}>Go to guide </span>
@@ -108,7 +117,7 @@ const ComingSoon = () => {
           <p
             className={styles.title}
             style={{
-              marginBottom: 0
+              marginBottom: 0,
             }}
           >
             JavaScript &amp; TypeScript
@@ -116,7 +125,7 @@ const ComingSoon = () => {
           <p
             style={{
               marginTop: "10px",
-              marginBottom: "18px"
+              marginBottom: "18px",
             }}
           >
             Join the newsletter to stay updated.

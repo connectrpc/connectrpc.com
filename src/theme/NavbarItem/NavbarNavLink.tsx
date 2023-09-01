@@ -43,27 +43,35 @@ export default function NavbarNavLink({
     <Link
       {...(href
         ? {
-            href: props.disabled ? undefined : prependBaseUrlToHref ? normalizedHref : href
+            href: props.disabled
+              ? undefined
+              : prependBaseUrlToHref
+              ? normalizedHref
+              : href,
           }
         : {
             isNavLink: true,
-            activeClassName: !props.className?.includes(activeClassName) ? activeClassName : "",
+            activeClassName: !props.className?.includes(activeClassName)
+              ? activeClassName
+              : "",
             to: toUrl,
             ...(activeBasePath || activeBaseRegex
               ? {
                   isActive: (_match, location) =>
                     activeBaseRegex
                       ? isRegexpStringMatch(activeBaseRegex, location.pathname)
-                      : location.pathname.startsWith(activeBaseUrl)
+                      : location.pathname.startsWith(activeBaseUrl),
                 }
-              : null)
+              : null),
           })}
       {...props}
     >
       {!props.disabled && isExternalLink ? (
         <>
           <span className="label">{label}</span>
-          <IconExternalLink {...(isDropdownLink && { width: 12, height: 12 })} />
+          <IconExternalLink
+            {...(isDropdownLink && { width: 12, height: 12 })}
+          />
         </>
       ) : props.disabled ? (
         <span className="label">{label}</span>

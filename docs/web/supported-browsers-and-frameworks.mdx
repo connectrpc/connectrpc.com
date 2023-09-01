@@ -18,7 +18,7 @@ integrates seamlessly with various module loaders and bundlers such as [esbuild]
 [Vite](https://vitejs.dev) and [Rollup](https://rollupjs.org).
 
 However, there are some gotchas to be aware of as well as common errors that you may encounter when attempting to set up
-your stack.  The issues vary depending on the tooling in your project.  This page explains some helpful workarounds
+your stack. The issues vary depending on the tooling in your project. This page explains some helpful workarounds
 with links to examples.
 
 ## Webpack
@@ -33,7 +33,7 @@ Module not found: Error: Can't resolve '<import name>' in 'path/to/your/connect/
 ```
 
 This is because if you are using `opt: target=ts` as part of your plugin configuration, `protoc-gen-es` will generate only TypeScript
-files.  However, these files will use imports internally that specify a `.js` extension.  This is in accordance with the
+files. However, these files will use imports internally that specify a `.js` extension. This is in accordance with the
 ECMAScript specification, but may cause some difficulty loading these files.
 
 Fortunately, some workarounds exist depending on your version of Webpack.
@@ -42,7 +42,7 @@ Fortunately, some workarounds exist depending on your version of Webpack.
 
 If you are using Webpack [v5.74.0](https://github.com/webpack/webpack/releases/tag/v5.74.0) and above, there is an option
 called [extensionAlias](https://webpack.js.org/configuration/resolve/#resolveextensionalias) that you can add to the
-`resolve` section of your Webpack config file.  This will tell Webpack how to alias TypeScript file extensions and load
+`resolve` section of your Webpack config file. This will tell Webpack how to alias TypeScript file extensions and load
 them properly.
 
 For a working example, see the [Webpack project](https://github.com/connectrpc/examples-es/tree/main/react/webpack)
@@ -55,8 +55,8 @@ If you are using a version < v5.74.0 and are not able to upgrade, then you have 
 **Use the `import_extension` option**
 
 The code generator plugins used by Connect and its dependency [Protobuf-ES](https://github.com/bufbuild/protobuf-es) will
-add a `.js` extension to import paths by default.  However, you can configure these plugins to use a different value
-using the plugin option `import_extension`.  Visit the docs [here](https://github.com/bufbuild/protobuf-es/tree/main/packages/protoc-gen-es#import_extensionjs) for details.
+add a `.js` extension to import paths by default. However, you can configure these plugins to use a different value
+using the plugin option `import_extension`. Visit the docs [here](https://github.com/bufbuild/protobuf-es/tree/main/packages/protoc-gen-es#import_extensionjs) for details.
 
 Note that if you do use this approach, you will need to set this option on both
 the Protobuf-ES plugin and the Connect-ES plugin.
@@ -79,7 +79,7 @@ plugins:
 Changing the target setting in your `buf.gen.yaml` to `opt: target=js+dts` will eliminate the file resolving issue as it
 will generate JavaScript files with a `.js` extension.
 
-Note that the default generation option is `target=js+dts` so omitting this `opt` option from your config will also do the trick.  For example:
+Note that the default generation option is `target=js+dts` so omitting this `opt` option from your config will also do the trick. For example:
 
 ```diff
 - opt: target=ts
@@ -95,12 +95,12 @@ or remove altogether.
 **Use the Resolve TypeScript Plugin**
 
 If you would still prefer to use `opt: target=ts`, it is recommended to use the
-[Resolve TypeScript Plugin](https://www.npmjs.com/package/resolve-typescript-plugin).  For more details on why this is
+[Resolve TypeScript Plugin](https://www.npmjs.com/package/resolve-typescript-plugin). For more details on why this is
 necessary, see the README of this plugin.
 
 Note that some scaffolding tools such as [Create React App](https://github.com/facebook/create-react-app)
 and the [Angular CLI](https://angular.io/cli) both use Webpack as their underlying bundler and at press time are using
-a version of Webpack < 5.74.0.  In addition, they discourage modification of the underlying Webpack config.  Therefore,
+a version of Webpack < 5.74.0. In addition, they discourage modification of the underlying Webpack config. Therefore,
 until these tools are updated to the latest version of Webpack, the recommended workaround is to use `opt: target=js+dts`
 as this is the path of least resistance.
 
@@ -115,51 +115,51 @@ For a working example of the above with Create React App, see the
 ## Cypress
 
 [Cypress](https://cypress.io/) is an end-to-end testing framework that uses Webpack as its module bundler and as a result will
-also experience the file resolving issue.   The options specified under [v5.73.0 and below](#v5730-and-below) also apply.
+also experience the file resolving issue. The options specified under [v5.73.0 and below](#v5730-and-below) also apply.
 However, modifying the Webpack config in Cypress is a bit easier, so if you'd prefer to output TypeScript files, you'll
 also need a Cypress plugin called [Cypress Webpack Preprocessor](https://www.npmjs.com/package/@cypress/webpack-preprocessor), which
 should be packaged with Cypress by default.
 
-The Webpack overrides will need to be in your `cypress.config` file.  An example config would look something like this:
+The Webpack overrides will need to be in your `cypress.config` file. An example config would look something like this:
 
 ```js
-import { defineConfig } from 'cypress'
+import { defineConfig } from "cypress";
 // highlight-start
-const webpackPreprocessor = require('@cypress/webpack-preprocessor')
-const ResolveTypeScriptPlugin = require('resolve-typescript-plugin')
+const webpackPreprocessor = require("@cypress/webpack-preprocessor");
+const ResolveTypeScriptPlugin = require("resolve-typescript-plugin");
 // highlight-end
 
 const options = {
-    webpackOptions: {
-        resolve: {
-            extensions: ['.ts', '.tsx', '.js'],
-            // highlight-start
-            plugins: [new ResolveTypeScriptPlugin()],
-            // highlight-end
-        },
-        module: {
-            rules: [
-                {
-                    test: /\.tsx?$/,
-                    loader: 'ts-loader',
-                    options: { transpileOnly: true },
-                },
-            ],
-        },
+  webpackOptions: {
+    resolve: {
+      extensions: [".ts", ".tsx", ".js"],
+      // highlight-start
+      plugins: [new ResolveTypeScriptPlugin()],
+      // highlight-end
     },
-}
+    module: {
+      rules: [
+        {
+          test: /\.tsx?$/,
+          loader: "ts-loader",
+          options: { transpileOnly: true },
+        },
+      ],
+    },
+  },
+};
 
 export default defineConfig({
-    e2e: {
-        specPattern: 'cypress/e2e/**/*.{cy,spec}.{js,jsx,ts,tsx}',
-        baseUrl: 'http://localhost:4173',
-        // highlight-start
-        setupNodeEvents(on, config) {
-            on('file:preprocessor', webpackPreprocessor(options))
-        },
-        // highlight-end
+  e2e: {
+    specPattern: "cypress/e2e/**/*.{cy,spec}.{js,jsx,ts,tsx}",
+    baseUrl: "http://localhost:4173",
+    // highlight-start
+    setupNodeEvents(on, config) {
+      on("file:preprocessor", webpackPreprocessor(options));
     },
-})
+    // highlight-end
+  },
+});
 ```
 
 For a working example, see the [Vue project](https://github.com/connectrpc/examples-es/tree/main/vue)
@@ -167,7 +167,7 @@ in the [examples-es](https://github.com/connectrpc/examples-es) repo.
 
 ## Parcel
 
-[Parcel](https://parceljs.org) is another build tool that is susceptible to the aforementioned resolver issue.  With
+[Parcel](https://parceljs.org) is another build tool that is susceptible to the aforementioned resolver issue. With
 Parcel, you will see an error similar to:
 
 ```bash
@@ -178,18 +178,18 @@ As a result, the current recommendation when using Parcel is to eschew the usage
 file and instead to use `opt: target=js+dts`.
 
 Unfortunately, if you still prefer to use `target=ts`, there is no workaround at this time as no plugin exists similar to the Webpack
-[Resolve TypeScript Plugin](https://www.npmjs.com/package/resolve-typescript-plugin).  For more details, see this
+[Resolve TypeScript Plugin](https://www.npmjs.com/package/resolve-typescript-plugin). For more details, see this
 [Github issue](https://github.com/parcel-bundler/parcel/issues/7823).
 
 ## React Native
 
-[React Native](https://reactnative.dev) does not offer great support for the Fetch API and the Text Encoding API.  As
-such, React Native requires a polyfill for these two implementations.  We recommend
+[React Native](https://reactnative.dev) does not offer great support for the Fetch API and the Text Encoding API. As
+such, React Native requires a polyfill for these two implementations. We recommend
 [react-native-polyfill-globals](https://github.com/acostalima/react-native-polyfill-globals) to accomplish this:
 
-* Install the aforementioned [react-native-polyfill-globals](https://github.com/acostalima/react-native-polyfill-globals) project.
-* Next, follow the `Polyfill all automatically` instructions under **Usage**.
-* Finally, apply the patches included in the project.  It is recommended to use the `patch-package` instructions.
+- Install the aforementioned [react-native-polyfill-globals](https://github.com/acostalima/react-native-polyfill-globals) project.
+- Next, follow the `Polyfill all automatically` instructions under **Usage**.
+- Finally, apply the patches included in the project. It is recommended to use the `patch-package` instructions.
 
 Unfortunately, only unary requests via the [Connect protocol](../protocol.md) are supported in
 React Native due to some limitations in the above polyfills.

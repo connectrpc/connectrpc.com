@@ -21,7 +21,13 @@
 }
 
 .container :global(.crt-scanner) {
-  background: linear-gradient(180deg, transparent 0, #fffcfc 85%, #42dffb 0, transparent);
+  background: linear-gradient(
+    180deg,
+    transparent 0,
+    #fffcfc 85%,
+    #42dffb 0,
+    transparent
+  );
 }
 
 .container :global(.crt-terminal__overflow-container)::-webkit-scrollbar-thumb {

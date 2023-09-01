@@ -9,14 +9,17 @@ import Link from "@docusaurus/Link";
 import { useThemeConfig } from "@docusaurus/theme-common";
 import { useLocation } from "@docusaurus/router";
 
-export default function Logo(props: { imageClassName?: string; titleClassName?: string }) {
+export default function Logo(props: {
+  imageClassName?: string;
+  titleClassName?: string;
+}) {
   const {
     navbar: {
       title: navbarTitle,
       logo = {
-        src: ""
-      }
-    }
+        src: "",
+      },
+    },
   } = useThemeConfig();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { imageClassName, titleClassName, ...propsRest } = props;
@@ -29,19 +32,19 @@ export default function Logo(props: { imageClassName?: string; titleClassName?: 
       to={homeDestination}
       {...propsRest}
       {...(logo.target && {
-        target: logo.target
+        target: logo.target,
       })}
       aria-label={`${navbarTitle} ${subTitle}`}
     >
       {/** Render both logos and let CSS hide to prevent SSR madness */}
       <DocsLogo
         style={{
-          display: isDocs ? "block" : "none"
+          display: isDocs ? "block" : "none",
         }}
       />
       <MainLogo
         style={{
-          display: isDocs ? "none" : "block"
+          display: isDocs ? "none" : "block",
         }}
       />
     </Link>

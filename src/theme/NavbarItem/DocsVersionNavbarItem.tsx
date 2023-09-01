@@ -14,7 +14,7 @@
 import {
   GlobalVersion,
   useActiveVersion,
-  useLatestVersion
+  useLatestVersion,
 } from "@docusaurus/plugin-content-docs/client";
 import { useDocsPreferredVersion } from "@docusaurus/theme-common";
 import DefaultNavbarItem from "@theme/NavbarItem/DefaultNavbarItem";

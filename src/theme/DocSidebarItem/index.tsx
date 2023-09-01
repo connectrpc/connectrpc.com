@@ -5,22 +5,22 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import React from 'react';
-import DocSidebarItemCategory from '@theme/DocSidebarItem/Category';
-import DocSidebarItemLink from '@theme/DocSidebarItem/Link';
-import DocSidebarItemHtml from '@theme/DocSidebarItem/Html';
-import type {Props} from '@theme/DocSidebarItem';
+import React from "react";
+import DocSidebarItemCategory from "@theme/DocSidebarItem/Category";
+import DocSidebarItemLink from "@theme/DocSidebarItem/Link";
+import DocSidebarItemHtml from "@theme/DocSidebarItem/Html";
+import type { Props } from "@theme/DocSidebarItem";
 
 export default function DocSidebarItem({
   item,
   ...props
 }: Props): JSX.Element | null {
   switch (item.type) {
-    case 'category':
+    case "category":
       return <DocSidebarItemCategory item={item} {...props} />;
-    case 'html':
+    case "html":
       return <DocSidebarItemHtml item={item} {...props} />;
-    case 'link':
+    case "link":
     default:
       return <DocSidebarItemLink item={item} {...props} />;
   }

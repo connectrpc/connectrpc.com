@@ -28,7 +28,9 @@ type LinkProps = {
 };
 
 function FooterLink(
-  props: PropsWithChildren<FooterLinkItem & { className?: string; ariaLabel?: string }>
+  props: PropsWithChildren<
+    FooterLinkItem & { className?: string; ariaLabel?: string }
+  >,
 ): JSX.Element {
   const linkProps: LinkProps = {};
   if (props.to) {
@@ -42,7 +44,11 @@ function FooterLink(
     }
   }
   return (
-    <Link {...linkProps} aria-label={props.ariaLabel} className={props.className}>
+    <Link
+      {...linkProps}
+      aria-label={props.ariaLabel}
+      className={props.className}
+    >
       {props.children}
     </Link>
   );
@@ -83,30 +89,30 @@ function Footer(): JSX.Element | null {
   const socialLinks: FooterLinkItem[] = [
     {
       label: "Twitter",
-      href: "https://twitter.com/bufbuild"
+      href: "https://twitter.com/bufbuild",
     },
     {
       label: "LinkedIn",
-      href: "https://www.linkedin.com/company/bufbuild"
+      href: "https://www.linkedin.com/company/bufbuild",
     },
     {
       label: "Mail",
-      href: "mailto:info@buf.build"
-    }
+      href: "mailto:info@buf.build",
+    },
   ];
   const legalLinks: FooterLinkItem[] = [
     {
       label: "Terms of use",
-      to: "https://buf.build/resources/terms/"
+      to: "https://buf.build/resources/terms/",
     },
     {
       label: "Privacy policy",
-      to: "https://buf.build/resources/privacy/"
+      to: "https://buf.build/resources/privacy/",
     },
     {
       label: "Cookie policy",
-      to: "https://buf.build/resources/cookie-policy/"
-    }
+      to: "https://buf.build/resources/cookie-policy/",
+    },
   ];
 
   if (!footer) {
@@ -142,7 +148,7 @@ function Footer(): JSX.Element | null {
           // eslint-disable-next-line react/no-danger
           // ^^^ comment by FB
           dangerouslySetInnerHTML={{
-            __html: copyright ?? ""
+            __html: copyright ?? "",
           }}
         />
       </div>
