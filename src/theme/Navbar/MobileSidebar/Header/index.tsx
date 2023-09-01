@@ -19,12 +19,9 @@ function CloseButton() {
 
 export default function NavbarMobileSidebarHeader() {
   return (
-    <div
-      className="navbar-sidebar__brand"
-      style={{
-        boxShadow: "none",
-      }}
-    >
+    <div className="navbar-sidebar__brand" style={{
+      boxShadow: 'none'
+    }}>
       <div className={styles.menuTitle}>Menu</div>
       <NavbarColorModeToggle className="margin-right--md" />
       <CloseButton />

@@ -16,17 +16,14 @@ import {
   isRegexpStringMatch,
   isSamePath,
   useCollapsible,
-  useLocalPathname,
+  useLocalPathname
 } from "@docusaurus/theme-common/internal";
 import NavbarItem from "@theme/NavbarItem";
 import NavbarNavLink from "@theme/NavbarItem/NavbarNavLink";
 import clsx from "clsx";
 import React, { useEffect, useRef, useState } from "react";
 
-import type {
-  DesktopOrMobileNavBarItemProps,
-  Props,
-} from "@theme/NavbarItem/DropdownNavbarItem";
+import type { DesktopOrMobileNavBarItemProps, Props } from "@theme/NavbarItem/DropdownNavbarItem";
 import type { LinkLikeNavbarItemProps } from "@theme/NavbarItem";
 
 /* eslint @typescript-eslint/no-non-null-assertion: "off",
@@ -34,10 +31,7 @@ import type { LinkLikeNavbarItemProps } from "@theme/NavbarItem";
 
 const dropdownLinkActiveClass = "dropdown__link--active";
 
-function isItemActive(
-  item: LinkLikeNavbarItemProps,
-  localPathname: string,
-): boolean {
+function isItemActive(item: LinkLikeNavbarItemProps, localPathname: string): boolean {
   if (isSamePath(item.to, localPathname)) {
     return true;
   }
@@ -52,7 +46,7 @@ function isItemActive(
 
 function containsActiveItems(
   items: readonly LinkLikeNavbarItemProps[],
-  localPathname: string,
+  localPathname: string
 ): boolean {
   return items.some((item) => isItemActive(item, localPathname));
 }
@@ -68,10 +62,7 @@ function DropdownNavbarItemDesktop({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent | TouchEvent) => {
-      if (
-        !dropdownRef.current ||
-        dropdownRef.current.contains(event.target as Node)
-      ) {
+      if (!dropdownRef.current || dropdownRef.current.contains(event.target as Node)) {
         return;
       }
       setShowDropdown(false);
@@ -91,7 +82,7 @@ function DropdownNavbarItemDesktop({
       ref={dropdownRef}
       className={clsx("navbar__item", "dropdown", "dropdown--hoverable", {
         "dropdown--right": position === "right",
-        "dropdown--show": showDropdown,
+        "dropdown--show": showDropdown
       })}
     >
       <NavbarNavLink
@@ -141,7 +132,7 @@ function DropdownNavbarItemMobile({
   const containsActive = containsActiveItems(items, localPathname);
 
   const { collapsed, toggleCollapsed, setCollapsed } = useCollapsible({
-    initialState: () => !containsActive,
+    initialState: () => !containsActive
   });
 
   // Expand/collapse if any item active after a navigation
@@ -154,7 +145,7 @@ function DropdownNavbarItemMobile({
   return (
     <li
       className={clsx("menu__list-item", {
-        "menu__list-item--collapsed": collapsed,
+        "menu__list-item--collapsed": collapsed
       })}
     >
       <NavbarNavLink
@@ -184,10 +175,7 @@ function DropdownNavbarItemMobile({
   );
 }
 
-export default function DropdownNavbarItem({
-  mobile = false,
-  ...props
-}: Props): JSX.Element {
+export default function DropdownNavbarItem({ mobile = false, ...props }: Props): JSX.Element {
   const Comp = mobile ? DropdownNavbarItemMobile : DropdownNavbarItemDesktop;
   return <Comp {...props} />;
 }

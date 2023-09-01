@@ -1,3 +1,5 @@
+
+
 ```ts
 import { Code, ConnectError } from "@connectrpc/connect";
 import { ElizaService } from "./gen/eliza_connect";
@@ -15,16 +17,17 @@ function say() {
     }),
   ];
   const metadata = new Headers({
-    "words-left": "none",
+    "words-left": "none"
   });
   throw new ConnectError(
     "I have no words anymore.",
     Code.ResourceExhausted,
     metadata,
-    details,
+    details
   );
 }
 ```
 
 We are using the protobuf message [`google.rpc.LocalizedMessage`](https://buf.build/googleapis/googleapis/file/main:google/rpc/error_details.proto#L241)
 in this example, but any protobuf message can be transmitted as error details.
+

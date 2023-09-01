@@ -23,7 +23,7 @@ const Tooltip: React.FC<TooltipProps> = ({
   classNameModifications = "",
   activeClassName = "",
   children,
-  leaveOn,
+  leaveOn
 }: PropsWithChildren<TooltipProps>) => {
   const [visible, setVisible] = useState<boolean>(false);
   const hidden = !visible;
@@ -39,11 +39,11 @@ const Tooltip: React.FC<TooltipProps> = ({
   return (
     <div
       className={clsx({
-        [activeClassName]: visible,
+        [activeClassName]: visible
       })}
       style={{
         display: "inline-block",
-        position: "relative",
+        position: "relative"
       }}
       onMouseEnter={() => {
         setVisible(true);
@@ -58,7 +58,7 @@ const Tooltip: React.FC<TooltipProps> = ({
       <div
         className={classNameModifications}
         style={{
-          display: hidden ? "none" : undefined,
+          display: hidden ? "none" : undefined
         }}
       >
         {content}

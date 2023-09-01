@@ -19,8 +19,8 @@ const config = {
       src: "https://cdn.usefathom.com/script.js",
       "data-site": "BWSMOXXQ",
       "data-spa": "auto",
-      defer: true,
-    },
+      defer: true
+    }
   ],
   presets: [
     [
@@ -28,16 +28,16 @@ const config = {
       /** @type {import('@docusaurus/preset-classic').Options} **/
       ({
         docs: {
-          sidebarPath: require.resolve("./sidebars.js"),
+          sidebarPath: require.resolve("./sidebars.js")
         },
         blog: {
-          showReadingTime: true,
+          showReadingTime: true
         },
         theme: {
-          customCss: require.resolve("./src/css/custom.css"),
-        },
-      }),
-    ],
+          customCss: require.resolve("./src/css/custom.css")
+        }
+      })
+    ]
   ],
   plugins: [
     "@stackql/docusaurus-plugin-hubspot",
@@ -46,60 +46,60 @@ const config = {
           "@docusaurus/plugin-google-gtag",
           {
             trackingID: gaTrackingID,
-            anonymizeIP: true,
-          },
+            anonymizeIP: true
+          }
         ]
-      : null,
+      : null
   ],
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       colorMode: {
         // We can re-enable later if/when we have design assets
-        disableSwitch: true,
+        disableSwitch: true
       },
       algolia: {
         appId: process.env.ALGOLIA_APP_ID || "none",
         apiKey: process.env.ALGOLIA_API_KEY || "none",
-        indexName: process.env.ALGOLIA_INDEX_NAME || "none",
+        indexName: process.env.ALGOLIA_INDEX_NAME || "none"
       },
       navbar: {
         title: "Connect",
         logo: {
           alt: "Connect logo",
-          src: "img/logos/simple-connect.svg",
+          src: "img/logos/simple-connect.svg"
         },
         items: [
           { to: "/docs/introduction", label: "Docs", position: "left" },
           {
             to: "https://github.com/connectrpc",
             label: "GitHub",
-            position: "left",
+            position: "left"
           },
           {
             to: "https://buf.build/blog",
             label: "Blog",
-            position: "left",
+            position: "left"
           },
-          { to: "/demo", label: "Demo", position: "left" },
-        ],
+          { to: "/demo", label: "Demo", position: "left" }
+        ]
       },
       footer: {
         style: "dark",
         links: [],
         copyright: `Copyright © ${
           new Date().getFullYear() != 2022 ? "2022&ndash;" : ""
-        }${new Date().getFullYear()} Buf Technologies, Inc.`,
+        }${new Date().getFullYear()} Buf Technologies, Inc.`
       },
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
-        additionalLanguages: ["kotlin", "protobuf", "swift"],
+        additionalLanguages: ["kotlin", "protobuf", "swift"]
       },
       hubspot: {
-        accountId: 8423972,
-      },
-    }),
+        accountId: 8423972
+      }
+    })
 };
 
 module.exports = config;

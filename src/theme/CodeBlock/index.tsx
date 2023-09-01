@@ -15,14 +15,11 @@ import {
   parseLanguage,
   parseLines,
   ThemeClassNames,
-  usePrismTheme,
+  usePrismTheme
 } from "@docusaurus/theme-common/internal";
 import styles from "./styles.module.css";
-import {
-  stripSeparatedTerminalOutput,
-  stripShellPromptForClipboard,
-  terminalOutputSeparator,
-} from "./utils";
+import { stripSeparatedTerminalOutput, stripShellPromptForClipboard, terminalOutputSeparator } from "./utils";
+
 
 interface Props {
   children: React.ReactNode;
@@ -39,9 +36,10 @@ export default function CodeBlock({
   title,
   language: languageProp,
 }: Props) {
-  const {
-    prism: { defaultLanguage, magicComments },
-  } = useThemeConfig();
+  const { prism: {
+    defaultLanguage,
+    magicComments
+  } } = useThemeConfig();
   const [showCopied, setShowCopied] = useState(false);
   const [mounted, setMounted] = useState(false); // The Prism theme on SSR is always the default theme but the site theme
   // can be in a different mode. React hydration doesn't update DOM styles
@@ -80,10 +78,10 @@ export default function CodeBlock({
               "thin-scrollbar",
               styles.codeBlockContainer,
               blockClassName,
-              ThemeClassNames.common.codeBlock,
+              ThemeClassNames.common.codeBlock
             )}
             style={{
-              ...style,
+              ...style
             }}
           >
             <code className={styles.codeBlockLines}>{children}</code>
@@ -94,20 +92,13 @@ export default function CodeBlock({
   } // The children is now guaranteed to be one/more plain strings
 
   const content = Array.isArray(children) ? children.join("") : children;
-  const language =
-    languageProp ?? parseLanguage(blockClassName) ?? defaultLanguage;
-  const { lineClassNames, code } = parseLines(content as any, {
-    metastring,
-    language,
-    magicComments,
-  });
+  const language = languageProp ?? parseLanguage(blockClassName) ?? defaultLanguage;
+  const { lineClassNames, code } = parseLines(content as any, { metastring, language, magicComments });
   let terminalSeparatorIndex = -1;
   if (language === "bash" || language === "terminal") {
     const lines = code.split("\n");
 
-    terminalSeparatorIndex = lines.findIndex(
-      (l) => l.trim() === terminalOutputSeparator,
-    );
+    terminalSeparatorIndex = lines.findIndex((l) => l.trim() === terminalOutputSeparator);
   }
   const handleCopyCode = () => {
     let textToCopy = code;
@@ -131,13 +122,9 @@ export default function CodeBlock({
     >
       {({ className, style, tokens, getLineProps, getTokenProps }) => {
         const mainTokens =
-          terminalSeparatorIndex === -1
-            ? tokens
-            : tokens.slice(0, terminalSeparatorIndex + 1);
+          terminalSeparatorIndex === -1 ? tokens : tokens.slice(0, terminalSeparatorIndex + 1);
         const terminalOutputTokens =
-          terminalSeparatorIndex === -1
-            ? []
-            : tokens.slice(terminalSeparatorIndex + 1);
+          terminalSeparatorIndex === -1 ? [] : tokens.slice(terminalSeparatorIndex + 1);
 
         return (
           <div
@@ -146,11 +133,12 @@ export default function CodeBlock({
               blockClassName,
               {
                 [`language-${language}`]:
-                  language && !blockClassName.includes(`language-${language}`),
+                  language && !blockClassName.includes(`language-${language}`)
               },
-              ThemeClassNames.common.codeBlock,
+              ThemeClassNames.common.codeBlock
             )}
           >
+
             {codeBlockTitle && (
               <div style={style} className={styles.codeBlockTitle}>
                 {codeBlockTitle}
@@ -166,10 +154,7 @@ export default function CodeBlock({
                 <code className={styles.codeBlockLines}>
                   {mainTokens.map((line, i) => {
                     // If the terminal separator is used, we only render the lines up to the separator here
-                    if (
-                      terminalSeparatorIndex > 0 &&
-                      i >= terminalSeparatorIndex
-                    ) {
+                    if (terminalSeparatorIndex > 0 && i >= terminalSeparatorIndex) {
                       return null;
                     }
 
@@ -179,11 +164,11 @@ export default function CodeBlock({
 
                     const lineProps = getLineProps({
                       line,
-                      key: i,
+                      key: i
                     });
 
                     if (lineClassNames[i]) {
-                      lineProps.className += lineClassNames[i].join(" ");
+                      lineProps.className += lineClassNames[i].join(' ');
                     }
 
                     return (
@@ -193,7 +178,7 @@ export default function CodeBlock({
                             key={key}
                             {...getTokenProps({
                               token,
-                              key,
+                              key
                             })}
                           />
                         ))}
@@ -209,12 +194,7 @@ export default function CodeBlock({
                     <div className={styles.bufTerminalOutputSeparator}>
                       <span>Output</span>
                     </div>
-                    <code
-                      className={clsx(
-                        styles.codeBlockLines,
-                        styles.bufTerminalOutput,
-                      )}
-                    >
+                    <code className={clsx(styles.codeBlockLines, styles.bufTerminalOutput)}>
                       {terminalOutputTokens.map((line, i) => {
                         // adjust line index with offset of separator, plus 1 for the separator line which we don't render
                         i += terminalSeparatorIndex + 1;
@@ -248,7 +228,7 @@ export default function CodeBlock({
                 aria-label={translate({
                   id: "theme.CodeBlock.copyButtonAriaLabel",
                   message: "Copy code to clipboard",
-                  description: "The ARIA label for copy code blocks button",
+                  description: "The ARIA label for copy code blocks button"
                 })}
                 className={clsx(styles.copyButton, "clean-btn")}
                 onClick={handleCopyCode}

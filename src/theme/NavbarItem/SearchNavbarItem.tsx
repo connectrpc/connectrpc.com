@@ -15,9 +15,7 @@ import SearchBar from "@theme/SearchBar";
 import React from "react";
 
 import type { Props } from "@theme/NavbarItem/SearchNavbarItem";
-export default function SearchNavbarItem({
-  mobile,
-}: Props): JSX.Element | null {
+export default function SearchNavbarItem({ mobile }: Props): JSX.Element | null {
   if (mobile) {
     return null;
   }

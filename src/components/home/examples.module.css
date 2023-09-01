@@ -131,36 +131,16 @@ pre.codeBlock {
   overflow: auto;
   /* horizontal shadows */
   background:
-		/* Shadow covers */
-    linear-gradient(90deg, #f4f5fe 0%, transparent 100%),
+		/* Shadow covers */ linear-gradient(90deg, #f4f5fe 0%, transparent 100%),
     linear-gradient(270deg, #f4f5fe 0%, transparent 100%) 0 100%,
     /* Shadows */
-      linear-gradient(
-        90deg,
-        rgba(99, 100, 102, 0.1) 0%,
-        transparent 50%,
-        transparent 100%
-      ),
-    linear-gradient(
-        270deg,
-        rgba(99, 100, 102, 0.1) 0%,
-        transparent 50%,
-        transparent 100%
-      )
-      0 100%;
+      linear-gradient(90deg, rgba(99, 100, 102, 0.1) 0%, transparent 50%, transparent 100%),
+    linear-gradient(270deg, rgba(99, 100, 102, 0.1) 0%, transparent 50%, transparent 100%) 0 100%;
 
   background-repeat: no-repeat;
   background-color: #f4f5fe;
-  background-size:
-    40px 100%,
-    40px 100%,
-    14px 100%,
-    14px 100%;
-  background-position:
-    left center,
-    right center,
-    left center,
-    right center;
+  background-size: 40px 100%, 40px 100%, 14px 100%, 14px 100%;
+  background-position: left center, right center, left center, right center;
 
   background-attachment: local, local, scroll, scroll;
 }

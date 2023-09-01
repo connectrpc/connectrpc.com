@@ -79,18 +79,8 @@ response stubs:
 
 ```ts
 // stub-transport.ts
-import type {
-  UnaryRequest,
-  UnaryResponse,
-  StreamResponse,
-} from "@connectrpc/connect";
-import type {
-  AnyMessage,
-  Message,
-  MethodInfo,
-  ServiceType,
-  PartialMessage,
-} from "@bufbuild/protobuf";
+import type { UnaryRequest, UnaryResponse, StreamResponse } from "@connectrpc/connect";
+import type { AnyMessage, Message, MethodInfo, ServiceType, PartialMessage } from "@bufbuild/protobuf";
 
 /**
  * Create a request with a single message.
@@ -100,7 +90,7 @@ function createUnaryRequest<T extends Message<T>>(
   method: MethodInfo<T, AnyMessage>,
   signal: AbortSignal | undefined,
   header: HeadersInit | undefined,
-  message: PartialMessage<T>,
+  message: PartialMessage<T>
 ): UnaryRequest<T> {
   signal = signal ?? new AbortController().signal;
   return {
@@ -120,7 +110,7 @@ function createUnaryRequest<T extends Message<T>>(
  */
 function createUnaryResponse<T extends Message<T>>(
   service: ServiceType,
-  method: MethodInfo<AnyMessage, T>,
+  method: MethodInfo<AnyMessage, T>
 ): UnaryResponse<T> {
   return {
     stream: false,
@@ -137,7 +127,7 @@ function createUnaryResponse<T extends Message<T>>(
  */
 function createStreamResponse<T extends Message<T>>(
   service: ServiceType,
-  method: MethodInfo<AnyMessage, T>,
+  method: MethodInfo<AnyMessage, T>
 ): StreamResponse<T> {
   const responses = [new method.O(), new method.O(), new method.O()];
   return {
@@ -159,11 +149,7 @@ simple:
 
 ```ts
 // stub-transport.ts
-import type {
-  Interceptor,
-  runUnary,
-  runServerStream,
-} from "@connectrpc/connect-web";
+import type { Interceptor, runUnary, runServerStream } from "@connectrpc/connect-web";
 
 /**
  * Create a stub transport that only returns default response messages.
@@ -175,7 +161,7 @@ function createStubTransport(interceptors?: Interceptor[]): Transport {
         createUnaryRequest(service, method, signal, header, message),
         // This is the UnaryFn that will be wrapped by interceptors:
         (_req) => Promise.resolve(createUnaryResponse(service, method)),
-        interceptors,
+        interceptors
       );
     },
     serverStream(service, method, signal, timeoutMs, header, message) {
@@ -184,7 +170,7 @@ function createStubTransport(interceptors?: Interceptor[]): Transport {
         createUnaryRequest(service, method, signal, header, message),
         // This is the ServerStreamFn that will be wrapped by interceptors:
         (_req) => Promise.resolve(createStreamResponse(service, method)),
-        interceptors,
+        interceptors
       );
     },
   };
@@ -200,7 +186,7 @@ import { ElizaService } from "@buf/connectrpc_eliza.connectrpc_es/connectrpc/eli
 
 const transport = createStubTransport();
 const client = createPromiseClient(ElizaService, transport);
-const res = await client.say({ sentence: "I feel happy." });
+const res = await client.say({sentence: "I feel happy."});
 console.log(res.sentence); // Will print an empty string
 ```
 
@@ -210,8 +196,8 @@ As it is, it has limited use in tests, because it does not give you control
 over the stubs it responds with. You could extend its capabilities, but we
 hope we were able to give you some insight into the inner workings of a
 Transport. To recap, we learned:
-
 - Transports are simple objects with just two methods.
 - They create a request object, and an executing `UnaryFn` or `ServerStreamFn`.
 - They call `runUnary()` or `runServerStreaming()` to let interceptors wrap the executing function.
 - They are independent of [Clients](/docs/web/using-clients).
+

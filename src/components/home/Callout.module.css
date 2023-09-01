@@ -5,11 +5,7 @@
   align-items: center;
   gap: 84px;
   padding: 48px 50px;
-  background: linear-gradient(
-    137.72deg,
-    #cdf2ff 34.3%,
-    rgba(205, 242, 255, 0) 114.26%
-  );
+  background: linear-gradient(137.72deg, #cdf2ff 34.3%, rgba(205, 242, 255, 0) 114.26%);
 }
 
 .text {

@@ -54,7 +54,7 @@ import { Code } from "@connectrpc/connect-web";
 import { assertConnectError } from "./assert-connect-error.js";
 
 try {
-  await client.say({ sentence: "" });
+  await client.say({sentence: ""});
 } catch (reason) {
   const error = assertConnectError(reason, Code.InvalidArgument);
   console.error("Oh no:", error.rawMessage);

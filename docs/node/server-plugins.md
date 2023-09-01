@@ -9,6 +9,7 @@ sufficient, but Connect also supports several server frameworks on Node.js.
 The following code snippets expect that you have already added a file `connect.ts` with your Connect RPCs to your
 project. See [Implementing services](./implementing-services.md) for more information.
 
+
 ## Vanilla Node.js
 
 Run your Connect RPCs on the Node.js built in HTTP modules with the function
@@ -19,11 +20,9 @@ import * as http from "http";
 import routes from "./connect";
 import { connectNodeAdapter } from "@connectrpc/connect-node";
 
-http
-  .createServer(
-    connectNodeAdapter({ routes }), // responds with 404 for other requests
-  )
-  .listen(8080);
+http.createServer(
+  connectNodeAdapter({ routes }) // responds with 404 for other requests
+).listen(8080);
 ```
 
 The function accepts all common options, and the following additional
@@ -36,6 +35,7 @@ ones:
   Serve all handlers under this prefix. For example, the prefix "/something"
   will serve the RPC foo.FooService/Bar under "/something/foo.FooService/Bar".
   Note that many gRPC client implementations do not allow for prefixes.
+
 
 ## Fastify
 
@@ -52,7 +52,7 @@ import { fastifyConnectPlugin } from "@connectrpc/connect-fastify";
 const server = fastify();
 
 await server.register(fastifyConnectPlugin, {
-  routes,
+ routes
 });
 
 await server.listen({
@@ -75,8 +75,8 @@ To enable the server plugin, create the file `pages/api/[[...connect]].ts` in yo
 import { nextJsApiRouter } from "@connectrpc/connect-next";
 import routes from "./connect";
 
-const { handler, config } = nextJsApiRouter({ routes });
-export { handler as default, config };
+const {handler, config} = nextJsApiRouter({ routes });
+export {handler as default, config};
 ```
 
 This file is a Next.js [catch-all API route](https://nextjs.org/docs/routing/dynamic-routes#catch-all-routes). It will
@@ -99,11 +99,9 @@ import { expressConnectMiddleware } from "@connectrpc/connect-express";
 
 const app = express();
 
-app.use(
-  expressConnectMiddleware({
-    routes,
-  }),
-);
+app.use(expressConnectMiddleware({
+ routes
+}));
 
 http.createServer(app).listen(8080);
 ```
@@ -112,11 +110,13 @@ The middleware accepts all common options, and the following additional
 one:
 
 - `requestPathPrefix?: string`<br/>
-  Serve all handlers under this prefix. For example, the prefix "/something"
-  will serve the RPC foo.FooService/Bar under "/something/foo.FooService/Bar".
-  Note that many gRPC client implementations do not allow for prefixes.
+Serve all handlers under this prefix. For example, the prefix "/something"
+will serve the RPC foo.FooService/Bar under "/something/foo.FooService/Bar".
+Note that many gRPC client implementations do not allow for prefixes.
+
 
 Note that Express does not support the `http2` module.
+
 
 ## Common options
 
@@ -132,6 +132,7 @@ All adapters take a set of common options:
 - `grpc?: boolean`<br/>
   Whether to enable the gRPC protocol for your routes. Enabled by default.
 
+
 ## HTTP/2, TLS, and gRPC
 
 All examples above use HTTP 1.1 without TLS (Transport Layer Security).
@@ -140,7 +141,7 @@ This works just fine for browsers and Connect clients, but most gRPC clients
 require HTTP/2. If you want gRPC clients and browsers, you need HTTP/2 and TLS:
 
 |                  | Web browsers | Connect | gRPC-web | gRPC |
-| ---------------- | ------------ | ------- | -------- | ---- |
+|------------------|--------------|---------|----------|------|
 | HTTP/2 + TLS     | ✓            | ✓       | ✓        | ✓    |
 | HTTP/2 cleartext |              | ✓       | ✓        | ✓    |
 | HTTP 1.1         | ✓            | ✓       | ✓        |      |
@@ -178,7 +179,10 @@ import { cors } from "@connectrpc/connect";
 await server.register(fastifyCors, {
   origin: "https://demo.connectrpc.com",
   methods: cors.allowedMethods,
-  allowedHeaders: [...cors.allowedHeaders, "Custom-Request-Header"],
+  allowedHeaders: [
+    ...cors.allowedHeaders,
+    "Custom-Request-Header"
+  ],
   exposedHeaders: [
     ...cors.exposedHeaders,
     "Custom-Response-Header",
@@ -186,7 +190,7 @@ await server.register(fastifyCors, {
   ],
   // Let browsers cache CORS information to reduce the number of
   // preflight requests. Modern Chrome caps the value at 2h.
-  maxAge: 2 * 60 * 60,
+  maxAge: 2 * 60 * 60
 });
 ```
 

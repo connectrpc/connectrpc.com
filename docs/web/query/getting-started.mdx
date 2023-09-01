@@ -3,11 +3,11 @@ title: Getting started
 sidebar_position: 1
 ---
 
-Connect-Query is an expansion pack for [TanStack Query](https://tanstack.com/query) (react-query), written in TypeScript and thoroughly tested. It enables effortless communication with servers over the [Connect Protocol](https://connectrpc.com/docs/protocol) or the gRPC-Web Protocol.
+Connect-Query is an expansion pack for [TanStack Query](https://tanstack.com/query) (react-query), written in TypeScript and thoroughly tested.  It enables effortless communication with servers over the [Connect Protocol](https://connectrpc.com/docs/protocol) or the gRPC-Web Protocol.
 
 # Quickstart
 
-Connect-Query will immediately feel familiar to you if you've used TanStack Query. It provides a set of convenient helpers that you can pass to the same TanStack Query functions you're already using:
+Connect-Query will immediately feel familiar to you if you've used TanStack Query.  It provides a set of convenient helpers that you can pass to the same TanStack Query functions you're already using:
 
 ```ts
 import { useQuery } from '@tanstack/react-query';
@@ -21,26 +21,27 @@ export const Example: FC = () => {
 
 **_That's it!_**
 
-The [code generator](https://www.npmjs.com/package/@connectrpc/protoc-gen-connect-query) does all the work of turning your Protobuf file into something you can easily import. TypeScript types all populate out-of-the-box. Your documentation is also converted to [TSDoc](https://tsdoc.org/).
+The [code generator](https://www.npmjs.com/package/@connectrpc/protoc-gen-connect-query) does all the work of turning your Protobuf file into something you can easily import.  TypeScript types all populate out-of-the-box.  Your documentation is also converted to [TSDoc](https://tsdoc.org/).
 
-One of the best features of this library is that once you write your schema in Protobuf form, the TypeScript types are generated and then inferred. You never again need to specify the types of your data since the library does it automatically.
+One of the best features of this library is that once you write your schema in Protobuf form, the TypeScript types are generated and then inferred.  You never again need to specify the types of your data since the library does it automatically.
 
-<div style={{ display: "flex", justifyContent: "center", marginTop: 50 }}>
-  <video width="700px" controls>
-    <source src="https://user-images.githubusercontent.com/15232461/212362170-65eb9efa-faa5-46fd-ac61-080719d011a5.mp4" />
-  </video>
+<div style={{ display: 'flex', justifyContent: 'center', marginTop: 50 }}>
+  <video width="700px" controls><source src="https://user-images.githubusercontent.com/15232461/212362170-65eb9efa-faa5-46fd-ac61-080719d011a5.mp4" /></video>
 </div>
 
 <sup>
   <p align="center">
-    <em>play the above video to see the TypeScript types in action</em>
+    <em>
+      play the above video to see the TypeScript types in action
+    </em>
   </p>
 </sup>
 <dl></dl>
 
+
 ## Generated Code
 
-This example shows the best developer experience using code generation. Here's what that generated code looks like:
+This example shows the best developer experience using code generation.  Here's what that generated code looks like:
 
 ```ts title="your-generated-code/example-ExampleService_connectquery"
 import { createQueryService } from "@connectrpc/connect-query";

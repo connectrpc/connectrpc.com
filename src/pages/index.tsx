@@ -3,10 +3,7 @@ import Callout from "../components/home/Callout";
 import Features from "../components/home/Features";
 import Guides from "../components/home/Guides";
 import Hero from "../components/home/Hero";
-import {
-  ThemeClassNames,
-  useKeyboardNavigation,
-} from "@docusaurus/theme-common/internal";
+import { ThemeClassNames, useKeyboardNavigation } from "@docusaurus/theme-common/internal";
 import AnnouncementBar from "@theme/AnnouncementBar";
 import Footer from "@theme/Footer";
 import LayoutProviders from "@theme/Layout/Provider";
@@ -63,29 +60,22 @@ export default function Home(): JSX.Element {
 
 const CommunityLinks = () => {
   const isSmall = useMediaQuery("screen and (max-width: 650px)");
-  const divider = (
-    <Divider
-      style={{ margin: "0 30px", display: isSmall ? undefined : "none" }}
-    />
-  );
+  const divider = <Divider style={{ margin: "0 30px", display: isSmall ? undefined : "none" }} />;
   return (
     <div className={styles.communityLinks}>
-      <CommunityLinkItem
-        text="Our slack"
-        href="https://buf.build/links/slack"
-      />
+      <CommunityLinkItem text="Our slack" href="https://buf.build/links/slack" />
       {divider}
-      <CommunityLinkItem text="Github" href="https://github.com/connectrpc" />
+      <CommunityLinkItem
+        text="Github"
+        href="https://github.com/connectrpc"
+      />
       {divider}
       <CommunityLinkItem text="Twitter" href="https://twitter.com/bufbuild" />
     </div>
   );
 };
 
-const CommunityLinkItem: React.FC<{ text: string; href: string }> = ({
-  text,
-  href,
-}) => {
+const CommunityLinkItem: React.FC<{ text: string; href: string }> = ({ text, href }) => {
   return (
     <a className={clsx(styles.goto, styles.communityLinkItem)} href={href}>
       <span className={styles.gotoText}>{text}</span>

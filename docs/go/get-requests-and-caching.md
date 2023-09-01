@@ -51,9 +51,9 @@ will continue to use POST.
 
 For other clients, see their respective documentation pages:
 
-- [Connect Node](../node/get-requests-and-caching.md)
-- [Connect Web](../web/get-requests-and-caching.md)
-- [Connect Kotlin](../kotlin/get-requests-and-caching.md)
+* [Connect Node](../node/get-requests-and-caching.md)
+* [Connect Web](../web/get-requests-and-caching.md)
+* [Connect Kotlin](../kotlin/get-requests-and-caching.md)
 
 ## Caching
 
@@ -74,7 +74,7 @@ This would instruct agents and proxies that the request may be cached for up to
 [`Cache-Control` Response Directives][cache-control-response-directives] that
 may be useful for your application as well; for example, the `private` directive
 would specify that the request should only be cached in private caches, such as
-the user agent itself, and _not_ CDNs or reverse proxies&mdash;this would be
+the user agent itself, and *not* CDNs or reverse proxies&mdash;this would be
 appropriate, for example, for authenticated requests.
 
 ## Distinguishing GET Requests

@@ -8,6 +8,7 @@ and performance. When it comes to web applications, spinning up a full server
 to test against may not always be the best option. In the following sections, we
 will go through a couple of alternatives.
 
+
 ## Mocking services
 
 The function `createRouterTransport` from `@connectrpc/connect` creates an in-memory
@@ -33,10 +34,7 @@ transport:
 ```ts
 import { ElizaService } from "@buf/connectrpc_eliza.connectrpc_es/connectrpc/eliza/v1/eliza_connect";
 import { SayResponse } from "@buf/connectrpc_eliza.connectrpc_es/connectrpc/eliza/v1/eliza_pb";
-import {
-  createRouterTransport,
-  createPromiseClient,
-} from "@connectrpc/connect";
+import { createRouterTransport, createPromiseClient } from "@connectrpc/connect";
 
 describe("simple ELIZA mock", function () {
   const mockTransport = createRouterTransport(({ service }) => {
@@ -52,7 +50,7 @@ describe("simple ELIZA mock", function () {
     const { sentence } = await client.say({ sentence: "how do you feel?" });
     // highlight-next-line
     expect(sentence).toEqual("I feel happy.");
-    // highlight-next-line
+  // highlight-next-line
   });
 });
 ```
@@ -73,6 +71,7 @@ const mockTransport = createRouterTransport(({ service }) => {
   });
 });
 ```
+
 
 ### Raising errors
 
@@ -102,11 +101,13 @@ const mockTransport = createRouterTransport(({ service }) => {
 });
 ```
 
+
 ### Transport options
 
 Other transports take options like [interceptors](./interceptors.mdx). They can
 be passed to `createRouterTransport` in the optional second argument, an object
 with the property `transport` for transport options.
+
 
 ### Jest and the jsdom environment
 
@@ -122,6 +123,7 @@ ReferenceError: TextEncoder is not defined
 If you see this error, consider to use [@bufbuild/jest-environment-jsdom](https://www.npmjs.com/package/@bufbuild/jest-environment-jsdom)
 instead.
 
+
 ### What about mocking `fetch` itself?
 
 Mocking `fetch` itself is a common approach to testing network requests, but it has some drawbacks. Instead, using a schema-based serialization chain with an in-memory transport can be a better approach. Here are some reasons why:
@@ -131,6 +133,7 @@ Mocking `fetch` itself is a common approach to testing network requests, but it 
 - An in-memory transport is fast, so you can quickly set up your tests without worrying about resetting mocks.
 - With an in-memory transport, you can eliminate the need for [spy functions](https://jestjs.io/docs/jest-object#jestspyonobject-methodname) because you can implement any checks directly in your server implementation. This can simplify your testing code and make it easier to understand.
 - You can leverage `expect` directly within the code of your mock implementation to verify particular scenarios pertaining to the requests or responses.
+
 
 ## End-to-end testing
 

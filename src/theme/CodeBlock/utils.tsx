@@ -1,3 +1,4 @@
+
 // Strips the prefix "$ " from every line of code.
 export const stripShellPromptForClipboard = (code: string): string => {
   const prefix = "$ ";

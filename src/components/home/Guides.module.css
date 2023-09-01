@@ -18,8 +18,7 @@
 }
 
 .guideCard {
-  padding: var(--card-padding-y) var(--card-padding-x) var(--card-padding-y)
-    var(--card-padding-x);
+  padding: var(--card-padding-y) var(--card-padding-x) var(--card-padding-y) var(--card-padding-x);
   width: 100%;
   height: 100%;
   position: relative;

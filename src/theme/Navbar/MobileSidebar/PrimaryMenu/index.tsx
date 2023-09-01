@@ -1,8 +1,5 @@
 import React from "react";
-import {
-  useNavbarMobileSidebar,
-  useThemeConfig,
-} from "@docusaurus/theme-common/internal";
+import { useNavbarMobileSidebar, useThemeConfig } from "@docusaurus/theme-common/internal";
 import NavbarItem from "@theme/NavbarItem";
 import { CreatedBy } from "@site/src/theme/components/created-by";
 import type { Props as NavbarItemConfig } from "@theme/NavbarItem";
@@ -21,12 +18,7 @@ export default function NavbarMobilePrimaryMenu() {
     <>
       <ul className="menu__list">
         {items.map((item, i) => (
-          <NavbarItem
-            mobile
-            {...item}
-            onClick={() => mobileSidebar.toggle()}
-            key={i}
-          />
+          <NavbarItem mobile {...item} onClick={() => mobileSidebar.toggle()} key={i} />
         ))}
       </ul>
       <div
@@ -34,7 +26,7 @@ export default function NavbarMobilePrimaryMenu() {
           flex: "1 1 auto",
           display: "flex",
           justifyContent: "center",
-          alignItems: "flex-end",
+          alignItems: "flex-end"
         }}
       >
         <CreatedBy />
