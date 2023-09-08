@@ -82,9 +82,10 @@ const mockTransport = createRouterTransport(({ service }) => {
 The `createRouterTransport` function also accepts an optional second argument, allowing you
 to pass options like [interceptors](./interceptors.mdx).
 
-As mentioned above, a recommended way to structure components that need to issue Connect calls is to pass a
+A recommended way to structure components that need to issue Connect calls is to pass a
 `Transport` object to the component. This adds flexibility to components for unit testing, but will vary
-depending on the framework being used.  Below are some examples.
+depending on the framework being used. Below are links to some helpful examples for passing transports to components
+and mocking them in unit tests.
 
 ### React
 
