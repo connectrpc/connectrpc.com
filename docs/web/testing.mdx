@@ -82,12 +82,14 @@ const mockTransport = createRouterTransport(({ service }) => {
 The `createRouterTransport` function also accepts an optional second argument, allowing you
 to pass options like [interceptors](./interceptors.mdx).
 
+### Examples
+
 A recommended way to structure components that need to issue Connect calls is to pass a
 `Transport` object to the component. This adds flexibility to components for unit testing, but will vary
 depending on the framework being used. Below are links to some helpful examples for passing transports to components
 and mocking them in unit tests.
 
-### React
+#### React
 
 With React, you have actions such as component props or [React Context](https://react.dev/learn/passing-data-deeply-with-context)
 to provide a transport to your component.
@@ -96,7 +98,7 @@ For a working example using the Context API, see the
 [Create React App project](https://github.com/connectrpc/examples-es/tree/main/react/cra) in the
 [examples-es](https://github.com/connectrpc/examples-es) repo.
 
-### Svelte
+#### Svelte
 
 The suggested method for providing transports to Svelte components makes use of Svelte's
 [Context API](https://learn.svelte.dev/tutorial/context-api).
@@ -105,7 +107,7 @@ To view a working example of using the Context API to mock transports in Svelte 
 [Svelte project](https://github.com/connectrpc/examples-es/tree/main/svelte) in the
 [examples-es](https://github.com/connectrpc/examples-es) repo.
 
-### Vue
+#### Vue
 
 Structuring a Vue application to allow for easy component testing involves Vue's [Provide/Inject API](https://vuejs.org/guide/components/provide-inject.html).
 
