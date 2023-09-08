@@ -27,6 +27,11 @@
       "permanent": true
     },
     {
+      "source": "/vanguard/",
+      "destination": "/vanguard.html",
+      "permanent": true
+    },
+    {
       "source": "/docs/",
       "destination": "/docs/introduction",
       "permanent": true
