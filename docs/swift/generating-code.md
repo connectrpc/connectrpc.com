@@ -85,7 +85,7 @@ plugins:
     out: Generated
 ```
 
-This file specifies that the [Connect-Swift plugin][connect-swift-plugin]
+This file specifies that the [`connect-swift` plugin][connect-swift-plugin]
 should be invoked with the options in `opt`, and that its outputs should be
 placed in the `Generated` directory. This plugin is responsible for generating
 `.connect.swift` files which contain Swift protocol interfaces and their
@@ -117,6 +117,17 @@ Generated
     ├── eliza.connect.swift
     └── eliza.pb.swift
 ```
+
+## Generating with `protoc`
+
+Both the [`connect-swift`][connect-swift-plugin]
+and [`connect-swift-mocks`][connect-swift-mocks-plugin] plugins are regular
+Protobuf plugins which can be used with `protoc` instead of `buf`, if
+desired.
+
+The easiest way to install these plugins is to download the executables
+from the latest [GitHub release][connect-swift-releases] and invoke them
+in the same way you would any other `protoc` plugin.
 
 ## Using generated code
 
@@ -160,8 +171,9 @@ the `buf.gen.yaml` file as shown in the example above.
 [buf.yaml]: https://buf.build/docs/configuration/v1/buf-yaml
 [buf-cli]: https://buf.build/docs/installation
 [connect-swift]: https://github.com/bufbuild/connect-swift
-[connect-swift-plugin]: https://buf.build/bufbuild/connect-swift
 [connect-swift-mocks-plugin]: https://buf.build/bufbuild/connect-swift-mocks
+[connect-swift-plugin]: https://buf.build/bufbuild/connect-swift
+[connect-swift-releases]: https://github.com/bufbuild/connect-swift/releases
 [protobuf]: https://developers.google.com/protocol-buffers
 [remote-plugins]: https://buf.build/docs/bsr/remote-plugins/usage
 [swift-protobuf-plugin]: https://buf.build/apple/swift
