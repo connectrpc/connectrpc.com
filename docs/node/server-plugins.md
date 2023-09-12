@@ -117,7 +117,8 @@ will serve the RPC foo.FooService/Bar under "/something/foo.FooService/Bar".
 Note that many gRPC client implementations do not allow for prefixes.
 
 
-Note that Express does not support the `http2` module.
+Note that Express does not support the `http2` module. Also, `@connectrpc/connect` and `@connectrpc/connect-node` are 
+peer dependencies of `@connectrpc/connect-express`.
 
 
 ## Common options
