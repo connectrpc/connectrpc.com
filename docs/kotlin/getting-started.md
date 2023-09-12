@@ -182,9 +182,9 @@ dependencies {
   implementation 'androidx.recyclerview:recyclerview:1.2.1'
   implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
   implementation "com.squareup.okhttp3:okhttp:4.10.0"
-  implementation "build.buf:connect-kotlin-okhttp:0.1.4"
+  implementation "com.connectrpc:connect-kotlin-okhttp:0.1.4"
   // Java specific dependencies.
-  implementation "build.buf:connect-kotlin-google-java-ext:0.1.4"
+  implementation "com.connectrpc:connect-kotlin-google-java-ext:0.1.4"
   implementation "com.google.protobuf:protobuf-java:3.22.0"
 }
 ```
@@ -198,9 +198,9 @@ dependencies {
   implementation 'androidx.recyclerview:recyclerview:1.2.1'
   implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
   implementation "com.squareup.okhttp3:okhttp:4.10.0"
-  implementation "build.buf:connect-kotlin-okhttp:0.1.4"
+  implementation "com.connectrpc:connect-kotlin-okhttp:0.1.4"
   // Javalite specific dependencies.
-  implementation "build.buf:connect-kotlin-google-javalite-ext:0.1.4"
+  implementation "com.connectrpc:connect-kotlin-google-javalite-ext:0.1.4"
   implementation "com.google.protobuf:protobuf-javalite:3.22.0"
 }
 ```
@@ -262,9 +262,9 @@ dependencies {
   implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
 
   implementation "com.squareup.okhttp3:okhttp:4.10.0"
-  implementation "build.buf:connect-kotlin-okhttp:$version"
+  implementation "com.connectrpc:connect-kotlin-okhttp:$version"
 
-  implementation "build.buf:connect-kotlin-google-java-ext:$version"
+  implementation "com.connectrpc:connect-kotlin-google-java-ext:$version"
   implementation "com.google.protobuf:protobuf-java:3.22.0"
 }
 ```
@@ -485,7 +485,7 @@ Now we are ready to dive into actual Kotlin code to speak with Eliza!
 The `ProtocolClient` constructor requires a `ProtocolClientConfig` to be instantiated.
 The required parameters are the host, serialization strategy, and protocol:
 
-- `host`: The host of the request (e.g `https://buf.build`).
+- `host`: The host of the request (e.g `https://demo.connectrpc.com`).
 - `serializationStrategy`: Configures the `ProtocolClient` to use a specified base data type and encoding
   (e.g., Google's Java and Google's Javalite).
 - `protocol`: The underlying network protocol to use (e.g., Connect, gRPC, or gRPC-Web).
@@ -527,13 +527,13 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
+import com.connectrpc.ProtocolClientConfig
+import com.connectrpc.extensions.GoogleJavaProtobufStrategy
+import com.connectrpc.impl.ProtocolClient
+import com.connectrpc.okhttp.ConnectOkHttpClient
+import com.connectrpc.protocols.NetworkProtocol
 import connectrpc.eliza.v1.Eliza
 import connectrpc.eliza.v1.ElizaServiceClient
-import build.buf.connect.ProtocolClientConfig
-import build.buf.connect.extensions.GoogleJavaProtobufStrategy
-import build.buf.connect.impl.ProtocolClient
-import build.buf.connect.okhttp.ConnectOkHttpClient
-import build.buf.connect.protocols.NetworkProtocol
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
