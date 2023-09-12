@@ -61,7 +61,8 @@ await server.listen({
 });
 ```
 
-The plugin accepts all common options.
+The plugin accepts all common options. Note that `@connectrpc/connect` and `@connectrpc/connect-node` are peer 
+dependencies of  `@connectrpc/connect-fastify`.
 
 ## Next.js
 
@@ -83,7 +84,8 @@ This file is a Next.js [catch-all API route](https://nextjs.org/docs/routing/dyn
 serve your Connect RPCs with the `/api` prefix. Make sure to include the `/api` prefix in the `baseUrl` option for
 your client transport.
 
-Note that Next.js does not support the http2 module.
+Note that Next.js does not support the http2 module. Also, `@connectrpc/connect` and `@connectrpc/connect-node` are 
+peer dependencies of `@connectrpc/connect-next`.
 
 ## Express
 
