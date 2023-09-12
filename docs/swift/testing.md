@@ -87,19 +87,19 @@ import Connect
 import Foundation
 import SwiftProtobuf
 
-public protocol Connectrpc_Eliza_V1_ElizaServiceClientInterface {
+public protocol Connectrpc_Eliza_V1_ElizaServiceClientInterface: Sendable {
     @discardableResult
-    func `say`(request: Connectrpc_Eliza_V1_SayRequest, headers: Headers, completion: @escaping (ResponseMessage<Connectrpc_Eliza_V1_SayResponse>) -> Void) -> Cancelable
+    func `say`(request: Connectrpc_Eliza_V1_SayRequest, headers: Headers, completion: @escaping @Sendable (ResponseMessage<Connectrpc_Eliza_V1_SayResponse>) -> Void) -> Cancelable
 
     func `say`(request: Connectrpc_Eliza_V1_SayRequest, headers: Headers) async -> ResponseMessage<Connectrpc_Eliza_V1_SayResponse>
 
-    func `converse`(headers: Headers, onResult: @escaping (StreamResult<Connectrpc_Eliza_V1_ConverseResponse>) -> Void) -> any BidirectionalStreamInterface<Connectrpc_Eliza_V1_ConverseRequest>
+    func `converse`(headers: Headers, onResult: @escaping @Sendable (StreamResult<Connectrpc_Eliza_V1_ConverseResponse>) -> Void) -> any BidirectionalStreamInterface<Connectrpc_Eliza_V1_ConverseRequest>
 
     func `converse`(headers: Headers) -> any BidirectionalAsyncStreamInterface<Connectrpc_Eliza_V1_ConverseRequest, Connectrpc_Eliza_V1_ConverseResponse>
 }
 
 /// Concrete implementation of `Connectrpc_Eliza_V1_ElizaServiceClientInterface`.
-public final class Connectrpc_Eliza_V1_ElizaServiceClient: Connectrpc_Eliza_V1_ElizaServiceClientInterface {
+public final class Connectrpc_Eliza_V1_ElizaServiceClient: Connectrpc_Eliza_V1_ElizaServiceClientInterface, Sendable {
     private let client: ProtocolClientInterface
 
     public init(client: ProtocolClientInterface) {
@@ -107,7 +107,7 @@ public final class Connectrpc_Eliza_V1_ElizaServiceClient: Connectrpc_Eliza_V1_E
     }
 
     @discardableResult
-    public func `say`(request: Connectrpc_Eliza_V1_SayRequest, headers: Headers = [:], completion: @escaping (ResponseMessage<Connectrpc_Eliza_V1_SayResponse>) -> Void) -> Cancelable {
+    public func `say`(request: Connectrpc_Eliza_V1_SayRequest, headers: Headers = [:], completion: @escaping @Sendable (ResponseMessage<Connectrpc_Eliza_V1_SayResponse>) -> Void) -> Cancelable {
         return self.client.unary(path: "connectrpc.eliza.v1.ElizaService/Say", request: request, headers: headers, completion: completion)
     }
 
@@ -115,7 +115,7 @@ public final class Connectrpc_Eliza_V1_ElizaServiceClient: Connectrpc_Eliza_V1_E
         return await self.client.unary(path: "connectrpc.eliza.v1.ElizaService/Say", request: request, headers: headers)
     }
 
-    public func `converse`(headers: Headers = [:], onResult: @escaping (StreamResult<Connectrpc_Eliza_V1_ConverseResponse>) -> Void) -> any BidirectionalStreamInterface<Connectrpc_Eliza_V1_ConverseRequest> {
+    public func `converse`(headers: Headers = [:], onResult: @escaping @Sendable (StreamResult<Connectrpc_Eliza_V1_ConverseResponse>) -> Void) -> any BidirectionalStreamInterface<Connectrpc_Eliza_V1_ConverseRequest> {
         return self.client.bidirectionalStream(path: "connectrpc.eliza.v1.ElizaService/Converse", headers: headers, onResult: onResult)
     }
 
@@ -141,12 +141,7 @@ import Foundation
 import SwiftProtobuf
 
 /// Mock implementation of `Connectrpc_Eliza_V1_ElizaServiceClientInterface`.
-///
-/// Production implementations can be substituted with instances of this
-/// class, allowing for mocking RPC calls. Behavior can be customized
-/// either through the properties on this class or by
-/// subclassing the class and overriding its methods.
-open class Connectrpc_Eliza_V1_ElizaServiceClientMock: Connectrpc_Eliza_V1_ElizaServiceClientInterface {
+public final class Connectrpc_Eliza_V1_ElizaServiceClientMock: Connectrpc_Eliza_V1_ElizaServiceClientInterface, @unchecked Sendable {
     private var cancellables = [Combine.AnyCancellable]()
 
     /// Mocked for calls to `say()`.
@@ -161,21 +156,21 @@ open class Connectrpc_Eliza_V1_ElizaServiceClientMock: Connectrpc_Eliza_V1_Eliza
     public init() {}
 
     @discardableResult
-    open func `say`(request: Connectrpc_Eliza_V1_SayRequest, headers: Headers = [:], completion: @escaping (ResponseMessage<Connectrpc_Eliza_V1_SayResponse>) -> Void) -> Cancelable {
+    public func `say`(request: Connectrpc_Eliza_V1_SayRequest, headers: Headers = [:], completion: @escaping @Sendable (ResponseMessage<Connectrpc_Eliza_V1_SayResponse>) -> Void) -> Cancelable {
         completion(self.mockSay(request))
         return Cancelable {}
     }
 
-    open func `say`(request: Connectrpc_Eliza_V1_SayRequest, headers: Headers = [:]) async -> ResponseMessage<Connectrpc_Eliza_V1_SayResponse> {
+    public func `say`(request: Connectrpc_Eliza_V1_SayRequest, headers: Headers = [:]) async -> ResponseMessage<Connectrpc_Eliza_V1_SayResponse> {
         return self.mockAsyncSay(request)
     }
 
-    open func `converse`(headers: Headers = [:], onResult: @escaping (StreamResult<Connectrpc_Eliza_V1_ConverseResponse>) -> Void) -> any BidirectionalStreamInterface<Connectrpc_Eliza_V1_ConverseRequest> {
+    public func `converse`(headers: Headers = [:], onResult: @escaping @Sendable (StreamResult<Connectrpc_Eliza_V1_ConverseResponse>) -> Void) -> any BidirectionalStreamInterface<Connectrpc_Eliza_V1_ConverseRequest> {
         self.mockConverse.$inputs.first { !$0.isEmpty }.sink { _ in self.mockConverse.outputs.forEach(onResult) }.store(in: &self.cancellables)
         return self.mockConverse
     }
 
-    open func `converse`(headers: Headers = [:]) -> any BidirectionalAsyncStreamInterface<Connectrpc_Eliza_V1_ConverseRequest, Connectrpc_Eliza_V1_ConverseResponse> {
+    public func `converse`(headers: Headers = [:]) -> any BidirectionalAsyncStreamInterface<Connectrpc_Eliza_V1_ConverseRequest, Connectrpc_Eliza_V1_ConverseResponse> {
         return self.mockAsyncConverse
     }
 }
