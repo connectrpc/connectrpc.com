@@ -673,9 +673,9 @@ the Connect-Kotlin repository on GitHub. These examples demonstrate:
 
 [connect-go]: https://github.com/connectrpc/connect-go
 
-[connect-kotlin]: https://github.com/bufbuild/connect-kotlin
+[connect-kotlin]: https://github.com/connectrpc/connect-kotlin
 
-[connect-kotlin-releases]: https://github.com/bufbuild/connect-kotlin/releases
+[connect-kotlin-releases]: https://github.com/connectrpc/connect-kotlin/releases
 
 [eliza-proto]: https://buf.build/connectrpc/eliza/file/main:connectrpc/eliza/v1/eliza.proto
 
@@ -689,7 +689,7 @@ the Connect-Kotlin repository on GitHub. These examples demonstrate:
 
 [grpc-web]: https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-WEB.md
 
-[more-examples]: https://github.com/bufbuild/connect-kotlin/tree/main/examples
+[more-examples]: https://github.com/connectrpc/connect-kotlin/tree/main/examples
 
 [okhttp]: https://github.com/square/okhttp
 
@@ -697,10 +697,10 @@ the Connect-Kotlin repository on GitHub. These examples demonstrate:
 
 [protobuf-releases]: https://github.com/protocolbuffers/protobuf/releases
 
-[pgjava-example]: https://github.com/bufbuild/connect-kotlin/blob/main/examples/kotlin-google-java/src/main/kotlin/build/buf/connect/examples/kotlin/Main.kt
+[pgjava-example]: https://github.com/connectrpc/connect-kotlin/blob/main/examples/kotlin-google-java/src/main/kotlin/com/connectrpc/examples/kotlin/Main.kt
 
-[pgjavalite-example]: https://github.com/bufbuild/connect-kotlin/blob/main/examples/kotlin-google-javalite/src/main/kotlin/build/buf/connect/examples/kotlin/Main.kt
+[pgjavalite-example]: https://github.com/connectrpc/connect-kotlin/blob/main/examples/kotlin-google-javalite/src/main/kotlin/com/connectrpc/examples/kotlin/Main.kt
 
 [remote-plugins]: https://buf.build/docs/bsr/remote-plugins/usage
 
-[streaming-example-kotlin]: https://github.com/bufbuild/connect-kotlin/blob/main/examples/kotlin-google-java/src/main/kotlin/build/buf/connect/examples/kotlin/Main.kt#L55-L71
+[streaming-example-kotlin]: https://github.com/connectrpc/connect-kotlin/blob/main/examples/kotlin-google-java/src/main/kotlin/com/connectrpc/examples/kotlin/Main.kt#L55-L71
