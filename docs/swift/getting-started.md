@@ -98,13 +98,14 @@ touch buf.gen.yaml
 version: v1
 plugins:
   - plugin: buf.build/bufbuild/connect-swift
-    opt: >
-      GenerateAsyncMethods=true,
-      GenerateCallbackMethods=true,
-      Visibility=Public
+    opt:
+      - GenerateAsyncMethods=true
+      - GenerateCallbackMethods=true
+      - Visibility=Public
     out: Generated
   - plugin: buf.build/apple/swift
-    opt: Visibility=Public
+    opt:
+      - Visibility=Public
     out: Generated
 ```
 

@@ -75,13 +75,14 @@ file is shown below:
 version: v1
 plugins:
   - plugin: buf.build/bufbuild/connect-swift
-    opt: >
-      GenerateAsyncMethods=true,
-      GenerateCallbackMethods=true,
-      Visibility=Public
+    opt:
+      - GenerateAsyncMethods=true
+      - GenerateCallbackMethods=true
+      - Visibility=Public
     out: Generated
   - plugin: buf.build/apple/swift
-    opt: Visibility=Public
+    opt:
+      - Visibility=Public
     out: Generated
 ```
 
@@ -118,16 +119,35 @@ Generated
     └── eliza.pb.swift
 ```
 
-## Generating with `protoc`
+## Local generation
 
 Both the [`connect-swift`][connect-swift-plugin]
 and [`connect-swift-mocks`][connect-swift-mocks-plugin] plugins are regular
-Protobuf plugins which can be used with `protoc` instead of `buf`, if
-desired.
+Protobuf plugins which can be used with `protoc` and `buf` to generate
+code locally.
 
-The easiest way to install these plugins is to download the executables
-from the latest [GitHub release][connect-swift-releases] and invoke them
-in the same way you would any other `protoc` plugin.
+The easiest way to install these plugins is to download their executables
+from the latest [GitHub release][connect-swift-releases] and install them in
+your `PATH`.
+
+The [same setup used for remote plugins above](#remote-plugins) applies to
+local generation, except the `buf.gen.yaml` file should be modified to use
+local plugins instead of remote plugins:
+
+```yaml
+version: v1
+plugins:
+  - plugin: connect-swift # protoc-gen-connect-swift in your PATH
+    opt:
+      - GenerateAsyncMethods=true
+      - GenerateCallbackMethods=true
+      - Visibility=Public
+    out: Generated
+  - plugin: swift # protoc-gen-swift in your PATH
+    opt:
+      - Visibility=Public
+    out: Generated
+```
 
 ## Using generated code
 

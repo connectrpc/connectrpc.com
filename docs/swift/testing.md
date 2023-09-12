@@ -21,21 +21,22 @@ version: v1
 plugins:
   # Generated models
   - plugin: buf.build/apple/swift
-    opt: Visibility=Public
+    opt:
+      - Visibility=Public
     out: Generated
   # Production generated services/methods
   - plugin: buf.build/bufbuild/connect-swift
-    opt: >
-      GenerateAsyncMethods=true,
-      GenerateCallbackMethods=true,
-      Visibility=Public
+    opt:
+      - GenerateAsyncMethods=true
+      - GenerateCallbackMethods=true
+      - Visibility=Public
     out: Generated
   # Mock generated services/methods
   - plugin: buf.build/bufbuild/connect-swift-mocks
-    opt: >
-      GenerateAsyncMethods=true,
-      GenerateCallbackMethods=true,
-      Visibility=Public
+    opt:
+      - GenerateAsyncMethods=true
+      - GenerateCallbackMethods=true
+      - Visibility=Public
     out: GeneratedMocks
 ```
 
