@@ -1,3 +1,17 @@
+// Copyright 2022-2023 The Connect Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 import Link from "@docusaurus/Link";
 import React from "react";
 
@@ -39,11 +53,11 @@ export type GuideProps = {
 /// Front page hero
 export const tagline = <>Simple, reliable, interoperable.</>;
 
-export const subTagline = <>A better gRPC.</>;
+export const subTagline = <>Protobuf RPC that works.</>;
 
 export const description = (
   <>
-    Connect is a family of libraries for building browser and gRPC-compatible HTTP APIs. If
+    Connect is a family of libraries for building browser and gRPC-compatible APIs. If
     you&apos;re tired of hand-written boilerplate and turned off by massive frameworks, Connect is
     for you.
   </>
@@ -99,7 +113,7 @@ export const featureList: FeatureItem[] = [
         <Link to="https://developers.google.com/protocol-buffers">Protocol Buffers</Link>, the
         industry&apos;s most battle-tested schema definition language, and skip the hand-written
         boilerplate. Connect handles server-side routing, serialization, and compression, and it
-        generates idiomatic clients in Go and TypeScript.
+        generates idiomatic clients in Go, TypeScript, Swift, and Kotlin.
       </>
     )
   }
