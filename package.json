@@ -26,7 +26,6 @@
     "@docusaurus/preset-classic": "^2.4.1",
     "@docusaurus/theme-search-algolia": "^2.4.1",
     "@react-hookz/web": "^23.1.0",
-    "@stackql/docusaurus-plugin-hubspot": "^1.1.0",
     "clsx": "^2.0.0",
     "crt-terminal": "^1.0.13",
     "prism-react-renderer": "^2.0.6",
