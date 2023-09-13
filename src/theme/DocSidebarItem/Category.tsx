@@ -1,3 +1,17 @@
+// Copyright 2023 Buf Technologies, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -5,8 +19,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import React, {type ComponentProps, useEffect, useMemo} from 'react';
-import clsx from 'clsx';
+import React, { type ComponentProps, useEffect, useMemo } from "react";
+import clsx from "clsx";
 import {
   isActiveSidebarItem,
   usePrevious,
@@ -17,15 +31,15 @@ import {
   useThemeConfig,
   useDocSidebarItemsExpandedState,
   isSamePath,
-} from '@docusaurus/theme-common/internal';
-import Link from '@docusaurus/Link';
-import {translate} from '@docusaurus/Translate';
+} from "@docusaurus/theme-common/internal";
+import Link from "@docusaurus/Link";
+import { translate } from "@docusaurus/Translate";
 
-import DocSidebarItems from '@theme/DocSidebarItems';
-import type {Props} from '@theme/DocSidebarItem/Category';
+import DocSidebarItems from "@theme/DocSidebarItems";
+import type { Props } from "@theme/DocSidebarItem/Category";
 
-import useIsBrowser from '@docusaurus/useIsBrowser';
-import { BadgeProps, Badge } from '../components/badge';
+import useIsBrowser from "@docusaurus/useIsBrowser";
+import { BadgeProps, Badge } from "../components/badge";
 
 // If we navigate to a category and it becomes active, it should automatically
 // expand itself
@@ -56,7 +70,7 @@ function useAutoExpandActiveCategory({
  * see https://github.com/facebook/docusaurus/issues/3030
  */
 function useCategoryHrefWithSSRFallback(
-  item: Props['item'],
+  item: Props["item"],
 ): string | undefined {
   const isBrowser = useIsBrowser();
   return useMemo(() => {
@@ -77,18 +91,18 @@ function CollapseButton({
   onClick,
 }: {
   categoryLabel: string;
-  onClick: ComponentProps<'button'>['onClick'];
+  onClick: ComponentProps<"button">["onClick"];
 }) {
   return (
     <button
       aria-label={translate(
         {
-          id: 'theme.DocSidebarItem.toggleCollapsedCategoryAriaLabel',
+          id: "theme.DocSidebarItem.toggleCollapsedCategoryAriaLabel",
           message: "Toggle the collapsible sidebar category '{label}'",
           description:
-            'The ARIA label to toggle the collapsible sidebar category',
+            "The ARIA label to toggle the collapsible sidebar category",
         },
-        {label: categoryLabel},
+        { label: categoryLabel },
       )}
       type="button"
       className="clean-btn menu__caret"
@@ -105,13 +119,13 @@ export default function DocSidebarItemCategory({
   index,
   ...props
 }: Props): JSX.Element {
-  const {items, label, collapsible, className, href} = item;
+  const { items, label, collapsible, className, href } = item;
   const hrefWithSSRFallback = useCategoryHrefWithSSRFallback(item);
 
   const isActive = isActiveSidebarItem(item, activePath);
   const isCurrentPage = isSamePath(href, activePath);
 
-  const {collapsed, setCollapsed} = useCollapsible({
+  const { collapsed, setCollapsed } = useCollapsible({
     // Active categories are always initialized as expanded. The default
     // (`item.collapsed`) is only used for non-active categories.
     initialState: () => {
@@ -122,8 +136,8 @@ export default function DocSidebarItemCategory({
     },
   });
 
-  useAutoExpandActiveCategory({isActive, collapsed, setCollapsed});
-  const {expandedItem, setExpandedItem} = useDocSidebarItemsExpandedState();
+  useAutoExpandActiveCategory({ isActive, collapsed, setCollapsed });
+  const { expandedItem, setExpandedItem } = useDocSidebarItemsExpandedState();
   function updateCollapsed(toCollapsed = !collapsed) {
     setExpandedItem(toCollapsed ? null : index);
     setCollapsed(toCollapsed);
@@ -131,7 +145,7 @@ export default function DocSidebarItemCategory({
 
   const {
     docs: {
-      sidebar: {autoCollapseCategories},
+      sidebar: { autoCollapseCategories },
     },
   } = useThemeConfig();
   useEffect(() => {
@@ -150,21 +164,23 @@ export default function DocSidebarItemCategory({
       className={clsx(
         ThemeClassNames.docs.docSidebarItemCategory,
         ThemeClassNames.docs.docSidebarItemCategoryLevel(level),
-        'menu__list-item',
+        "menu__list-item",
         {
-          'menu__list-item--collapsed': collapsed,
+          "menu__list-item--collapsed": collapsed,
         },
         className,
-      )}>
+      )}
+    >
       <div
-        className={clsx('menu__list-item-collapsible', {
-          'menu__list-item-collapsible--active': isCurrentPage,
-        })}>
+        className={clsx("menu__list-item-collapsible", {
+          "menu__list-item-collapsible--active": isCurrentPage,
+        })}
+      >
         <Link
-          className={clsx('menu__link', {
-            'menu__link--sublist': collapsible,
-            'menu__link--sublist-caret': !href && collapsible,
-            'menu__link--active': isActive,
+          className={clsx("menu__link", {
+            "menu__link--sublist": collapsible,
+            "menu__link--sublist-caret": !href && collapsible,
+            "menu__link--active": isActive,
           })}
           onClick={
             collapsible
@@ -181,12 +197,15 @@ export default function DocSidebarItemCategory({
                   onItemClick?.(item);
                 }
           }
-          aria-current={isCurrentPage ? 'page' : undefined}
+          aria-current={isCurrentPage ? "page" : undefined}
           aria-expanded={collapsible ? !collapsed : undefined}
-          href={collapsible ? hrefWithSSRFallback ?? '#' : hrefWithSSRFallback}
-          {...props}>
+          href={collapsible ? hrefWithSSRFallback ?? "#" : hrefWithSSRFallback}
+          {...props}
+        >
           {label}
-          {item.customProps?.badge && <Badge {...item.customProps.badge as BadgeProps}  />}
+          {item.customProps?.badge && (
+            <Badge {...(item.customProps.badge as BadgeProps)} />
+          )}
         </Link>
         {href && collapsible && (
           <CollapseButton

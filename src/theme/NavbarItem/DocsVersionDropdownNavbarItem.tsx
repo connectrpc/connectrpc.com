@@ -1,3 +1,17 @@
+// Copyright 2023 Buf Technologies, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 /**
  * This file is a swizzled and wrapped component, generated and adapted from the
  * docusaurus source code, copyright of Facebook, Inc.
@@ -14,7 +28,7 @@
 import {
   useActiveDocContext,
   useLatestVersion,
-  useVersions
+  useVersions,
 } from "@docusaurus/plugin-content-docs/client";
 import { useDocsPreferredVersion } from "@docusaurus/theme-common";
 import { translate } from "@docusaurus/Translate";
@@ -43,14 +57,16 @@ export default function DocsVersionDropdownNavbarItem({
   const versions = useVersions(docsPluginId);
   const latestVersion = useLatestVersion(docsPluginId);
 
-  const { preferredVersion, savePreferredVersionName } = useDocsPreferredVersion(docsPluginId);
+  const { preferredVersion, savePreferredVersionName } =
+    useDocsPreferredVersion(docsPluginId);
 
   function getItems(): LinkLikeNavbarItemProps[] {
     const versionLinks = versions.map((version) => {
       // We try to link to the same doc, in another version
       // When not possible, fallback to the "main doc" of the version
       const versionDoc =
-        activeDocContext?.alternateDocVersions[version.name] || getVersionMainDoc(version);
+        activeDocContext?.alternateDocVersions[version.name] ||
+        getVersionMainDoc(version);
       return {
         isNavLink: true,
         label: version.label,
@@ -58,7 +74,7 @@ export default function DocsVersionDropdownNavbarItem({
         isActive: () => version === activeDocContext?.activeVersion,
         onClick: () => {
           savePreferredVersionName(version.name);
-        }
+        },
       };
     });
 
@@ -67,7 +83,8 @@ export default function DocsVersionDropdownNavbarItem({
 
   const items = getItems();
 
-  const dropdownVersion = activeDocContext.activeVersion ?? preferredVersion ?? latestVersion;
+  const dropdownVersion =
+    activeDocContext.activeVersion ?? preferredVersion ?? latestVersion;
 
   // Mobile dropdown is handled a bit differently
   const dropdownLabel =
@@ -75,11 +92,14 @@ export default function DocsVersionDropdownNavbarItem({
       ? translate({
           id: "theme.navbar.mobileVersionsDropdown.label",
           message: "Versions",
-          description: "The label for the navbar versions dropdown on mobile view"
+          description:
+            "The label for the navbar versions dropdown on mobile view",
         })
       : dropdownVersion.label;
   const dropdownTo =
-    mobile && items.length > 1 ? undefined : getVersionMainDoc(dropdownVersion).path;
+    mobile && items.length > 1
+      ? undefined
+      : getVersionMainDoc(dropdownVersion).path;
 
   // We don't want to render a version dropdown with 0 or 1 item. If we build
   // the site with a single docs version (onlyIncludeVersions: ['1.0.0']),

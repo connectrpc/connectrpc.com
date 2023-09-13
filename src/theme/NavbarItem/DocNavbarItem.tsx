@@ -1,3 +1,17 @@
+// Copyright 2023 Buf Technologies, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 /**
  * This file is a swizzled and wrapped component, generated and adapted from the
  * docusaurus source code, copyright of Facebook, Inc.
@@ -11,7 +25,10 @@
  * For original sources see:
  * https://github.com/facebook/docusaurus/tree/v2.0.0-beta.17/packages/docusaurus-theme-classic/src/theme/NavbarItem/DocNavbarItem.tsx
  */
-import { useActiveDocContext, useLatestVersion } from "@docusaurus/plugin-content-docs/client";
+import {
+  useActiveDocContext,
+  useLatestVersion,
+} from "@docusaurus/plugin-content-docs/client";
 import { uniq, useDocsPreferredVersion } from "@docusaurus/theme-common";
 import DefaultNavbarItem from "@theme/NavbarItem/DefaultNavbarItem";
 import { getInfimaActiveClassName } from "./utils";
@@ -30,7 +47,7 @@ function getDocInVersions(versions: GlobalVersion[], docId: string) {
       `DocNavbarItem: couldn't find any doc with id "${docId}" in version${
         versions.length ? "s" : ""
       } ${versions.map((version) => version.name).join(", ")}".
-Available doc ids are:\n- ${docIds}`
+Available doc ids are:\n- ${docIds}`,
     );
   }
   return doc;
@@ -48,7 +65,9 @@ export default function DocNavbarItem({
 
   // Versions used to look for the doc to link to, ordered + no duplicate
   const versions = uniq(
-    [activeVersion, preferredVersion, latestVersion].filter(Boolean) as GlobalVersion[]
+    [activeVersion, preferredVersion, latestVersion].filter(
+      Boolean,
+    ) as GlobalVersion[],
   );
   const doc = getDocInVersions(versions, docId);
   const activeDocInfimaClassName = getInfimaActiveClassName(props.mobile);
@@ -58,7 +77,8 @@ export default function DocNavbarItem({
       exact
       {...props}
       className={clsx(props.className, {
-        [activeDocInfimaClassName]: activeDoc?.sidebar && activeDoc.sidebar === doc.sidebar
+        [activeDocInfimaClassName]:
+          activeDoc?.sidebar && activeDoc.sidebar === doc.sidebar,
       })}
       activeClassName={activeDocInfimaClassName}
       label={staticLabel ?? doc.id}

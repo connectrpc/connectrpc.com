@@ -15,9 +15,9 @@ and how to call your new API.
 
 ## Prerequisites
 
-* You'll need one of the [last two major releases][go-releases] of Go. See Go's
+- You'll need one of the [last two major releases][go-releases] of Go. See Go's
   [Getting Started][install-go] guide for installation instructions.
-* We'll also use [cURL][]. It's available from Homebrew and most Linux package
+- We'll also use [cURL][]. It's available from Homebrew and most Linux package
   managers.
 
 ## Install tools
@@ -283,10 +283,10 @@ Congratulations &mdash; you've built your first Connect service! 🎉
 
 - The gRPC protocol that is used throughout the gRPC ecosystem, making
   `connect-go` [compatible](grpc-compatibility.md) with other gRPC implementations out of the box.
-	`grpc-go` clients will work with `connect-go` servers and vice versa without
-	issue - in fact, before `connect-go`'s public release, this is exactly what
-	the [Buf CLI][buf-cli] was doing.
-- The gRPC-Web protocol used by [grpc/grpc-web][grpc-web], allowing
+  `grpc-go` clients will work with `connect-go` servers and vice versa without
+  issue - in fact, before `connect-go`'s public release, this is exactly what
+  the [Buf CLI][buf-cli] was doing.
+- The gRPC-Web protocol used by [gRPC/gRPC-Web][grpc-web], allowing
   `connect-go` servers to interop with `grpc-web` frontends without the need
   for an intermediary proxy (such as Envoy).
 - The new [Connect protocol](../protocol.md), a simple, HTTP-based protocol that
@@ -330,7 +330,7 @@ supports both the gRPC and Connect protocols. Unlike a hand-written REST
 service, you didn't need to design a URL hierarchy, hand-write request and
 response structs, manage your own marshaling, or parse typed values out of
 query parameters. More importantly, your users got an idiomatic, type-safe
-client without *any* extra work on your part.
+client without _any_ extra work on your part.
 
 [buf]: https://buf.build/
 [buf.gen.yaml]: https://buf.build/docs/configuration/v1/buf-gen-yaml

@@ -8,7 +8,6 @@ one that is promise based. You create a client for a service using one of the
 provided constructor functions, and you do not need to generate additional
 code.
 
-
 ## Promises
 
 We have already been using the function `createPromiseClient` in the
@@ -61,20 +60,23 @@ callback functions: one that is called every time a response message arrives,
 and one that is called at the end of the stream.
 
 ```ts
-import {ConnectError} from "@connectrpc/connect";
+import { ConnectError } from "@connectrpc/connect";
 
-client.introduce({name: "Joseph"}, (res) => {
-  console.log(res);
-}, (err?: ConnectError) => {
-  if (err) {
-    console.error(err);
-  }
-});
+client.introduce(
+  { name: "Joseph" },
+  (res) => {
+    console.log(res);
+  },
+  (err?: ConnectError) => {
+    if (err) {
+      console.error(err);
+    }
+  },
+);
 ```
 
 The callback client is particularly useful if you want to migrate an existing
 code base from gRPC-web to Connect clients.
-
 
 ## Managing clients and transports
 
@@ -97,8 +99,8 @@ const transport = createConnectTransport({
 });
 
 /**
-* Get a promise client for the given service.
-*/
+ * Get a promise client for the given service.
+ */
 export function useClient<T extends ServiceType>(service: T): PromiseClient<T> {
   // We memoize the client, so that we only create one instance per service.
   return useMemo(() => createPromiseClient(service, transport), [service]);
@@ -108,7 +110,7 @@ export function useClient<T extends ServiceType>(service: T): PromiseClient<T> {
 Usage:
 
 ```ts
-await useClient(ElizaService).say({sentence: "I feel happy."});
+await useClient(ElizaService).say({ sentence: "I feel happy." });
 ```
 
 ## Roll your own client
@@ -127,4 +129,3 @@ should be named `provideXClient`.
 Connect provides some helpful utilities to implement your own clients.
 Take a look at the implementation of [promise-client.ts](https://github.com/connectrpc/connect-es/blob/1c1dc4cfd300e120d07a486f488d5693139f9dee/packages/connect/src/promise-client.ts#L35)
 to get started.
-

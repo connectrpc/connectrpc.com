@@ -36,13 +36,13 @@ service BigIntService {
 With `createRouterTransport` and `BigIntService` from your generated code, you can create a simple mock:
 
 ```ts
-import { createRouterTransport } from '@connectrpc/connect';
-import { BigIntService } from 'my-generated-code/bigint_connectweb';
+import { createRouterTransport } from "@connectrpc/connect";
+import { BigIntService } from "my-generated-code/bigint_connectweb";
 
 export const mockBigIntTransport = () =>
   createRouterTransport(({ service }) => {
     service(BigIntService, {
-      count: () => new CountResponse({ count: 1n })
+      count: () => new CountResponse({ count: 1n }),
     });
   });
 ```
@@ -50,10 +50,10 @@ export const mockBigIntTransport = () =>
 In your client testing code, you can then use `createPromiseClient` from `@connectrpc/connect` with `mockBigIntTransport`:
 
 ```ts
-import { createPromiseClient } from '@connectrpc/connect';
+import { createPromiseClient } from "@connectrpc/connect";
 
-describe('your client test suite', () => {
-  it('tests a simple client call', async () => {
+describe("your client test suite", () => {
+  it("tests a simple client call", async () => {
     const client = createPromiseClient(BigIntService, mockBigIntTransport());
     const { count } = await client.count({});
     expect(count).toEqual(1n);
@@ -70,25 +70,28 @@ You can pass the `Transport` returned by `createRouterTransport` to any client t
 You can do all the same things with this mock as with any other transport, such as setting headers and trailers, using interceptors, and more. Here's an example:
 
 ```ts
-import { type HandlerContext } from '@connectrpc/connect';
-import { CountRequest } from 'my-generated-code/bigint_connectweb';
+import { type HandlerContext } from "@connectrpc/connect";
+import { CountRequest } from "my-generated-code/bigint_connectweb";
 
 export const mockBigIntTransport = () =>
   createRouterTransport(({ service }) => {
-    service(BigIntService, {
-      count: (_request: CountRequest, context: HandlerContext) => {
-        context.responseHeader.set("unary-response-header", "foo"); // set Response Header
-        context.responseTrailer.set("unary-response-trailer", "foo"); // set Response Trailer
-        return new CountResponse({ count: 1n });
+    service(
+      BigIntService,
+      {
+        count: (_request: CountRequest, context: HandlerContext) => {
+          context.responseHeader.set("unary-response-header", "foo"); // set Response Header
+          context.responseTrailer.set("unary-response-trailer", "foo"); // set Response Trailer
+          return new CountResponse({ count: 1n });
+        },
       },
-    },
-    {
-      transport: {
-        interceptors: [
-          loggingInterceptor, // set an interceptor
-        ],
+      {
+        transport: {
+          interceptors: [
+            loggingInterceptor, // set an interceptor
+          ],
+        },
       },
-    });
+    );
   });
 ```
 
@@ -119,9 +122,12 @@ export const mockStatefulBigIntTransport = () =>
 Your client test for this might look something like:
 
 ```ts
-describe('your client test suite', () => {
-  it('tests a client calling a mock stateful server', async () => {
-    const client = createPromiseClient(BigIntService, mockStatefulBigIntTransport());
+describe("your client test suite", () => {
+  it("tests a client calling a mock stateful server", async () => {
+    const client = createPromiseClient(
+      BigIntService,
+      mockStatefulBigIntTransport(),
+    );
     let { count } = await client.count({ add: 1n });
     expect(count).toEqual(1n);
 

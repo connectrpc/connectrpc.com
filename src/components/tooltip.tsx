@@ -1,3 +1,17 @@
+// Copyright 2023 Buf Technologies, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 // Copied from buf core, replace once we publish design system somewhere these docs can use it from.
 
 import clsx from "clsx";
@@ -12,6 +26,7 @@ type TooltipProps = {
   activeClassName?: string;
   // leaveOn sets the tooltip to stay on if it's true
   leaveOn?: boolean;
+  children: React.ReactNode;
 };
 
 const Tooltip: React.FC<TooltipProps> = ({
@@ -19,7 +34,7 @@ const Tooltip: React.FC<TooltipProps> = ({
   classNameModifications = "",
   activeClassName = "",
   children,
-  leaveOn
+  leaveOn,
 }: PropsWithChildren<TooltipProps>) => {
   const [visible, setVisible] = useState<boolean>(false);
   const hidden = !visible;
@@ -35,11 +50,11 @@ const Tooltip: React.FC<TooltipProps> = ({
   return (
     <div
       className={clsx({
-        [activeClassName]: visible
+        [activeClassName]: visible,
       })}
       style={{
         display: "inline-block",
-        position: "relative"
+        position: "relative",
       }}
       onMouseEnter={() => {
         setVisible(true);
@@ -54,7 +69,7 @@ const Tooltip: React.FC<TooltipProps> = ({
       <div
         className={classNameModifications}
         style={{
-          display: hidden ? "none" : undefined
+          display: hidden ? "none" : undefined,
         }}
       >
         {content}

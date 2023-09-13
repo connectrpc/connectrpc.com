@@ -14,9 +14,9 @@ clients as you normally would. (If you're not sure what all the different
 timeouts mean, [this Cloudflare blog post][cloudflare-timeouts] is a good place
 to start.) There are a few RPC-specific nuances, though:
 
-* RPC clients tend to make many requests to relatively few hosts. On your HTTP
+- RPC clients tend to make many requests to relatively few hosts. On your HTTP
   client, you may want to increase `Transport.MaxIdleConnsPerHost`.
-* Most RPC servers don't use HTTP redirects, so you may want to configure your
+- Most RPC servers don't use HTTP redirects, so you may want to configure your
   clients to never follow them:
   ```go
   client := &http.Client{
@@ -25,9 +25,9 @@ to start.) There are a few RPC-specific nuances, though:
     }
   }
   ```
-* Connect always sets the `Accept-Encoding` HTTP header, so the client's
+- Connect always sets the `Accept-Encoding` HTTP header, so the client's
   `Transport.DisableCompression` has no effect on Connect RPCs.
-* Timeouts for streaming RPCs apply to the whole message exchange. Servers must
+- Timeouts for streaming RPCs apply to the whole message exchange. Servers must
   strike a balance between keeping timeouts reasonable for unary RPCs while
   still leaving enough time for streaming RPCs. Clients can use a compromise
   configuration or use separate HTTP clients for streaming and unary calls.
@@ -125,6 +125,7 @@ on other origins other than the server's own.
 
 CORS can be configured outside of Connect's Go APIs by using popular go libraries. The following example
 shows how to configure CORS with the [`github.com/rs/cors`](https://github.com/rs/cors) package:
+
 ```go
 mux := http.NewServeMux()
 mux.Handle(pingv1connect.NewPingServiceHandler(&PingServer{}))
@@ -157,6 +158,7 @@ corsHandler := cors.New(cors.Options{
 handler := corsHandler.Handler(mux)
 http.ListenAndServe(":8080", handler)
 ```
+
 Make sure to include application-specific request headers in the allowed headers,
 and response headers in the exposed headers. If your application uses trailers,
 they will be sent as header fields with a `Trailer-` prefix for Connect unary RPCs.

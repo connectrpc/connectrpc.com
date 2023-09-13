@@ -39,3 +39,9 @@ npmchecktypes:
 npmprose:
 	npm run prose
 
+.PHONY: licenseheader
+licenseheader:
+	npm run license-header
+
+.PHONY: ci
+ci: build fix lint licenseheader

@@ -7,11 +7,13 @@ Connect supports performing idempotent, side-effect free requests using an HTTP
 GET-based protocol. This makes it easier to cache certain kinds of requests in
 the browser, on your CDN, or in proxies and other middleboxes.
 
+This is done as per the requirements.
+
 First, configure your server to handle HTTP GET requests using Connect. Refer
 to the documentation that corresponds to your server:
 
-* [Connect Go](../go/get-requests-and-caching.md)
-* [Connect Node](../node/get-requests-and-caching.md)
+- [Connect Go](../go/get-requests-and-caching.md)
+- [Connect Node](../node/get-requests-and-caching.md)
 
 Afterwards, ensure that a new enough version of `@connectrpc/connect-web` is set
 up; HTTP GET support is available in Connect Web v0.9.0 or newer. Then, you can

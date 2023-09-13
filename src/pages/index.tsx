@@ -1,9 +1,26 @@
+// Copyright 2023 Buf Technologies, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 import React from "react";
 import Callout from "../components/home/Callout";
 import Features from "../components/home/Features";
 import Guides from "../components/home/Guides";
 import Hero from "../components/home/Hero";
-import { ThemeClassNames, useKeyboardNavigation } from "@docusaurus/theme-common/internal";
+import {
+  ThemeClassNames,
+  useKeyboardNavigation,
+} from "@docusaurus/theme-common/internal";
 import AnnouncementBar from "@theme/AnnouncementBar";
 import Footer from "@theme/Footer";
 import LayoutProviders from "@theme/Layout/Provider";
@@ -15,7 +32,6 @@ import NavBar from "@theme/Navbar";
 import { Divider } from "../components/home/divider";
 import { Examples } from "../components/home/examples";
 import { useMediaQuery } from "@react-hookz/web";
-import { NewsletterForm } from "@site/src/components/home/newsletter-form";
 
 import { callout } from "@site/src/components/home/text";
 import calloutStyles from "../components/home/Callout.module.css";
@@ -45,41 +61,13 @@ export default function Home(): JSX.Element {
           <Divider />
         </div>
         <Guides />
-        <NewsletterForm />
       </div>
       <div className={clsx(styles.footerBackground)}>
         <div className={clsx(styles.moreInfo, "container")}>
           <Callout />
-          <CommunityLinks />
         </div>
         <Footer />
       </div>
     </LayoutProviders>
   );
 }
-
-const CommunityLinks = () => {
-  const isSmall = useMediaQuery("screen and (max-width: 650px)");
-  const divider = <Divider style={{ margin: "0 30px", display: isSmall ? undefined : "none" }} />;
-  return (
-    <div className={styles.communityLinks}>
-      <CommunityLinkItem text="Our slack" href="https://buf.build/links/slack" />
-      {divider}
-      <CommunityLinkItem
-        text="Github"
-        href="https://github.com/connectrpc"
-      />
-      {divider}
-      <CommunityLinkItem text="Twitter" href="https://twitter.com/bufbuild" />
-    </div>
-  );
-};
-
-const CommunityLinkItem: React.FC<{ text: string; href: string }> = ({ text, href }) => {
-  return (
-    <a className={clsx(styles.goto, styles.communityLinkItem)} href={href}>
-      <span className={styles.gotoText}>{text}</span>
-      <span>&#8599;</span>
-    </a>
-  );
-};

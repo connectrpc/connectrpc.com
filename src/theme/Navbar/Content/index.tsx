@@ -1,8 +1,26 @@
+// Copyright 2023 Buf Technologies, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 import React from "react";
 import NavbarItem from "@theme/NavbarItem";
 import NavbarColorModeToggle from "@theme/Navbar/ColorModeToggle";
 import SearchBar from "@theme/SearchBar";
-import { splitNavbarItems, useNavbarMobileSidebar, useThemeConfig } from "@docusaurus/theme-common/internal";
+import {
+  splitNavbarItems,
+  useNavbarMobileSidebar,
+  useThemeConfig,
+} from "@docusaurus/theme-common/internal";
 import NavbarMobileSidebarToggle from "@theme/Navbar/MobileSidebar/Toggle";
 import NavbarLogo from "@theme/Navbar/Logo";
 import NavbarSearch from "@theme/Navbar/Search";
@@ -19,14 +37,22 @@ function useNavbarItems() {
 
 function NavbarItems({ items }: { items: NavbarItemConfig[] }): JSX.Element {
   const mobileSidebar = useNavbarMobileSidebar();
-  const renderedItems = items.map((item, i) => <NavbarItem {...item} key={i} />);
+  const renderedItems = items.map((item, i) => (
+    <NavbarItem {...item} key={i} />
+  ));
   if (mobileSidebar.shouldRender) {
     return <>{renderedItems}</>;
   }
   return <div className={styles.linkList}>{renderedItems}</div>;
 }
 
-function NavbarContentLayout({ left, right }: { left: React.ReactNode; right: React.ReactNode }) {
+function NavbarContentLayout({
+  left,
+  right,
+}: {
+  left: React.ReactNode;
+  right: React.ReactNode;
+}) {
   return (
     <div className={clsx("navbar__inner", styles.inner)}>
       <div className="navbar__items">{left}</div>
@@ -51,9 +77,9 @@ export default function NavbarContent() {
           <NavbarLogo />
           <NavbarItems items={leftItems} />
           <div className={styles.rightWrapper}>
-            <div className={styles.searchWrapper} >
+            <div className={styles.searchWrapper}>
               <NavbarSearch>
-                <SearchBar {...siteConfig.themeConfig.algolia as any} />
+                <SearchBar {...(siteConfig.themeConfig.algolia as any)} />
               </NavbarSearch>
             </div>
             <CreatedBy className="desktop-only" />

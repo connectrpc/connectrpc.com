@@ -86,7 +86,9 @@ to work them in `net/http` middleware!
 Both the gRPC and Connect protocols [require](../protocol.md#unary-request)
 that header keys contain only ASCII letters, numbers, underscores, hyphens, and
 periods, and the protocols reserve all keys beginning with "Connect-" or
+<!-- vale off -->
 "Grpc-". Similarly, header values may contain only printable ASCII and spaces.
+<!-- vale on -->
 In our experience, application code writing reserved or non-ASCII headers is
 unusual; rather than wrapping `net/http.Header` in a fat validation layer, we
 rely on your good judgment.

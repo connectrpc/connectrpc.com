@@ -173,17 +173,17 @@ variety of options that can be
 used to customize outputs. These options can be combined in the `opt` field of
 the `buf.gen.yaml` file as shown in the example above.
 
-| **Option** | **Type** | **Default** | **Repeatable** | **Details** |
-|---|:---:|:---:|:---:|---|
-| `ExtraModuleImports` | String | None | Yes | Allows for specifying additional modules that generated Connect sources should import |
-| `FileNaming` | String | `FullPath` | No | [Documentation](https://github.com/apple/swift-protobuf/blob/main/Documentation/PLUGIN.md#generation-option-filenaming---naming-of-generated-sources) |
-| `GenerateAsyncMethods` | Bool | `true` | No | Generates RPC functions that provide Swift async/await interfaces |
-| `GenerateCallbackMethods` | Bool | `false` | No | Generates RPC functions that provide closure-based callback interfaces |
-| `GenerateServiceMetadata` | Bool | `true` | No | Generates metadata on client implementations, providing information on RPC paths, stream types, etc. |
-| `KeepMethodCasing` | Bool | `false` | No | Generated RPC function names will match the `rpc` specified in the `.proto` file instead of being lower-camel-cased |
-| `ProtoPathModuleMappings` | Custom | None | No | [Documentation](https://github.com/apple/swift-protobuf/blob/main/Documentation/PLUGIN.md#generation-option-protopathmodulemappings---swift-module-names-for-proto-paths) |
-| `SwiftProtobufModuleName` | String | `SwiftProtobuf` | No | Allows for overriding the `SwiftProtobuf` module name in `import` statements. Useful if the `SwiftProtobuf` dependency is being renamed by custom build configurations |
-| `Visibility` | String | `Internal` | No | [Documentation](https://github.com/apple/swift-protobuf/blob/main/Documentation/PLUGIN.md#generation-option-visibility---visibility-of-generated-types) |
+| **Option**                | **Type** |   **Default**   | **Repeatable** | **Details**                                                                                                                                                               |
+| ------------------------- | :------: | :-------------: | :------------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ExtraModuleImports`      |  String  |      None       |      Yes       | Allows for specifying additional modules that generated Connect sources should import                                                                                     |
+| `FileNaming`              |  String  |   `FullPath`    |       No       | [Documentation](https://github.com/apple/swift-protobuf/blob/main/Documentation/PLUGIN.md#generation-option-filenaming---naming-of-generated-sources)                     |
+| `GenerateAsyncMethods`    |   Bool   |     `true`      |       No       | Generates RPC functions that provide Swift async/await interfaces                                                                                                         |
+| `GenerateCallbackMethods` |   Bool   |     `false`     |       No       | Generates RPC functions that provide closure-based callback interfaces                                                                                                    |
+| `GenerateServiceMetadata` |   Bool   |     `true`      |       No       | Generates metadata on client implementations, providing information on RPC paths, stream types, etc.                                                                      |
+| `KeepMethodCasing`        |   Bool   |     `false`     |       No       | Generated RPC function names will match the `rpc` specified in the `.proto` file instead of being lower-camel-cased                                                       |
+| `ProtoPathModuleMappings` |  Custom  |      None       |       No       | [Documentation](https://github.com/apple/swift-protobuf/blob/main/Documentation/PLUGIN.md#generation-option-protopathmodulemappings---swift-module-names-for-proto-paths) |
+| `SwiftProtobufModuleName` |  String  | `SwiftProtobuf` |       No       | Allows for overriding the `SwiftProtobuf` module name in `import` statements. Useful if the `SwiftProtobuf` dependency is being renamed by custom build configurations    |
+| `Visibility`              |  String  |   `Internal`    |       No       | [Documentation](https://github.com/apple/swift-protobuf/blob/main/Documentation/PLUGIN.md#generation-option-visibility---visibility-of-generated-types)                   |
 
 [available-plugins]: https://buf.build/plugins
 [buf]: https://buf.build/docs/

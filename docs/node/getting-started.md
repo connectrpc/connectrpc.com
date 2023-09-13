@@ -11,17 +11,15 @@ This ten-minute walkthrough helps you create a small Connect service in Node.js.
 It demonstrates what you'll be writing by hand, what Connect generates for you,
 and how to call your new API.
 
-
 ## Prerequisites
 
 We'll set up a project from scratch and then augment it to serve a new endpoint.
 
-* You'll need [Node.js](https://nodejs.dev/en/download) installed - we recommend the
+- You'll need [Node.js](https://nodejs.dev/en/download) installed - we recommend the
   most recent long-term support version (LTS).
-* We'll use the package manager `npm`, but we are also compatible with `yarn` and `pnpm`.
-* We'll also use [cURL](https://curl.se/). It's available from Homebrew and most Linux package
+- We'll use the package manager `npm`, but we are also compatible with `yarn` and `pnpm`.
+- We'll also use [cURL](https://curl.se/). It's available from Homebrew and most Linux package
   managers.
-
 
 ## Project setup
 
@@ -117,7 +115,6 @@ You should now see two generated TypeScript files:
 
 Next, we are going to use these files to implement our service.
 
-
 ## Implement the service
 
 We defined the `ElizaService` - now it's time to implement it, and register it
@@ -136,8 +133,8 @@ export default (router: ConnectRouter) =>
     // implements rpc Say
     async say(req) {
       return {
-        sentence: `You said: ${req.sentence}`
-      }
+        sentence: `You said: ${req.sentence}`,
+      };
     },
   });
 ```
@@ -146,7 +143,6 @@ That's it! There are many other alternatives to implementing a service, and you
 have access to a context object for headers and trailers, but let's keep it
 simple for now.
 
-
 ## Start a server
 
 Connect services can be plugged into vanilla Node.js servers, [Next.js](https://nextjs.org), [Express](https://expressjs.com/),
@@ -154,7 +150,7 @@ or [Fastify](https://www.fastify.io/). We are going to use Fastify here.
 Let's install it, along with our plugin for Fastify:
 
 ```bash
-$ npm install fastify @connectrpc/connect-node @connectrpc/connect-fastify 
+$ npm install fastify @connectrpc/connect-node @connectrpc/connect-fastify
 ```
 
 Create a new file `server.ts` with the following contents:
@@ -211,7 +207,7 @@ import { createConnectTransport } from "@connectrpc/connect-node";
 
 const transport = createConnectTransport({
   baseUrl: "http://localhost:8080",
-  httpVersion: "1.1"
+  httpVersion: "1.1",
 });
 
 async function main() {
@@ -230,7 +226,6 @@ $ npx tsx client.ts
 SayResponse { sentence: 'You said: I feel happy.' }
 ```
 
-
 Congratulations — you've built your first Connect service! 🎉
 
 ## From the browser
@@ -246,9 +241,9 @@ import { createConnectTransport } from "@connectrpc/connect-web";
 
 const transport = createConnectTransport({
   baseUrl: "http://localhost:8080",
-// highlight-next-line
+  // highlight-next-line
   // Not needed. Web browsers use HTTP/2 automatically.
-// highlight-next-line
+  // highlight-next-line
   // httpVersion: "1.1"
 });
 
@@ -265,8 +260,8 @@ void main();
 On Node.js, we support three protocols:
 
 - The gRPC protocol that is used throughout the gRPC ecosystem.
-- The gRPC-Web protocol used by [grpc/grpc-web](https://github.com/grpc/grpc-web),
-  allowing servers to interop with `grpc-web` frontends without the need
+- The gRPC-Web protocol used by [gRPC/gRPC-Web](https://github.com/grpc/grpc-web),
+  allowing servers to interop with `gRPC-Web` frontends without the need
   for an intermediary proxy (such as Envoy).
 - The new [Connect protocol](../protocol.md), a simple, HTTP-based protocol that
   works over HTTP/1.1 or HTTP/2. It takes the best portions of gRPC and gRPC-Web,
@@ -317,7 +312,7 @@ async function main() {
       // highlight-next-line
       cert: readFileSync("localhost+2.pem", "utf8"),
       // highlight-next-line
-    }
+    },
   });
   await server.register(fastifyConnectPlugin, {
     routes,
@@ -342,7 +337,6 @@ npx buf curl --protocol grpc --schema . -d '{"sentence": "I feel happy."}' \
 In your `client.ts`, update the URL and use HTTP version `2` and you're set. It
 will pick up the locally-trusted certificate authority, just like your web
 browser and other apps.
-
 
 ## So what?
 

@@ -57,7 +57,7 @@ response.error {
 ## Cancelation
 
 Generated methods have the `suspend` keyword on the method signature which will cancel the underlying
-request when the Kotlin Coroutine context is canceled.
+request when the Kotlin coroutine context is canceled.
 
 With the callback unary signature, the result is a canceling handler
 to give control to the user to manually cancel a request:

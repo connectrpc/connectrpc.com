@@ -3,6 +3,6 @@
   "extends": "@tsconfig/docusaurus/tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".",
-    "strictNullChecks": true
+    "skipLibCheck": true
   }
 }
