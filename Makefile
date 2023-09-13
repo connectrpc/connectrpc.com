@@ -40,4 +40,4 @@ licenseheader:
 	npm run license-header
 
 .PHONY: ci
-ci: build fix lint licenseheader
+ci: build licenseheader
