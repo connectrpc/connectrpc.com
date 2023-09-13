@@ -30,10 +30,7 @@ seriously, and we'll never break your build after tagging a stable release.
 Connect servers and clients support three protocols: gRPC, gRPC-Web, and
 Connect's own protocol.
 
-<!-- vale off -->
-
 - Connect fully supports the [gRPC protocol][grpc-protocol], including
-  <!-- vale on -->
   streaming, trailers, and error details. Any gRPC client, in any language, can
   call a Connect server, and Connect clients can call any gRPC server. We
   validate our gRPC compatibility with an [extended version][connect-conformance]
@@ -74,7 +71,7 @@ in production for a while. We plan to release a stable v1 in early 2023. However
 you can [get started now][web-getting-started].
 
 Connect for Node is currently in beta. We plan to release a stable v1
-alongside Connect for Web. You can [get started with `connect-node` now][node-getting-started].
+alongside Connect for Web.  You can [get started with `connect-node` now][node-getting-started].
 
 ## Swift and Kotlin
 

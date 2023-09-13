@@ -17,11 +17,11 @@ RPCs.
 
 This protocol aims to:
 
-- Be human-readable and debuggable with general-purpose HTTP tools, especially
+* Be human-readable and debuggable with general-purpose HTTP tools, especially
   for unary RPCs.
-- Remain conceptually close to [gRPC's HTTP/2 protocol][], so Connect
+* Remain conceptually close to [gRPC's HTTP/2 protocol][], so Connect
   implementations can support both protocols.
-- Depend only on widely-implemented HTTP features and specify behavior in terms
+* Depend only on widely-implemented HTTP features and specify behavior in terms
   of [high-level semantics][rfc-http-semantics], so that Connect
   implementations can easily use off-the-shelf networking libraries.
 
@@ -109,17 +109,17 @@ errors.
 
 ## Outline
 
-- **Request** &rarr; Unary-Request / Unary-Get-Request / Streaming-Request
-- **[Unary-Request](#unary-request)** &rarr; Unary-Request-Headers Bare-Message
-- **[Unary-Get-Request](#unary-get-request)** &rarr; Unary-Get-Request-Headers
-- **[Streaming-Request](#streaming-request)** &rarr; Streaming-Request-Headers \*Enveloped-Message
+* **Request** &rarr; Unary-Request / Unary-Get-Request / Streaming-Request
+* **[Unary-Request](#unary-request)** &rarr; Unary-Request-Headers Bare-Message
+* **[Unary-Get-Request](#unary-get-request)** &rarr; Unary-Get-Request-Headers
+* **[Streaming-Request](#streaming-request)** &rarr; Streaming-Request-Headers \*Enveloped-Message
 
 Clients send HTTP requests to servers. Unary requests contain exactly one
 message, while streaming requests contain zero or more messages.
 
-- **Response** &rarr; Unary-Response / Streaming-Response
-- **[Unary-Response](#unary-response)** &rarr; Unary-Response-Headers Bare-Message
-- **[Streaming-Response](#streaming-response)** &rarr; Streaming-Response-Headers 1\*Enveloped-Message
+* **Response** &rarr; Unary-Response / Streaming-Response
+* **[Unary-Response](#unary-response)** &rarr; Unary-Response-Headers Bare-Message
+* **[Streaming-Response](#streaming-response)** &rarr; Streaming-Response-Headers 1\*Enveloped-Message
 
 Servers return HTTP responses to clients. Unary responses contain exactly one
 message, while streaming responses contain one or more messages.
@@ -138,28 +138,28 @@ general-purpose HTTP tools.
 
 ### Unary-Request
 
-- **Unary-Request** &rarr; Unary-Request-Headers Bare-Message
-- **Unary-Request-Headers** &rarr; Unary-Call-Specification \*Leading-Metadata
-- **Unary-Call-Specification** &rarr; Method-Post Path Unary-Content-Type \[Connect-Protocol-Version\] \[Timeout\] \[Content-Encoding\] \[Accept-Encoding\]
-- **Method-Post** &rarr; ":method POST"
-- **Path** &rarr; ":path" "/" [Routing-Prefix "/"] Procedure-Name ; case-sensitive
-- **Routing-Prefix** &rarr; {_arbitrary prefix_}
-- **Procedure-Name** &rarr; {_IDL-specific service &amp; method name_} ; see [Protocol Buffers](#protobuf)
-- **Message-Codec** &rarr; ("proto" / "json" / {_custom_})
-- **Unary-Content-Type** &rarr; "content-type" "application/" Message-Codec
-- **Connect-Protocol-Version** &rarr; "connect-protocol-version" "1"
-- **Timeout** &rarr; "connect-timeout-ms" Timeout-Milliseconds
-- **Timeout-Milliseconds** &rarr; {_positive integer as ASCII string of at most 10 digits_}
-- **Content-Encoding** &rarr; "content-encoding" Content-Coding
-- **Content-Coding** &rarr; "identity" / "gzip" / "br" / "zstd" / {_custom_}
-- **Accept-Encoding** &rarr; "accept-encoding" Content-Coding \*("," [" "] Content-Coding) ; subset of HTTP quality value syntax
-- **Leading-Metadata** &rarr; Custom-Metadata
-- **Custom-Metadata** &rarr; ASCII-Metadata / Binary-Metadata
-- **ASCII-Metadata** &rarr; Header-Name ASCII-Value
-- **Binary-Metadata** &rarr; {Header-Name "-bin"} {base64-encoded value}
-- **Header-Name** &rarr; 1\*( %x30-39 / %x61-7A / "\_" / "-" / ".") ; 0-9 a-z \_ - .
-- **ASCII-Value** &rarr; 1\*( %x20-%x7E ) ; space &amp; printable ASCII
-- **Bare-Message** &rarr; \*{binary octet}
+* **Unary-Request** &rarr; Unary-Request-Headers Bare-Message
+* **Unary-Request-Headers** &rarr; Unary-Call-Specification \*Leading-Metadata
+* **Unary-Call-Specification** &rarr; Method-Post Path Unary-Content-Type \[Connect-Protocol-Version\] \[Timeout\] \[Content-Encoding\] \[Accept-Encoding\]
+* **Method-Post** &rarr; ":method POST"
+* **Path** &rarr; ":path" "/" [Routing-Prefix "/"] Procedure-Name ; case-sensitive
+* **Routing-Prefix** &rarr; {_arbitrary prefix_}
+* **Procedure-Name** &rarr; {_IDL-specific service &amp; method name_} ; see [Protocol Buffers](#protobuf)
+* **Message-Codec** &rarr; ("proto" / "json" / {_custom_})
+* **Unary-Content-Type** &rarr; "content-type" "application/" Message-Codec
+* **Connect-Protocol-Version** &rarr; "connect-protocol-version" "1"
+* **Timeout** &rarr; "connect-timeout-ms" Timeout-Milliseconds
+* **Timeout-Milliseconds** &rarr; {_positive integer as ASCII string of at most 10 digits_}
+* **Content-Encoding** &rarr; "content-encoding" Content-Coding
+* **Content-Coding** &rarr; "identity" / "gzip" / "br" / "zstd" / {_custom_}
+* **Accept-Encoding** &rarr; "accept-encoding" Content-Coding \*("," [" "] Content-Coding) ; subset of HTTP quality value syntax
+* **Leading-Metadata** &rarr; Custom-Metadata
+* **Custom-Metadata** &rarr; ASCII-Metadata / Binary-Metadata
+* **ASCII-Metadata** &rarr; Header-Name ASCII-Value
+* **Binary-Metadata** &rarr; {Header-Name "-bin"} {base64-encoded value}
+* **Header-Name** &rarr; 1\*( %x30-39 / %x61-7A / "\_" / "-" / ".") ; 0-9 a-z \_ - .
+* **ASCII-Value** &rarr; 1\*( %x20-%x7E ) ; space &amp; printable ASCII
+* **Bare-Message** &rarr; *{binary octet}
 
 **Unary-Request-Headers** are sent as &mdash; and have the same semantics as
 &mdash; HTTP headers. Servers may respond with an error if the client sends too
@@ -209,16 +209,16 @@ called the body).
 
 ### Unary-Get-Request
 
-- **Unary-Get-Request** &rarr; Unary-Get-Request-Headers
-- **Unary-Get-Request-Headers** &rarr; Unary-Get-Call-Specification \*Leading-Metadata
-- **Unary-Get-Call-Specification** &rarr; Method-Get Path "?" Query-Get \[Timeout\] \[Accept-Encoding\]
-- **Method-Get** &rarr; ":method GET"
-- **Query-Get** &rarr; Message-Query Encoding-Query \[Base64-Query\] \[Compression-Query\] \[Connect-Version-Query\]
-- **Message-Query** &rarr; "message=" (\*{percent-encoded octet})
-- **Base64-Query** &rarr; "&base64=1"
-- **Encoding-Query** &rarr; "&encoding=" Message-Codec
-- **Compression-Query** &rarr; "&compression=" Content-Coding
-- **Connect-Version-Query** &rarr; "&connect=v1"
+* **Unary-Get-Request** &rarr; Unary-Get-Request-Headers
+* **Unary-Get-Request-Headers** &rarr; Unary-Get-Call-Specification \*Leading-Metadata
+* **Unary-Get-Call-Specification** &rarr; Method-Get Path "?" Query-Get \[Timeout\] \[Accept-Encoding\]
+* **Method-Get** &rarr; ":method GET"
+* **Query-Get** &rarr; Message-Query Encoding-Query \[Base64-Query\] \[Compression-Query\] \[Connect-Version-Query\]
+* **Message-Query** &rarr; "message=" (*{percent-encoded octet})
+* **Base64-Query** &rarr; "&base64=1"
+* **Encoding-Query** &rarr; "&encoding=" Message-Codec
+* **Compression-Query** &rarr; "&compression=" Content-Coding
+* **Connect-Version-Query** &rarr; "&connect=v1"
 
 **Unary-Get-Request** is a special variant of the unary request designed to
 utilize only ordinary HTTP GET requests, for side-effect-free RPCs such as
@@ -295,13 +295,13 @@ an HTTP status code of 400.
 
 ### Unary-Response
 
-- **Unary-Response** &rarr; Unary-Response-Headers Bare-Message
-- **Unary-Response-Headers** &rarr; HTTP-Status Unary-Content-Type \[Content-Encoding\] \[Accept-Encoding\] \*Leading-Metadata \*Prefixed-Trailing-Metadata
-- **HTTP-Status** &rarr; ":status" ("200" / {_error code translated to HTTP_})
-- **Prefixed-Trailing-Metadata** &rarr; Prefixed-ASCII-Metadata / Prefixed-Binary-Metadata
-- **Prefixed-ASCII-Metadata** &rarr; Prefixed-Header-Name ASCII-Value
-- **Prefixed-Binary-Metadata** &rarr; {Prefixed-Header-Name "-bin"} {base64-encoded value}
-- **Prefixed-Header-Name** &rarr; "trailer-" Header-Name
+* **Unary-Response** &rarr; Unary-Response-Headers Bare-Message
+* **Unary-Response-Headers** &rarr; HTTP-Status Unary-Content-Type \[Content-Encoding\] \[Accept-Encoding\] \*Leading-Metadata \*Prefixed-Trailing-Metadata
+* **HTTP-Status** &rarr; ":status" ("200" / {_error code translated to HTTP_})
+* **Prefixed-Trailing-Metadata** &rarr; Prefixed-ASCII-Metadata / Prefixed-Binary-Metadata
+* **Prefixed-ASCII-Metadata** &rarr; Prefixed-Header-Name ASCII-Value
+* **Prefixed-Binary-Metadata** &rarr; {Prefixed-Header-Name "-bin"} {base64-encoded value}
+* **Prefixed-Header-Name** &rarr; "trailer-" Header-Name
 
 **Unary-Response-Headers** are sent as &mdash; and have the same semantics as
 &mdash; HTTP headers. This includes **Prefixed-Trailing-Metadata**: though it's
@@ -416,16 +416,16 @@ RPC types may be unavailable.
 
 ### Streaming-Request
 
-- **Streaming-Request** &rarr; Streaming-Request-Headers \*Enveloped-Message
-- **Streaming-Request-Headers** &rarr; Streaming-Call-Specification \*Leading-Metadata
-- **Streaming-Call-Specification** &rarr; Method-Post Path Streaming-Content-Type \[Connect-Protocol-Version\] \[Timeout\] \[Streaming-Content-Encoding\] \[Streaming-Accept-Encoding\]
-- **Streaming-Content-Type** &rarr; "content-type" "application/connect+" ("proto" / "json" / {_custom_})
-- **Streaming-Content-Encoding** &rarr; "connect-content-encoding" Content-Coding
-- **Streaming-Accept-Encoding** &rarr; "connect-accept-encoding" Content-Coding \*("," [" "] Content-Coding)
-- **Enveloped-Message** &rarr; Envelope-Flags Message-Length Message
-- **Envelope-Flags** &rarr; %d0-255 ; 8 bitwise flags encoded as 1 byte unsigned integer
-- **Message-Length** &rarr; {_length of Message_} ; encoded as 4 byte unsigned integer, big-endian
-- **Message** &rarr; \*{binary octet}
+* **Streaming-Request** &rarr; Streaming-Request-Headers \*Enveloped-Message
+* **Streaming-Request-Headers** &rarr; Streaming-Call-Specification \*Leading-Metadata
+* **Streaming-Call-Specification** &rarr; Method-Post Path Streaming-Content-Type \[Connect-Protocol-Version\] \[Timeout\] \[Streaming-Content-Encoding\] \[Streaming-Accept-Encoding\]
+* **Streaming-Content-Type** &rarr; "content-type" "application/connect+" ("proto" / "json" / {_custom_})
+* **Streaming-Content-Encoding** &rarr; "connect-content-encoding" Content-Coding
+* **Streaming-Accept-Encoding** &rarr; "connect-accept-encoding" Content-Coding \*("," [" "] Content-Coding)
+* **Enveloped-Message** &rarr; Envelope-Flags Message-Length Message
+* **Envelope-Flags** &rarr; %d0-255 ; 8 bitwise flags encoded as 1 byte unsigned integer
+* **Message-Length** &rarr; {_length of Message_} ; encoded as 4 byte unsigned integer, big-endian
+* **Message** &rarr; *{binary octet}
 
 If **Streaming-Content-Type** does not begin with "application/connect+",
 servers should respond with an HTTP status of 415 Unsupported Media Type. This
@@ -439,23 +439,23 @@ rules as **Content-Encoding** and **Accept-Encoding**.
 The HTTP request content is a sequence of zero or more **Enveloped-Message**.
 The first byte is **Envelope-Flags**, a set of 8 bitwise flags.
 
-- If the least significant bit is 1, the **Message** is compressed using the
+* If the least significant bit is 1, the **Message** is compressed using the
   algorithm specified in **Streaming-Content-Encoding**. If
   **Streaming-Content-Encoding** is omitted or "identity", this bit must be 0.
   Compression contexts are not maintained over message boundaries.
-- If the next least significant bit is 1, the **Message** is an
+* If the next least significant bit is 1, the **Message** is an
   [EndStreamResponse](#error-end-stream) rather than the response type
   defined in the service's IDL. Response streams must set this bit on the final
   **Enveloped-Message** in the stream, and must leave this bit unset on all
   other messages in the stream. Request streams must always leave this bit
   unset. (Note that this is not the same as the gRPC-Web protocol, which uses
   the _most_ significant bit to mark trailers.)
-- The six most significant bits are reserved for future protocol extensions.
+* The six most significant bits are reserved for future protocol extensions.
 
 ### Streaming-Response
 
-- **Streaming-Response** &rarr; Streaming-Response-Headers 1\*Enveloped-Message
-- **Streaming-Response-Headers** &rarr; ":status 200" Streaming-Content-Type \[Streaming-Content-Encoding\] \[Streaming-Accept-Encoding\] \*Leading-Metadata
+* **Streaming-Response** &rarr; Streaming-Response-Headers 1\*Enveloped-Message
+* **Streaming-Response-Headers** &rarr; ":status 200" Streaming-Content-Type \[Streaming-Content-Encoding\] \[Streaming-Accept-Encoding\] \*Leading-Metadata
 
 Streaming responses always have an HTTP status of 200 OK. As noted above,
 server implementations must send an [EndStreamResponse](#error-end-stream)
@@ -503,24 +503,24 @@ Connect represents categories of errors as codes, and each code maps to a
 specific HTTP status code. The codes and their semantics were chosen to match
 gRPC. Only the codes below are valid &mdash; there are no user-defined codes.
 
-| Code                | HTTP Status               | Description                                                                                                                                                 |
-| ------------------- | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| canceled            | 408 Request Timeout       | RPC canceled, usually by the caller.                                                                                                                        |
-| unknown             | 500 Internal Server Error | Catch-all for errors of unclear origin and errors without a more appropriate code.                                                                          |
-| invalid_argument    | 400 Bad Request           | Request is invalid, regardless of system state.                                                                                                             |
-| deadline_exceeded   | 408 Request Timeout       | Deadline expired before RPC could complete or before the client received the response.                                                                      |
-| not_found           | 404 Not Found             | User requested a resource (for example, a file or directory) that can't be found.                                                                           |
-| already_exists      | 409 Conflict              | Caller attempted to create a resource that already exists.                                                                                                  |
-| permission_denied   | 403 Forbidden             | Caller isn't authorized to perform the operation.                                                                                                           |
-| resource_exhausted  | 429 Too Many Requests     | Operation can't be completed because some resource is exhausted. Use unavailable if the server is temporarily overloaded and the caller should retry later. |
-| failed_precondition | 412 Precondition Failed   | Operation can't be completed because the system isn't in the required state.                                                                                |
-| aborted             | 409 Conflict              | The operation was aborted, often because of concurrency issues like a database transaction abort.                                                           |
-| out_of_range        | 400 Bad Request           | The operation was attempted past the valid range.                                                                                                           |
-| unimplemented       | 404 Not Found             | The operation isn't implemented, supported, or enabled.                                                                                                     |
-| internal            | 500 Internal Server Error | An invariant expected by the underlying system has been broken. Reserved for serious errors.                                                                |
-| unavailable         | 503 Service Unavailable   | The service is currently unavailable, usually transiently. Clients should back off and retry idempotent operations.                                         |
-| data_loss           | 500 Internal Server Error | Unrecoverable data loss or corruption.                                                                                                                      |
-| unauthenticated     | 401 Unauthorized          | Caller doesn't have valid authentication credentials for the operation.                                                                                     |
+| Code | HTTP Status | Description |
+| ---- | ----------- | ----------- |
+| canceled | 408 Request Timeout | RPC canceled, usually by the caller. |
+| unknown | 500 Internal Server Error | Catch-all for errors of unclear origin and errors without a more appropriate code. |
+| invalid_argument | 400 Bad Request | Request is invalid, regardless of system state. |
+| deadline_exceeded | 408 Request Timeout | Deadline expired before RPC could complete or before the client received the response. |
+| not_found | 404 Not Found | User requested a resource (for example, a file or directory) that can't be found. |
+| already_exists | 409 Conflict | Caller attempted to create a resource that already exists. |
+| permission_denied | 403 Forbidden | Caller isn't authorized to perform the operation. |
+| resource_exhausted | 429 Too Many Requests | Operation can't be completed because some resource is exhausted. Use unavailable if the server is temporarily overloaded and the caller should retry later. |
+| failed_precondition | 412 Precondition Failed | Operation can't be completed because the system isn't in the required state. |
+| aborted | 409 Conflict | The operation was aborted, often because of concurrency issues like a database transaction abort. |
+| out_of_range | 400 Bad Request | The operation was attempted past the valid range. |
+| unimplemented | 404 Not Found | The operation isn't implemented, supported, or enabled. |
+| internal | 500 Internal Server Error | An invariant expected by the underlying system has been broken. Reserved for serious errors. |
+| unavailable | 503 Service Unavailable | The service is currently unavailable, usually transiently. Clients should back off and retry idempotent operations. |
+| data_loss | 500 Internal Server Error | Unrecoverable data loss or corruption. |
+| unauthenticated | 401 Unauthorized | Caller doesn't have valid authentication credentials for the operation. |
 
 When choosing between invalid_argument, failed_precondition, and out_of_range,
 use invalid_argument if the failure is independent of the system state. For
@@ -556,23 +556,23 @@ unknown or internal), Connect maps to the semantically-equivalent error code.
 
 #### HTTP to Error Code {#http-to-error-code}
 
-| HTTP Status                         | Inferred Code       |
-| ----------------------------------- | ------------------- |
-| 400 Bad Request                     | invalid_argument    |
-| 401 Unauthorized                    | unauthenticated     |
-| 403 Forbidden                       | permission_denied   |
-| 404 Not Found                       | unimplemented       |
-| 408 Request Timeout                 | deadline_exceeded   |
-| 409 Conflict                        | aborted             |
-| 412 Precondition Failed             | failed_precondition |
-| 413 Payload Too Large               | resource_exhausted  |
-| 415 Unsupported Media Type          | internal            |
-| 429 Too Many Requests               | unavailable         |
-| 431 Request Header Fields Too Large | resource_exhausted  |
-| 502 Bad Gateway                     | unavailable         |
-| 503 Service Unavailable             | unavailable         |
-| 504 Gateway Timeout                 | unavailable         |
-| _all others_                        | unknown             |
+| HTTP Status | Inferred Code |
+| ----------- | ------------- |
+| 400 Bad Request | invalid_argument |
+| 401 Unauthorized | unauthenticated |
+| 403 Forbidden | permission_denied |
+| 404 Not Found | unimplemented |
+| 408 Request Timeout | deadline_exceeded |
+| 409 Conflict | aborted |
+| 412 Precondition Failed | failed_precondition |
+| 413 Payload Too Large | resource_exhausted |
+| 415 Unsupported Media Type | internal |
+| 429 Too Many Requests | unavailable |
+| 431 Request Header Fields Too Large | resource_exhausted |
+| 502 Bad Gateway | unavailable |
+| 503 Service Unavailable | unavailable |
+| 504 Gateway Timeout | unavailable |
+| _all others_ | unknown |
 
 ## Error and EndStreamResponse {#error-end-stream}
 
@@ -609,11 +609,12 @@ resulting object under the "debug" key. Clients must not depend on data in the
     {
       "type": "google.rpc.RetryInfo",
       "value": "CgIIPA",
-      "debug": { "retryDelay": "30s" }
+      "debug": {"retryDelay": "30s"},
     }
   ]
 }
 ```
+
 
 An `EndStreamMessage` is the final message in streaming response. It conveys
 whether or not the RPC succeeded and any trailing metadata. Trailing metadata
@@ -645,9 +646,9 @@ After a successful RPC, `EndStreamResponse` can be as simple as `{}`.
 
 When used with Protocol Buffer IDL,
 
-- **Procedure-Name** &rarr; ?( {_proto package name_} "." ) {_service name_} "/" {_method name_}
-- **Unary-Content-Type** &rarr; "content-type application/" ("proto" / "json")
-- **Streaming-Content-Type** &rarr; "content-type application/connect+" ("proto" / "json")
+* **Procedure-Name** &rarr; ?( {_proto package name_} "." ) {_service name_} "/" {_method name_}
+* **Unary-Content-Type** &rarr; "content-type application/" ("proto" / "json")
+* **Streaming-Content-Type** &rarr; "content-type application/connect+" ("proto" / "json")
 
 Choose the "proto" content types for binary serialization and the "json" types
 to use the canonical JSON mapping.

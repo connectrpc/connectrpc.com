@@ -3,6 +3,7 @@ title: Errors
 sidebar_position: 5
 ---
 
+
 <!--
 TODO
 
@@ -11,6 +12,8 @@ TODO
 - link to mapped clients for Either or neverthrow?
 
 -->
+
+
 
 Similar to the familiar "404 Not Found" and "500 Internal Server Error" status
 codes you may have seen in HTTP, Connect uses a set of [16 error codes](/docs/protocol#error-codes).
@@ -31,6 +34,7 @@ With the gRPC-web protocol, errors are usually not human-readable, but
 Connect provides a common type that represents errors consistently across
 all supported protocols.
 
+
 ## Working with errors
 
 All errors are represented by [`ConnectError`](https://github.com/connectrpc/connect-es/blob/1c1dc4cfd300e120d07a486f488d5693139f9dee/packages/connect/src/connect-error.ts#L27),
@@ -41,22 +45,23 @@ any error that occurred during a call:
 import { ConnectError } from "@connectrpc/connect";
 
 try {
-  await client.say({ sentence: "" });
+  await client.say({sentence: ""});
 } catch (err) {
   // We have to verify err is a ConnectError
   // before using it as one.
   if (err instanceof ConnectError) {
-    err.code; // Code.InvalidArgument
+    err.code;    // Code.InvalidArgument
     err.message; // "[invalid_argument] sentence cannot be empty"
   }
   // Alternatively, we can use ConnectError.from()
   // It returns a ConnectError as is, and converts any
   // other error to a ConnectError.
   const connectErr = ConnectError.from(err);
-  connectErr.code; // Code.InvalidArgument
+  connectErr.code;    // Code.InvalidArgument
   connectErr.message; // "[invalid_argument] sentence cannot be empty"
 }
 ```
+
 
 ## Error codes
 
@@ -74,6 +79,7 @@ let name = Code[code]; // "InvalidArgument"
 let val: Code = Code["InvalidArgument"]; // 3
 ```
 
+
 ## Error messages
 
 The `message` property contains a descriptive error message. In most cases,
@@ -90,6 +96,7 @@ if (err.code == Code.InvalidArgument) {
 }
 ```
 
+
 ## Metadata
 
 If you catch an error, your program takes an exception from the regular code
@@ -101,6 +108,7 @@ simple `Headers` object:
 err.metadata.get("Custom-Header-Value");
 err.metadata.get("Custom-Trailer-Value");
 ```
+
 
 ## Error details
 
@@ -119,9 +127,8 @@ import { ConnectError } from "@connectrpc/connect";
 import { LocalizedMessage } from "./error_details_pb.js";
 
 function handle(err: ConnectError) {
-  const localized = err
-    .findDetails(LocalizedMessage)
-    .find((i) => i.locale === navigator.language);
+  const localized = err.findDetails(LocalizedMessage)
+    .find(i => i.locale === navigator.language);
   console.log(localized?.message);
 }
 ```
@@ -132,6 +139,7 @@ in this example, but any protobuf message can be transmitted as error details.
 Alternatively, `findDetails()` takes a registry as an argument. See the
 [protobuf-es documentation](https://github.com/bufbuild/protobuf-es/blob/main/docs/runtime_api.md#registries)
 for details.
+
 
 ## Cancellation
 

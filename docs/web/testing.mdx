@@ -47,15 +47,15 @@ const mockTransport = createRouterTransport(({ service }) => {
       sentences.push(request.sentence);
       // highlight-next-line
       if (sentences.length > 3) {
-        // highlight-next-line
+      // highlight-next-line
         throw new ConnectError(
-          // highlight-next-line
+      // highlight-next-line
           "I have no words anymore.",
-          // highlight-next-line
+      // highlight-next-line
           Code.ResourceExhausted,
-          // highlight-next-line
+      // highlight-next-line
         );
-        // highlight-next-line
+      // highlight-next-line
       }
       return new SayResponse({
         sentence: `You said ${sentences.length} sentences.`,
@@ -138,6 +138,7 @@ Mocking `fetch` itself is a common approach to testing network requests, but it 
 - An in-memory transport is fast, so you can quickly set up your tests without worrying about resetting mocks.
 - With an in-memory transport, you can eliminate the need for [spy functions](https://jestjs.io/docs/jest-object#jestspyonobject-methodname) because you can implement any checks directly in your server implementation. This can simplify your testing code and make it easier to understand.
 - You can leverage `expect` directly within the code of your mock implementation to verify particular scenarios pertaining to the requests or responses.
+
 
 ## End-to-end testing
 

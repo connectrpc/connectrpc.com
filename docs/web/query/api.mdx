@@ -12,14 +12,14 @@ const createQueryService: <Service extends ServiceType>({
 }: {
   service: Service;
   transport?: Transport;
-}) => QueryHooks<Service>;
+}) => QueryHooks<Service>
 ```
 
 `createQueryService` is the main entrypoint for Connect-Query.
 
-Pass in a service and you will receive an object with properties for each of your services and values that provide hooks for those services that you can then give to Tanstack Query. The `ServiceType` TypeScript interface is provided by Protobuf-ES (`@bufbuild/protobuf`) while generated service definitions are provided by Connect-Web (`@connectrpc/connect-web`).
+Pass in a service and you will receive an object with properties for each of your services and values that provide hooks for those services that you can then give to Tanstack Query.  The `ServiceType` TypeScript interface is provided by Protobuf-ES (`@bufbuild/protobuf`) while generated service definitions are provided by Connect-Web (`@connectrpc/connect-web`).
 
-`Transport` refers to the mechanism by which your client will make the actual network calls. If you want to use a custom transport, you can optionally provide one with a call to `useTransport`, which Connect-Query exports. Otherwise, the default transport from React context will be used. This default transport is placed on React context by the `TransportProvider`. Whether you pass a custom transport or you use `TransportProvider`, in both cases you'll need to use one of `@connectrpc/connect-web`'s exports `createConnectTransport` or `createGrpcWebTransport`.
+`Transport` refers to the mechanism by which your client will make the actual network calls.  If you want to use a custom transport, you can optionally provide one with a call to `useTransport`, which Connect-Query exports.  Otherwise, the default transport from React context will be used.  This default transport is placed on React context by the `TransportProvider`. Whether you pass a custom transport or you use `TransportProvider`, in both cases you'll need to use one of `@connectrpc/connect-web`'s exports `createConnectTransport` or `createGrpcWebTransport`.
 
 Note that the most memory performant approach is to use the transport on React Context by using the `TransportProvider` because that provider is memoized by React, but also that any calls to `createQueryService` with the same service is cached by this function.
 
@@ -48,19 +48,17 @@ const { data, isLoading, ...etc } = useQuery(say.useQuery());
 > Note: This API can only be used with React
 
 ```ts
-const TransportProvider: FC<
-  PropsWithChildren<{
-    transport: Transport;
-  }>
->;
+const TransportProvider: FC<PropsWithChildren<{
+  transport: Transport;
+}>>;
 ```
 
 `TransportProvider` is the main mechanism by which Connect-Query keeps track of the `Transport` used by your application.
 
 Broadly speaking, "transport" joins two concepts:
 
-1. The protocol of communication. For this there are two options: the [Connect Protocol](https://connectrpc.com/docs/protocol/), or the [gRPC-Web Protocol](https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-WEB.md).
-1. The protocol options. The primary important piece of information here is the `baseUrl`, but there are also other potentially critical options like request credentials and binary wire format encoding options.
+  1. The protocol of communication.  For this there are two options: the [Connect Protocol](https://connectrpc.com/docs/protocol/), or the [gRPC-Web Protocol](https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-WEB.md).
+  1. The protocol options.  The primary important piece of information here is the `baseUrl`, but there are also other potentially critical options like request credentials and binary wire format encoding options.
 
 With these two pieces of information in hand, the transport provides the critical mechanism by which your app can make network requests.
 
@@ -110,23 +108,23 @@ Use this to create a data object that can be used as `placeholderData` or initia
 
 ```ts
 const createUseQueryOptions: (
-  input: DisableQuery | PartialMessage<I> | undefined,
-  options: {
-    getPlaceholderData?: (enabled: boolean) => PartialMessage<O> | undefined;
-    onError?: (error: ConnectError) => void;
-    transport: Transport;
-    callOptions?: CallOptions | undefined;
-  },
+ input: DisableQuery | PartialMessage<I> | undefined,
+ options: {
+   getPlaceholderData?: (enabled: boolean) => PartialMessage<O> | undefined;
+   onError?: (error: ConnectError) => void;
+   transport: Transport;
+   callOptions?: CallOptions | undefined;
+ },
 ) => {
-  enabled: boolean;
-  queryKey: ConnectQueryKey<I>;
-  queryFn: (context?: QueryFunctionContext<ConnectQueryKey<I>>) => Promise<O>;
-  placeholderData?: () => O | undefined;
-  onError?: (error: ConnectError) => void;
+ enabled: boolean;
+ queryKey: ConnectQueryKey<I>;
+ queryFn: (context?: QueryFunctionContext<ConnectQueryKey<I>>) => Promise<O>;
+ placeholderData?: () => O | undefined;
+ onError?: (error: ConnectError) => void;
 };
 ```
 
-`createUseQueryOptions` is intended to be used with TanStack's [`useQuery`](https://tanstack.com/query/v4/docs/react/reference/useQuery) hook. The difference is that `createUseQueryOptions` is not a hook. Since hooks cannot be called conditionally, it can sometimes be helpful to use `createUseQueryOptions` to prepare an input to TanStack's `useQuery`.
+`createUseQueryOptions` is intended to be used with TanStack's [`useQuery`](https://tanstack.com/query/v4/docs/react/reference/useQuery) hook.  The difference is that `createUseQueryOptions` is not a hook.  Since hooks cannot be called conditionally, it can sometimes be helpful to use `createUseQueryOptions` to prepare an input to TanStack's `useQuery`.
 
 It is also useful to use alongside TanStack's [`useQueries`](https://tanstack.com/query/v4/docs/react/reference/useQueries) hook since hooks cannot be called in loops.
 
@@ -141,12 +139,10 @@ This helper is useful for getting query keys matching a wider set of queries ass
 ## `UnaryHooks.getQueryKey`
 
 ```ts
-const getQueryKey: (
-  input?: DisableQuery | PartialMessage<I>,
-) => ConnectQueryKey<I>;
+const getQueryKey: (input?: DisableQuery | PartialMessage<I>) => ConnectQueryKey<I>;
 ```
 
-This helper is useful to manually compute the [`queryKey`](https://tanstack.com/query/v4/docs/react/guides/query-keys) sent to TanStack Query. This function has no side effects.
+This helper is useful to manually compute the [`queryKey`](https://tanstack.com/query/v4/docs/react/guides/query-keys) sent to TanStack Query.  This function has no side effects.
 
 ## `UnaryHooks.methodInfo`
 
@@ -160,9 +156,14 @@ This is the metadata associated with this method.
 
 ```ts
 const setQueryData: (
-  updater: PartialMessage<O> | ((prev?: O) => PartialMessage<O>),
+  updater: PartialMessage<O> | (
+    (prev?: O) => PartialMessage<O>
+  ),
   input?: PartialMessage<I>,
-) => [queryKey: ConnectQueryKey<I>, updater: (prev?: O) => O | undefined];
+) => [
+  queryKey: ConnectQueryKey<I>,
+  updater: (prev?: O) => O | undefined
+];
 ```
 
 This helper is intended to be used with TanStack Query `QueryClient`'s [`setQueryData`](https://tanstack.com/query/v4/docs/react/reference/QueryClient#queryclientsetquerydata) function.
@@ -171,8 +172,13 @@ This helper is intended to be used with TanStack Query `QueryClient`'s [`setQuer
 
 ```ts
 const setQueriesData: (
-  updater: PartialMessage<O> | ((prev?: O) => PartialMessage<O>),
-) => [queryKey: ConnectPartialQueryKey, updater: (prev?: O) => O | undefined];
+  updater: PartialMessage<O> | (
+    (prev?: O) => PartialMessage<O>
+  ),
+) => [
+  queryKey: ConnectPartialQueryKey,
+  updater: (prev?: O) => O | undefined
+];
 ```
 
 This helper is intended to be used with TanStack Query `QueryClient`'s [`setQueriesData`](https://tanstack.com/query/v4/docs/react/reference/QueryClient#queryclientsetqueriesdata) function.
@@ -272,7 +278,7 @@ For example, a query key might look like this:
   "example.v1.ExampleService",
   "GetTodos",
   { id: "0fdf2ebe-9a0c-4366-9772-cfb21346c3f9" },
-];
+]
 ```
 
 ## `ConnectPartialQueryKey`
@@ -280,11 +286,17 @@ For example, a query key might look like this:
 This type is useful In situations where you want to use partial matching for TanStack Query `queryKey`s.
 
 ```ts
-type ConnectPartialQueryKey = [serviceTypeName: string, methodName: string];
+type ConnectPartialQueryKey = [
+  serviceTypeName: string,
+  methodName: string,
+];
 ```
 
 For example, a partial query key might look like this:
 
 ```ts
-["example.v1.ExampleService", "GetTodos"];
+[
+  "example.v1.ExampleService",
+  "GetTodos",
+]
 ```

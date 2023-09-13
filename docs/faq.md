@@ -45,7 +45,7 @@ still allowing your code to interoperate with the larger gRPC ecosystem.
 
 ### Why are numbers serialized as strings in JSON?
 
-Javascript's `Number` is an IEEE 754 double-precision float: even though it
+JavaScript's `Number` is an IEEE 754 double-precision float: even though it
 occupies 64 bits of memory, some of the space is reserved for the fractional
 portion of the number. There's just not enough space left to represent 64-bit
 integers! To make absolutely sure that integers are handled correctly, the

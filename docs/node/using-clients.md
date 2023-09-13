@@ -14,11 +14,11 @@ import { createConnectTransport } from "@connectrpc/connect-node";
 
 // highlight-next-line
 const transport = createConnectTransport({
-  // highlight-next-line
+// highlight-next-line
   httpVersion: "1.1",
-  // highlight-next-line
+// highlight-next-line
   baseUrl: "http://demo.connectrpc.com",
-  // highlight-next-line
+// highlight-next-line
 });
 
 async function main() {
@@ -38,6 +38,7 @@ Under the hood, the transports from [@connectrpc/connect-node](https://www.npmjs
 use the built-in Node modules `http`, `https`, and `http2` instead of the fetch
 API. The allows us to provide a transport for gRPC and bidi streaming. Node.js
 v18 comes with fetch(), but it is limited to HTTP 1.1.
+
 
 ## Connect
 
@@ -60,6 +61,7 @@ const transport = createConnectTransport({
 });
 ```
 
+
 ## gRPC
 
 The function `createGrpcTransport()` creates a transport for the gRPC protocol.
@@ -79,6 +81,8 @@ const transport = createGrpcTransport({
   interceptors: [],
 });
 ```
+
+
 
 ## gRPC-web
 
