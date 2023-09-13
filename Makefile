@@ -3,7 +3,7 @@ build:
 	npm run build
 
 .PHONY: lint
-lint: npmlint npmchecktypes npmprose
+lint: npmlint npmchecktypes
 
 .PHONY: format
 format:
@@ -34,10 +34,6 @@ npmlint:
 .PHONY: npmchecktypes
 npmchecktypes:
 	npm run check:types
-
-.PHONY: npmprose
-npmprose:
-	npm run prose
 
 .PHONY: licenseheader
 licenseheader:

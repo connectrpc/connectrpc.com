@@ -31,8 +31,9 @@ Connect servers and clients support three protocols: gRPC, gRPC-Web, and
 Connect's own protocol.
 
 <!-- vale off -->
+
 - Connect fully supports the [gRPC protocol][grpc-protocol], including
-<!-- vale on -->
+  <!-- vale on -->
   streaming, trailers, and error details. Any gRPC client, in any language, can
   call a Connect server, and Connect clients can call any gRPC server. We
   validate our gRPC compatibility with an [extended version][connect-conformance]
