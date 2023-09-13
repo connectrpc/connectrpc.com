@@ -154,7 +154,7 @@ or [Fastify](https://www.fastify.io/). We are going to use Fastify here.
 Let's install it, along with our plugin for Fastify:
 
 ```bash
-$ npm install fastify @connectrpc/connect @connectrpc/connect-node @connectrpc/connect-fastify 
+$ npm install fastify @connectrpc/connect-node @connectrpc/connect-fastify 
 ```
 
 Create a new file `server.ts` with the following contents:

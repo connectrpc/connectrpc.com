@@ -44,6 +44,10 @@ for Node.js. We highly recommend it if you want to serve anything else along
 with your Connect RPCs. Use the plugin from [@connectrpc/connect-fastify](https://www.npmjs.com/package/@connectrpc/connect-fastify)
 with Fastify:
 
+```bash
+$ npm install fastify @connectrpc/connect-node @connectrpc/connect-fastify
+```
+
 ```ts
 import { fastify } from "fastify";
 import routes from "./connect";
@@ -70,6 +74,10 @@ dependencies of  `@connectrpc/connect-fastify`.
 using the latest React features. With [@connectrpc/connect-next](https://www.npmjs.com/package/@connectrpc/connect-next),
 you can serve your Connect RPCs via Next.js API Routes.
 
+```bash
+$ npm install next @connectrpc/connect-node @connectrpc/connect-next
+```
+
 To enable the server plugin, create the file `pages/api/[[...connect]].ts` in your project:
 
 ```ts
@@ -84,14 +92,17 @@ This file is a Next.js [catch-all API route](https://nextjs.org/docs/routing/dyn
 serve your Connect RPCs with the `/api` prefix. Make sure to include the `/api` prefix in the `baseUrl` option for
 your client transport.
 
-Note that Next.js does not support the http2 module. Also, `@connectrpc/connect` and `@connectrpc/connect-node` are 
-peer dependencies of `@connectrpc/connect-next`.
+Note that Next.js does not support the http2 module.
 
 ## Express
 
 [Express](https://expressjs.com/) has been around for a long time, and it's still
 popular because of its simplicity. Use the middleware provided by [@connectrpc/connect-express](https://www.npmjs.com/package/@connectrpc/connect-express)
 to add your Connect RPCs to Express:
+
+```bash
+$ npm install express @connectrpc/connect-node @connectrpc/connect-express
+```
 
 ```ts
 import http from "http";
@@ -117,8 +128,7 @@ will serve the RPC foo.FooService/Bar under "/something/foo.FooService/Bar".
 Note that many gRPC client implementations do not allow for prefixes.
 
 
-Note that Express does not support the `http2` module. Also, `@connectrpc/connect` and `@connectrpc/connect-node` are 
-peer dependencies of `@connectrpc/connect-express`.
+Note that Express does not support the `http2` module.
 
 
 ## Common options
