@@ -3,19 +3,27 @@ title: Testing
 sidebar_position: 5
 ---
 
-## Testing a client application
+## Testing services
 
-Testing a client application can be a crucial part of ensuring its functionality and performance. When it comes to TypeScript projects, you can utilize the `createRouterTransport` method from `@connectrpc/connect` to create a mock transport that can be used in both backend and frontend applications.
+There are multiple ways for testing your Connect-Node services each with their own benefits. Below are some examples:
 
-For backend applications, it can be useful to create mock transports within the context of unit tests. By integrating the actual logic of your application and testing it incrementally, you can ensure that each part of your application is functioning as expected.
+### Testing against a running server
+With this approach, we run a full HTTP server over TPC, and use regular clients to call procedures, asserting that the result matches expectations.
 
-On the other hand, for frontend applications, it may not always be feasible or desirable to test against an actual API. In such cases, you can utilize a mocked Connect backend to test your application.
+This way you get a behavior that is closest to a real deployment. This approach works well with plain Node.js, Fastify, and Express. It let's you test other routes besides connect routes that your server might implement, including middleware.
 
-To help you get started with testing your client application, here is a guide on how to use `createRouterTransport` to create mock transports for your TypeScript projects.
+Note that we do not recommend fastify.inject() for testing Connect routes. fastify.inject() is a great tool, but using it means you have to handle details of the protocol like content-types and status codes yourself. This is rather straight-forward for Connect unary, but much less so for streaming RPCs, or the gRPC or gRPC-web protocols.
 
-### A simple mock to test a client
+### Testing against an in-memory server
+With this approach, we testust connect routes, no other routes or middleware that your server might implement. We use createRouterTransport from @connectrpc/connect. It is a special transport that does not make HTTP requests over the network, but calls the supplied connect routes instead. We create clients with this transport, and call procedures, asserting that the result matches expectations.
 
-No matter whether your client is Node.js with Connect-Node or a web frontend with Connect-Web or Connect-Query, you can use `createRouterTransport` to write tests.
+The behavior is not as close to a real deployment because we are not going through the network, but request and response messages are serialized, and headers, trailers, errors and other Connect features are supported.
+
+This approach works well with Next.js, where spinning up a full server in tests is not trivial.
+
+### Unit testing a service
+We side-step TCP and HTTP, and call service methods directly. This approach is useful for unit testing, making it trivial to inject test-only dependencies via the constructor.
+
 
 To illustrate, let's start with a simple `BigIntService` proto definition:
 
@@ -131,12 +139,3 @@ describe('your client test suite', () => {
 });
 ```
 
-### What about mocking `fetch` itself?
-
-Mocking `fetch` itself is a common approach to testing network requests, but it has some drawbacks. Instead, using a schema-based serialization chain with an in-memory transport can be a better approach. Here are some reasons why:
-
-- With schema-based serialization, the request goes through the same process as it would in your actual code, allowing you to test the full flow of your application.
-- You can create stateful mocks with an in-memory transport, which can test more complex workflows and scenarios.
-- An in-memory transport is fast, so you can quickly set up your tests without worrying about resetting mocks.
-- With an in-memory transport, you can eliminate the need for [spy functions](https://jestjs.io/docs/jest-object#jestspyonobject-methodname) because you can implement any checks directly in your server implementation. This can simplify your testing code and make it easier to understand.
-- You can leverage `expect` directly within the code of your mock implementation to verify particular scenarios pertaining to the requests or responses.
