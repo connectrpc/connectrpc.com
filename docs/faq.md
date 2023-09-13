@@ -45,7 +45,7 @@ still allowing your code to interoperate with the larger gRPC ecosystem.
 
 ### Why are numbers serialized as strings in JSON?
 
-JavaScript's `Number` is an IEEE 754 double-precision float: even though it
+Javascript's `Number` is an IEEE 754 double-precision float: even though it
 occupies 64 bits of memory, some of the space is reserved for the fractional
 portion of the number. There's just not enough space left to represent 64-bit
 integers! To make absolutely sure that integers are handled correctly, the
@@ -65,6 +65,7 @@ evolve without breaking existing clients: simply adding a field to a response wi
 Connect clients and servers will ignore unknown fields, provided that the
 underlying implementation allows us to do so.
 
+
 ## Go
 
 ### Why use generics?
@@ -77,7 +78,7 @@ generics to `connect-go` eliminated two significant sources of complexity:
   Connect without `protoc-gen-connect-go`. The generic stream types, like
   `BidirectionalStream`, are much clearer than the equivalent code generation
   templates.
-- We don't need to attach any values to the context, because Connect's generic
+* We don't need to attach any values to the context, because Connect's generic
   `Request` and `Response` structs can carry headers and trailers explicitly.
   This makes data flow obvious and avoids any confusion about inbound and
   outbound metadata.
@@ -93,12 +94,12 @@ separate, Connect-specific Go package and imports the base types.
 
 This serves a few purposes:
 
-- It keeps the base types lightweight, so _every_ package that works with
+* It keeps the base types lightweight, so _every_ package that works with
   Protobuf messages doesn't drag along an RPC framework.
-- It avoids name collisions. Many Protobuf plugins &mdash; including
+* It avoids name collisions. Many Protobuf plugins &mdash; including
   `protoc-gen-go-grpc` &mdash; generate code alongside the base types, so the
   package namespace becomes very crowded.
-- It keeps the contents of the base types package constant. This isn't critical
+* It keeps the contents of the base types package constant. This isn't critical
   when generating code locally, but it's critical to making [remote packages] and [remote plugins]
   work.
 
@@ -150,7 +151,7 @@ compatible with existing gRPC-web backends. See [Choosing a protocol](/docs/web/
 
 Connect uses the Protobuf runtime provided by [Protobuf-ES](https://github.com/bufbuild/protobuf-es).
 Additionally, the code generator plugin used by Connect-ES is based on the plugin
-framework also provided by Protobuf-ES. For any questions you may have about this library,
+framework also provided by Protobuf-ES.  For any questions you may have about this library,
 visit the [Protobuf-ES FAQ page](https://github.com/bufbuild/protobuf-es/blob/main/docs/faq.md).
 
 ### How do I provide a type registry for sending or receiving Any?
