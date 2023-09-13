@@ -89,7 +89,7 @@ const config = {
         links: [],
         copyright: `Copyright © ${
           new Date().getFullYear() != 2022 ? "2022&ndash;" : ""
-        }${new Date().getFullYear()} Buf Technologies, Inc.`
+        }${new Date().getFullYear()} The Connect Authors`
       },
       prism: {
         theme: lightCodeTheme,

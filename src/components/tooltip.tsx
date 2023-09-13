@@ -1,7 +1,3 @@
-// Copyright 2020-2022 Buf Technologies, Inc.
-//
-// All rights reserved.
-
 // Copied from buf core, replace once we publish design system somewhere these docs can use it from.
 
 import clsx from "clsx";
