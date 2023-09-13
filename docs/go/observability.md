@@ -6,7 +6,6 @@ sidebar_position: 65
 Connect stays close to `net/http`, which means any logging, tracing, or metrics that work with an `http.Handler` or `http.Client` will also work with Connect. In particular, the [otelhttp](https://pkg.go.dev/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp) OpenTelemetry package and the [ochttp](https://pkg.go.dev/go.opencensus.io/plugin/ochttp) OpenCensus package both integrate seamlessly with Connect servers and clients.
 
 For more detailed, RPC-focused metrics, use the [otelconnect] package. [otelconnect] works with your [OpenTelemetry] metrics and tracing setup to capture information such as:
-
 - `rpc.system`: Was this call gRPC, gRPC-Web, or Connect?
 - `rpc.service` and `rpc.method`: What service and method was called?
 - `responses_per_rpc`: How many messages were written to streaming responses?
@@ -63,10 +62,10 @@ By default, this will use:
 ## Using custom MeterProvider, TraceProvider and TextMapPropagators
 
 When running multiple applications in a single binary, or if different sections of code should use different exporters, pass the correct exporters to [otelconnect.NewInterceptor] explicitly:
-
 - [otelconnect.WithTracerProvider] to set the TracerProvider
 - [otelconnect.WithMeterProvider] to set the MeterProvider
 - [otelconnect.WithPropagator] to set the TextMapPropagator
+
 
 ```go
 // newInterceptor instruments Connect clients and handlers using custom OpenTelemetry metrics, tracing, and propagation.

@@ -9,7 +9,7 @@
     "serve": "docusaurus serve",
     "swizzle": "docusaurus swizzle",
     "check:types": "tsc --noEmit",
-    "format": "prettier --write .",
+    "format": "prettier --write --ignore-unknown '.' '!*.md' '!*.mdx'",
     "lint": "eslint .",
     "lint:fix": "eslint --fix",
     "write:translations": "docusaurus write-translations",

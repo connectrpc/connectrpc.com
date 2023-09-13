@@ -72,7 +72,7 @@ underlying implementation allows us to do so.
 Generic code is inherently more complex than non-generic code. Still, introducing
 generics to `connect-go` eliminated two significant sources of complexity:
 
-- Generics let us generate less code, especially for streaming RPCs &mdash; if
+* Generics let us generate less code, especially for streaming RPCs &mdash; if
   you're willing to write out some long URLs, it's now just as easy to use
   Connect without `protoc-gen-connect-go`. The generic stream types, like
   `BidirectionalStream`, are much clearer than the equivalent code generation
