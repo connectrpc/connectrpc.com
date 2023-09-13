@@ -275,6 +275,78 @@ func testBidirectionalStreamMessagingViewModel() async {
 }
 ```
 
+## Testing with `@Sendable` closures
+
+If your codebase is not yet using `async`/`await` and is instead consuming
+generated clients that provide completion/result closures which are annotated
+with `@Sendable`, writing tests can prove challenging. For example:
+
+```swift
+func testGetUser() {
+    let client = Users_V1_UsersMock()
+    client.mockGetUserInfo = { request in
+        return ResponseMessage(result: .success(...))
+    }
+
+    var receivedMessage: Users_V1_UserInfoResponse?
+    client.getUserInfo(request: Users_V1_UserInfoRequest()) { response in
+        //highlight-next-line
+        // ERROR: Mutation of captured var 'receivedMessage' in concurrently-executing code
+        //highlight-next-line
+        receivedMessage = response.message
+    }
+    XCTAssertEqual(receivedMessage?.name, "jane")
+}
+```
+
+One workaround for this is to wrap the captured type with a class
+that conforms to `Sendable`. For example:
+
+```swift
+public final class Locked<T>: @unchecked Sendable {
+    private let lock = NSLock()
+    private var wrappedValue: T
+
+    /// Thread-safe access to the underlying value.
+    public var value: T {
+        get {
+            self.lock.lock()
+            defer { self.lock.unlock() }
+            return self.wrappedValue
+        }
+        set {
+            self.lock.lock()
+            self.wrappedValue = newValue
+            self.lock.unlock()
+        }
+    }
+
+    public init(_ value: T) {
+        self.wrappedValue = value
+    }
+}
+```
+
+The above error can be solved by updating the test to use this wrapper:
+
+```swift
+func testGetUser() {
+    let client = Users_V1_UsersMock()
+    client.mockGetUserInfo = { request in
+        return ResponseMessage(result: .success(...))
+    }
+
+    //highlight-next-line
+    let receivedMessage = Locked<Users_V1_UserInfoResponse?>(nil)
+    client.getUserInfo(request: Users_V1_UserInfoRequest()) { response in
+        //highlight-next-line
+        receivedMessage.value = response.message
+    }
+    //highlight-next-line
+    XCTAssertEqual(receivedMessage.value?.name, "jane")
+}
+```
+
 [connect-swift]: https://github.com/bufbuild/connect-swift
 [connect-swift-plugin]: https://buf.build/bufbuild/connect-swift
 [connect-swift-mocks-plugin]: https://buf.build/bufbuild/connect-swift-mocks
