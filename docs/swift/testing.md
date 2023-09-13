@@ -141,7 +141,7 @@ import Foundation
 import SwiftProtobuf
 
 /// Mock implementation of `Connectrpc_Eliza_V1_ElizaServiceClientInterface`.
-public final class Connectrpc_Eliza_V1_ElizaServiceClientMock: Connectrpc_Eliza_V1_ElizaServiceClientInterface, @unchecked Sendable {
+open class Connectrpc_Eliza_V1_ElizaServiceClientMock: Connectrpc_Eliza_V1_ElizaServiceClientInterface, @unchecked Sendable {
     private var cancellables = [Combine.AnyCancellable]()
 
     /// Mocked for calls to `say()`.
@@ -156,21 +156,21 @@ public final class Connectrpc_Eliza_V1_ElizaServiceClientMock: Connectrpc_Eliza_
     public init() {}
 
     @discardableResult
-    public func `say`(request: Connectrpc_Eliza_V1_SayRequest, headers: Headers = [:], completion: @escaping @Sendable (ResponseMessage<Connectrpc_Eliza_V1_SayResponse>) -> Void) -> Cancelable {
+    open func `say`(request: Connectrpc_Eliza_V1_SayRequest, headers: Headers = [:], completion: @escaping @Sendable (ResponseMessage<Connectrpc_Eliza_V1_SayResponse>) -> Void) -> Cancelable {
         completion(self.mockSay(request))
         return Cancelable {}
     }
 
-    public func `say`(request: Connectrpc_Eliza_V1_SayRequest, headers: Headers = [:]) async -> ResponseMessage<Connectrpc_Eliza_V1_SayResponse> {
+    open func `say`(request: Connectrpc_Eliza_V1_SayRequest, headers: Headers = [:]) async -> ResponseMessage<Connectrpc_Eliza_V1_SayResponse> {
         return self.mockAsyncSay(request)
     }
 
-    public func `converse`(headers: Headers = [:], onResult: @escaping @Sendable (StreamResult<Connectrpc_Eliza_V1_ConverseResponse>) -> Void) -> any BidirectionalStreamInterface<Connectrpc_Eliza_V1_ConverseRequest> {
+    open func `converse`(headers: Headers = [:], onResult: @escaping @Sendable (StreamResult<Connectrpc_Eliza_V1_ConverseResponse>) -> Void) -> any BidirectionalStreamInterface<Connectrpc_Eliza_V1_ConverseRequest> {
         self.mockConverse.$inputs.first { !$0.isEmpty }.sink { _ in self.mockConverse.outputs.forEach(onResult) }.store(in: &self.cancellables)
         return self.mockConverse
     }
 
-    public func `converse`(headers: Headers = [:]) -> any BidirectionalAsyncStreamInterface<Connectrpc_Eliza_V1_ConverseRequest, Connectrpc_Eliza_V1_ConverseResponse> {
+    open func `converse`(headers: Headers = [:]) -> any BidirectionalAsyncStreamInterface<Connectrpc_Eliza_V1_ConverseRequest, Connectrpc_Eliza_V1_ConverseResponse> {
         return self.mockAsyncConverse
     }
 }
