@@ -40,7 +40,6 @@ export default function Guides() {
   return (
     <div className={styles.guideBackground} id="guides">
       <div className="container">
-        <h2 className={styles.mainTitle}>Connect Guides</h2>
         <div className={styles.guideList}>
           <Guide
             enabled

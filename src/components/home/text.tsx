@@ -39,11 +39,11 @@ export type GuideProps = {
 /// Front page hero
 export const tagline = <>Simple, reliable, interoperable.</>;
 
-export const subTagline = <>A better gRPC.</>;
+export const subTagline = <>Protobuf RPC that works.</>;
 
 export const description = (
   <>
-    Connect is a family of libraries for building browser and gRPC-compatible HTTP APIs. If
+    Connect is a family of libraries for building browser and gRPC-compatible APIs. If
     you&apos;re tired of hand-written boilerplate and turned off by massive frameworks, Connect is
     for you.
   </>
@@ -99,7 +99,7 @@ export const featureList: FeatureItem[] = [
         <Link to="https://developers.google.com/protocol-buffers">Protocol Buffers</Link>, the
         industry&apos;s most battle-tested schema definition language, and skip the hand-written
         boilerplate. Connect handles server-side routing, serialization, and compression, and it
-        generates idiomatic clients in Go and TypeScript.
+        generates idiomatic clients in Go, TypeScript, Swift, and Kotlin.
       </>
     )
   }

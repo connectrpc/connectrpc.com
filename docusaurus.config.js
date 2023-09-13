@@ -6,7 +6,7 @@ const gaTrackingID = process.env.GOOGLE_ANALYTICS_GTAG ?? "";
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: "Connect",
-  tagline: "Simple, reliable, interoperable. A better gRPC.", // Used for description metadata
+  tagline: "Simple, reliable, interoperable: Protobuf RPC that works.", // Used for description metadata
   url: "https://connectrpc.com",
   baseUrl: "/",
   onBrokenLinks: "throw",
@@ -89,7 +89,7 @@ const config = {
         links: [],
         copyright: `Copyright © ${
           new Date().getFullYear() != 2022 ? "2022&ndash;" : ""
-        }${new Date().getFullYear()} Buf Technologies, Inc.`
+        }${new Date().getFullYear()} The Connect Authors`
       },
       prism: {
         theme: lightCodeTheme,
