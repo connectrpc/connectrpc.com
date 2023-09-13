@@ -109,7 +109,7 @@ function Footer(): JSX.Element | null {
   ];
   const legalLinks: FooterLinkItem[] = [
     {
-      label: "Terms of use",
+      label: "Terms",
       to: "https://www.linuxfoundation.org/terms",
     },
     {
