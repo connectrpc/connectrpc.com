@@ -234,7 +234,7 @@ final class ElizaAppTests: XCTestCase {
         let client = Connectrpc_Eliza_V1_ElizaServiceClientMock()
         client.mockAsyncSay = { request in
             XCTAssertEqual(request.sentence, "hello!")
-            return ResponseMessage(message: .with { $0.sentence = "hi, i'm eliza!" })
+            return ResponseMessage(result: .success(.with { $0.sentence = "hi, i'm eliza!" }))
         }
 
         let viewModel = MessagingViewModel(elizaClient: client)
