@@ -1,10 +1,23 @@
+// Copyright 2022-2023 The Connect Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import { GuideProps } from "@site/src/components/home/text";
 import clsx from "clsx";
 import React from "react";
 import { Divider } from "./divider";
 import styles from "./Guides.module.css";
-import { NewsletterForm } from "./newsletter-form";
 
 const Guide = ({ title, description, logos, href }: GuideProps) => {
   return (
@@ -12,12 +25,19 @@ const Guide = ({ title, description, logos, href }: GuideProps) => {
       <div
         className={styles.titleAndIcon}
         style={{
-          flexGrow: 1
+          flexGrow: 1,
         }}
       >
         <div className={styles.logoContainer}>
           {logos.map((logo) => {
-            return <img key={logo} alt={title} src={useBaseUrl(logo)} className={styles.logo} />;
+            return (
+              <img
+                key={logo}
+                alt={title}
+                src={useBaseUrl(logo)}
+                className={styles.logo}
+              />
+            );
           })}
         </div>
         <div>
@@ -26,7 +46,9 @@ const Guide = ({ title, description, logos, href }: GuideProps) => {
         </div>
       </div>
 
-      <Divider style={{ width: "100%", marginBottom: "1.5rem", marginTop: "1.5rem" }} />
+      <Divider
+        style={{ width: "100%", marginBottom: "1.5rem", marginTop: "1.5rem" }}
+      />
 
       <a className={styles.goto} href={href}>
         <span className={styles.gotoText}>Go to guide </span>
@@ -40,7 +62,6 @@ export default function Guides() {
   return (
     <div className={styles.guideBackground} id="guides">
       <div className="container">
-        <h2 className={styles.mainTitle}>Connect Guides</h2>
         <div className={styles.guideList}>
           <Guide
             enabled
@@ -108,22 +129,13 @@ const ComingSoon = () => {
           <p
             className={styles.title}
             style={{
-              marginBottom: 0
+              marginBottom: 0,
             }}
           >
             JavaScript &amp; TypeScript
           </p>
-          <p
-            style={{
-              marginTop: "10px",
-              marginBottom: "18px"
-            }}
-          >
-            Join the newsletter to stay updated.
-          </p>
         </div>
       </div>
-      <NewsletterForm />
     </div>
   );
 };

@@ -98,13 +98,14 @@ touch buf.gen.yaml
 version: v1
 plugins:
   - plugin: buf.build/bufbuild/connect-swift
-    opt: >
-      GenerateAsyncMethods=true,
-      GenerateCallbackMethods=true,
-      Visibility=Public
+    opt:
+      - GenerateAsyncMethods=true
+      - GenerateCallbackMethods=true
+      - Visibility=Public
     out: Generated
   - plugin: buf.build/apple/swift
-    opt: Visibility=Public
+    opt:
+      - Visibility=Public
     out: Generated
 ```
 
@@ -143,7 +144,7 @@ In the popup window, click into the `Search or Enter Package URL` text field
 in the top right and paste the Connect-Swift GitHub URL:
 
 ```
-https://github.com/bufbuild/connect-swift
+https://github.com/connectrpc/connect-swift
 ```
 
 Ensure the `Connect` library is selected, then
@@ -184,7 +185,11 @@ using Swift Package Manager due to the fact that
 ## Integrate into the app
 
 First, add the generated `.swift` files from the previous steps to your
-project by dragging the `Generated` directory into Xcode.
+project:
+
+- Drag the `Generated` directory into Xcode and drop it alongside the `ContentView.swift` file.
+- When prompted, ensure that `Eliza` is selected under `Add to targets:` in Xcode. This will make sure the generated sources get compiled into your application target.
+- Click `Finish` in the Xcode prompt.
 
 At this point, your app should build successfully.
 
@@ -492,13 +497,13 @@ enabling you to use Connect-Swift without the SwiftNIO dependency.
 [buf.gen.yaml]: https://buf.build/docs/configuration/v1/buf-gen-yaml
 [buf.yaml]: https://buf.build/docs/configuration/v1/buf-yaml
 [connect-go]: https://github.com/connectrpc/connect-go
-[connect-swift]: https://github.com/bufbuild/connect-swift
+[connect-swift]: https://github.com/connectrpc/connect-swift
 [envoy-grpc-bridge]: https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_filters/connect_grpc_bridge_filter
 [go-demo]: https://github.com/connectrpc/examples-go
 [grpc]: https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md
 [grpc-swift]: https://github.com/grpc/grpc-swift
 [grpc-web]: https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-WEB.md
-[more-examples]: https://github.com/bufbuild/connect-swift/tree/main/Examples
+[more-examples]: https://github.com/connectrpc/connect-swift/tree/main/Examples
 [protobuf]: https://developers.google.com/protocol-buffers
 [remote-plugins]: https://buf.build/docs/bsr/remote-plugins/usage
 [swift-protobuf]: https://github.com/apple/swift-protobuf

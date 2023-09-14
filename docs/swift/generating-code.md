@@ -75,17 +75,18 @@ file is shown below:
 version: v1
 plugins:
   - plugin: buf.build/bufbuild/connect-swift
-    opt: >
-      GenerateAsyncMethods=true,
-      GenerateCallbackMethods=true,
-      Visibility=Public
+    opt:
+      - GenerateAsyncMethods=true
+      - GenerateCallbackMethods=true
+      - Visibility=Public
     out: Generated
   - plugin: buf.build/apple/swift
-    opt: Visibility=Public
+    opt:
+      - Visibility=Public
     out: Generated
 ```
 
-This file specifies that the [Connect-Swift plugin][connect-swift-plugin]
+This file specifies that the [`connect-swift` plugin][connect-swift-plugin]
 should be invoked with the options in `opt`, and that its outputs should be
 placed in the `Generated` directory. This plugin is responsible for generating
 `.connect.swift` files which contain Swift protocol interfaces and their
@@ -116,6 +117,36 @@ generated Swift files in the `Generated` directory:
 Generated
     ├── eliza.connect.swift
     └── eliza.pb.swift
+```
+
+## Local generation
+
+Both the [`connect-swift`][connect-swift-plugin]
+and [`connect-swift-mocks`][connect-swift-mocks-plugin] plugins are regular
+Protobuf plugins which can be used with `protoc` and `buf` to generate
+code locally.
+
+The easiest way to install these plugins is to download their executables
+from the latest [GitHub release][connect-swift-releases] and install them in
+your `PATH`.
+
+The [same setup used for remote plugins above](#remote-plugins) applies to
+local generation, except the `buf.gen.yaml` file should be modified to use
+local plugins instead of remote plugins:
+
+```yaml
+version: v1
+plugins:
+  - plugin: connect-swift # protoc-gen-connect-swift in your PATH
+    opt:
+      - GenerateAsyncMethods=true
+      - GenerateCallbackMethods=true
+      - Visibility=Public
+    out: Generated
+  - plugin: swift # protoc-gen-swift in your PATH
+    opt:
+      - Visibility=Public
+    out: Generated
 ```
 
 ## Using generated code
@@ -159,9 +190,10 @@ the `buf.gen.yaml` file as shown in the example above.
 [buf.gen.yaml]: https://buf.build/docs/configuration/v1/buf-gen-yaml
 [buf.yaml]: https://buf.build/docs/configuration/v1/buf-yaml
 [buf-cli]: https://buf.build/docs/installation
-[connect-swift]: https://github.com/bufbuild/connect-swift
-[connect-swift-plugin]: https://buf.build/bufbuild/connect-swift
-[connect-swift-mocks-plugin]: https://buf.build/bufbuild/connect-swift-mocks
+[connect-swift]: https://github.com/connectrpc/connect-swift
+[connect-swift-mocks-plugin]: https://buf.build/connectrpc/connect-swift-mocks
+[connect-swift-plugin]: https://buf.build/connectrpc/connect-swift
+[connect-swift-releases]: https://github.com/connectrpc/connect-swift/releases
 [protobuf]: https://developers.google.com/protocol-buffers
 [remote-plugins]: https://buf.build/docs/bsr/remote-plugins/usage
 [swift-protobuf-plugin]: https://buf.build/apple/swift
