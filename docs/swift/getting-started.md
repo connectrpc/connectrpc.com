@@ -98,13 +98,14 @@ touch buf.gen.yaml
 version: v1
 plugins:
   - plugin: buf.build/bufbuild/connect-swift
-    opt: >
-      GenerateAsyncMethods=true,
-      GenerateCallbackMethods=true,
-      Visibility=Public
+    opt:
+      - GenerateAsyncMethods=true
+      - GenerateCallbackMethods=true
+      - Visibility=Public
     out: Generated
   - plugin: buf.build/apple/swift
-    opt: Visibility=Public
+    opt:
+      - Visibility=Public
     out: Generated
 ```
 
@@ -184,7 +185,11 @@ using Swift Package Manager due to the fact that
 ## Integrate into the app
 
 First, add the generated `.swift` files from the previous steps to your
-project by dragging the `Generated` directory into Xcode.
+project:
+
+- Drag the `Generated` directory into Xcode and drop it alongside the `ContentView.swift` file.
+- When prompted, ensure that `Eliza` is selected under `Add to targets:` in Xcode. This will make sure the generated sources get compiled into your application target.
+- Click `Finish` in the Xcode prompt.
 
 At this point, your app should build successfully.
 

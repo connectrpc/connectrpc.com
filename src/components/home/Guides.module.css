@@ -41,14 +41,6 @@
   height: var(--card-logo-height);
 }
 
-.mainTitle {
-  font-family: var(--ifm-font-family-base);
-  font-weight: 200;
-  font-size: 32px;
-  margin: 0;
-  padding-bottom: 33px;
-}
-
 .title {
   font-size: var(--card-title-font-size);
   font-family: var(--ifm-font-family-base);

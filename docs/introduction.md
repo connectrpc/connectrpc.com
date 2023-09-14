@@ -33,7 +33,7 @@ Connect's own protocol.
 - Connect fully supports the [gRPC protocol][grpc-protocol], including
   streaming, trailers, and error details. Any gRPC client, in any language, can
   call a Connect server, and Connect clients can call any gRPC server. We
-  validate our gRPC compatibility with an [extended version][connect-crosstest]
+  validate our gRPC compatibility with an [extended version][connect-conformance]
   of Google's own interoperability tests.
 - Connect also offers direct support for the [gRPC-Web
   protocol][grpcweb-protocol] used by [grpc/grpc-web][grpcweb], without relying
@@ -91,7 +91,7 @@ implementations for Rails, Django, Laravel, and similar frameworks.
 You shouldn't have to choose between these productive toolkits and
 Protocol Buffers &mdash; they should work seamlessly together.
 
-[connect-crosstest]: https://github.com/bufbuild/connect-crosstest
+[connect-conformance]: https://github.com/connectrpc/conformance
 [connect-go]: https://github.com/connectrpc/connect-go
 [connect-kotlin]: https://github.com/bufbuild/connect-kotlin
 [connect-swift]: https://github.com/connectrpc/connect-swift

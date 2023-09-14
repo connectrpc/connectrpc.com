@@ -21,21 +21,22 @@ version: v1
 plugins:
   # Generated models
   - plugin: buf.build/apple/swift
-    opt: Visibility=Public
+    opt:
+      - Visibility=Public
     out: Generated
   # Production generated services/methods
   - plugin: buf.build/bufbuild/connect-swift
-    opt: >
-      GenerateAsyncMethods=true,
-      GenerateCallbackMethods=true,
-      Visibility=Public
+    opt:
+      - GenerateAsyncMethods=true
+      - GenerateCallbackMethods=true
+      - Visibility=Public
     out: Generated
   # Mock generated services/methods
   - plugin: buf.build/bufbuild/connect-swift-mocks
-    opt: >
-      GenerateAsyncMethods=true,
-      GenerateCallbackMethods=true,
-      Visibility=Public
+    opt:
+      - GenerateAsyncMethods=true
+      - GenerateCallbackMethods=true
+      - Visibility=Public
     out: GeneratedMocks
 ```
 
@@ -86,19 +87,19 @@ import Connect
 import Foundation
 import SwiftProtobuf
 
-public protocol Connectrpc_Eliza_V1_ElizaServiceClientInterface {
+public protocol Connectrpc_Eliza_V1_ElizaServiceClientInterface: Sendable {
     @discardableResult
-    func `say`(request: Connectrpc_Eliza_V1_SayRequest, headers: Headers, completion: @escaping (ResponseMessage<Connectrpc_Eliza_V1_SayResponse>) -> Void) -> Cancelable
+    func `say`(request: Connectrpc_Eliza_V1_SayRequest, headers: Headers, completion: @escaping @Sendable (ResponseMessage<Connectrpc_Eliza_V1_SayResponse>) -> Void) -> Cancelable
 
     func `say`(request: Connectrpc_Eliza_V1_SayRequest, headers: Headers) async -> ResponseMessage<Connectrpc_Eliza_V1_SayResponse>
 
-    func `converse`(headers: Headers, onResult: @escaping (StreamResult<Connectrpc_Eliza_V1_ConverseResponse>) -> Void) -> any BidirectionalStreamInterface<Connectrpc_Eliza_V1_ConverseRequest>
+    func `converse`(headers: Headers, onResult: @escaping @Sendable (StreamResult<Connectrpc_Eliza_V1_ConverseResponse>) -> Void) -> any BidirectionalStreamInterface<Connectrpc_Eliza_V1_ConverseRequest>
 
     func `converse`(headers: Headers) -> any BidirectionalAsyncStreamInterface<Connectrpc_Eliza_V1_ConverseRequest, Connectrpc_Eliza_V1_ConverseResponse>
 }
 
 /// Concrete implementation of `Connectrpc_Eliza_V1_ElizaServiceClientInterface`.
-public final class Connectrpc_Eliza_V1_ElizaServiceClient: Connectrpc_Eliza_V1_ElizaServiceClientInterface {
+public final class Connectrpc_Eliza_V1_ElizaServiceClient: Connectrpc_Eliza_V1_ElizaServiceClientInterface, Sendable {
     private let client: ProtocolClientInterface
 
     public init(client: ProtocolClientInterface) {
@@ -106,7 +107,7 @@ public final class Connectrpc_Eliza_V1_ElizaServiceClient: Connectrpc_Eliza_V1_E
     }
 
     @discardableResult
-    public func `say`(request: Connectrpc_Eliza_V1_SayRequest, headers: Headers = [:], completion: @escaping (ResponseMessage<Connectrpc_Eliza_V1_SayResponse>) -> Void) -> Cancelable {
+    public func `say`(request: Connectrpc_Eliza_V1_SayRequest, headers: Headers = [:], completion: @escaping @Sendable (ResponseMessage<Connectrpc_Eliza_V1_SayResponse>) -> Void) -> Cancelable {
         return self.client.unary(path: "connectrpc.eliza.v1.ElizaService/Say", request: request, headers: headers, completion: completion)
     }
 
@@ -114,7 +115,7 @@ public final class Connectrpc_Eliza_V1_ElizaServiceClient: Connectrpc_Eliza_V1_E
         return await self.client.unary(path: "connectrpc.eliza.v1.ElizaService/Say", request: request, headers: headers)
     }
 
-    public func `converse`(headers: Headers = [:], onResult: @escaping (StreamResult<Connectrpc_Eliza_V1_ConverseResponse>) -> Void) -> any BidirectionalStreamInterface<Connectrpc_Eliza_V1_ConverseRequest> {
+    public func `converse`(headers: Headers = [:], onResult: @escaping @Sendable (StreamResult<Connectrpc_Eliza_V1_ConverseResponse>) -> Void) -> any BidirectionalStreamInterface<Connectrpc_Eliza_V1_ConverseRequest> {
         return self.client.bidirectionalStream(path: "connectrpc.eliza.v1.ElizaService/Converse", headers: headers, onResult: onResult)
     }
 
@@ -140,12 +141,7 @@ import Foundation
 import SwiftProtobuf
 
 /// Mock implementation of `Connectrpc_Eliza_V1_ElizaServiceClientInterface`.
-///
-/// Production implementations can be substituted with instances of this
-/// class, allowing for mocking RPC calls. Behavior can be customized
-/// either through the properties on this class or by
-/// subclassing the class and overriding its methods.
-open class Connectrpc_Eliza_V1_ElizaServiceClientMock: Connectrpc_Eliza_V1_ElizaServiceClientInterface {
+open class Connectrpc_Eliza_V1_ElizaServiceClientMock: Connectrpc_Eliza_V1_ElizaServiceClientInterface, @unchecked Sendable {
     private var cancellables = [Combine.AnyCancellable]()
 
     /// Mocked for calls to `say()`.
@@ -160,7 +156,7 @@ open class Connectrpc_Eliza_V1_ElizaServiceClientMock: Connectrpc_Eliza_V1_Eliza
     public init() {}
 
     @discardableResult
-    open func `say`(request: Connectrpc_Eliza_V1_SayRequest, headers: Headers = [:], completion: @escaping (ResponseMessage<Connectrpc_Eliza_V1_SayResponse>) -> Void) -> Cancelable {
+    open func `say`(request: Connectrpc_Eliza_V1_SayRequest, headers: Headers = [:], completion: @escaping @Sendable (ResponseMessage<Connectrpc_Eliza_V1_SayResponse>) -> Void) -> Cancelable {
         completion(self.mockSay(request))
         return Cancelable {}
     }
@@ -169,7 +165,7 @@ open class Connectrpc_Eliza_V1_ElizaServiceClientMock: Connectrpc_Eliza_V1_Eliza
         return self.mockAsyncSay(request)
     }
 
-    open func `converse`(headers: Headers = [:], onResult: @escaping (StreamResult<Connectrpc_Eliza_V1_ConverseResponse>) -> Void) -> any BidirectionalStreamInterface<Connectrpc_Eliza_V1_ConverseRequest> {
+    open func `converse`(headers: Headers = [:], onResult: @escaping @Sendable (StreamResult<Connectrpc_Eliza_V1_ConverseResponse>) -> Void) -> any BidirectionalStreamInterface<Connectrpc_Eliza_V1_ConverseRequest> {
         self.mockConverse.$inputs.first { !$0.isEmpty }.sink { _ in self.mockConverse.outputs.forEach(onResult) }.store(in: &self.cancellables)
         return self.mockConverse
     }
@@ -238,7 +234,7 @@ final class ElizaAppTests: XCTestCase {
         let client = Connectrpc_Eliza_V1_ElizaServiceClientMock()
         client.mockAsyncSay = { request in
             XCTAssertEqual(request.sentence, "hello!")
-            return ResponseMessage(message: .with { $0.sentence = "hi, i'm eliza!" })
+            return ResponseMessage(result: .success(.with { $0.sentence = "hi, i'm eliza!" }))
         }
 
         let viewModel = MessagingViewModel(elizaClient: client)
@@ -279,6 +275,78 @@ func testBidirectionalStreamMessagingViewModel() async {
 }
 ```
 
+## Testing with `@Sendable` closures
+
+If your codebase is not yet using `async`/`await` and is instead consuming
+generated clients that provide completion/result closures which are annotated
+with `@Sendable`, writing tests can prove challenging. For example:
+
+```swift
+func testGetUser() {
+    let client = Users_V1_UsersMock()
+    client.mockGetUserInfo = { request in
+        return ResponseMessage(result: .success(...))
+    }
+
+    var receivedMessage: Users_V1_UserInfoResponse?
+    client.getUserInfo(request: Users_V1_UserInfoRequest()) { response in
+        //highlight-next-line
+        // ERROR: Mutation of captured var 'receivedMessage' in concurrently-executing code
+        //highlight-next-line
+        receivedMessage = response.message
+    }
+    XCTAssertEqual(receivedMessage?.name, "jane")
+}
+```
+
+One workaround for this is to wrap the captured type with a class
+that conforms to `Sendable`. For example:
+
+```swift
+public final class Locked<T>: @unchecked Sendable {
+    private let lock = NSLock()
+    private var wrappedValue: T
+
+    /// Thread-safe access to the underlying value.
+    public var value: T {
+        get {
+            self.lock.lock()
+            defer { self.lock.unlock() }
+            return self.wrappedValue
+        }
+        set {
+            self.lock.lock()
+            self.wrappedValue = newValue
+            self.lock.unlock()
+        }
+    }
+
+    public init(_ value: T) {
+        self.wrappedValue = value
+    }
+}
+```
+
+The above error can be solved by updating the test to use this wrapper:
+
+```swift
+func testGetUser() {
+    let client = Users_V1_UsersMock()
+    client.mockGetUserInfo = { request in
+        return ResponseMessage(result: .success(...))
+    }
+
+    //highlight-next-line
+    let receivedMessage = Locked<Users_V1_UserInfoResponse?>(nil)
+    client.getUserInfo(request: Users_V1_UserInfoRequest()) { response in
+        //highlight-next-line
+        receivedMessage.value = response.message
+    }
+    //highlight-next-line
+    XCTAssertEqual(receivedMessage.value?.name, "jane")
+}
+```
+
 [connect-swift]: https://github.com/connectrpc/connect-swift
-[connect-swift-plugin]: https://buf.build/bufbuild/connect-swift
-[connect-swift-mocks-plugin]: https://buf.build/bufbuild/connect-swift-mocks
+[connect-swift-plugin]: https://buf.build/connectrpc/connect-swift
+[connect-swift-mocks-plugin]: https://buf.build/connectrpc/connect-swift-mocks
