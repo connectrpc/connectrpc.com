@@ -347,6 +347,6 @@ func testGetUser() {
 }
 ```
 
-[connect-swift]: https://github.com/bufbuild/connect-swift
-[connect-swift-plugin]: https://buf.build/bufbuild/connect-swift
-[connect-swift-mocks-plugin]: https://buf.build/bufbuild/connect-swift-mocks
+[connect-swift]: https://github.com/connectrpc/connect-swift
+[connect-swift-plugin]: https://buf.build/connectrpc/connect-swift
+[connect-swift-mocks-plugin]: https://buf.build/connectrpc/connect-swift-mocks

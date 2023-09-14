@@ -214,5 +214,5 @@ stream.close()
 [envoy-grpc-bridge]: https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_filters/connect_grpc_bridge_filter
 [grpc]: https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md
 [grpc-web]: https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-WEB.md
-[gzip-pool]: https://github.com/bufbuild/connect-swift/blob/main/Libraries/Connect/Implementation/Compression/GzipCompressionPool.swift
-[protocol-client-config]: https://github.com/bufbuild/connect-swift/blob/main/Libraries/Connect/Implementation/ProtocolClientConfig.swift
+[gzip-pool]: https://github.com/connectrpc/connect-swift/blob/main/Libraries/Connect/Implementation/Compression/GzipCompressionPool.swift
+[protocol-client-config]: https://github.com/connectrpc/connect-swift/blob/main/Libraries/Connect/Implementation/ProtocolClientConfig.swift

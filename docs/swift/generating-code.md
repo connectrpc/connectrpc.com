@@ -190,10 +190,10 @@ the `buf.gen.yaml` file as shown in the example above.
 [buf.gen.yaml]: https://buf.build/docs/configuration/v1/buf-gen-yaml
 [buf.yaml]: https://buf.build/docs/configuration/v1/buf-yaml
 [buf-cli]: https://buf.build/docs/installation
-[connect-swift]: https://github.com/bufbuild/connect-swift
-[connect-swift-mocks-plugin]: https://buf.build/bufbuild/connect-swift-mocks
-[connect-swift-plugin]: https://buf.build/bufbuild/connect-swift
-[connect-swift-releases]: https://github.com/bufbuild/connect-swift/releases
+[connect-swift]: https://github.com/connectrpc/connect-swift
+[connect-swift-mocks-plugin]: https://buf.build/connectrpc/connect-swift-mocks
+[connect-swift-plugin]: https://buf.build/connectrpc/connect-swift
+[connect-swift-releases]: https://github.com/connectrpc/connect-swift/releases
 [protobuf]: https://developers.google.com/protocol-buffers
 [remote-plugins]: https://buf.build/docs/bsr/remote-plugins/usage
 [swift-protobuf-plugin]: https://buf.build/apple/swift
