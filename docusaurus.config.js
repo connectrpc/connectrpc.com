@@ -36,6 +36,22 @@ const config = {
       defer: true,
     },
   ],
+  headTags: [
+    // Declare some json-ld structured data
+    {
+      tagName: "script",
+      attributes: {
+        type: "application/ld+json",
+      },
+      innerHTML: JSON.stringify({
+        "@context": "https://schema.org/",
+        "@type": "WebSite",
+        name: "Connect",
+        url: "https://connectrpc.com/",
+        logo: "https://connectrpc.com/img/logo.svg",
+      }),
+    },
+  ],
   presets: [
     [
       "classic",
