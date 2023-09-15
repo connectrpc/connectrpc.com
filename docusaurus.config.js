@@ -46,7 +46,7 @@ const config = {
       innerHTML: JSON.stringify({
         "@context": "https://schema.org/",
         "@type": "WebSite",
-        name: "Connect",
+        name: "Protobuf RPC that works",
         url: "https://connectrpc.com/",
       }),
     },
@@ -54,7 +54,7 @@ const config = {
       tagName: "meta",
       attributes: {
         property: "og:site_name",
-        content: "Connect",
+        content: "Protobuf RPC that works",
       },
     },
   ],
