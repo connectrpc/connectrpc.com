@@ -48,7 +48,6 @@ const config = {
         "@type": "WebSite",
         name: "Connect",
         url: "https://connectrpc.com/",
-        logo: "https://connectrpc.com/img/logos/simple-connect.svg",
       }),
     },
   ],
