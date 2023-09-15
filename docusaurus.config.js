@@ -50,6 +50,13 @@ const config = {
         url: "https://connectrpc.com/",
       }),
     },
+    {
+      tagName: "meta",
+      attributes: {
+        property: "og:site_name",
+        content: "Connect",
+      },
+    },
   ],
   presets: [
     [
