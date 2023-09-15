@@ -94,7 +94,7 @@ Protocol Buffers &mdash; they should work seamlessly together.
 [connect-conformance]: https://github.com/connectrpc/conformance
 [connect-go]: https://github.com/connectrpc/connect-go
 [connect-kotlin]: https://github.com/bufbuild/connect-kotlin
-[connect-swift]: https://github.com/bufbuild/connect-swift
+[connect-swift]: https://github.com/connectrpc/connect-swift
 [swift-launch-blog-post]: https://buf.build/blog/announcing-connect-swift
 [connect-protocol]: /docs/protocol
 [demo]: https://github.com/bufbuild/examples-go

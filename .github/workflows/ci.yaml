@@ -16,7 +16,7 @@ jobs:
           path: |
             ~/.tmp
             .tmp
-          key: ${{ runner.os }}-connectrpc-ci-${{ hashFiles('turbo.json') }}
+          key: ${{ runner.os }}-connectrpc-ci-${{ hashFiles('Makefile') }}
           restore-keys: |
             ${{ runner.os }}-connectrpc-ci-
 
