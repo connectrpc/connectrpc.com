@@ -1,12 +1,12 @@
 # Maintainers
 
-Connect's website and governance repository is maintained by the combined
-efforts of the:
+This repository is maintained by the combined efforts of the maintainers of the
+Connect implementations:
 
-- [connect-go maintainers][go],
-- [connect-es maintainers][es],
-- [connect-swift maintainers][swift], and
-- [connect-kotlin maintainers][kotlin].
+- [connect-go][go],
+- [connect-es][es],
+- [connect-swift][swift], and
+- [connect-kotlin][kotlin].
 
 [go]: https://github.com/connectrpc/connect-go/blob/main/MAINTAINERS.md
 [es]: https://github.com/connectrpc/connect-es/blob/main/MAINTAINERS.md

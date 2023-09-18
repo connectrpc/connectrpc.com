@@ -23,9 +23,9 @@ The Connect community abides by the CNCF [code of conduct][cncf-coc] and
 ## Making decisions
 
 Connect is an open source project, so we make decisions in the open. Connect's
-governance, protocols, APIs, and roadmap are defined in [GitHub][project], so
-making decisions requires changing source code. Thus, all decisions follow the
-same four steps:
+governance, protocols, and APIs are defined in [GitHub][project], so making
+decisions requires changing source code. Thus, all decisions follow the same
+four steps:
 
 1. Optionally, create an issue or discussion. Anyone can do this.
 2. Open a pull request. Anyone can do this.
@@ -46,24 +46,44 @@ current maintainers:
 - Each maintainer may cast one vote, with a simple majority required for
   approval.
 - Any decisions affecting multiple repositories must be discussed in an RFC,
-  discussed below.
+  described below.
 
 ## Project-wide decisions
 
 To make decisions affecting multiple repositories, Connect uses RFCs: pull
 requests adding a public design document to the [website and governance
-repository][governance-repo]. The process for opening an RFC is documented in
+repository][governance-repo]. The mechanics of opening an RFC are documented in
 the [contribution guide][governance-contrib].
 
 The decision-making process for RFCs is the same as it is for other pull
 requests &mdash; discussion, followed by consensus or a formal vote among
 maintainers. However, the list of maintainers for the governance repository is
 handled specially: it includes all the maintainers of Connect implementations,
-but not maintainers of standalone interceptors, testing utilities, and similar
-ancillary projects. This policy considers the needs of each language-specific
-Connect ecosystem, keeps the voting process lightweight, and lowers the bar
-for creating small new projects. As detailed below, new Connect implementations
-are identified during the repository creation process.
+but not maintainers of ancillary projects. This policy considers the needs of
+each language ecosystem while keeping votes lightweight and minimizing
+disincentives to expanding the project.
+
+### Implementations vs ancillary projects
+
+The authoritative list of Connect implementations &mdash; whose maintainers may
+vote on RFCs &mdash; is the [governance repository's `MAINTAINERS.md`
+file][rfc-maintainers]. Thus, changing the list of implementations requires a
+pull request, which must be approved and merged by the current governance
+repository maintainers.
+
+Implementations are the foundation of the Connect project. They typically build
+atop a widely-used HTTP library and implement the Connect RPC [protocol].
+Implementations may be client-only, like the [Swift
+implementation][connect-swift], or they may support both servers and clients,
+like the [Go implementation][connect-go]. The maintainers of each Connect
+implementation represent the interests of their language community in the RFC
+process.
+
+Ancillary projects build atop implementations to provide optional features or
+conveniences. Examples include interceptors, Envoy filters, and runtime
+Protobuf descriptor access. Maintainers of ancillary projects may vote on pull
+requests in their individual repositories, but may not vote on Connect RFCs
+(unless they are also maintainers of an implementation).
 
 ## Becoming a maintainer
 
@@ -110,14 +130,12 @@ maintainers can be removed by a pull request approved by a majority of the
 
 ## Adding new repositories
 
-The Connect project includes full-fledged RPC runtimes, but it also includes
-smaller projects: testing utilities, middleware and interceptors, plugins for
-other systems, and similar conveniences. As long as it adheres to the CNCF [code
-of conduct][cncf-coc] and [charter][cncf-charter], any repository may be added
-to the Connect GitHub organization by following the RFC process outlined above.
-RFCs for new repositories must indicate whether the new repository is an RPC
-runtime, whose maintainers will also become maintainers of Connect's
-[governance repository][governance-repo].
+As long as it adheres to the CNCF [code of conduct][cncf-coc] and
+[charter][cncf-charter], repositories may be added to the Connect GitHub
+organization by following the RFC process outlined above. RFCs for new Connect
+implementations, whose maintainers will also become maintainers of Connect's
+[governance repository][governance-repo], must include an amendment to the
+governance repository's `MAINTAINERS.md` file in the pull request.
 
 ## Amendments
 
@@ -128,4 +146,9 @@ either as a pull request to this document, or as an RFC.
 [cncf-coc]: https://github.com/cncf/foundation/blob/main/code-of-conduct.md
 [cncf-charter]: https://github.com/cncf/foundation/blob/main/charter.md
 [governance-repo]: https://github.com/connectrpc/connectrpc.com
+[rfc-maintainers]: https://github.com/connectrpc/connectrpc.com/blob/main/MAINTAINERS.md
 [governance-contrib]: https://github.com/connectrpc/connectrpc.com/blob/main/.github/CONTRIBUTING.md
+[validate-go]: https://github.com/connectrpc/validate-go
+[connect-swift]: https://github.com/connectrpc/connect-swift
+[connect-go]: https://github.com/connectrpc/connect-go
+[protocol]: https://connectrpc.com/docs/protocol
