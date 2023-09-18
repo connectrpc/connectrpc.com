@@ -32,8 +32,8 @@ methods.
 
 ### `toJson`
 
-In addition to `toPlainMessage`, you can also convert your message to JSON explicitly using
-[`toJson`](https://github.com/bufbuild/protobuf-es/blob/main/docs/runtime_api.md#json). The downside to this approach
+In addition to `toPlainMessage`, you can also convert your message to JSON explicitly using the
+[`toJson`](https://github.com/bufbuild/protobuf-es/blob/main/docs/runtime_api.md#json) method that every message provides. The downside to this approach
 is that you lose all type information when converted to JSON, but you can get it back in your client by simply
 converting into the original message type using `fromJson`.
 
