@@ -1,69 +1,43 @@
-# The Connect docs
+Connect
+=======
 
-This repo houses the assets used to build the website and documentation for the
-[Connect] project, which is built using [Docusaurus].
+Connect is a family of libraries for building browser- and gRPC-compatible
+APIs with Protocol Buffers. If you're tired of hand-written boilerplate and
+turned off by massive frameworks, Connect is for you.
 
-## Running the site
+This repository houses the [connectrpc.com website][website], which includes
+Connect's [governance] and [security] policies. It's also the home of Connect's
+[RFC process][rfc].
 
-Setup:
+For more on Connect, see the [announcement blog post][blog], the
+[website], an [example server][examples-go], or the [protocol
+specification][protocol].
 
-```sh
-npm install
-```
+## Ecosystem
 
-To serve locally:
+* [connect-go]: Go servers and clients
+* [connect-es]: TypeScript servers and clients
+* [connect-swift]: Swift clients
+* [connect-kotlin]: Kotlin clients
+* [conformance]: Connect, gRPC, and gRPC-Web interoperability tests
+* [examples-go]: Go server powering demo.connectrpc.com
+* and [much more][github-org].
 
-```sh
-npm run start
-```
+## Legal
 
-## Publishing
+Offered under the [Apache 2 license][license].
 
-The Connect site is published automatically on [Vercel][vercel]. Any time
-changes are pushed/merged to `main`, Vercel's CI automatically builds and
-deploys the most recent commit.
-
-## Custom theme components
-
-The Connect site uses [swizzling] to customize several Docusaurus components:
-
-- [Front page navbar](./src/theme/HomeNavbar)
-- [Front page navbar item](./src/theme/HomeNavbarItem)
-- [Docs navbar item](./src/theme/NavbarItem)
-- [Footer](./src/theme/Footer)
-- [Search bar](./src/theme/SearchBar.tsx)
-- [CodeBlock](./src/theme/CodeBlock)
-- [DocSidebar/Desktop/Content](./src/theme/DocSidebar/Desktop/Content)
-- [DocSidebarItem/Category](./src/theme/DocSidebarItem)
-- [NavBar/Content](./src/theme/NavBar/Content)
-- [NavBar/Layout](./src/theme/NavBar/Layout)
-- [NavBar/MobileSidebar](./src/theme/NavBar/MobileSidebar)
-
-To swizzle more components, run `npm run swizzle -- @docusaurus/theme-classic --typescript` and select component you want to modify
-
-## What lives where
-
-In general, the site follows the standard Docusaurus structure, with swizzled components in [`src/theme`](./src/theme) and fully custom components in [`src/components`](./src/components). Some additional things to be aware of:
-
-- The core logic for the front page is in [`src/pages/index.tsx`](./src/pages/index.tsx)
-- Components specific to the front page are in [`src/components/home`](./src/components/home)
-- All text for the front page is defined in [`src/components/home/text.tsx`](./src/components/home/text.tsx)
-
-[connect]: https://connectrpc.com
-[docusaurus]: https://docusaurus.io
-[eslint]: https://eslint.org
-[vercel]: https://vercel.com
-[swizzling]: https://docusaurus.io/docs/swizzling
-
-## Vendored libs
-
-We've vendored out `crt-terminal` in order to fix a focus issue on mount. We have added the prop `focusOnMount` to the `Terminal` component.
-
-In order to rebuild the package:
-
-```bash
-cd src/vendor/crt-terminal
-npm install
-npm run build
-rm -rf node_modules
-```
+[blog]: https://buf.build/blog/connect-a-better-grpc
+[conformance]: https://github.com/connectrpc/conformance
+[connect-go]: https://github.com/connectrpc/connect-go
+[connect-es]: https://github.com/connectrpc/connect-es
+[connect-swift]: https://github.com/connectrpc/connect-swift
+[connect-kotlin]: https://github.com/connectrpc/connect-kotlin
+[examples-go]: https://github.com/connectrpc/examples-go
+[license]: LICENSE
+[protocol]: https://connectrpc.com/docs/protocol
+[website]: https://connectrpc.com
+[governance]: https://connectrpc.com/docs/governance/project-governance
+[security]: https://connectrpc.com/docs/governance/security
+[rfc]: https://connectrpc.com/docs/governance/project-governance#project-wide-decisions
+[github-org]: https://github.com/connectrpc

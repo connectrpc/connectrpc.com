@@ -111,7 +111,7 @@ version: v1
 plugins:
   - plugin: buf.build/protocolbuffers/java
     out: app/src/main/java
-  - plugin: buf.build/bufbuild/connect-kotlin
+  - plugin: buf.build/connectrpc/kotlin
     out: app/src/main/java
 ```
 
@@ -124,7 +124,7 @@ The above `buf.gen.yaml` config does two things:
    If the javalite option is desired, simply add `opt: javalite` to the yaml block.
    :::
 
-2. Executes the [bufbuild/connect-kotlin](https://buf.build/bufbuild/connect-kotlin) plugin to generates clients for
+2. Executes the [connectrpc/kotlin](https://buf.build/connectrpc/kotlin) plugin to generates clients for
    connect-kotlin. Compatible with the gRPC,
    gRPC-Web, and Connect RPC protocols into the specified directory. Connect is an RPC protocol which supports gRPC —
    including streaming! They interoperate seamlessly with Envoy, grpcurl, gRPC Gateway, and every other gRPC
@@ -182,9 +182,9 @@ dependencies {
   implementation 'androidx.recyclerview:recyclerview:1.2.1'
   implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
   implementation "com.squareup.okhttp3:okhttp:4.10.0"
-  implementation "build.buf:connect-kotlin-okhttp:0.1.4"
+  implementation "com.connectrpc:connect-kotlin-okhttp:0.1.11"
   // Java specific dependencies.
-  implementation "build.buf:connect-kotlin-google-java-ext:0.1.4"
+  implementation "com.connectrpc:connect-kotlin-google-java-ext:0.1.11"
   implementation "com.google.protobuf:protobuf-java:3.22.0"
 }
 ```
@@ -198,9 +198,9 @@ dependencies {
   implementation 'androidx.recyclerview:recyclerview:1.2.1'
   implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
   implementation "com.squareup.okhttp3:okhttp:4.10.0"
-  implementation "build.buf:connect-kotlin-okhttp:0.1.4"
+  implementation "com.connectrpc:connect-kotlin-okhttp:0.1.11"
   // JavaLite specific dependencies.
-  implementation "build.buf:connect-kotlin-google-javalite-ext:0.1.4"
+  implementation "com.connectrpc:connect-kotlin-google-javalite-ext:0.1.11"
   implementation "com.google.protobuf:protobuf-javalite:3.22.0"
 }
 ```
@@ -262,9 +262,9 @@ dependencies {
   implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
 
   implementation "com.squareup.okhttp3:okhttp:4.10.0"
-  implementation "build.buf:connect-kotlin-okhttp:$version"
+  implementation "com.connectrpc:connect-kotlin-okhttp:$version"
 
-  implementation "build.buf:connect-kotlin-google-java-ext:$version"
+  implementation "com.connectrpc:connect-kotlin-google-java-ext:$version"
   implementation "com.google.protobuf:protobuf-java:3.22.0"
 }
 ```
@@ -485,7 +485,7 @@ Now we are ready to dive into actual Kotlin code to speak with Eliza!
 The `ProtocolClient` constructor requires a `ProtocolClientConfig` to be instantiated.
 The required parameters are the host, serialization strategy, and protocol:
 
-- `host`: The host of the request (e.g `https://buf.build`).
+- `host`: The host of the request (e.g `https://demo.connectrpc.com`).
 - `serializationStrategy`: Configures the `ProtocolClient` to use a specified base data type and encoding
   (e.g., Google's Java and Google's JavaLite).
 - `protocol`: The underlying network protocol to use (e.g., Connect, gRPC, or gRPC-Web).
@@ -527,15 +527,16 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
+import com.connectrpc.ProtocolClientConfig
+import com.connectrpc.extensions.GoogleJavaProtobufStrategy
+import com.connectrpc.impl.ProtocolClient
+import com.connectrpc.okhttp.ConnectOkHttpClient
+import com.connectrpc.protocols.NetworkProtocol
 import connectrpc.eliza.v1.Eliza
 import connectrpc.eliza.v1.ElizaServiceClient
-import build.buf.connect.ProtocolClientConfig
-import build.buf.connect.extensions.GoogleJavaProtobufStrategy
-import build.buf.connect.impl.ProtocolClient
-import build.buf.connect.okhttp.ConnectOkHttpClient
-import build.buf.connect.protocols.NetworkProtocol
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
@@ -574,18 +575,18 @@ class MainActivity : AppCompatActivity() {
       adapter.add(MessageData(sentence, false))
       editTextView.setText("")
 
-      lifecycleScope.launch(Dispatchers.IO) {
+      lifecycleScope.launch {
         // Ensure IO context for unary requests.
-        val elizaSentence = talkToEliza(sentence)
-        lifecycleScope.launch(Dispatchers.Main) {
-          // Display the result
-          displayElizaResponse(elizaSentence)
+        val elizaSentence = withContext(Dispatchers.IO) {
+          talkToEliza(sentence)
         }
+        // Display the result
+        displayElizaResponse(elizaSentence)
       }
     }
   }
 
-  private fun talkToEliza(sentence: String): String? {
+  private suspend fun talkToEliza(sentence: String): String? {
     // Make unary request to Eliza.
     val response = elizaServiceClient.say(Eliza.SayRequest.newBuilder().setSentence(sentence).build())
     val elizaSentence = response.success { success ->
@@ -593,14 +594,14 @@ class MainActivity : AppCompatActivity() {
       success.message.sentence
     }
     response.failure { failure ->
-      Log.e("MainActivity", "${failure.error}")
+      Log.e("MainActivity", "Failed to talk to eliza", failure.error)
     }
     return elizaSentence
   }
 
-  private fun displayElizaResponse(sentence: String) {
-    if (elizaSentence!!.isNotBlank()) {
-      adapter.add(MessageData(elizaSentence, true))
+  private fun displayElizaResponse(sentence: String?) {
+    if (!sentence.isNullOrBlank()) {
+      adapter.add(MessageData(sentence, true))
     } else {
       adapter.add(MessageData("...No response from Eliza...", true))
     }
@@ -673,9 +674,9 @@ the Connect-Kotlin repository on GitHub. These examples demonstrate:
 
 [connect-go]: https://github.com/connectrpc/connect-go
 
-[connect-kotlin]: https://github.com/bufbuild/connect-kotlin
+[connect-kotlin]: https://github.com/connectrpc/connect-kotlin
 
-[connect-kotlin-releases]: https://github.com/bufbuild/connect-kotlin/releases
+[connect-kotlin-releases]: https://github.com/connectrpc/connect-kotlin/releases
 
 [eliza-proto]: https://buf.build/connectrpc/eliza/file/main:connectrpc/eliza/v1/eliza.proto
 
@@ -689,7 +690,7 @@ the Connect-Kotlin repository on GitHub. These examples demonstrate:
 
 [grpc-web]: https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-WEB.md
 
-[more-examples]: https://github.com/bufbuild/connect-kotlin/tree/main/examples
+[more-examples]: https://github.com/connectrpc/connect-kotlin/tree/main/examples
 
 [okhttp]: https://github.com/square/okhttp
 
@@ -697,10 +698,10 @@ the Connect-Kotlin repository on GitHub. These examples demonstrate:
 
 [protobuf-releases]: https://github.com/protocolbuffers/protobuf/releases
 
-[pgjava-example]: https://github.com/bufbuild/connect-kotlin/blob/main/examples/kotlin-google-java/src/main/kotlin/build/buf/connect/examples/kotlin/Main.kt
+[pgjava-example]: https://github.com/connectrpc/connect-kotlin/blob/main/examples/kotlin-google-java/src/main/kotlin/com/connectrpc/examples/kotlin/Main.kt
 
-[pgjavalite-example]: https://github.com/bufbuild/connect-kotlin/blob/main/examples/kotlin-google-javalite/src/main/kotlin/build/buf/connect/examples/kotlin/Main.kt
+[pgjavalite-example]: https://github.com/connectrpc/connect-kotlin/blob/main/examples/kotlin-google-javalite/src/main/kotlin/com/connectrpc/examples/kotlin/Main.kt
 
 [remote-plugins]: https://buf.build/docs/bsr/remote-plugins/usage
 
-[streaming-example-kotlin]: https://github.com/bufbuild/connect-kotlin/blob/main/examples/kotlin-google-java/src/main/kotlin/build/buf/connect/examples/kotlin/Main.kt#L55-L71
+[streaming-example-kotlin]: https://github.com/connectrpc/connect-kotlin/blob/main/examples/kotlin-google-java/src/main/kotlin/com/connectrpc/examples/kotlin/Main.kt#L55-L71

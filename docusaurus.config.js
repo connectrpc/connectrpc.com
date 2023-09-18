@@ -36,6 +36,28 @@ const config = {
       defer: true,
     },
   ],
+  headTags: [
+    // Declare some json-ld structured data
+    {
+      tagName: "script",
+      attributes: {
+        type: "application/ld+json",
+      },
+      innerHTML: JSON.stringify({
+        "@context": "https://schema.org/",
+        "@type": "WebSite",
+        name: "Protobuf RPC that works",
+        url: "https://connectrpc.com/",
+      }),
+    },
+    {
+      tagName: "meta",
+      attributes: {
+        property: "og:site_name",
+        content: "Protobuf RPC that works",
+      },
+    },
+  ],
   presets: [
     [
       "classic",

@@ -70,4 +70,4 @@ val cancelable = elizaClient.say(request) { response in
 cancelable.cancel()
 ```
 
-[connect-error-source]: https://github.com/bufbuild/connect-kotlin/blob/main/library/src/main/kotlin/build/buf/connect/ConnectError.kt
+[connect-error-source]: https://github.com/connectrpc/connect-kotlin/blob/main/library/src/main/kotlin/com/connectrpc/ConnectError.kt
