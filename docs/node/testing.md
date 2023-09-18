@@ -77,13 +77,32 @@ const mockTransport = createRouterTransport(({ service }) => {
 The `createRouterTransport` function also accepts an optional second argument, allowing you
 to pass options like [interceptors](./interceptors.mdx).
 
-### Testing against a running server
+<h3 id="client-running-server">Testing against a running server</h3>
+
+With this approach, you can run a full HTTP server over TCP, and use regular clients to call procedures, asserting that
+the result matches expectations.
+
+The big benefit is that you get a behavior that is closest to a real deployment. It let's you test other routes besides
+Connect routes that your server might implement, including middleware.
 
 
 ### Testing against an in-memory server
 
+With an in-memory server, you can test your Connect routes in isolation and circumvent any other routes or middleware
+that your server might implement. To accomplish this, you can use the `createRouterTransport` function
+exported from [`@connectrpc/connect`](https://www.npmjs.com/package/@connectrpc/connect). This in-memory transport is a
+special transport that does not make HTTP requests over the network, but directly calls the supplied Connect routes
+instead. The `Transport` returned from `createRouterTransport` can be used to create clients and call procedures,
+asserting that the result matches expectations.
 
-### Mocking clients
+One of the benefits with testing clients against an in-memory server is the ease of setup. For example, request and
+response messages are serialized. Headers, trailers, errors and other Connect features are supported, too. However, the
+behavior under test is not as close to a real deployment. Since requests are not going through the network, there are
+many areas not factored into the test that could result in a false sense of security about the completeness of your
+client coverage.
+
+
+### Mocking services
 
 
 
@@ -91,13 +110,11 @@ to pass options like [interceptors](./interceptors.mdx).
 
 There are multiple ways for testing your Connect-Node services each with their own benefits. Below are some examples:
 
-### Testing against a running server
-With this approach, you can run a full HTTP server over TCP, and use regular clients to call procedures, asserting that
-the result matches expectations.
+<h3 id="service-running-server">Testing against a running server</h3>
 
-The big benefit is that you get a behavior that is closest to a real deployment. This approach works well with plain
-Node.js, Fastify, and Express. It let's you test other routes besides Connect routes that your server might implement,
-including middleware.
+This approach is basically the same concept [as described above](#client-running-server) for testing clients with a
+running server. All the same benefits apply. When testing Connect for Node.js servers, This approach works well with
+plain Node.js, Fastify, and Express.
 
 :::note
 We do not recommend using [`fastify.inject()`](https://fastify.dev/docs/v1.14.x/Documentation/Testing/#testing-with-http-injection)
