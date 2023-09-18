@@ -3,9 +3,15 @@ title: Testing
 sidebar_position: 5
 ---
 
+## Testing clients
+
+
+
+## Testing services
+
 There are multiple ways for testing your Connect-Node services each with their own benefits. Below are some examples:
 
-## Testing against a running server
+### Testing against a running server
 With this approach, you can run a full HTTP server over TCP, and use regular clients to call procedures, asserting that
 the result matches expectations.
 
@@ -20,7 +26,7 @@ protocol like `Content-Type` headers and status codes yourself. This is rather s
 but much less so for streaming RPCs, or the gRPC or gRPC-Web protocols.
 :::note
 
-## Testing against an in-memory server
+### Testing against an in-memory server
 When testing against an in-memory server, you can test your Connect routes in isolation and circumvent any other routes
 or middleware that your server might implement. To accomplish this, you can use the `createRouterTransport` function
 exported from [`@connectrpc/connect`](https://www.npmjs.com/package/@connectrpc/connect). This in-memory transport is a
@@ -35,12 +41,12 @@ many areas not factored into the test that could fail in production.
 
 This approach works well with Next.js, where spinning up a full server in tests is not trivial.
 
-## Unit testing a service
+### Unit testing a service
 Unit testing a service side-steps TCP and HTTP altogether and calls the service methods directly, without the need for
 clients, transports, and other ancillary processes used when using an actual server. This approach is useful for unit
 testing, making it trivial to inject test-only dependencies via the constructor.
 
-## Examples
+### Examples
 
 Our examples-es repo provides examples for all three approaches in [Fastify](https://github.com/connectrpc/examples-es/blob/b5d3f6822330f6b7816fac697b64ed4214aabafe/fastify/test/connect.test.ts), [Express](https://github.com/connectrpc/examples-es/blob/b5d3f6822330f6b7816fac697b64ed4214aabafe/express/connect.test.ts), and [vanilla Node.js](https://github.com/connectrpc/examples-es/blob/b5d3f6822330f6b7816fac697b64ed4214aabafe/vanilla-node/connect.test.ts).
 
