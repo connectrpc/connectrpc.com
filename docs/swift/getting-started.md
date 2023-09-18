@@ -97,7 +97,7 @@ touch buf.gen.yaml
 ```yaml
 version: v1
 plugins:
-  - plugin: buf.build/bufbuild/connect-swift
+  - plugin: buf.build/connectrpc/swift
     opt:
       - GenerateAsyncMethods=true
       - GenerateCallbackMethods=true

@@ -25,14 +25,14 @@ plugins:
       - Visibility=Public
     out: Generated
   # Production generated services/methods
-  - plugin: buf.build/bufbuild/connect-swift
+  - plugin: buf.build/connectrpc/swift
     opt:
       - GenerateAsyncMethods=true
       - GenerateCallbackMethods=true
       - Visibility=Public
     out: Generated
   # Mock generated services/methods
-  - plugin: buf.build/bufbuild/connect-swift-mocks
+  - plugin: buf.build/connectrpc/swift-mocks
     opt:
       - GenerateAsyncMethods=true
       - GenerateCallbackMethods=true

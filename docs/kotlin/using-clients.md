@@ -150,4 +150,4 @@ val cancelable = elizaServiceClient.say(SayRequest.newBuilder().setSentence("hel
 [envoy-grpc-bridge]: https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_filters/connect_grpc_bridge_filter
 [grpc]: https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md
 [grpc-web]: https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-WEB.md
-[gzip-option]: https://github.com/bufbuild/connect-kotlin/blob/main/library/src/main/kotlin/build/buf/connect/compression/CompressionPool.kt
+[gzip-option]: https://github.com/connectrpc/connect-kotlin/blob/main/library/src/main/kotlin/com/connectrpc/compression/CompressionPool.kt
