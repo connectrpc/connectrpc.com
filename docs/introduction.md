@@ -39,12 +39,12 @@ Connect's own protocol.
   protocol][grpcweb-protocol] used by [grpc/grpc-web][grpcweb], without relying
   on a translating proxy like Envoy.
 - Finally, Connect supports [its own protocol][connect-protocol]: a
-  straightforward HTTP-based protocol that works over HTTP/1.1 and HTTP/2. It
-  takes the best parts of gRPC and gRPC-Web, including streaming,
-  and packages them into a protocol that's equally at home in browsers, monoliths, and
-  microservices. The Connect protocol is what we think the gRPC protocol should
-  be. By default, JSON- and binary-encoded Protobuf is supported. You can
-  call our live [demo service][demo] with cURL:
+  straightforward HTTP-based protocol that works over HTTP/1.1, HTTP/2, and
+  HTTP/3. It takes the best parts of gRPC and gRPC-Web, including streaming,
+  and packages them into a protocol that's equally at home in browsers,
+  monoliths, and microservices. By default, implementations support both JSON-
+  and binary-encoded Protobuf. You can call our live [demo service][demo] with
+  cURL:
 
   ```bash
   curl \
@@ -66,30 +66,25 @@ now][go-getting-started].
 
 ## TypeScript and JavaScript
 
-Connect for ECMAScript is currently pre-v1, but we have been using it on the web
-in production for a while. We plan to release a stable v1 in early 2023. However,
-you can [get started now][web-getting-started].
-
-Connect for Node is currently in beta. We plan to release a stable v1
-alongside Connect for Web.  You can [get started with `connect-node` now][node-getting-started].
+Connect for ECMAScript is currently pre-v1, but it's in production at Buf and
+several other companies. We plan to release a stable v1 in late 2023. However,
+you can get started now on the [web][web-getting-started] or in
+[Node.js][node-getting-started].
 
 ## Swift and Kotlin
 
-We believe Protobuf should be the best choice for API development
-at every layer of the stack, and this includes mobile clients.
-
-To this end, both [`connect-swift`][connect-swift] and [`connect-kotlin`][connect-kotlin] are now available in beta,
-and you can get started today with the [Swift getting started guide][swift-getting-started] and
-the [Kotlin getting started guide][kotlin-getting-started]!
+For mobile applications, [`connect-swift`][connect-swift] and
+[`connect-kotlin`][connect-kotlin] are now available in beta. Get started today
+with our [Swift guide][swift-getting-started] and [Kotlin
+guide][kotlin-getting-started].
 
 ## What's next?
 
-In addition to improving our current suite of Connect products and moving
-our beta products to a stable v1, eventually, we'd like to release Connect
-implementations for Rails, Django, Laravel, and similar frameworks.
+In addition to improving our current Connect implementations, we'd eventually
+like to bring Connect to more languages and frameworks. Our current roadmap is
+always pinned to the top of our [GitHub discussions][announcement-discussions],
+and we gauge interest in new languages with [GitHub polls][poll-discussions].
 
-You shouldn't have to choose between these productive toolkits and
-Protocol Buffers &mdash; they should work seamlessly together.
 
 [connect-conformance]: https://github.com/connectrpc/conformance
 [connect-go]: https://github.com/connectrpc/connect-go
@@ -110,3 +105,5 @@ Protocol Buffers &mdash; they should work seamlessly together.
 [web-launch-blog-post]: https://buf.build/blog/connect-web-protobuf-grpc-in-the-browser
 [node-launch-blog-post]: https://buf.build/blog/connect-node-preview
 [protobuf]: https://developers.google.com/protocol-buffers
+[announcement-discussions]: https://github.com/orgs/connectrpc/discussions/categories/announcements
+[poll-discussions]: https://github.com/orgs/connectrpc/discussions/categories/polls
