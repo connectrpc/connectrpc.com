@@ -30,6 +30,10 @@ The `toPlainMessage` is a function exposed by the [`@bufbuild/protobuf`](https:/
 package. This function will convert a Connect-ES response into its [`PlainMessage`](https://github.com/bufbuild/protobuf-es/blob/main/docs/runtime_api.md#plainmessage) equivalent, which is an object containing just the fields of a message and none of the message's
 methods.
 
+:::note
+This approach will leave any `BigInt` or `Uint8Array` types in your messages as-is.
+:::
+
 ### `toJson`
 
 In addition to `toPlainMessage`, you can also convert your message to JSON explicitly using the
@@ -37,8 +41,10 @@ In addition to `toPlainMessage`, you can also convert your message to JSON expli
 is that you lose all type information when converted to JSON, but you can get it back in your client by simply
 converting into the original message type using `fromJson`.
 
-> NOTE: This approach will work for any messages which contain a `BigInt` or `Uint8Array` type, because the `toJson` method will convert them to their correct JSON representation.
-
+:::note
+This approach will work for any messages which contain a `BigInt` or `Uint8Array` type, because the `toJson` method will
+convert them to their correct JSON representation.
+:::
 
 ## Examples
 
@@ -67,9 +73,8 @@ import { ElizaService } from "./gen/connectrpc/eliza/v1/eliza_connect";
 
 export const load = async ({ fetch, params }) => {
     const transport = createConnectTransport({
-        // All transports accept a custom fetch implementation. 
-        fetch,
-        // With Svelte's custom fetch function, we could alternatively 
+        // All transports accept a custom fetch implementation.
+        // With Svelte's custom fetch function, we could alternatively
         // use a relative base URL here.
         baseUrl: "https://demo.connectrpc.com",
     });
@@ -140,7 +145,10 @@ crossing the serialization boundary. All data returned from this function will n
 something JSON-serializable. This can be accomplished through the use of [`toPlainMessage`](#toplainmessage)
 or [`toJson`](#tojson) discussed above.
 
-Note that `getStaticProps` and `getServerSideProps` are features of the Next.js Pages Router. Version 13 of Next.js adds the new App Router, which uses React Server Components instead. 
+Note that `getStaticProps` and `getServerSideProps` are features of the Next.js Pages Router. Version 13 of Next.js adds the new App Router, which uses React Server Components instead.
+
+For a working example of `getServerSideProps` with Next.js, check out the [Next.js](https://github.com/connectrpc/examples-es/tree/main/nextjs) project in our
+[examples-es](https://github.com/connectrpc/examples-es) repo.
 
 ### React Server Components
 
@@ -154,6 +162,3 @@ render on the client, you must explicitly opt-in to do so. Note though that when
 Next.js, you aren't necessarily subject to the same restrictions regarding JSON serialization. You can
 fetch data and render it server-side without needing to serialize it since it is not crossing a boundary using just RSC.
 This only becomes applicable when using `getServerSideProps`.
-
-For a working example of `getServerSideProps` with Next.js, check out the [Next.js](https://github.com/connectrpc/examples-es/tree/main/nextjs) project in our
-[examples-es](https://github.com/connectrpc/examples-es) repo.
