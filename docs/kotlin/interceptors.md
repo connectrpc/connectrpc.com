@@ -15,10 +15,10 @@ For example, here is an interceptor that adds an `Authorization` header to
 all outbound requests that are destined for the `demo.connectrpc.com` host:
 
 ```kotlin
-import build.buf.connect.Interceptor
-import build.buf.connect.StreamFunction
-import build.buf.connect.UnaryFunction
-import build.buf.connect.http.HTTPRequest
+import com.connectrpc.Interceptor
+import com.connectrpc.StreamFunction
+import com.connectrpc.UnaryFunction
+import com.connectrpc.http.HTTPRequest
 
 /// Interceptor that adds an `Authorization` header to outbound
 /// requests to `demo.connectrpc.com`.

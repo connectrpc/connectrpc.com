@@ -158,7 +158,7 @@ The following generation options can be combined in the `opt` field of the `buf.
 [buf.gen.yaml]: https://buf.build/docs/configuration/v1/buf-gen-yaml
 [buf.yaml]: https://buf.build/docs/configuration/v1/buf-yaml
 [buf-cli]: https://buf.build/docs/installation
-[connect-kotlin]: https://github.com/bufbuild/connect-kotlin
+[connect-kotlin]: https://github.com/connectrpc/connect-kotlin
 [connect-kotlin-plugin]: https://buf.build/connectrpc/kotlin
 [java-protobuf-plugin]: https://buf.build/protocolbuffers/java
 [protobuf]: https://developers.google.com/protocol-buffers
