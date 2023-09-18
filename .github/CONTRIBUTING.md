@@ -21,16 +21,15 @@ accept the CLA when you open your pull request.
 Most documentation changes only require updating or adding Markdown. Fork, then
 clone the repository, and make your changes locally. If you have Node.js
 installed locally, you can preview your changes with `npm install && npm run
-start`. Otherwise, you can open a pull request and use the [Vercel][vercel]
-preview links. More complex changes may require consulting the
+start`. More complex changes may require consulting the
 [Docusaurus][docusaurus] documentation and understanding [this project's
 component swizzling][swizzling].
 
 At this point, you're waiting on us to review your changes. We *try* to respond
 to issues and pull requests within a few business days, and we may suggest some
 improvements or alternatives. Once your changes are approved, one of the
-project maintainers will merge them. After your pull request is merged, the
-production website will update automatically.
+project maintainers will merge them. After your pull request is merged,
+[Vercel][vercel] will update the production website automatically.
 
 ## RFCs
 
