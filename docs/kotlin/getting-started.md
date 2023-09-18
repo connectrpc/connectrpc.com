@@ -182,9 +182,9 @@ dependencies {
   implementation 'androidx.recyclerview:recyclerview:1.2.1'
   implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
   implementation "com.squareup.okhttp3:okhttp:4.10.0"
-  implementation "com.connectrpc:connect-kotlin-okhttp:0.1.4"
+  implementation "com.connectrpc:connect-kotlin-okhttp:0.1.11"
   // Java specific dependencies.
-  implementation "com.connectrpc:connect-kotlin-google-java-ext:0.1.4"
+  implementation "com.connectrpc:connect-kotlin-google-java-ext:0.1.11"
   implementation "com.google.protobuf:protobuf-java:3.22.0"
 }
 ```
@@ -198,9 +198,9 @@ dependencies {
   implementation 'androidx.recyclerview:recyclerview:1.2.1'
   implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
   implementation "com.squareup.okhttp3:okhttp:4.10.0"
-  implementation "com.connectrpc:connect-kotlin-okhttp:0.1.4"
+  implementation "com.connectrpc:connect-kotlin-okhttp:0.1.11"
   // Javalite specific dependencies.
-  implementation "com.connectrpc:connect-kotlin-google-javalite-ext:0.1.4"
+  implementation "com.connectrpc:connect-kotlin-google-javalite-ext:0.1.11"
   implementation "com.google.protobuf:protobuf-javalite:3.22.0"
 }
 ```
