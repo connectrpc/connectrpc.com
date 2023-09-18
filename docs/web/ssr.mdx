@@ -65,8 +65,12 @@ import { createPromiseClient } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { ElizaService } from "./gen/connectrpc/eliza/v1/eliza_connect";
 
-export const load = async () => {
+export const load = async ({ fetch, params }) => {
     const transport = createConnectTransport({
+        // All transports accept a custom fetch implementation. 
+        fetch,
+        // With Svelte's custom fetch function, we could alternatively 
+        // use a relative base URL here.
         baseUrl: "https://demo.connectrpc.com",
     });
     const client = createPromiseClient(ElizaService, transport);
