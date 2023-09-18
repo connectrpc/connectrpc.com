@@ -36,7 +36,7 @@ Connect's own protocol.
   validate our gRPC compatibility with an [extended version][connect-conformance]
   of Google's own interoperability tests.
 - Connect also offers direct support for the [gRPC-Web
-  protocol][grpcweb-protocol] used by [gRPC/gRPC-Web][grpcweb], without relying
+  protocol][grpcweb-protocol] used by [grpc/grpc-web][grpcweb], without relying
   on a translating proxy like Envoy.
 - Finally, Connect supports [its own protocol][connect-protocol]: a
   straightforward HTTP-based protocol that works over HTTP/1.1 and HTTP/2. It

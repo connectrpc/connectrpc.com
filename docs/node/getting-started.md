@@ -265,8 +265,8 @@ void main();
 On Node.js, we support three protocols:
 
 - The gRPC protocol that is used throughout the gRPC ecosystem.
-- The gRPC-Web protocol used by [gRPC/gRPC-Web](https://github.com/grpc/grpc-web),
-  allowing servers to interop with `gRPC-Web` frontends without the need
+- The gRPC-Web protocol used by [grpc/grpc-web](https://github.com/grpc/grpc-web),
+  allowing servers to interop with `grpc-web` frontends without the need
   for an intermediary proxy (such as Envoy).
 - The new [Connect protocol](../protocol.md), a simple, HTTP-based protocol that
   works over HTTP/1.1 or HTTP/2. It takes the best portions of gRPC and gRPC-Web,
