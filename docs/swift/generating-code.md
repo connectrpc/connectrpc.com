@@ -74,7 +74,7 @@ file is shown below:
 ```yaml
 version: v1
 plugins:
-  - plugin: buf.build/bufbuild/connect-swift
+  - plugin: buf.build/connectrpc/swift
     opt:
       - GenerateAsyncMethods=true
       - GenerateCallbackMethods=true
@@ -191,8 +191,8 @@ the `buf.gen.yaml` file as shown in the example above.
 [buf.yaml]: https://buf.build/docs/configuration/v1/buf-yaml
 [buf-cli]: https://buf.build/docs/installation
 [connect-swift]: https://github.com/connectrpc/connect-swift
-[connect-swift-mocks-plugin]: https://buf.build/connectrpc/connect-swift-mocks
-[connect-swift-plugin]: https://buf.build/connectrpc/connect-swift
+[connect-swift-mocks-plugin]: https://buf.build/connectrpc/swift-mocks
+[connect-swift-plugin]: https://buf.build/connectrpc/swift
 [connect-swift-releases]: https://github.com/connectrpc/connect-swift/releases
 [protobuf]: https://developers.google.com/protocol-buffers
 [remote-plugins]: https://buf.build/docs/bsr/remote-plugins/usage
