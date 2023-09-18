@@ -53,7 +53,7 @@ data fetching strategy with SSR.
 
 ### Svelte
 
-Svelte allows you to customize your data fetching strategy by defining `load` functions which do the actual fetching.
+Svelte allows you to customize your data fetching strategy by defining `load` functions which do the actual fetching. All `load` functions provide a custom [`fetch`](https://kit.svelte.dev/docs/load#making-fetch-requests) function, which behaves identical to the native Fetch API with a few added benefits.
 There are two types of `load` functions you can define: **server** and **universal**.
 
 #### Server load functions
