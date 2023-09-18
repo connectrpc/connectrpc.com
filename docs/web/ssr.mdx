@@ -28,7 +28,8 @@ convert them into a form that is JSON-serializable. This can be done one of two 
 
 The `toPlainMessage` is a function exposed by the [`@bufbuild/protobuf`](https://www.npmjs.com/package/@bufbuild/protobuf)
 package. This function will convert a Connect-ES response into its [`PlainMessage`](https://github.com/bufbuild/protobuf-es/blob/main/docs/runtime_api.md#plainmessage) equivalent, which is an object containing just the fields of a message and none of the message's
-methods.
+methods. Additionally, you can safely convert a `PlainMessage` to a full message again with the message constructor.
+
 
 :::note
 This approach will leave any `BigInt` or `Uint8Array` types in your messages as-is.
@@ -74,6 +75,7 @@ import { ElizaService } from "./gen/connectrpc/eliza/v1/eliza_connect";
 export const load = async ({ fetch, params }) => {
     const transport = createConnectTransport({
         // All transports accept a custom fetch implementation.
+        fetch,
         // With Svelte's custom fetch function, we could alternatively
         // use a relative base URL here.
         baseUrl: "https://demo.connectrpc.com",
@@ -102,30 +104,6 @@ Because of this, you do not need to make your messages JSON-serializable using t
 However, with universal load functions, you will be constrained to using the Connect transport only. With gRPC-Web or
 any other binary data (this includes the Protobuf binary format and all streaming RPCs), Svelte falls back to always
 run the function in the browser. For details, see [this issue](https://github.com/sveltejs/kit/issues/8302).
-
-#### Using Svelte's custom `fetch`
-
-Svelte also provides a custom [`fetch`](https://kit.svelte.dev/docs/load#making-fetch-requests) function, which behaves
-identical to the native Fetch API with a few added benefits. One of these is that you do not need to use absolute URLs
-for your API as you normally would in a server context.
-
-Connect-ES allows you to specify a custom `fetch` implementation when creating a `Transport`. So, it is easy to use
-Svelte's `fetch` as part of your Connect setup:
-
-```ts
-export const load = async ({ fetch, params }) => {
-    const transport = createConnectTransport({
-        // Note you can use a relative URL here with Svelte's fetch
-        baseUrl: "/api",
-        fetch
-    });
-    const client = createPromiseClient(ElizaService, transport);
-    const request = { sentence: "Hello from the server" };
-    const response = await client.say(request);
-
-    ...
-};
-```
 
 For full working examples of both universal and server load functions check out the [Svelte](https://github.com/connectrpc/examples-es/tree/main/svelte)
 project in our [examples-es](https://github.com/connectrpc/examples-es) repo.
@@ -161,4 +139,9 @@ By default in Next.js, all components are considered React Server Components. Re
 render on the client, you must explicitly opt-in to do so. Note though that when using React Server Components in
 Next.js, you aren't necessarily subject to the same restrictions regarding JSON serialization. You can
 fetch data and render it server-side without needing to serialize it since it is not crossing a boundary using just RSC.
-This only becomes applicable when using `getServerSideProps`.
+
+However, keep in mind that you *do* cross the network boundary if you interleave server and client components. In this
+case, the same restrictions apply as mentioned above. You cannot pass full `Message` instances, but you can use
+`toPlainMessage` to convert them to their `PlainMessage` counterparts. React Server Components in Next.js handle `BigInt`
+properly, but be careful with `Uint8Array`, as they are converted to regular arrays. You can restore them by wrapping
+them with a call to the `Uint8Array` constructor.
