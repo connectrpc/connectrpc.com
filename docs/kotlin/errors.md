@@ -57,7 +57,7 @@ response.error {
 ## Cancelation
 
 Generated methods have the `suspend` keyword on the method signature which will cancel the underlying
-request when the Kotlin Coroutine context is canceled.
+request when the Kotlin coroutine context is canceled.
 
 With the callback unary signature, the result is a canceling handler
 to give control to the user to manually cancel a request:
@@ -70,4 +70,4 @@ val cancelable = elizaClient.say(request) { response in
 cancelable.cancel()
 ```
 
-[connect-error-source]: https://github.com/bufbuild/connect-kotlin/blob/main/library/src/main/kotlin/build/buf/connect/ConnectError.kt
+[connect-error-source]: https://github.com/connectrpc/connect-kotlin/blob/main/library/src/main/kotlin/com/connectrpc/ConnectError.kt

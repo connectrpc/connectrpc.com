@@ -75,7 +75,7 @@ export const ElizaDemo: React.FC<{ focusOnMount?: boolean }> = ({
         }),
       ]);
     },
-    [elizaServicePromiseClient, print]
+    [elizaServicePromiseClient, print],
   );
 
   return (

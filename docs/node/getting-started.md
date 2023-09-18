@@ -154,7 +154,7 @@ or [Fastify](https://www.fastify.io/). We are going to use Fastify here.
 Let's install it, along with our plugin for Fastify:
 
 ```bash
-$ npm install fastify @connectrpc/connect-node @connectrpc/connect-fastify 
+$ npm install fastify @connectrpc/connect-node @connectrpc/connect-fastify
 ```
 
 Create a new file `server.ts` with the following contents:
@@ -331,7 +331,7 @@ void main();
 
 That's it! After you restarted the server, you can still open
 [https://localhost:8443/](https://localhost:8443/) in your browser, but along
-with gRPC-web and Connect, any gRPC client can access it too. Here's an example
+with gRPC-Web and Connect, any gRPC client can access it too. Here's an example
 using `buf curl`:
 
 ```shell

@@ -57,9 +57,9 @@ export const subTagline = <>Protobuf RPC that works.</>;
 
 export const description = (
   <>
-    Connect is a family of libraries for building browser and gRPC-compatible APIs. If
-    you&apos;re tired of hand-written boilerplate and turned off by massive frameworks, Connect is
-    for you.
+    Connect is a family of libraries for building browser and gRPC-compatible
+    APIs. If you&apos;re tired of hand-written boilerplate and turned off by
+    massive frameworks, Connect is for you.
   </>
 );
 
@@ -68,8 +68,8 @@ export const callout: Callout = {
   text: "Simple, reliable, Protobuf-powered APIs",
   button: {
     text: "Learn more",
-    href: "/docs/introduction"
-  }
+    href: "/docs/introduction",
+  },
 };
 
 export const featureList: FeatureItem[] = [
@@ -77,44 +77,50 @@ export const featureList: FeatureItem[] = [
     title: "Production-grade simplicity",
     description: (
       <>
-        Connect shines in production. Implementations are focused &mdash; a few thousand lines of
-        code, a handful of essential options, and a cURL-friendly protocol &mdash; which makes them
-        stable, predictable, and debuggable.
+        Connect shines in production. Implementations are focused &mdash; a few
+        thousand lines of code, a handful of essential options, and a
+        cURL-friendly protocol &mdash; which makes them stable, predictable, and
+        debuggable.
       </>
-    )
+    ),
   },
   {
     title: "Compatible with gRPC",
     description: (
       <>
-        In addition to its own protocol, Connect servers and backend clients also support gRPC
-        &mdash; including streaming! They interoperate seamlessly with Envoy, grpcurl, gRPC Gateway,
-        and every other gRPC implementation. Connect servers handle gRPC-Web requests natively,
+        In addition to its own protocol, Connect servers and backend clients
+        also support gRPC &mdash; including streaming! They interoperate
+        seamlessly with Envoy, grpcurl, gRPC Gateway, and every other gRPC
+        implementation. Connect servers handle gRPC-Web requests natively,
         without a translating proxy.
       </>
-    )
+    ),
   },
   {
     title: "Familiar primitives",
     description: (
       <>
-        Connect builds on primitives you already know. Go handlers slot right into your{" "}
-        <code>net/http</code> server and work with your existing middleware, router, and
-        observability. TypeScript clients stay close to the <code>fetch</code> API and integrate
-        cleanly with popular UI frameworks.
+        Connect builds on primitives you already know. Go handlers slot right
+        into your <code>net/http</code> server and work with your existing
+        middleware, router, and observability. TypeScript clients stay close to
+        the <code>fetch</code> API and integrate cleanly with popular UI
+        frameworks.
       </>
-    )
+    ),
   },
   {
     title: "No boilerplate",
     description: (
       <>
         Define your APIs using{" "}
-        <Link to="https://developers.google.com/protocol-buffers">Protocol Buffers</Link>, the
-        industry&apos;s most battle-tested schema definition language, and skip the hand-written
-        boilerplate. Connect handles server-side routing, serialization, and compression, and it
-        generates idiomatic clients in Go, TypeScript, Swift, and Kotlin.
+        <Link to="https://developers.google.com/protocol-buffers">
+          Protocol Buffers
+        </Link>
+        , the industry&apos;s most battle-tested schema definition language, and
+        skip the hand-written boilerplate. Connect handles server-side routing,
+        serialization, and compression, and it generates idiomatic clients in
+        Go, TypeScript, Swift, and Kotlin.
       </>
-    )
-  }
+    ),
+  },
 ];

@@ -13,16 +13,21 @@
 // limitations under the License.
 
 import clsx from "clsx";
-import React, { useEffect, useState } from "react";
+import React, { PropsWithChildren, useEffect, useState } from "react";
 import classes from "./examples.module.css";
 import codeBlockStyles from "@site/src/theme/CodeBlock/styles.module.css";
-import { parseLines, ThemeClassNames, usePrismTheme } from "@docusaurus/theme-common/internal";
+import {
+  parseLines,
+  ThemeClassNames,
+  usePrismTheme,
+} from "@docusaurus/theme-common/internal";
 import {
   stripSeparatedTerminalOutput,
   stripShellPromptForClipboard,
-  terminalOutputSeparator
+  terminalOutputSeparator,
 } from "@site/src/theme/CodeBlock/utils";
 import copy from "copy-text-to-clipboard";
+// @ts-ignore
 import { Highlight } from "prism-react-renderer";
 import Translate, { translate } from "@docusaurus/Translate";
 import Tooltip from "../tooltip";
@@ -90,7 +95,13 @@ export const Examples = () => {
   );
 };
 
-function CodeBlock({ children, title }: { children: React.ReactNode; title: string }) {
+function CodeBlock({
+  children,
+  title,
+}: {
+  children: React.ReactNode;
+  title: string;
+}) {
   const [showCopied, setShowCopied] = useState(false);
   const [mounted, setMounted] = useState(false); // The Prism theme on SSR is always the default theme but the site theme
   // can be in a different mode. React hydration doesn't update DOM styles
@@ -115,11 +126,13 @@ function CodeBlock({ children, title }: { children: React.ReactNode; title: stri
   const { lineClassNames, code } = parseLines(content as any, {
     metastring: undefined,
     language,
-    magicComments: []
+    magicComments: [],
   });
   const lines = code.split("\n");
 
-  const terminalSeparatorIndex = lines.findIndex((l) => l.trim() === terminalOutputSeparator);
+  const terminalSeparatorIndex = lines.findIndex(
+    (l) => l.trim() === terminalOutputSeparator,
+  );
   const handleCopyCode = () => {
     let textToCopy = code;
     if (language === "bash" || language === "terminal") {
@@ -142,9 +155,13 @@ function CodeBlock({ children, title }: { children: React.ReactNode; title: stri
     >
       {({ className, style, tokens, getLineProps, getTokenProps }) => {
         const mainTokens =
-          terminalSeparatorIndex === -1 ? tokens : tokens.slice(0, terminalSeparatorIndex + 1);
+          terminalSeparatorIndex === -1
+            ? tokens
+            : tokens.slice(0, terminalSeparatorIndex + 1);
         const terminalOutputTokens =
-          terminalSeparatorIndex === -1 ? [] : tokens.slice(terminalSeparatorIndex + 1);
+          terminalSeparatorIndex === -1
+            ? []
+            : tokens.slice(terminalSeparatorIndex + 1);
 
         return (
           <div
@@ -152,7 +169,7 @@ function CodeBlock({ children, title }: { children: React.ReactNode; title: stri
               codeBlockStyles.codeBlockContainer,
               classes.codeBlockContainer,
               `language-${language}`,
-              ThemeClassNames.common.codeBlock
+              ThemeClassNames.common.codeBlock,
             )}
           >
             <TerminalHeader>{title}</TerminalHeader>
@@ -165,14 +182,17 @@ function CodeBlock({ children, title }: { children: React.ReactNode; title: stri
                   codeBlockStyles.codeBlock,
                   "thin-scrollbar",
                   classes.codeBlock,
-                  classes.horizontalScrollBox
+                  classes.horizontalScrollBox,
                 )}
                 style={{ ...style, backgroundColor: "#F4F5FE" }}
               >
                 <code className={classes.codeBlockLines}>
                   {mainTokens.map((line, i) => {
                     // If the terminal separator is used, we only render the lines up to the separator here
-                    if (terminalSeparatorIndex > 0 && i >= terminalSeparatorIndex) {
+                    if (
+                      terminalSeparatorIndex > 0 &&
+                      i >= terminalSeparatorIndex
+                    ) {
                       return null;
                     }
 
@@ -182,7 +202,7 @@ function CodeBlock({ children, title }: { children: React.ReactNode; title: stri
 
                     const lineProps = getLineProps({
                       line,
-                      key: i
+                      key: i,
                     });
 
                     if (lineClassNames[i]) {
@@ -196,7 +216,7 @@ function CodeBlock({ children, title }: { children: React.ReactNode; title: stri
                             key={key}
                             {...getTokenProps({
                               token,
-                              key
+                              key,
                             })}
                           />
                         ))}
@@ -208,7 +228,12 @@ function CodeBlock({ children, title }: { children: React.ReactNode; title: stri
                 {/* If the terminal separator is used, we render the content following the separator separately,
                   allowing us to style it differently */}
                 {terminalSeparatorIndex === -1 ? null : (
-                  <code className={clsx(classes.codeBlockLines, classes.bufTerminalOutput)}>
+                  <code
+                    className={clsx(
+                      classes.codeBlockLines,
+                      classes.bufTerminalOutput,
+                    )}
+                  >
                     {terminalOutputTokens.map((line, i) => {
                       // adjust line index with offset of separator, plus 1 for the separator line which we don't render
                       i += terminalSeparatorIndex + 1;
@@ -235,13 +260,17 @@ function CodeBlock({ children, title }: { children: React.ReactNode; title: stri
                   </code>
                 )}
                 <div className={classes.codeFooter}>
-                  <Tooltip content={<>Copy</>} classNameModifications={classes.tooltip}>
+                  <Tooltip
+                    content={<>Copy</>}
+                    classNameModifications={classes.tooltip}
+                  >
                     <button
                       type="button"
                       aria-label={translate({
                         id: "theme.CodeBlock.copyButtonAriaLabel",
                         message: "Copy code to clipboard",
-                        description: "The ARIA label for copy code blocks button"
+                        description:
+                          "The ARIA label for copy code blocks button",
                       })}
                       onClick={handleCopyCode}
                       className={classes.copyButton}
@@ -281,7 +310,12 @@ function CodeBlock({ children, title }: { children: React.ReactNode; title: stri
   );
 }
 
-export const TerminalHeader: React.FC = ({ children }) => {
+type TerminalHeaderProps = {
+  children: React.ReactNode;
+};
+export const TerminalHeader: React.FC<TerminalHeaderProps> = ({
+  children,
+}: PropsWithChildren<TerminalHeaderProps>) => {
   return (
     <div className={clsx(classes.terminalHeaderWrapper)}>
       <div className={classes.terminalHeaderFakeButtons}>

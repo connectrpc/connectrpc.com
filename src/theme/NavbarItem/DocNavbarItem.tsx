@@ -25,7 +25,10 @@
  * For original sources see:
  * https://github.com/facebook/docusaurus/tree/v2.0.0-beta.17/packages/docusaurus-theme-classic/src/theme/NavbarItem/DocNavbarItem.tsx
  */
-import { useActiveDocContext, useLatestVersion } from "@docusaurus/plugin-content-docs/client";
+import {
+  useActiveDocContext,
+  useLatestVersion,
+} from "@docusaurus/plugin-content-docs/client";
 import { uniq, useDocsPreferredVersion } from "@docusaurus/theme-common";
 import DefaultNavbarItem from "@theme/NavbarItem/DefaultNavbarItem";
 import { getInfimaActiveClassName } from "./utils";
@@ -44,7 +47,7 @@ function getDocInVersions(versions: GlobalVersion[], docId: string) {
       `DocNavbarItem: couldn't find any doc with id "${docId}" in version${
         versions.length ? "s" : ""
       } ${versions.map((version) => version.name).join(", ")}".
-Available doc ids are:\n- ${docIds}`
+Available doc ids are:\n- ${docIds}`,
     );
   }
   return doc;
@@ -62,7 +65,9 @@ export default function DocNavbarItem({
 
   // Versions used to look for the doc to link to, ordered + no duplicate
   const versions = uniq(
-    [activeVersion, preferredVersion, latestVersion].filter(Boolean) as GlobalVersion[]
+    [activeVersion, preferredVersion, latestVersion].filter(
+      Boolean,
+    ) as GlobalVersion[],
   );
   const doc = getDocInVersions(versions, docId);
   const activeDocInfimaClassName = getInfimaActiveClassName(props.mobile);
@@ -72,7 +77,8 @@ export default function DocNavbarItem({
       exact
       {...props}
       className={clsx(props.className, {
-        [activeDocInfimaClassName]: activeDoc?.sidebar && activeDoc.sidebar === doc.sidebar
+        [activeDocInfimaClassName]:
+          activeDoc?.sidebar && activeDoc.sidebar === doc.sidebar,
       })}
       activeClassName={activeDocInfimaClassName}
       label={staticLabel ?? doc.id}
