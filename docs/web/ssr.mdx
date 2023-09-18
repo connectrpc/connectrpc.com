@@ -37,9 +37,7 @@ In addition to `toPlainMessage`, you can also convert your message to JSON expli
 is that you lose all type information when converted to JSON, but you can get it back in your client by simply
 converting into the original message type using `fromJson`.
 
-> NOTE: This approach will not work for any messages which contain a `BigInt` or `Uint8Array` type as they cannot be
-serialized to JSON. If you have a message containing these fields, you will have to convert them manually to something
-that is compatible with JSON (i.e. by transforming your `BigInt` values to strings).
+> NOTE: This approach will work for any messages which contain a `BigInt` or `Uint8Array` type, because the `toJson` method will convert them to their correct JSON representation.
 
 
 ## Examples
