@@ -19,6 +19,7 @@ export default (router: ConnectRouter) => {}
 
 
 Let's say you have defined a simple service in Protobuf:
+
 ```protobuf
 message SayRequest {
   string sentence = 1;
