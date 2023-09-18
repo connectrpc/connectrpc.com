@@ -5,6 +5,85 @@ sidebar_position: 5
 
 ## Testing clients
 
+Testing clients can be a crucial part of ensuring their functionality and performance. However, it may not always be
+feasible or desirable to test against an actual API. In such cases, you can utilize a mocked Connect backend to test
+your application using Connect's `createRouterTransport` function.
+
+### Mocking Transports
+
+The function `createRouterTransport` from `@connectrpc/connect` creates an in-memory
+server with your own RPC implementations. It allows you to mock a backend to cover different behavior in your component.
+
+To illustrate, let's setup a very simple ELIZA service:
+
+```ts
+import { ElizaService } from "@buf/connectrpc_eliza.connectrpc_es/connectrpc/eliza/v1/eliza_connect";
+import { SayResponse } from "@buf/connectrpc_eliza.connectrpc_es/connectrpc/eliza/v1/eliza_pb";
+import { createRouterTransport } from "@connectrpc/connect";
+
+const mockTransport = createRouterTransport(({ service }) => {
+  service(ElizaService, {
+    say: () => new SayResponse({ sentence: "I feel happy." }),
+  });
+});
+```
+
+Under the hood, this mock transport runs nearly the same code that a server running on
+Node.js would run. This means that all features from [implementing real services](../node/implementing-services.md)
+are available: You can access request headers, raise errors with details, and also
+mock streaming responses. Here is an example that raises an error on the fourth
+request:
+
+```ts
+const mockTransport = createRouterTransport(({ service }) => {
+  const sentences: string[] = [];
+  service(ElizaService, {
+    say(request: SayRequest) {
+      sentences.push(request.sentence);
+      // highlight-next-line
+      if (sentences.length > 3) {
+      // highlight-next-line
+        throw new ConnectError(
+      // highlight-next-line
+          "I have no words anymore.",
+      // highlight-next-line
+          Code.ResourceExhausted,
+      // highlight-next-line
+        );
+      // highlight-next-line
+      }
+      return new SayResponse({
+        sentence: `You said ${sentences.length} sentences.`,
+      });
+    },
+  });
+});
+```
+
+You can also use expectations to assert that your client sends requests as expected:
+
+```ts
+const mockTransport = createRouterTransport(({ service }) => {
+  service(ElizaService, {
+    say(request) {
+      // highlight-next-line
+      expect(request.sentence).toBe("how do you feel?");
+      return new SayResponse({ sentence: "I feel happy." });
+    },
+  });
+});
+```
+
+The `createRouterTransport` function also accepts an optional second argument, allowing you
+to pass options like [interceptors](./interceptors.mdx).
+
+### Testing against a running server
+
+
+### Testing against an in-memory server
+
+
+### Mocking clients
 
 
 
