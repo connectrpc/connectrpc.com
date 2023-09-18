@@ -536,6 +536,7 @@ import build.buf.connect.okhttp.ConnectOkHttpClient
 import build.buf.connect.protocols.NetworkProtocol
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
@@ -574,18 +575,18 @@ class MainActivity : AppCompatActivity() {
       adapter.add(MessageData(sentence, false))
       editTextView.setText("")
 
-      lifecycleScope.launch(Dispatchers.IO) {
+      lifecycleScope.launch {
         // Ensure IO context for unary requests.
-        val elizaSentence = talkToEliza(sentence)
-        lifecycleScope.launch(Dispatchers.Main) {
-          // Display the result
-          displayElizaResponse(elizaSentence)
+        val elizaSentence = withContext(Dispatchers.IO) {
+          talkToEliza(sentence)
         }
+        // Display the result
+        displayElizaResponse(elizaSentence)
       }
     }
   }
 
-  private fun talkToEliza(sentence: String): String? {
+  private suspend fun talkToEliza(sentence: String): String? {
     // Make unary request to Eliza.
     val response = elizaServiceClient.say(Eliza.SayRequest.newBuilder().setSentence(sentence).build())
     val elizaSentence = response.success { success ->
@@ -593,14 +594,14 @@ class MainActivity : AppCompatActivity() {
       success.message.sentence
     }
     response.failure { failure ->
-      Log.e("MainActivity", "${failure.error}")
+      Log.e("MainActivity", "Failed to talk to eliza", failure.error)
     }
     return elizaSentence
   }
 
-  private fun displayElizaResponse(sentence: String) {
-    if (elizaSentence!!.isNotBlank()) {
-      adapter.add(MessageData(elizaSentence, true))
+  private fun displayElizaResponse(sentence: String?) {
+    if (!sentence.isNullOrBlank()) {
+      adapter.add(MessageData(sentence, true))
     } else {
       adapter.add(MessageData("...No response from Eliza...", true))
     }
