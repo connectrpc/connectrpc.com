@@ -66,9 +66,8 @@ now][go-getting-started].
 
 ## TypeScript and JavaScript
 
-Connect for ECMAScript is currently pre-v1, but it's in production at Buf and
-several other companies. We plan to release a stable v1 in late 2023. However,
-you can get started now on the [web][web-getting-started] or in
+Connect for ECMAScript is stable and used by several companies (including Buf)
+in production. You can get started now on the [web][web-getting-started] or in
 [Node.js][node-getting-started].
 
 ## Swift and Kotlin
