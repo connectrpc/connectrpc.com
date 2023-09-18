@@ -22,6 +22,16 @@
       "permanent": true
     },
     {
+      "source": "/validate/",
+      "destination": "/validate.html",
+      "permanent": true
+    },
+    {
+      "source": "/docs/governance/",
+      "destination": "/docs/governance/project-governance",
+      "permanent": true
+    },
+    {
       "source": "/docs/",
       "destination": "/docs/introduction",
       "permanent": true

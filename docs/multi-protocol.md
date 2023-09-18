@@ -1,6 +1,6 @@
 ---
 title: Multi-Protocol Support
-sidebar_position: 990
+sidebar_position: 980
 ---
 
 Connect supports multiple protocols by switching on HTTP Content-Types: each

@@ -2,7 +2,6 @@
   display: flex;
   align-content: center;
   justify-content: center;
-
 }
 
 .container {
@@ -12,7 +11,7 @@
   position: relative;
   padding-top: 2.5rem;
   padding-bottom: 5rem;
-  border-top: 1px solid #D8E9EE;
+  border-top: 1px solid #d8e9ee;
 }
 
 .socialGroup {
@@ -22,7 +21,7 @@
 }
 
 .socialGroup a {
-  color: #93B4BE;
+  color: #93b4be;
 }
 
 .legalGroup {
@@ -32,7 +31,6 @@
   gap: 1.8rem;
 }
 
-
 .copyright {
   font-size: 0.875rem;
   color: var(--buf-footer-color);
@@ -40,14 +38,20 @@
 }
 
 .socialLink {
-  transition: color 0.2s ease-in-out, opacity 0.2s ease-in-out, background-size 0.2s ease-in-out,
-    background 0.2s ease-in-out, background-color 0.2s ease-in-out, border-color 0.2s ease-in-out,
-    width 0.2s ease-in-out, height 0.2s ease-in-out;
-  transition-property: color, opacity, background-size, background, background-color, border-color,
-    width, height;
+  transition:
+    color 0.2s ease-in-out,
+    opacity 0.2s ease-in-out,
+    background-size 0.2s ease-in-out,
+    background 0.2s ease-in-out,
+    background-color 0.2s ease-in-out,
+    border-color 0.2s ease-in-out,
+    width 0.2s ease-in-out,
+    height 0.2s ease-in-out;
+  transition-property: color, opacity, background-size, background,
+    background-color, border-color, width, height;
   transition-duration: 0.2s, 0.2s, 0.2s, 0.2s, 0.2s, 0.2s, 0.2s, 0.2s;
-  transition-timing-function: ease-in-out, ease-in-out, ease-in-out, ease-in-out, ease-in-out,
-    ease-in-out, ease-in-out, ease-in-out;
+  transition-timing-function: ease-in-out, ease-in-out, ease-in-out, ease-in-out,
+    ease-in-out, ease-in-out, ease-in-out, ease-in-out;
   transition-delay: 0s, 0s, 0s, 0s, 0s, 0s, 0s, 0s;
 }
 .socialLink:hover {
@@ -65,7 +69,9 @@
   background-size: 0 100%;
   padding-bottom: 0.125rem;
   text-decoration: none;
-  transition: background-size 0.4s ease-in-out, opacity 0.4s ease-in-out;
+  transition:
+    background-size 0.4s ease-in-out,
+    opacity 0.4s ease-in-out;
 }
 .legalLink:hover {
   text-decoration: none;

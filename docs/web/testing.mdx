@@ -8,12 +8,18 @@ and performance. When it comes to web applications, spinning up a full server
 to test against may not always be the best option. In the following sections, we
 will go through a couple of alternatives.
 
+## Component Testing
 
-## Mocking services
+For components that interface with Connect, it will generally be desirable to mock your RPCs since a backend may not be
+available or desirable to access in a unit test. The easiest way to do this is via Connect's `createRouterTransport`
+function.
+
+### Mocking Transports
 
 The function `createRouterTransport` from `@connectrpc/connect` creates an in-memory
-server with your own RPC implementations. To illustrate, let's implement a very
-simple ELIZA service:
+server with your own RPC implementations. It allows you to mock a backend to cover different behavior in your component.
+
+To illustrate, let's setup a very simple ELIZA service:
 
 ```ts
 import { ElizaService } from "@buf/connectrpc_eliza.connectrpc_es/connectrpc/eliza/v1/eliza_connect";
@@ -27,38 +33,39 @@ const mockTransport = createRouterTransport(({ service }) => {
 });
 ```
 
-In your tests, you can then use the `mockTransport` with the function
-`createPromiseClient` or `createCallbackClient`, just like you would use any other
-transport:
+Under the hood, this mock transport runs nearly the same code that a server running on
+Node.js would run. This means that all features from [implementing real services](../node/implementing-services.md)
+are available: You can access request headers, raise errors with details, and also
+mock streaming responses. Here is an example that raises an error on the fourth
+request:
 
 ```ts
-import { ElizaService } from "@buf/connectrpc_eliza.connectrpc_es/connectrpc/eliza/v1/eliza_connect";
-import { SayResponse } from "@buf/connectrpc_eliza.connectrpc_es/connectrpc/eliza/v1/eliza_pb";
-import { createRouterTransport, createPromiseClient } from "@connectrpc/connect";
-
-describe("simple ELIZA mock", function () {
-  const mockTransport = createRouterTransport(({ service }) => {
-    service(ElizaService, {
-      say: () => new SayResponse({ sentence: "I feel happy." }),
-    });
-  });
-  // highlight-next-line
-  it("returns mocked answer", async () => {
-    // highlight-next-line
-    const client = createPromiseClient(ElizaService, mockTransport);
-    // highlight-next-line
-    const { sentence } = await client.say({ sentence: "how do you feel?" });
-    // highlight-next-line
-    expect(sentence).toEqual("I feel happy.");
-  // highlight-next-line
+const mockTransport = createRouterTransport(({ service }) => {
+  const sentences: string[] = [];
+  service(ElizaService, {
+    say(request: SayRequest) {
+      sentences.push(request.sentence);
+      // highlight-next-line
+      if (sentences.length > 3) {
+      // highlight-next-line
+        throw new ConnectError(
+      // highlight-next-line
+          "I have no words anymore.",
+      // highlight-next-line
+          Code.ResourceExhausted,
+      // highlight-next-line
+        );
+      // highlight-next-line
+      }
+      return new SayResponse({
+        sentence: `You said ${sentences.length} sentences.`,
+      });
+    },
   });
 });
 ```
 
-### Expectations in the service
-
-So far, we have only returned a mock response from our server, but we can also
-use expectations to assert that our client sends requests as expected:
+You can also use expectations to assert that your client sends requests as expected:
 
 ```ts
 const mockTransport = createRouterTransport(({ service }) => {
@@ -72,42 +79,41 @@ const mockTransport = createRouterTransport(({ service }) => {
 });
 ```
 
+The `createRouterTransport` function also accepts an optional second argument, allowing you
+to pass options like [interceptors](./interceptors.mdx).
 
-### Raising errors
+### Examples
 
-Under the hood, the transport runs nearly the same code that a server running on
-Node.js would run. This means that all features from [implementing real services](../node/implementing-services.md)
-are available: You can access request headers, raise errors with details, and also
-mock streaming responses. Here is an example that raises an error on the fourth
-request:
+A recommended way to structure components that need to issue Connect calls is to pass a
+`Transport` object to the component. This adds flexibility to components for unit testing, but will vary
+depending on the framework being used. Below are links to some helpful examples for passing transports to components
+and mocking them in unit tests.
 
-```ts
-const mockTransport = createRouterTransport(({ service }) => {
-  const sentences: string[] = [];
-  service(ElizaService, {
-    say(request: SayRequest) {
-      sentences.push(request.sentence);
-      if (sentences.length > 3) {
-        throw new ConnectError(
-          "I have no words anymore.",
-          Code.ResourceExhausted,
-        );
-      }
-      return new SayResponse({
-        sentence: `You said ${sentences.length} sentences.`,
-      });
-    },
-  });
-});
-```
+#### React
 
+With React, you have actions such as component props or [React Context](https://react.dev/learn/passing-data-deeply-with-context)
+to provide a transport to your component.
 
-### Transport options
+For a working example using the Context API, see the
+[Create React App project](https://github.com/connectrpc/examples-es/tree/main/react/cra) in the
+[examples-es](https://github.com/connectrpc/examples-es) repo.
 
-Other transports take options like [interceptors](./interceptors.mdx). They can
-be passed to `createRouterTransport` in the optional second argument, an object
-with the property `transport` for transport options.
+#### Svelte
 
+The suggested method for providing transports to Svelte components makes use of Svelte's
+[Context API](https://learn.svelte.dev/tutorial/context-api).
+
+To view a working example of using the Context API to mock transports in Svelte components, check out the
+[Svelte project](https://github.com/connectrpc/examples-es/tree/main/svelte) in the
+[examples-es](https://github.com/connectrpc/examples-es) repo.
+
+#### Vue
+
+Structuring a Vue application to allow for easy component testing involves Vue's [Provide/Inject API](https://vuejs.org/guide/components/provide-inject.html).
+
+For a working example of mocking transports in Vue components, see the
+[Vue project](https://github.com/connectrpc/examples-es/tree/main/vue) in the
+[examples-es](https://github.com/connectrpc/examples-es) repo.
 
 ### Jest and the jsdom environment
 
@@ -122,7 +128,6 @@ ReferenceError: TextEncoder is not defined
 
 If you see this error, consider to use [@bufbuild/jest-environment-jsdom](https://www.npmjs.com/package/@bufbuild/jest-environment-jsdom)
 instead.
-
 
 ### What about mocking `fetch` itself?
 

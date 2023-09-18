@@ -1,0 +1,32 @@
+name: ci
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  ci:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.tmp
+            .tmp
+          key: ${{ runner.os }}-connectrpc-ci-${{ hashFiles('Makefile') }}
+          restore-keys: |
+            ${{ runner.os }}-connectrpc-ci-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run CI
+        run: make ci
+
+      - name: Check Diff
+        id: checkdiff
+        run: |
+          [[ -z $(git status --porcelain | tee /dev/stderr) ]] || exit 1

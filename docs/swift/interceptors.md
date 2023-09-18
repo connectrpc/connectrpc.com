@@ -59,7 +59,7 @@ let client = ProtocolClient(
         networkProtocol: .connect,
         codec: ProtoCodec(),
         //highlight-next-line
-        interceptors: [ExampleAuthInterceptor.init]
+        interceptors: [{ ExampleAuthInterceptor(config: $0) }]
     )
 )
 ```
@@ -70,7 +70,12 @@ path, and in LIFO order on the response path.
 For example, if the following interceptors are registered:
 
 ```swift
-InterceptorsOption(interceptors: [A.init, B.init, C.init, D.init])
+interceptors: [
+    { A(config: $0) },
+    { B(config: $0) },
+    { C(config: $0) },
+    { D(config: $0) },
+]
 ```
 
 They'll be created each time a request is initiated by the client, then

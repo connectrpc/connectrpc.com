@@ -44,6 +44,10 @@ for Node.js. We highly recommend it if you want to serve anything else along
 with your Connect RPCs. Use the plugin from [@connectrpc/connect-fastify](https://www.npmjs.com/package/@connectrpc/connect-fastify)
 with Fastify:
 
+```bash
+$ npm install fastify @connectrpc/connect-node @connectrpc/connect-fastify
+```
+
 ```ts
 import { fastify } from "fastify";
 import routes from "./connect";
@@ -61,13 +65,18 @@ await server.listen({
 });
 ```
 
-The plugin accepts all common options.
+The plugin accepts all common options. Note that `@connectrpc/connect` and `@connectrpc/connect-node` are peer 
+dependencies of  `@connectrpc/connect-fastify`.
 
 ## Next.js
 
 [Next.js](https://nextjs.org/) is a framework supported by Vercel that enables creating full-stack web applications
 using the latest React features. With [@connectrpc/connect-next](https://www.npmjs.com/package/@connectrpc/connect-next),
 you can serve your Connect RPCs via Next.js API Routes.
+
+```bash
+$ npm install next @connectrpc/connect-node @connectrpc/connect-next
+```
 
 To enable the server plugin, create the file `pages/api/[[...connect]].ts` in your project:
 
@@ -90,6 +99,10 @@ Note that Next.js does not support the http2 module.
 [Express](https://expressjs.com/) has been around for a long time, and it's still
 popular because of its simplicity. Use the middleware provided by [@connectrpc/connect-express](https://www.npmjs.com/package/@connectrpc/connect-express)
 to add your Connect RPCs to Express:
+
+```bash
+$ npm install express @connectrpc/connect-node @connectrpc/connect-express
+```
 
 ```ts
 import http from "http";

@@ -1,7 +1,7 @@
 ---
 title: Connect Protocol Reference
 sidebar_label: Connect Protocol
-sidebar_position: 999
+sidebar_position: 990
 ---
 
 This document specifies the Connect protocol for making RPCs over HTTP. The
