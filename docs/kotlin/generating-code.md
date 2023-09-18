@@ -74,7 +74,7 @@ file is shown below:
 ```yaml
 version: v1
 plugins:
-  - plugin: buf.build/bufbuild/connect-kotlin
+  - plugin: buf.build/connectrpc/kotlin
     out: generated
   - plugin: buf.build/protocolbuffers/java
     out: generated
@@ -159,7 +159,7 @@ The following generation options can be combined in the `opt` field of the `buf.
 [buf.yaml]: https://buf.build/docs/configuration/v1/buf-yaml
 [buf-cli]: https://buf.build/docs/installation
 [connect-kotlin]: https://github.com/connectrpc/connect-kotlin
-[connect-kotlin-plugin]: https://buf.build/bufbuild/connect-kotlin
+[connect-kotlin-plugin]: https://buf.build/connectrpc/kotlin
 [java-protobuf-plugin]: https://buf.build/protocolbuffers/java
 [protobuf]: https://developers.google.com/protocol-buffers
 [remote-plugins]: https://buf.build/docs/bsr/remote-plugins/usage

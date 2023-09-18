@@ -1,6 +1,6 @@
 ---
 title: cURL & other clients
-sidebar_position: 30
+sidebar_position: 970
 ---
 
 Not every client has access to generated code and a full RPC framework: perhaps

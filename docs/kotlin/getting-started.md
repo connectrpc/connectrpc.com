@@ -111,7 +111,7 @@ version: v1
 plugins:
   - plugin: buf.build/protocolbuffers/java
     out: app/src/main/java
-  - plugin: buf.build/bufbuild/connect-kotlin
+  - plugin: buf.build/connectrpc/kotlin
     out: app/src/main/java
 ```
 
@@ -124,7 +124,7 @@ The above `buf.gen.yaml` config does two things:
    If the javalite option is desired, simply add `opt: javalite` to the yaml block.
    :::
 
-2. Executes the [bufbuild/connect-kotlin](https://buf.build/bufbuild/connect-kotlin) plugin to generates clients for
+2. Executes the [connectrpc/kotlin](https://buf.build/connectrpc/kotlin) plugin to generates clients for
    connect-kotlin. Compatible with the gRPC,
    gRPC-Web, and Connect RPC protocols into the specified directory. Connect is an RPC protocol which supports gRPC —
    including streaming! They interoperate seamlessly with Envoy, grpcurl, gRPC Gateway, and every other gRPC
