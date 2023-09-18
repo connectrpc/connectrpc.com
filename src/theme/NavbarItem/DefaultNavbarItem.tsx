@@ -34,7 +34,10 @@ import styles from "./NavbarItem.module.css";
 
 /* eslint @typescript-eslint/no-unused-vars: "off" */
 
-import type { DesktopOrMobileNavBarItemProps, Props } from "@theme/NavbarItem/DefaultNavbarItem";
+import type {
+  DesktopOrMobileNavBarItemProps,
+  Props,
+} from "@theme/NavbarItem/DefaultNavbarItem";
 
 function DefaultNavbarItemDesktop({
   className,
@@ -46,7 +49,7 @@ function DefaultNavbarItemDesktop({
       className={clsx(
         isDropdownItem ? "dropdown__link" : "navbar__item navbar__link",
         styles.item,
-        className
+        className,
       )}
       {...props}
     />
@@ -78,6 +81,11 @@ export default function DefaultNavbarItem({
 }: Props): JSX.Element {
   const Comp = mobile ? DefaultNavbarItemMobile : DefaultNavbarItemDesktop;
   return (
-    <Comp {...props} activeClassName={props.activeClassName ?? getInfimaActiveClassName(mobile)} />
+    <Comp
+      {...props}
+      activeClassName={
+        props.activeClassName ?? getInfimaActiveClassName(mobile)
+      }
+    />
   );
 }

@@ -16,7 +16,11 @@ import React from "react";
 import NavbarItem from "@theme/NavbarItem";
 import NavbarColorModeToggle from "@theme/Navbar/ColorModeToggle";
 import SearchBar from "@theme/SearchBar";
-import { splitNavbarItems, useNavbarMobileSidebar, useThemeConfig } from "@docusaurus/theme-common/internal";
+import {
+  splitNavbarItems,
+  useNavbarMobileSidebar,
+  useThemeConfig,
+} from "@docusaurus/theme-common/internal";
 import NavbarMobileSidebarToggle from "@theme/Navbar/MobileSidebar/Toggle";
 import NavbarLogo from "@theme/Navbar/Logo";
 import NavbarSearch from "@theme/Navbar/Search";
@@ -33,14 +37,22 @@ function useNavbarItems() {
 
 function NavbarItems({ items }: { items: NavbarItemConfig[] }): JSX.Element {
   const mobileSidebar = useNavbarMobileSidebar();
-  const renderedItems = items.map((item, i) => <NavbarItem {...item} key={i} />);
+  const renderedItems = items.map((item, i) => (
+    <NavbarItem {...item} key={i} />
+  ));
   if (mobileSidebar.shouldRender) {
     return <>{renderedItems}</>;
   }
   return <div className={styles.linkList}>{renderedItems}</div>;
 }
 
-function NavbarContentLayout({ left, right }: { left: React.ReactNode; right: React.ReactNode }) {
+function NavbarContentLayout({
+  left,
+  right,
+}: {
+  left: React.ReactNode;
+  right: React.ReactNode;
+}) {
   return (
     <div className={clsx("navbar__inner", styles.inner)}>
       <div className="navbar__items">{left}</div>
@@ -65,9 +77,9 @@ export default function NavbarContent() {
           <NavbarLogo />
           <NavbarItems items={leftItems} />
           <div className={styles.rightWrapper}>
-            <div className={styles.searchWrapper} >
+            <div className={styles.searchWrapper}>
               <NavbarSearch>
-                <SearchBar {...siteConfig.themeConfig.algolia as any} />
+                <SearchBar {...(siteConfig.themeConfig.algolia as any)} />
               </NavbarSearch>
             </div>
             <CreatedBy className="desktop-only" />

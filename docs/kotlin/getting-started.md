@@ -199,7 +199,7 @@ dependencies {
   implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
   implementation "com.squareup.okhttp3:okhttp:4.10.0"
   implementation "com.connectrpc:connect-kotlin-okhttp:0.1.11"
-  // Javalite specific dependencies.
+  // JavaLite specific dependencies.
   implementation "com.connectrpc:connect-kotlin-google-javalite-ext:0.1.11"
   implementation "com.google.protobuf:protobuf-javalite:3.22.0"
 }
@@ -487,7 +487,7 @@ The required parameters are the host, serialization strategy, and protocol:
 
 - `host`: The host of the request (e.g `https://demo.connectrpc.com`).
 - `serializationStrategy`: Configures the `ProtocolClient` to use a specified base data type and encoding
-  (e.g., Google's Java and Google's Javalite).
+  (e.g., Google's Java and Google's JavaLite).
 - `protocol`: The underlying network protocol to use (e.g., Connect, gRPC, or gRPC-Web).
 
 To use alternative serialization strategies or protocols, the `ProtocolClientConfig` can be instantiated with different
@@ -653,7 +653,7 @@ There are more [detailed examples][more-examples] within
 the Connect-Kotlin repository on GitHub. These examples demonstrate:
 
 - Using [streaming APIs][streaming-example-kotlin].
-- Integrating with [Google's Java][pgjava-example] and [Javalite Protobuf][pgjavalite-example].
+- Integrating with [Google's Java][pgjava-example] and [JavaLite Protobuf][pgjavalite-example].
 - Using the [Connect protocol](../protocol.md).
 - Using the [gRPC protocol][grpc].
 - Using the [gRPC-Web protocol][grpc-web].

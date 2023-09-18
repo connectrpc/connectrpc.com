@@ -22,7 +22,7 @@ export const Divider = ({ style }: { style?: CSSProperties }) => {
         height: "1px",
         backgroundColor: "var(--buf-grey-04)",
         opacity: "0.1",
-        ...style
+        ...style,
       }}
     />
   );

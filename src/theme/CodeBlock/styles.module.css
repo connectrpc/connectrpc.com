@@ -72,7 +72,7 @@
 .codeBlockLines :global(.token-linetheme-code-block-highlighted-line) {
   background-color: var(--docusaurus-highlighted-code-line-bg);
   display: block;
-  margin: 0 calc(var(--ifm-pre-padding)*-1);
+  margin: 0 calc(var(--ifm-pre-padding) * -1);
   padding: 0 var(--ifm-pre-padding);
 }
 
