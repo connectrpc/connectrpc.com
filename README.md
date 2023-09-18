@@ -15,9 +15,6 @@ To serve locally:
 
 ```sh
 npm run start
-
-# Also:
-make run
 ```
 
 ## Publishing

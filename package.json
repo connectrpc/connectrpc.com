@@ -9,12 +9,14 @@
     "serve": "docusaurus serve",
     "swizzle": "docusaurus swizzle",
     "check:types": "tsc --noEmit",
-    "format": "prettier --write --ignore-unknown './src'",
+    "format": "prettier --write './src'",
     "lint": "eslint .",
     "lint:fix": "eslint --fix",
     "write:translations": "docusaurus write-translations",
     "write:heading-ids": "docusaurus write-heading-ids",
-    "license-header": "license-header"
+    "license-header": "license-header",
+    "ci": "npm run build && npm run format && npm run lint:fix && npm run check:types && npm run license-header",
+    "publish": "npm install && npm run lint && npm run check:types && npm run build"
   },
   "dependencies": {
     "@buf/connectrpc_eliza.connectrpc_es": "0.13.2-20230822171018-8b8b971d6fde.1",
