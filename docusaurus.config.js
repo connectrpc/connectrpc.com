@@ -17,11 +17,16 @@ const lightCodeTheme = require("prism-react-renderer").themes.github;
 const darkCodeTheme = require("prism-react-renderer").themes.dracula;
 const gaTrackingID = process.env.GOOGLE_ANALYTICS_GTAG ?? "";
 
+const publicUrl =
+  process.env.NEXT_PUBLIC_VERCEL_URL === undefined
+    ? "https://connectrpc.com"
+    : `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`;
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: "Connect",
   tagline: "Simple, reliable, interoperable: Protobuf RPC that works.", // Used for description metadata
-  url: "https://connectrpc.com",
+  url: publicUrl,
   baseUrl: "/",
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
@@ -101,7 +106,7 @@ const config = {
         },
         {
           name: "og:image",
-          content: "https://connectrpc.com/img/logos/og-connect.svg",
+          content: `${publicUrl}/img/logos/og-connect.svg`,
         },
         {
           name: "twitter:card",
@@ -109,15 +114,15 @@ const config = {
         },
         {
           name: "twitter:image",
-          content: "https://connectrpc.com/img/logos/og-connect.svg",
+          content: `${publicUrl}/img/logos/og-connect.svg`,
         },
         {
           name: "twitter:domain",
-          content: "connectrpc.com",
+          content: publicUrl.replace(/^https?:\/\//, ""),
         },
         {
           name: "twitter:url",
-          content: "https://connectrpc.com",
+          content: publicUrl,
         },
         {
           name: "twitter:title",
