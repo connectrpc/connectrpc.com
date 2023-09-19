@@ -43,7 +43,6 @@ route that hardcodes certain scenarios such as always returning an error or alwa
 cases, you can utilize a mocked Connect backend to test your application again using Connect's `createRouterTransport`
 function.
 
-#### Mocking Transports
 
 As mentioned, the function `createRouterTransport` from `@connectrpc/connect` creates an in-memory
 server with the supplied routes. So, you can provide your own RPC implementations just for testing purposes.
