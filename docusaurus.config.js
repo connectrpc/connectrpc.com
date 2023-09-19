@@ -28,6 +28,7 @@ const config = {
   favicon: "img/fav@2x.png",
   organizationName: "connectrpc",
   projectName: "connect",
+
   scripts: [
     {
       src: "https://cdn.usefathom.com/script.js",
@@ -89,6 +90,44 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
+      metadata: [
+        {
+          name: "description",
+          content: "Simple, reliable, interoperable: Protobuf RPC that works.",
+        },
+        {
+          name: "og:type",
+          content: "website",
+        },
+        {
+          name: "og:image",
+          content: "https://connectrpc.com/img/logos/simple-connect.svg",
+        },
+        {
+          name: "twitter:card",
+          content: "summary_large_image",
+        },
+        {
+          name: "twitter:image",
+          content: "https://connectrpc.com/img/logos/simple-connect.svg",
+        },
+        {
+          name: "twitter:domain",
+          content: "connectrpc.com",
+        },
+        {
+          name: "twitter:url",
+          content: "https://connectrpc.com",
+        },
+        {
+          name: "twitter:title",
+          content: "Connect",
+        },
+        {
+          name: "twitter:description",
+          content: "Simple, reliable, interoperable: Protobuf RPC that works.",
+        },
+      ],
       colorMode: {
         // We can re-enable later if/when we have design assets
         disableSwitch: true,
