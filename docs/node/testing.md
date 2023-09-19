@@ -3,140 +3,155 @@ title: Testing
 sidebar_position: 5
 ---
 
-## Testing a client application
+When writing tests for your Connect for Node.js application, your approach will
+vary depending on whether you are testing clients or backend services. There are similarities
+in the setups as well as advantages and disadvantages for each. Below we'll list a few techniques for testing both.
 
-Testing a client application can be a crucial part of ensuring its functionality and performance. When it comes to TypeScript projects, you can utilize the `createRouterTransport` method from `@connectrpc/connect` to create a mock transport that can be used in both backend and frontend applications.
+## Clients
 
-For backend applications, it can be useful to create mock transports within the context of unit tests. By integrating the actual logic of your application and testing it incrementally, you can ensure that each part of your application is functioning as expected.
+The process of testing your Connect for Node.js clients involves verifying that your client is sending the expected
+requests and reacting correctly to various responses. Consequently, when writing tests for your clients, you will have
+to define a server to interact with during your tests.
 
-On the other hand, for frontend applications, it may not always be feasible or desirable to test against an actual API. In such cases, you can utilize a mocked Connect backend to test your application.
+### Testing against a running server
 
-To help you get started with testing your client application, here is a guide on how to use `createRouterTransport` to create mock transports for your TypeScript projects.
+With this approach, you can run a full HTTP server over TCP, and use your clients under test to call procedures,
+asserting that the result matches expectations. The big benefit is that you get a behavior that is closest to a real
+deployment. It lets you get closest to a production deployment and will factor in test other processes that your server
+might interact with, including middleware. The big drawback is that it requires a lot of legwork to get a working server
+setup for your tests.
 
-### A simple mock to test a client
+### Testing against an in-memory server
 
-No matter whether your client is Node.js with Connect-Node or a web frontend with Connect-Web or Connect-Query, you can use `createRouterTransport` to write tests.
+With an in-memory server, you can test your Connect clients against a route in isolation and circumvent any other
+routes or middleware that your server might implement. To accomplish this, you can use the `createRouterTransport`
+function exported from [`@connectrpc/connect`](https://www.npmjs.com/package/@connectrpc/connect). This in-memory
+transport is a special transport that does not make HTTP requests over the network, but directly calls the supplied
+Connect routes instead. The `Transport` returned from `createRouterTransport` can be used to create clients and call
+procedures, asserting that the result matches expectations.
 
-To illustrate, let's start with a simple `BigIntService` proto definition:
+One of the benefits with testing clients against an in-memory server is the ease of setup. For example, request and
+response messages are serialized. Headers, trailers, errors and other Connect features are supported, too. However, the
+behavior under test is not as close to a real deployment. Since requests are not going through the network, there are
+many areas not factored into the test that could result in a false sense of security about the completeness of your
+client coverage.
 
-```protobuf
-message CountRequest {
-  int64 add = 1;
-}
+### Mocking services
 
-message CountResponse {
-  int64 count = 1;
-}
+It may not always be feasible or desirable to test against an actual API. For example, you may want to write a test
+route that hardcodes certain scenarios such as always returning an error or always returning an empty response. In such
+cases, you can utilize a mocked Connect backend to test your application again using Connect's `createRouterTransport`
+function.
 
-service BigIntService {
-  rpc Count(CountRequest) returns (CountResponse);
-}
-```
 
-With `createRouterTransport` and `BigIntService` from your generated code, you can create a simple mock:
+As mentioned, the function `createRouterTransport` from `@connectrpc/connect` creates an in-memory
+server with the supplied routes. So, you can provide your own RPC implementations just for testing purposes.
+
+To illustrate, let's setup a very simple ELIZA service:
 
 ```ts
-import { createRouterTransport } from '@connectrpc/connect';
-import { BigIntService } from 'my-generated-code/bigint_connectweb';
+import { ElizaService } from "@buf/connectrpc_eliza.connectrpc_es/connectrpc/eliza/v1/eliza_connect";
+import { SayResponse } from "@buf/connectrpc_eliza.connectrpc_es/connectrpc/eliza/v1/eliza_pb";
+import { createRouterTransport } from "@connectrpc/connect";
 
-export const mockBigIntTransport = () =>
-  createRouterTransport(({ service }) => {
-    service(BigIntService, {
-      count: () => new CountResponse({ count: 1n })
-    });
-  });
-```
-
-In your client testing code, you can then use `createPromiseClient` from `@connectrpc/connect` with `mockBigIntTransport`:
-
-```ts
-import { createPromiseClient } from '@connectrpc/connect';
-
-describe('your client test suite', () => {
-  it('tests a simple client call', async () => {
-    const client = createPromiseClient(BigIntService, mockBigIntTransport());
-    const { count } = await client.count({});
-    expect(count).toEqual(1n);
+const mockTransport = createRouterTransport(({ service }) => {
+  service(ElizaService, {
+    say: () => new SayResponse({ sentence: "I feel happy." }),
   });
 });
 ```
+
+Under the hood, this mock transport runs nearly the same code that a server running on
+Node.js would run. This means that all features from [implementing real services](../node/implementing-services.md)
+are available: You can access request headers, raise errors with details, and also
+mock streaming responses. Here is an example that raises an error on the fourth
+request:
+
+```ts
+const mockTransport = createRouterTransport(({ service }) => {
+  const sentences: string[] = [];
+  service(ElizaService, {
+    say(request: SayRequest) {
+      sentences.push(request.sentence);
+      // highlight-next-line
+      if (sentences.length > 3) {
+      // highlight-next-line
+        throw new ConnectError(
+      // highlight-next-line
+          "I have no words anymore.",
+      // highlight-next-line
+          Code.ResourceExhausted,
+      // highlight-next-line
+        );
+      // highlight-next-line
+      }
+      return new SayResponse({
+        sentence: `You said ${sentences.length} sentences.`,
+      });
+    },
+  });
+});
+```
+
+With this mock, you can test how your client will react to returned errors after subsequent responses. You can also use
+expectations to assert that your client sends requests as expected:
+
+```ts
+const mockTransport = createRouterTransport(({ service }) => {
+  service(ElizaService, {
+    say(request) {
+      // highlight-next-line
+      expect(request.sentence).toBe("how do you feel?");
+      return new SayResponse({ sentence: "I feel happy." });
+    },
+  });
+});
+```
+
+The `createRouterTransport` function also accepts an optional second argument, allowing you
+to pass options like [interceptors](docs/web/interceptors.mdx).
+
+### Examples
+
+For a working example of all three approaches in vanilla Node.js, check out the [client.test.ts file](https://github.com/connectrpc/examples-es/blob/b5d3f6822330f6b7816fac697b64ed4214aabafe/vanilla-node/client.test.ts) in the `vanilla-node` project of our [examples-es](https://github.com/connectrpc/examples-es) repo.
+
+## Services
+
+As with clients, there are multiple ways for testing your Connect-Node services each with their own benefits. The
+approaches mainly follow the same concepts as with clients with the only difference being what you are testing.
+
+### Testing with a running server
+
+This approach is basically the same concept [as described above](#testing-against-a-running-server) regarding using a
+running server. With this approach, you can set up test clients to send various configurations of requests and verify
+your routes are behaving as planned. This approach works well with plain Node.js, Fastify, and Express.
 
 :::note
-You can pass the `Transport` returned by `createRouterTransport` to any client that accepts a transport, including Connect-Node, Connect-Web, and Connect-Query.
-:::
+We do not recommend using [`fastify.inject()`](https://fastify.dev/docs/v1.14.x/Documentation/Testing/#testing-with-http-injection)
+for testing Connect routes. `fastify.inject()` is a great tool, but using it means you have to handle details of the
+protocol like `Content-Type` headers and status codes yourself. This is rather straight-forward for Connect unary,
+but much less so for streaming RPCs, or the gRPC or gRPC-Web protocols.
+:::note
 
-### Adding Headers, interceptors, more
+### Testing with an in-memory server
 
-You can do all the same things with this mock as with any other transport, such as setting headers and trailers, using interceptors, and more. Here's an example:
+Likewise, this follows the same concept as its [client counterpart above](#testing-against-an-in-memory-server). The
+idea is to test your routes in isolation without factoring in any ancillary servers or middleware. The setup is the
+same as above and can be facilitated through the use of `createRouterTransport`.
 
-```ts
-import { type HandlerContext } from '@connectrpc/connect';
-import { CountRequest } from 'my-generated-code/bigint_connectweb';
+This approach works well with Next.js, where spinning up a full server in tests is not trivial.
 
-export const mockBigIntTransport = () =>
-  createRouterTransport(({ service }) => {
-    service(BigIntService, {
-      count: (_request: CountRequest, context: HandlerContext) => {
-        context.responseHeader.set("unary-response-header", "foo"); // set Response Header
-        context.responseTrailer.set("unary-response-trailer", "foo"); // set Response Trailer
-        return new CountResponse({ count: 1n });
-      },
-    },
-    {
-      transport: {
-        interceptors: [
-          loggingInterceptor, // set an interceptor
-        ],
-      },
-    });
-  });
-```
+### Unit testing a service
 
-In this example, we have added an interceptor to the mock implementation of the `count` method. The interceptor is a function that logs some information before and after the request is processed. We have also added a response header and a response trailer to the response.
+Unit testing a service side-steps TCP and HTTP altogether and calls the service methods directly, without the need for
+clients, transports, and other processes used when interacting with an actual server. This approach is ideal
+for unit testing, but it requires implementing services as classes using
+[helper types](https://connectrpc.com/docs/node/implementing-services#helper-types). This way, you can simply
+instantiate your service class directory and invoke methods on the service directly.
 
-### Using stateful mocks to test a client
+### Examples
 
-You can also create a stateful mock. Here's an example of a mock server that takes in a request and adds it to an existing count:
+Our examples-es repo provides examples for all three approaches in [Fastify](https://github.com/connectrpc/examples-es/blob/b5d3f6822330f6b7816fac697b64ed4214aabafe/fastify/test/connect.test.ts), [Express](https://github.com/connectrpc/examples-es/blob/b5d3f6822330f6b7816fac697b64ed4214aabafe/express/connect.test.ts), and [vanilla Node.js](https://github.com/connectrpc/examples-es/blob/b5d3f6822330f6b7816fac697b64ed4214aabafe/vanilla-node/connect.test.ts).
 
-```ts
-/**
- * a mock for BigIntService that acts as an impromptu database
- */
-export const mockStatefulBigIntTransport = () =>
-  createRouterTransport(({ service }) => {
-    let count = 0n;
-    service(BigIntService, {
-      count: (request?: CountRequest) => {
-        if (request) {
-          count += request.add;
-        }
-        return new CountResponse({ count });
-      },
-    });
-  });
-```
+In addition, check out the [Next.js](https://github.com/connectrpc/examples-es/blob/6e80c5677bf650b4c40bb26e8220bcac53adb585/nextjs/__tests__/connect.test.ts) project for an example of testing with an in-memory server and unit testing service methods directly in Next.js
 
-Your client test for this might look something like:
-
-```ts
-describe('your client test suite', () => {
-  it('tests a client calling a mock stateful server', async () => {
-    const client = createPromiseClient(BigIntService, mockStatefulBigIntTransport());
-    let { count } = await client.count({ add: 1n });
-    expect(count).toEqual(1n);
-
-    ({ count } = await client.count({ add: 9000n }));
-    expect(count).toEqual(9001n);
-  });
-});
-```
-
-### What about mocking `fetch` itself?
-
-Mocking `fetch` itself is a common approach to testing network requests, but it has some drawbacks. Instead, using a schema-based serialization chain with an in-memory transport can be a better approach. Here are some reasons why:
-
-- With schema-based serialization, the request goes through the same process as it would in your actual code, allowing you to test the full flow of your application.
-- You can create stateful mocks with an in-memory transport, which can test more complex workflows and scenarios.
-- An in-memory transport is fast, so you can quickly set up your tests without worrying about resetting mocks.
-- With an in-memory transport, you can eliminate the need for [spy functions](https://jestjs.io/docs/jest-object#jestspyonobject-methodname) because you can implement any checks directly in your server implementation. This can simplify your testing code and make it easier to understand.
-- You can leverage `expect` directly within the code of your mock implementation to verify particular scenarios pertaining to the requests or responses.
