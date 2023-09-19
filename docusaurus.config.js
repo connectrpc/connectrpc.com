@@ -101,7 +101,7 @@ const config = {
         },
         {
           name: "og:image",
-          content: "https://connectrpc.com/img/fav@2x.png",
+          content: "https://connectrpc.com/img/logos/og-connect.svg",
         },
         {
           name: "twitter:card",
@@ -109,7 +109,7 @@ const config = {
         },
         {
           name: "twitter:image",
-          content: "https://connectrpc.com/img/fav@2x.png",
+          content: "https://connectrpc.com/img/logos/og-connect.svg",
         },
         {
           name: "twitter:domain",
