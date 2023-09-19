@@ -106,7 +106,7 @@ const config = {
         },
         {
           name: "og:image",
-          content: `${publicUrl}/img/logos/og-connect.svg`,
+          content: `${publicUrl}/img/og@2x.png`,
         },
         {
           name: "twitter:card",
@@ -114,7 +114,7 @@ const config = {
         },
         {
           name: "twitter:image",
-          content: `${publicUrl}/img/logos/og-connect.svg`,
+          content: `${publicUrl}/img/og@2x.png`,
         },
         {
           name: "twitter:domain",
