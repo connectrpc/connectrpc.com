@@ -219,10 +219,9 @@ try {
 }
 ```
 
-
-
-
-
+Timeouts in Connect are the equivalent of [deadlines](https://grpc.io/docs/guides/deadlines/) in gRPC. They both
+behave similarly in that they will throw a "deadline exceeded" error. Since Connect's defined error codes map to the
+same codes and semantics as gRPC, this allows for easy interop between the two protocols.
 
 
 There is no silver bullet to error handling with async/await and cancellation.
