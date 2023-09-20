@@ -34,38 +34,12 @@ With the gRPC-web protocol, errors are usually not human-readable, but
 Connect provides a common type that represents errors consistently across
 all supported protocols.
 
-
-## Working with errors
-
 All errors are represented by [`ConnectError`](https://github.com/connectrpc/connect-es/blob/1c1dc4cfd300e120d07a486f488d5693139f9dee/packages/connect/src/connect-error.ts#L27),
-a subtype of the built-in `Error` class. Using a try-catch block, we can catch
-any error that occurred during a call:
-
-```ts
-import { ConnectError } from "@connectrpc/connect";
-
-try {
-  await client.say({sentence: ""});
-} catch (err) {
-  // We have to verify err is a ConnectError
-  // before using it as one.
-  if (err instanceof ConnectError) {
-    err.code;    // Code.InvalidArgument
-    err.message; // "[invalid_argument] sentence cannot be empty"
-  }
-  // Alternatively, we can use ConnectError.from()
-  // It returns a ConnectError as is, and converts any
-  // other error to a ConnectError.
-  const connectErr = ConnectError.from(err);
-  connectErr.code;    // Code.InvalidArgument
-  connectErr.message; // "[invalid_argument] sentence cannot be empty"
-}
-```
-
+a subtype of the built-in `Error` class.
 
 ## Error codes
 
-The `code` property holds one of Connects [error codes](/docs/protocol#error-codes).
+The `code` property holds one of Connect's [error codes](/docs/protocol#error-codes).
 All error codes are available through the TypeScript enumeration [`Code`](https://github.com/connectrpc/connect-es/blob/1c1dc4cfd300e120d07a486f488d5693139f9dee/packages/connect/src/code.ts#L16).
 Note that a code is an integer value, but can easily be converted to and
 from a string value.
@@ -141,6 +115,59 @@ Alternatively, `findDetails()` takes a registry as an argument. See the
 for details.
 
 
+
+## Working with errors
+
+The method of handling errors will depend on the type of client being used.
+
+### Promise Clients
+
+[Promise-based clients](./using-clients#promises) can use a try-catch block to catch the error. Note that you must
+verify it is a `ConnectError` first.
+
+```ts
+import { ConnectError } from "@connectrpc/connect";
+
+try {
+  await client.say({sentence: ""});
+} catch (err) {
+  // We have to verify err is a ConnectError
+  // before using it as one.
+  if (err instanceof ConnectError) {
+    err.code;    // Code.InvalidArgument
+    err.message; // "[invalid_argument] sentence cannot be empty"
+  }
+  // Alternatively, we can use ConnectError.from()
+  // It returns a ConnectError as is, and converts any
+  // other error to a ConnectError.
+  const connectErr = ConnectError.from(err);
+  connectErr.code;    // Code.InvalidArgument
+  connectErr.message; // "[invalid_argument] sentence cannot be empty"
+}
+```
+
+### Callback Clients
+
+[Callback-based clients](./using-clients#callbacks) can use an error callback to receive the error.
+
+```ts
+import { ConnectError } from "@connectrpc/connect";
+
+client.say({ sentence: "" },
+  (response) => {
+    // handle successful response
+  },
+  (err: ConnectError | undefined) => {
+    if (err) {
+      err.code;    // Code.InvalidArgument
+      err.message; // "[invalid_argument] sentence cannot be empty"
+    }
+  },
+);
+```
+
+
+
 ## Cancellation
 
 There may be cases where you want to cancel a call, for example because the
@@ -169,6 +196,34 @@ try {
   }
 }
 ```
+
+## Timeouts
+
+Similar to the `signal` option for cancellation, there is also the `timeoutMs` option, which
+allows you to specify a timeout, in milliseconds, for an individual call in instances
+where the request is hung up or not responding. The timeout value is specified in the same
+options object described above.
+
+When a timeout is reached before the request has been completed, a `ConnectError` with code `DeadlineExceeded` will
+be thrown.
+
+An example using a timeout of 3 seconds:
+
+```ts
+try {
+  await client.say({sentence: "Hello"}, { timeoutMs: 3000 });
+} catch (err) {
+  if (err instanceof ConnectError && err.code === Code.DeadlineExceeded) {
+    // handle the timeout error
+  }
+}
+```
+
+
+
+
+
+
 
 There is no silver bullet to error handling with async/await and cancellation.
 In general, we recommend to let exception travel up to a central error handler
