@@ -1,6 +1,6 @@
 ---
 title: Errors
-sidebar_position: 5
+sidebar_position: 4
 ---
 
 
@@ -34,8 +34,30 @@ With the gRPC-web protocol, errors are usually not human-readable, but
 Connect provides a common type that represents errors consistently across
 all supported protocols.
 
-All errors are represented by [`ConnectError`](https://github.com/connectrpc/connect-es/blob/1c1dc4cfd300e120d07a486f488d5693139f9dee/packages/connect/src/connect-error.ts#L27),
-a subtype of the built-in `Error` class.
+## Working with errors
+
+All errors are represented by [`ConnectError`](https://github.com/connectrpc/connect-es/blob/1c1dc4cfd300e120d07a486f488d5693139f9dee/packages/connect/src/connect-error.ts#L27), a subtype of the built-in `Error` class. Using a try-catch block, we can catch any error that occurred during a call:
+
+```ts
+import { ConnectError } from "@connectrpc/connect";
+
+try {
+  await client.say({sentence: ""});
+} catch (err) {
+  // We have to verify err is a ConnectError
+  // before using it as one.
+  if (err instanceof ConnectError) {
+    err.code;    // Code.InvalidArgument
+    err.message; // "[invalid_argument] sentence cannot be empty"
+  }
+  // Alternatively, we can use ConnectError.from()
+  // It returns a ConnectError as is, and converts any
+  // other error to a ConnectError.
+  const connectErr = ConnectError.from(err);
+  connectErr.code;    // Code.InvalidArgument
+  connectErr.message; // "[invalid_argument] sentence cannot be empty"
+}
+```
 
 ## Error codes
 
@@ -114,120 +136,4 @@ Alternatively, `findDetails()` takes a registry as an argument. See the
 [protobuf-es documentation](https://github.com/bufbuild/protobuf-es/blob/main/docs/runtime_api.md#registries)
 for details.
 
-
-
-## Working with errors
-
-The method of handling errors will depend on the type of client being used.
-
-### Promise Clients
-
-[Promise-based clients](./using-clients#promises) can use a try-catch block to catch the error. Note that you must
-verify it is a `ConnectError` first.
-
-```ts
-import { ConnectError } from "@connectrpc/connect";
-
-try {
-  await client.say({sentence: ""});
-} catch (err) {
-  // We have to verify err is a ConnectError
-  // before using it as one.
-  if (err instanceof ConnectError) {
-    err.code;    // Code.InvalidArgument
-    err.message; // "[invalid_argument] sentence cannot be empty"
-  }
-  // Alternatively, we can use ConnectError.from()
-  // It returns a ConnectError as is, and converts any
-  // other error to a ConnectError.
-  const connectErr = ConnectError.from(err);
-  connectErr.code;    // Code.InvalidArgument
-  connectErr.message; // "[invalid_argument] sentence cannot be empty"
-}
-```
-
-### Callback Clients
-
-[Callback-based clients](./using-clients#callbacks) can use an error callback to receive the error.
-
-```ts
-import { ConnectError } from "@connectrpc/connect";
-
-client.say({ sentence: "" },
-  (response) => {
-    // handle successful response
-  },
-  (err: ConnectError | undefined) => {
-    if (err) {
-      err.code;    // Code.InvalidArgument
-      err.message; // "[invalid_argument] sentence cannot be empty"
-    }
-  },
-);
-```
-
-
-
-## Cancellation
-
-There may be cases where you want to cancel a call, for example because the
-user closed a dialog. All client methods take an optional [AbortSignal](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal)
-as an argument for this purpose. If this signal is aborted, the browser stops
-the request, and the fetch API raises an `AbortError` to abort the code path
-of the application.
-
-Connect converts those errors into a `ConnectError` with code `Canceled`,
-so that you can handle cancellation appropriately:
-
-```ts
-import { createPromiseClient, ConnectError, Code } from "@connectrpc/connect";
-
-const client = createPromiseClient(ElizaService, ...);
-
-// For the sake of this example, let's cancel the request right away
-const abort = new AbortController();
-abort.abort();
-
-try {
-  await client.say({sentence: "I feel..."}, { signal: abort.signal });
-} catch (err) {
-  if (err instanceof ConnectError && err.code != Code.Canceled) {
-    // handle the genuine error, ignoring cancelled requests
-  }
-}
-```
-
-## Timeouts
-
-Similar to the `signal` option for cancellation, there is also the `timeoutMs` option, which
-allows you to specify a timeout, in milliseconds, for an individual call in instances
-where the request is hung up or not responding. The timeout value is specified in the same
-options object described above.
-
-When a timeout is reached before the request has been completed, a `ConnectError` with code `DeadlineExceeded` will
-be thrown.
-
-An example using a timeout of 3 seconds:
-
-```ts
-try {
-  await client.say({sentence: "Hello"}, { timeoutMs: 3000 });
-} catch (err) {
-  if (err instanceof ConnectError && err.code === Code.DeadlineExceeded) {
-    // handle the timeout error
-  }
-}
-```
-
-Timeouts in Connect are the equivalent of [deadlines](https://grpc.io/docs/guides/deadlines/) in gRPC. They both
-behave similarly in that they will throw a "deadline exceeded" error. Since Connect's defined error codes map to the
-same codes and semantics as gRPC, this allows for easy interop between the two protocols.
-
-
-There is no silver bullet to error handling with async/await and cancellation.
-In general, we recommend to let exception travel up to a central error handler
-in your application, and only catch errors in the case they need to be
-explicitly handled in your business logic.
-
-But your use case may vary, and we encourage you to [roll your own client](/docs/web/using-clients#roll-your-own-client)
-if you want to represent errors and cancellation differently.
+For some practical examples of handling specific errors, check out the [Cancellation & Timeouts](./cancellation-and-timeouts.mdx) docs.

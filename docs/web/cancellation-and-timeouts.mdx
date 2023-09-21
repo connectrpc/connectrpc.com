@@ -1,0 +1,70 @@
+---
+title: Cancellation & Timeouts
+sidebar_position: 6
+---
+
+## Cancellation
+
+There may be cases where you want to cancel a call, for example because the
+user closed a dialog. All client methods take an optional [AbortSignal](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal)
+as an argument for this purpose. If this signal is aborted, the browser stops
+the request, and the fetch API raises an `AbortError` to abort the code path
+of the application.
+
+Connect converts those errors into a `ConnectError` with code `Canceled`,
+so that you can handle cancellation appropriately:
+
+```ts
+import { createPromiseClient, ConnectError, Code } from "@connectrpc/connect";
+
+const client = createPromiseClient(ElizaService, ...);
+
+// For the sake of this example, let's cancel the request right away
+const abort = new AbortController();
+abort.abort();
+
+try {
+  await client.say({sentence: "I feel..."}, { signal: abort.signal });
+} catch (err) {
+  if (err instanceof ConnectError && err.code != Code.Canceled) {
+    // handle the genuine error, ignoring cancelled requests
+  }
+}
+```
+
+
+## Timeouts
+
+Similar to the `signal` option for cancellation, there is also the `timeoutMs` option, which
+allows you to specify a timeout, in milliseconds, for an individual call. The timeout value is
+specified in the same options object described above.
+
+When a timeout is reached before the request has been completed, a `ConnectError` with code `DeadlineExceeded` will
+be thrown.
+
+An example using a timeout of 3 seconds:
+
+```ts
+try {
+  await client.say({sentence: "Hello"}, { timeoutMs: 3000 });
+} catch (err) {
+  if (err instanceof ConnectError && err.code === Code.DeadlineExceeded) {
+    // handle the timeout error
+  }
+}
+```
+
+The timeout value is sent to the server, and honored on the server (and typically also on the client). This allows for
+propagation of the timeout to upstream services.
+
+Timeouts in Connect are the equivalent of [deadlines](https://grpc.io/docs/guides/deadlines/) in gRPC. They both
+behave similarly in that they will throw a "deadline exceeded" error. Since Connect's defined error codes map to the
+same codes and semantics as gRPC, this allows for easy interop between the two protocols.
+
+There is no silver bullet to error handling with async/await and cancellation or
+timeout errors as they both can force you to handle exceptional flow. In general, we
+recommend to let the exception travel up to a central error handler in your application,
+and only catch errors in the case they need to be explicitly handled in your business logic.
+
+But your use case may vary, and we encourage you to [roll your own client](/docs/web/using-clients#roll-your-own-client)
+if you want to represent errors differently when handling cancellations and timeouts.

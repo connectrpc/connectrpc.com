@@ -1,6 +1,6 @@
 ---
 title: Get Requests and Caching
-sidebar_position: 21
+sidebar_position: 12
 ---
 
 Connect supports performing idempotent, side-effect free requests using an HTTP
