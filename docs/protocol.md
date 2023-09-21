@@ -530,7 +530,7 @@ sub-category of `failed_precondition`, so clients iterating through a space can
 detect when they're done. For example, attempting to seek past the
 end of a particular file should return `out_of_range`.
 
-When choosing between `unauthorized`, `permission_denied`, `resource_exhausted`, and
+When choosing between `unauthenticated`, `permission_denied`, `resource_exhausted`, and
 `not_found`, use `unauthenticated` if the user can't be identified or presents
 invalid credentials. Use `resource_exhausted` if a per-user quota (for example, a
 rate limit) is exhausted. Use `not_found` if an operation is denied for a class
