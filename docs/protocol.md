@@ -505,42 +505,42 @@ gRPC. Only the codes below are valid &mdash; there are no user-defined codes.
 
 | Code | HTTP Status | Description |
 | ---- | ----------- | ----------- |
-| canceled | 408 Request Timeout | RPC canceled, usually by the caller. |
-| unknown | 500 Internal Server Error | Catch-all for errors of unclear origin and errors without a more appropriate code. |
-| invalid_argument | 400 Bad Request | Request is invalid, regardless of system state. |
-| deadline_exceeded | 408 Request Timeout | Deadline expired before RPC could complete or before the client received the response. |
-| not_found | 404 Not Found | User requested a resource (for example, a file or directory) that can't be found. |
-| already_exists | 409 Conflict | Caller attempted to create a resource that already exists. |
-| permission_denied | 403 Forbidden | Caller isn't authorized to perform the operation. |
-| resource_exhausted | 429 Too Many Requests | Operation can't be completed because some resource is exhausted. Use unavailable if the server is temporarily overloaded and the caller should retry later. |
-| failed_precondition | 412 Precondition Failed | Operation can't be completed because the system isn't in the required state. |
-| aborted | 409 Conflict | The operation was aborted, often because of concurrency issues like a database transaction abort. |
-| out_of_range | 400 Bad Request | The operation was attempted past the valid range. |
-| unimplemented | 404 Not Found | The operation isn't implemented, supported, or enabled. |
-| internal | 500 Internal Server Error | An invariant expected by the underlying system has been broken. Reserved for serious errors. |
-| unavailable | 503 Service Unavailable | The service is currently unavailable, usually transiently. Clients should back off and retry idempotent operations. |
-| data_loss | 500 Internal Server Error | Unrecoverable data loss or corruption. |
-| unauthenticated | 401 Unauthorized | Caller doesn't have valid authentication credentials for the operation. |
+| `canceled` | 408 Request Timeout | RPC canceled, usually by the caller. |
+| `unknown` | 500 Internal Server Error | Catch-all for errors of unclear origin and errors without a more appropriate code. |
+| `invalid_argument` | 400 Bad Request | Request is invalid, regardless of system state. |
+| `deadline_exceeded` | 408 Request Timeout | Deadline expired before RPC could complete or before the client received the response. |
+| `not_found` | 404 Not Found | User requested a resource (for example, a file or directory) that can't be found. |
+| `already_exists` | 409 Conflict | Caller attempted to create a resource that already exists. |
+| `permission_denied` | 403 Forbidden | Caller isn't authorized to perform the operation. |
+| `resource_exhausted` | 429 Too Many Requests | Operation can't be completed because some resource is exhausted. Use unavailable if the server is temporarily overloaded and the caller should retry later. |
+| `failed_precondition` | 412 Precondition Failed | Operation can't be completed because the system isn't in the required state. |
+| `aborted` | 409 Conflict | The operation was aborted, often because of concurrency issues like a database transaction abort. |
+| `out_of_range` | 400 Bad Request | The operation was attempted past the valid range. |
+| `unimplemented` | 404 Not Found | The operation isn't implemented, supported, or enabled. |
+| `internal` | 500 Internal Server Error | An invariant expected by the underlying system has been broken. Reserved for serious errors. |
+| `unavailable` | 503 Service Unavailable | The service is currently unavailable, usually transiently. Clients should back off and retry idempotent operations. |
+| `data_loss` | 500 Internal Server Error | Unrecoverable data loss or corruption. |
+| `unauthenticated` | 401 Unauthorized | Caller doesn't have valid authentication credentials for the operation. |
 
-When choosing between invalid_argument, failed_precondition, and out_of_range,
-use invalid_argument if the failure is independent of the system state. For
+When choosing between `invalid_argument`, `failed_precondition`, and `out_of_range`,
+use `invalid_argument` if the failure is independent of the system state. For
 example, attempting to seek to a file offset larger than 2^32-1 on a 32-bit
-system should return invalid_argument. Use out_of_range as a common
-sub-category of failed_precondition, so clients iterating through a space can
+system should return `invalid_argument`. Use `out_of_range` as a common
+sub-category of `failed_precondition`, so clients iterating through a space can
 detect when they're done. For example, attempting to seek past the
-end of a particular file should return out_of_range.
+end of a particular file should return `out_of_range`.
 
-When choosing between unauthorized, permission_denied, resource_exhausted, and
-not_found, use unauthenticated if the user can't be identified or presents
-invalid credentials. Use resource_exhausted if a per-user quota (for example, a
-rate limit) is exhausted. Use not_found if an operation is denied for a class
+When choosing between `unauthorized`, `permission_denied`, `resource_exhausted`, and
+`not_found`, use `unauthenticated` if the user can't be identified or presents
+invalid credentials. Use `resource_exhausted` if a per-user quota (for example, a
+rate limit) is exhausted. Use `not_found` if an operation is denied for a class
 of users (for example, because of a gradual rollout or an undocumented
-allowlist). Use permission_denied for other authorization-based rejections.
+allowlist). Use `permission_denied` for other authorization-based rejections.
 
-When choosing between failed_precondition, aborted, and unavailable, use
-unavailable if the client can back off and retry the operation. Use aborted if
+When choosing between `failed_precondition`, `aborted`, and `unavailable`, use
+`unavailable` if the client can back off and retry the operation. Use `aborted` if
 the client should retry at a higher level (for example, restarting a
-read-modify-write cycle). Use failed_precondition if the client must explicitly
+read-modify-write cycle). Use `failed_precondition` if the client must explicitly
 fix the system state before retrying (for example, by emptying a directory
 before attempting to remove it).
 
@@ -558,21 +558,21 @@ unknown or internal), Connect maps to the semantically-equivalent error code.
 
 | HTTP Status | Inferred Code |
 | ----------- | ------------- |
-| 400 Bad Request | invalid_argument |
-| 401 Unauthorized | unauthenticated |
-| 403 Forbidden | permission_denied |
-| 404 Not Found | unimplemented |
-| 408 Request Timeout | deadline_exceeded |
-| 409 Conflict | aborted |
-| 412 Precondition Failed | failed_precondition |
-| 413 Payload Too Large | resource_exhausted |
-| 415 Unsupported Media Type | internal |
-| 429 Too Many Requests | unavailable |
-| 431 Request Header Fields Too Large | resource_exhausted |
-| 502 Bad Gateway | unavailable |
-| 503 Service Unavailable | unavailable |
-| 504 Gateway Timeout | unavailable |
-| _all others_ | unknown |
+| 400 Bad Request | `invalid_argument` |
+| 401 Unauthorized | `unauthenticated` |
+| 403 Forbidden | `permission_denied` |
+| 404 Not Found | `unimplemented` |
+| 408 Request Timeout | `deadline_exceeded` |
+| 409 Conflict | `aborted` |
+| 412 Precondition Failed | `failed_precondition` |
+| 413 Payload Too Large | `resource_exhausted` |
+| 415 Unsupported Media Type | `internal` |
+| 429 Too Many Requests | `unavailable` |
+| 431 Request Header Fields Too Large | `resource_exhausted` |
+| 502 Bad Gateway | `unavailable` |
+| 503 Service Unavailable | `unavailable` |
+| 504 Gateway Timeout | `unavailable` |
+| _all others_ | `unknown` |
 
 ## Error and EndStreamResponse {#error-end-stream}
 
