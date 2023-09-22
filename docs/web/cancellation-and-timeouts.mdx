@@ -3,16 +3,18 @@ title: Cancellation & Timeouts
 sidebar_position: 6
 ---
 
+There may be cases where you want to cancel a call, because you are no longer
+interested in the response. For example, you want to show search results as soon
+as the user starts typing, but when the user enters another term, you want to
+cancel the previous call. Let's take a look at cancellation, and the complementary
+topic of timeouts.
+
+
 ## Cancellation
 
-There may be cases where you want to cancel a call, for example because the
-user closed a dialog. All client methods take an optional [AbortSignal](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal)
-as an argument for this purpose. If this signal is aborted, the browser stops
-the request, and the fetch API raises an `AbortError` to abort the code path
-of the application.
-
-Connect converts those errors into a `ConnectError` with code `Canceled`,
-so that you can handle cancellation appropriately:
+To cancel a call, you can pass an [AbortSignal](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) to every client method.
+If the signal triggers, the network call is cancelled, and the response promise
+for your call is rejected:
 
 ```ts
 import { createPromiseClient, ConnectError, Code } from "@connectrpc/connect";
@@ -32,39 +34,36 @@ try {
 }
 ```
 
+Note that our client raises a `ConnectError` with code `Canceled`, instead of a
+`DOMException` that fetch() would raise.
+
 
 ## Timeouts
 
-Similar to the `signal` option for cancellation, there is also the `timeoutMs` option, which
-allows you to specify a timeout, in milliseconds, for an individual call. The timeout value is
-specified in the same options object described above.
-
-When a timeout is reached before the request has been completed, a `ConnectError` with code `DeadlineExceeded` will
-be thrown.
-
-An example using a timeout of 3 seconds:
+Similar to the `signal` option for cancellation, there is also the `timeoutMs`
+option, which allows you to specify a timeout, in milliseconds, for an individual
+call. Here is an example:
 
 ```ts
 try {
-  await client.say({sentence: "Hello"}, { timeoutMs: 3000 });
+  const req = { name: "Joe" };
+  // If this call takes more than 200 milliseconds, it is canceled
+  for await (const res of client.introduce(req, { timeoutMs: 200 })) {
+    console.log(res.sentence);
+  }
 } catch (err) {
+  // Note that our client raises a ConnectError with Code.DeadlineExceeded
   if (err instanceof ConnectError && err.code === Code.DeadlineExceeded) {
     // handle the timeout error
   }
 }
 ```
 
-The timeout value is sent to the server, and honored on the server (and typically also on the client). This allows for
-propagation of the timeout to upstream services.
+When a timeout is reached before the request finishes, a `ConnectError` with
+code `DeadlineExceeded` is raised.
 
-Timeouts in Connect are the equivalent of [deadlines](https://grpc.io/docs/guides/deadlines/) in gRPC. They both
-behave similarly in that they will throw a "deadline exceeded" error. Since Connect's defined error codes map to the
-same codes and semantics as gRPC, this allows for easy interop between the two protocols.
-
-There is no silver bullet to error handling with async/await and cancellation or
-timeout errors as they both can force you to handle exceptional flow. In general, we
-recommend to let the exception travel up to a central error handler in your application,
-and only catch errors in the case they need to be explicitly handled in your business logic.
-
-But your use case may vary, and we encourage you to [roll your own client](/docs/web/using-clients#roll-your-own-client)
-if you want to represent errors differently when handling cancellations and timeouts.
+When you specify a timeout, the value is sent to the server in a request header
+that is understood by Connect, gRCP, and gRPC-web servers. Servers _and_ clients
+honor the timeout, which can be immensely helpful for streaming calls in a fragile
+network environment. Timeouts can also be propagated to upstream services.
+In gRPC, the concept is also known as [deadlines](https://grpc.io/docs/guides/deadlines/).

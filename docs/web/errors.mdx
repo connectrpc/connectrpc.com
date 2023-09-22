@@ -4,16 +4,6 @@ sidebar_position: 4
 ---
 
 
-<!--
-TODO
-
-- explain timeoutMs
-- explain assertion alternative and connectErrorFromReason() ?
-- link to mapped clients for Either or neverthrow?
-
--->
-
-
 
 Similar to the familiar "404 Not Found" and "500 Internal Server Error" status
 codes you may have seen in HTTP, Connect uses a set of [16 error codes](/docs/protocol#error-codes).
@@ -135,5 +125,3 @@ in this example, but any protobuf message can be transmitted as error details.
 Alternatively, `findDetails()` takes a registry as an argument. See the
 [protobuf-es documentation](https://github.com/bufbuild/protobuf-es/blob/main/docs/runtime_api.md#registries)
 for details.
-
-For some practical examples of handling specific errors, check out the [Cancellation & Timeouts](./cancellation-and-timeouts.mdx) docs.
