@@ -1,17 +1,7 @@
 ---
 title: Errors
-sidebar_position: 5
+sidebar_position: 4
 ---
-
-
-<!--
-TODO
-
-- explain timeoutMs
-- explain assertion alternative and connectErrorFromReason() ?
-- link to mapped clients for Either or neverthrow?
-
--->
 
 
 
@@ -34,12 +24,9 @@ With the gRPC-web protocol, errors are usually not human-readable, but
 Connect provides a common type that represents errors consistently across
 all supported protocols.
 
-
 ## Working with errors
 
-All errors are represented by [`ConnectError`](https://github.com/connectrpc/connect-es/blob/1c1dc4cfd300e120d07a486f488d5693139f9dee/packages/connect/src/connect-error.ts#L27),
-a subtype of the built-in `Error` class. Using a try-catch block, we can catch
-any error that occurred during a call:
+All errors are represented by [`ConnectError`](https://github.com/connectrpc/connect-es/blob/1c1dc4cfd300e120d07a486f488d5693139f9dee/packages/connect/src/connect-error.ts#L27), a subtype of the built-in `Error` class. Using a try-catch block, we can catch any error that occurred during a call:
 
 ```ts
 import { ConnectError } from "@connectrpc/connect";
@@ -62,10 +49,9 @@ try {
 }
 ```
 
-
 ## Error codes
 
-The `code` property holds one of Connects [error codes](/docs/protocol#error-codes).
+The `code` property holds one of Connect's [error codes](/docs/protocol#error-codes).
 All error codes are available through the TypeScript enumeration [`Code`](https://github.com/connectrpc/connect-es/blob/1c1dc4cfd300e120d07a486f488d5693139f9dee/packages/connect/src/code.ts#L16).
 Note that a code is an integer value, but can easily be converted to and
 from a string value.
@@ -139,41 +125,3 @@ in this example, but any protobuf message can be transmitted as error details.
 Alternatively, `findDetails()` takes a registry as an argument. See the
 [protobuf-es documentation](https://github.com/bufbuild/protobuf-es/blob/main/docs/runtime_api.md#registries)
 for details.
-
-
-## Cancellation
-
-There may be cases where you want to cancel a call, for example because the
-user closed a dialog. All client methods take an optional [AbortSignal](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal)
-as an argument for this purpose. If this signal is aborted, the browser stops
-the request, and the fetch API raises an `AbortError` to abort the code path
-of the application.
-
-Connect converts those errors into a `ConnectError` with code `Canceled`,
-so that you can handle cancellation appropriately:
-
-```ts
-import { createPromiseClient, ConnectError, Code } from "@connectrpc/connect";
-
-const client = createPromiseClient(ElizaService, ...);
-
-// For the sake of this example, let's cancel the request right away
-const abort = new AbortController();
-abort.abort();
-
-try {
-  await client.say({sentence: "I feel..."}, { signal: abort.signal });
-} catch (err) {
-  if (err instanceof ConnectError && err.code != Code.Canceled) {
-    // handle the genuine error, ignoring cancelled requests
-  }
-}
-```
-
-There is no silver bullet to error handling with async/await and cancellation.
-In general, we recommend to let exception travel up to a central error handler
-in your application, and only catch errors in the case they need to be
-explicitly handled in your business logic.
-
-But your use case may vary, and we encourage you to [roll your own client](/docs/web/using-clients#roll-your-own-client)
-if you want to represent errors and cancellation differently.

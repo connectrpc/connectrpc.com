@@ -91,7 +91,7 @@ and we gauge interest in new languages with [GitHub polls][poll-discussions].
 [connect-swift]: https://github.com/connectrpc/connect-swift
 [swift-launch-blog-post]: https://buf.build/blog/announcing-connect-swift
 [connect-protocol]: /docs/protocol
-[demo]: https://github.com/bufbuild/examples-go
+[demo]: https://github.com/connectrpc/examples-go
 [go-getting-started]: /docs/go/getting-started
 [kotlin-getting-started]: /docs/kotlin/getting-started
 [swift-getting-started]: /docs/swift/getting-started

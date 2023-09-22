@@ -1,6 +1,6 @@
 ---
 title: Common errors
-sidebar_position: 18
+sidebar_position: 10
 ---
 
 This page explains how to fix common errors when using Connect from a web browser

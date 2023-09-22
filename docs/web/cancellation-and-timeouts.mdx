@@ -1,0 +1,69 @@
+---
+title: Cancellation & Timeouts
+sidebar_position: 6
+---
+
+There may be cases where you want to cancel a call, because you are no longer
+interested in the response. For example, you want to show search results as soon
+as the user starts typing, but when the user enters another term, you want to
+cancel the previous call. Let's take a look at cancellation, and the complementary
+topic of timeouts.
+
+
+## Cancellation
+
+To cancel a call, you can pass an [AbortSignal](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) to every client method.
+If the signal triggers, the network call is cancelled, and the response promise
+for your call is rejected:
+
+```ts
+import { createPromiseClient, ConnectError, Code } from "@connectrpc/connect";
+
+const client = createPromiseClient(ElizaService, ...);
+
+// For the sake of this example, let's cancel the request right away
+const abort = new AbortController();
+abort.abort();
+
+try {
+  await client.say({sentence: "I feel..."}, { signal: abort.signal });
+} catch (err) {
+  if (err instanceof ConnectError && err.code != Code.Canceled) {
+    // handle the genuine error, ignoring cancelled requests
+  }
+}
+```
+
+Note that our client raises a `ConnectError` with code `Canceled`, instead of a
+`DOMException` that fetch() would raise.
+
+
+## Timeouts
+
+Similar to the `signal` option for cancellation, there is also the `timeoutMs`
+option, which allows you to specify a timeout, in milliseconds, for an individual
+call. Here is an example:
+
+```ts
+try {
+  const req = { name: "Joe" };
+  // If this call takes more than 200 milliseconds, it is canceled
+  for await (const res of client.introduce(req, { timeoutMs: 200 })) {
+    console.log(res.sentence);
+  }
+} catch (err) {
+  // Note that our client raises a ConnectError with Code.DeadlineExceeded
+  if (err instanceof ConnectError && err.code === Code.DeadlineExceeded) {
+    // handle the timeout error
+  }
+}
+```
+
+When a timeout is reached before the request finishes, a `ConnectError` with
+code `DeadlineExceeded` is raised.
+
+When you specify a timeout, the value is sent to the server in a request header
+that is understood by Connect, gRCP, and gRPC-web servers. Servers _and_ clients
+honor the timeout, which can be immensely helpful for streaming calls in a fragile
+network environment. Timeouts can also be propagated to upstream services.
+In gRPC, the concept is also known as [deadlines](https://grpc.io/docs/guides/deadlines/).
