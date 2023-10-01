@@ -30,7 +30,7 @@
     "@react-hookz/web": "^23.1.0",
     "clsx": "^2.0.0",
     "crt-terminal": "^1.0.13",
-    "prism-react-renderer": "^2.0.6",
+    "prism-react-renderer": "^2.1.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1"
   },
