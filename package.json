@@ -24,7 +24,7 @@
     "@connectrpc/connect": "^0.13.2",
     "@connectrpc/connect-web": "^0.13.2",
     "@docusaurus/core": "^2.4.1",
-    "@docusaurus/plugin-google-gtag": "^2.4.1",
+    "@docusaurus/plugin-google-gtag": "^2.4.3",
     "@docusaurus/preset-classic": "^2.4.1",
     "@docusaurus/theme-search-algolia": "^2.4.1",
     "@react-hookz/web": "^23.1.0",
