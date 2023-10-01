@@ -35,7 +35,7 @@
     "react-dom": "^17.0.1"
   },
   "devDependencies": {
-    "@bufbuild/license-header": "^0.0.3",
+    "@bufbuild/license-header": "^0.0.4",
     "@docusaurus/eslint-plugin": "^2.4.1",
     "@docusaurus/module-type-aliases": "^2.4.1",
     "@tsconfig/docusaurus": "^2.0.0",
