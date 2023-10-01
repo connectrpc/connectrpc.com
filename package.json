@@ -38,7 +38,7 @@
     "@bufbuild/license-header": "^0.0.3",
     "@docusaurus/eslint-plugin": "^2.4.1",
     "@docusaurus/module-type-aliases": "^2.4.1",
-    "@tsconfig/docusaurus": "^2.0.0",
+    "@tsconfig/docusaurus": "^2.0.1",
     "@types/react": "^18.2.21",
     "@typescript-eslint/eslint-plugin": "^6.5.0",
     "@typescript-eslint/parser": "^6.5.0",
