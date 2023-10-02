@@ -17,31 +17,40 @@ const createQueryService: <Service extends ServiceType>({
 
 `createQueryService` is the main entrypoint for Connect-Query.
 
-Pass in a service and you will receive an object with properties for each of your services and values that provide hooks for those services that you can then give to Tanstack Query.  The `ServiceType` TypeScript interface is provided by Protobuf-ES (`@bufbuild/protobuf`) while generated service definitions are provided by Connect-Web (`@connectrpc/connect-web`).
+Pass in a service and you will receive an object with properties for each of your services and values that provide hooks for those services that you can then give to Tanstack Query. The `ServiceType` TypeScript interface is provided by Protobuf-ES (`@bufbuild/protobuf`) while generated service definitions are provided by Connect-Web (`@connectrpc/connect-web`).
 
-`Transport` refers to the mechanism by which your client will make the actual network calls.  If you want to use a custom transport, you can optionally provide one with a call to `useTransport`, which Connect-Query exports.  Otherwise, the default transport from React context will be used.  This default transport is placed on React context by the `TransportProvider`. Whether you pass a custom transport or you use `TransportProvider`, in both cases you'll need to use one of `@connectrpc/connect-web`'s exports `createConnectTransport` or `createGrpcWebTransport`.
+`Transport` refers to the mechanism by which your client will make the actual network calls. If you want to use a custom transport, you can optionally provide one with a call to `useTransport`, which Connect-Query exports. Otherwise, the default transport from React context will be used. This default transport is placed on React context by the `TransportProvider`. Whether you pass a custom transport or you use `TransportProvider`, in both cases you'll need to use one of `@connectrpc/connect-web`'s exports `createConnectTransport` or `createGrpcWebTransport`.
 
 Note that the most memory performant approach is to use the transport on React Context by using the `TransportProvider` because that provider is memoized by React, but also that any calls to `createQueryService` with the same service is cached by this function.
 
 Here's an example of a simple usage:
 
 ```ts
-export const { say } = createQueryService({
+const queryService = createQueryService({
   service: {
     methods: {
-      say: {
-        name: "Say",
+      example: {
+        name: "Example",
         kind: MethodKind.Unary,
-        I: SayRequest,
-        O: SayResponse,
+        I: ExampleRequest,
+        O: ExampleResponse,
       },
     },
-    typeName: "connectrpc.eliza.v1.ElizaService",
+    typeName: "your.company.com.example.v1.ExampleService",
   },
 });
 
-const { data, isLoading, ...etc } = useQuery(say.useQuery());
+const example = {
+  ...queryService.say,
+  ...createUnaryHooks($queryService.say),
+};
+
+const { data, isLoading, ...etc } = useQuery(example.useQuery());
 ```
+
+## `createUnaryHooks`
+
+This creates some helper functions for unary methods that automatically include the transport from context. It's a distinct function from `createQueryService` so the core function can be separate from specific React APIs.
 
 ## `TransportProvider`
 
@@ -96,7 +105,7 @@ const useTransport: () => Transport;
 
 Use this helper to get the default transport that's currently attached to the React context for the calling component.
 
-## `UnaryHooks.createData`
+## `UnaryFunctions.createData`
 
 ```ts
 const createData: (data: PartialMessage<O>) => O;
@@ -104,7 +113,7 @@ const createData: (data: PartialMessage<O>) => O;
 
 Use this to create a data object that can be used as `placeholderData` or initialData.
 
-## `UnaryHooks.createUseQueryOptions`
+## `UnaryFunctions.createUseQueryOptions`
 
 ```ts
 const createUseQueryOptions: (
@@ -124,11 +133,54 @@ const createUseQueryOptions: (
 };
 ```
 
-`createUseQueryOptions` is intended to be used with TanStack's [`useQuery`](https://tanstack.com/query/v4/docs/react/reference/useQuery) hook.  The difference is that `createUseQueryOptions` is not a hook.  Since hooks cannot be called conditionally, it can sometimes be helpful to use `createUseQueryOptions` to prepare an input to TanStack's `useQuery`.
+`createUseQueryOptions` is intended to be used with TanStack's [`useQuery`](https://tanstack.com/query/v4/docs/react/reference/useQuery) hook. The difference is that `createUseQueryOptions` is not a hook. Since hooks cannot be called conditionally, it can sometimes be helpful to use `createUseQueryOptions` to prepare an input to TanStack's `useQuery`.
 
 It is also useful to use alongside TanStack's [`useQueries`](https://tanstack.com/query/v4/docs/react/reference/useQueries) hook since hooks cannot be called in loops.
 
-## `UnaryHooks.getPartialQueryKey`
+## `UnaryFunctions.createUseMutationOptions`
+
+```ts
+const createUseMutationOptions: (options: {
+ onError?: (error: ConnectError) => void;
+ transport?: Transport | undefined;
+ callOptions?: CallOptions | undefined;
+}) => {
+ mutationFn: (
+  input: PartialMessage<I>,
+  context?: QueryFunctionContext<ConnectQueryKey<I>>
+ ) => Promise<O>;
+ onError?: (error: ConnectError) => void;
+};
+```
+
+`createUseMutationOptions` is intended to be used with TanStack's [`useMutation`](https://tanstack.com/query/v4/docs/react/reference/useMutation) hook. The difference is that `createUseMutationOptions` is not a hook and doesn't read from `TransportProvider` for it's transport.
+
+## `UnaryFunctions.createUseInfiniteQueryOptions`
+
+```ts
+const createUseInfiniteQueryOptions: <ParamKey extends keyof PlainMessage<I>>(
+ input: DisableQuery | PartialMessage<I>,
+ options: {
+  pageParamKey: ParamKey;
+  getNextPageParam: (lastPage: O, allPages: O[]) => unknown;
+  onError?: (error: ConnectError) => void;
+  transport?: Transport | undefined;
+  callOptions?: CallOptions | undefined;
+ }
+) => {
+ enabled: boolean;
+ queryKey: ConnectQueryKey<I>;
+ queryFn: (
+  context: QueryFunctionContext<ConnectQueryKey<I>, PlainMessage<I>[ParamKey]>
+ ) => Promise<O>;
+ getNextPageParam: GetNextPageParamFunction<O>;
+ onError?: (error: ConnectError) => void;
+};
+```
+
+`createUseInfiniteQueryOptions` is intended to be used with TanStack's [`useInfiniteQuery`](https://tanstack.com/query/v4/docs/react/reference/useInfiniteQuery) hook. The difference is that `createUseInfiniteQueryOptions` is not a hook and doesn't read from `TransportProvider` for it's transport.
+
+## `UnaryFunctions.getPartialQueryKey`
 
 ```ts
 const getPartialQueryKey: () => ConnectPartialQueryKey;
@@ -136,15 +188,15 @@ const getPartialQueryKey: () => ConnectPartialQueryKey;
 
 This helper is useful for getting query keys matching a wider set of queries associated to this Connect `Service`, per TanStack Query's [partial matching](https://tanstack.com/query/v4/docs/react/guides/query-invalidation#query-matching-with-invalidatequeries) mechanism.
 
-## `UnaryHooks.getQueryKey`
+## `UnaryFunctions.getQueryKey`
 
 ```ts
 const getQueryKey: (input?: DisableQuery | PartialMessage<I>) => ConnectQueryKey<I>;
 ```
 
-This helper is useful to manually compute the [`queryKey`](https://tanstack.com/query/v4/docs/react/guides/query-keys) sent to TanStack Query.  This function has no side effects.
+This helper is useful to manually compute the [`queryKey`](https://tanstack.com/query/v4/docs/react/guides/query-keys) sent to TanStack Query. This function has no side effects.
 
-## `UnaryHooks.methodInfo`
+## `UnaryFunctions.methodInfo`
 
 ```ts
 const methodInfo: MethodInfoUnary<I, O>;
@@ -152,23 +204,18 @@ const methodInfo: MethodInfoUnary<I, O>;
 
 This is the metadata associated with this method.
 
-## `UnaryHooks.setQueryData`
+## `UnaryFunctions.setQueryData`
 
 ```ts
 const setQueryData: (
-  updater: PartialMessage<O> | (
-    (prev?: O) => PartialMessage<O>
-  ),
-  input?: PartialMessage<I>,
-) => [
-  queryKey: ConnectQueryKey<I>,
-  updater: (prev?: O) => O | undefined
-];
+  updater: PartialMessage<O> | ((prev?: O) => PartialMessage<O>),
+  input?: PartialMessage<I>
+) => [queryKey: ConnectQueryKey<I>, updater: (prev?: O) => O | undefined];
 ```
 
 This helper is intended to be used with TanStack Query `QueryClient`'s [`setQueryData`](https://tanstack.com/query/v4/docs/react/reference/QueryClient#queryclientsetquerydata) function.
 
-## `UnaryHooks.setQueriesData`
+## `UnaryFunctions.setQueriesData`
 
 ```ts
 const setQueriesData: (
