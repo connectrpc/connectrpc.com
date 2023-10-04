@@ -67,8 +67,8 @@ export const ExampleService = {
 const $queryService = createQueryService({ service: ExampleService });
 
 export const say = {
-  ...$queryService.say,
-  ...createUnaryHooks($queryService.say),
+  ...$queryService.example,
+  ...createUnaryHooks($queryService.example),
 };
 ```
 
