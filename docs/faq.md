@@ -171,7 +171,23 @@ mappings for your backend services. You can work around this problem using the
 `cluster_tag` property, as described in
 [emissary-ingress/emissary#3112](https://github.com/emissary-ingress/emissary/issues/3112).
 
+### HTTP 464 error with AWS
+
+If you're using the [Application Load Balancer support for gRPC][alp-aws-grpc], 
+you will likely see an HTTP error response with code 464 for a Connect `GET` 
+request, or for a web browser making a CORS preflight `OPTIONS` request.
+
+If you only need the Connect protocol, you can simply change your target group 
+to HTTP/2.
+
+If you need both the Connect and gRPC protocols, you can use two target groups:
+Route HTTP GET requests and anything with the `application/proto`, `application/json`, 
+`application/connect+proto`, or `application/connect+json` Content-Types to the 
+HTTP/2 target group. Route anything else to the gRPC target group.
+
+
 [remote packages]: https://buf.build/docs/bsr/remote-packages/overview/
 [remote plugins]: https://buf.build/docs/bsr/remote-plugins/overview/
 [twirp-protocol]: https://github.com/twitchtv/twirp/blob/main/PROTOCOL.md
 [whatwg-streams-issue]: https://github.com/whatwg/fetch/issues/1438
+[alp-aws-grpc]: https://aws.amazon.com/blogs/aws/new-application-load-balancer-support-for-end-to-end-http-2-and-grpc/
