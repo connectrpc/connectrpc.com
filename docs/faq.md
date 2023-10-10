@@ -173,7 +173,7 @@ mappings for your backend services. You can work around this problem using the
 
 ### HTTP 464 error with AWS
 
-If you're using the [Application Load Balancer support for gRPC][alp-aws-grpc], 
+If you're using the AWS [Application Load Balancer support for gRPC][alp-aws-grpc], 
 you will likely see an HTTP error response with code 464 for a Connect `GET` 
 request, or for a web browser making a CORS preflight `OPTIONS` request.
 
