@@ -55,7 +55,7 @@ meaningful HTTP status codes. For example:
 For RPCs that have no side effects, it is possible to use GET requests instead:
 
 ```
-> GET /connectrpc.greet.v1.GreetService/Greet?encoding=json&msg=%7B%22name%22%3A%22Buf%22%7D HTTP/1.1
+> GET /connectrpc.greet.v1.GreetService/Greet?encoding=json&message=%7B%22name%22%3A%22Buf%22%7D HTTP/1.1
 > Host: demo.connectrpc.com
 
 < HTTP/1.1 200 OK
