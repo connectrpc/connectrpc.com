@@ -13,7 +13,7 @@ state, as well as to mutate outbound or inbound content.
 
 Every interceptor has the opportunity to perform asynchronous work before passing a potentially
 altered value to the next interceptor in the chain. When the end of the chain is reached, the
-final value is passed to the networking client where it is sent to the server (outbound request)
+final value is passed to the networking client, where it is sent to the server (outbound request)
 or to the caller (inbound response).
 
 Interceptors may also fail outbound requests before they're sent, thus preventing subsequent
