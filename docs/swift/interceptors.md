@@ -16,8 +16,8 @@ altered value to the next interceptor in the chain. When the end of the chain is
 final value is passed to the networking client, where it is sent to the server (outbound request)
 or to the caller (inbound response).
 
-Interceptors may also fail outbound requests before they're sent, thus preventing subsequent
-interceptors from being invoked and returning a specified error back to the original caller.
+Interceptors may also fail outbound requests before they are sent; subsequent 
+interceptors in the chain will not be invoked, and the error will be returned to the original caller.
 
 Interceptors are closure-based and are passed both the current value and a closure which
 should be called to resume the interceptor chain. Propagation will not continue until
