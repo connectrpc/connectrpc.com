@@ -19,9 +19,9 @@ or to the caller (inbound response).
 Interceptors may also fail outbound requests before they are sent; subsequent 
 interceptors in the chain will not be invoked, and the error will be returned to the original caller.
 
-Interceptors are closure-based and are passed both the current value and a closure which
-should be called to resume the interceptor chain. Propagation will not continue until
-this closure is called. Additional values may still be passed to a given interceptor even
+Interceptors are closure-based and receive both the current value and a closure that 
+should be called to resume the interceptor chain. Propagation will not continue until 
+this closure is invoked. Additional values may still be passed to a given interceptor even
 though it has not yet continued the chain with a previous value. For example:
 
 - A request is sent
