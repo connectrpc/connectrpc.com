@@ -65,7 +65,7 @@ to give control to the user to manually cancel a request:
 ```kotlin
 val request = sayRequest { sentence = sentence }
 val cancel = elizaServiceClient.say(request) { response ->
-    print(response.code) // Code.CANCELED.
+  print(response.code) // Code.CANCELED.
 }
 cancel()
 ```
