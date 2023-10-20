@@ -63,11 +63,11 @@ With the callback unary signature, the result is a canceling handler
 to give control to the user to manually cancel a request:
 
 ```kotlin
-val request = SayRequest(sentence = sentence)
-val cancelable = elizaClient.say(request) { response in
-  print(response.code) // Code.canceled.
+val request = sayRequest { sentence = sentence }
+val cancel = elizaServiceClient.say(request) { response ->
+    print(response.code) // Code.CANCELED.
 }
-cancelable.cancel()
+cancel()
 ```
 
 [connect-exception-source]: https://github.com/connectrpc/connect-kotlin/blob/main/library/src/main/kotlin/com/connectrpc/ConnectException.kt
