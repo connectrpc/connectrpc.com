@@ -205,7 +205,8 @@ Connect protocol.
 **Bare-Message** is the RPC request payload, serialized using the codec
 indicated by **Unary-Content-Type** and possibly compressed using
 **Content-Encoding**. It's sent on the wire as the HTTP request content (often
-called the body).
+called the body). Servers must not attempt to decompress zero-length HTTP request 
+content.
 
 ### Unary-Get-Request
 
@@ -280,6 +281,7 @@ sending the easy-to-parse subset outlined above. Servers should treat
 encoding first and least preferred encoding last. If the client uses an
 unsupported **Compression-Query** value, servers should return an error with
 code "unimplemented" and a message listing the supported encodings.
+Servers must not attempt to decompress zero-length **Message-Query**.
 
 If **Timeout** is omitted, the server should assume an infinite timeout. The
 protocol accommodates timeouts of more than 100 days. Client implementations
@@ -322,16 +324,17 @@ Successful responses have an **HTTP-Status** of 200. In those cases,
 **Bare-Message** is the RPC response payload, serialized using the codec indicated
 by **Unary-Content-Type** and possibly compressed using **Content-Encoding**.
 It's sent on the wire as the HTTP response content (often called the body).
+Clients must not attempt to decompress zero-length HTTP response content.
 
 Errors are sent with a non-200 **HTTP-Status**. In those cases,
 **Unary-Content-Type** _must_ be "application/json". **Bare-Message** is either
 omitted or a JSON-serialized [Error](#error-end-stream), possibly compressed
 using **Content-Encoding** and sent on the wire as the HTTP response content.
-If **Bare-Message** is an Error, **HTTP-Status** must match Error.code as
-specified in [the table below](#error-codes). When reading data from the wire,
-client implementations must use the [HTTP-to-Connect
-mapping](#http-to-error-code) to infer a Connect error code if **Bare-Message**
-is missing or malformed.
+Clients must not attempt to decompress zero-length HTTP response content. If 
+**Bare-Message** is an Error, **HTTP-Status** must match Error.code as specified 
+in [the table below](#error-codes). When reading data from the wire, client 
+implementations must use the [HTTP-to-Connect mapping](#http-to-error-code) to infer a Connect 
+error code if **Bare-Message** is missing or malformed.
 
 ### Examples {#unary-examples}
 
