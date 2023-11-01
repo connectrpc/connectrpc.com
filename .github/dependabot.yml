@@ -19,3 +19,29 @@ updates:
       # These are required by docusaurus
       - dependency-name: "react"
       - dependency-name: "react-dom"
+    groups:
+      docusaurus:
+        patterns:
+          - "@docusaurus/*"
+          - "@tsconfig/docusaurus"
+      format:
+        patterns:
+          - "@bufbuild/license-header"
+          - "prettier"
+          - "esbuild"
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@react-hookz/web"
+      eslint:
+        patterns:
+          - "@typescript-eslint/*"
+          - "*eslint-*"
+          - "eslint"
+      demo:
+        patterns:
+          - "@buf/connectrpc*"
+          - "@bufbuild/protobuf"
+          - "@connectrpc/*"
