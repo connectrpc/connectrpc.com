@@ -176,7 +176,7 @@ mappings for your backend services. You can work around this problem using the
 If you're using the AWS [Application Load Balancer support for gRPC][alp-aws-grpc], 
 you will likely see an HTTP error response with code 464 for a Connect `GET` 
 request, or for a web browser making a CORS preflight `OPTIONS` request. The 
-reason for this behavior is is that target groups with "protocol version" set to 
+reason for this behavior is that target groups with "protocol version" set to 
 "gRPC" only accept `POST` requests. See the [troubleshooting document][alp-aws-troubleshooting] 
 for reference.
 
