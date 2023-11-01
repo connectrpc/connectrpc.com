@@ -147,10 +147,11 @@ For guidance on how to call the generated code, see the
 
 The following generation options can be combined in the `opt` field of the `buf.gen.yaml` file to customize outputs:
 
-| **Option**                 | **Type** | **Default** | **Repeatable** | **Details**                                     |
-|----------------------------|:--------:|:-----------:|:--------------:|-------------------------------------------------|
-| `generateCallbackMethods`  | Boolean  |   `false`   |       No       | Generate callback signatures for unary methods. |
-| `generateCoroutineMethods` | Boolean  |   `true`    |       No       | Generate suspend signatures for unary methods.  |
+| **Option**                     | **Type** | **Default** | **Repeatable** | **Details**                                     |
+|--------------------------------|:--------:|:-----------:|:--------------:|-------------------------------------------------|
+| `generateCallbackMethods`      | Boolean  |   `false`   |       No       | Generate callback signatures for unary methods. |
+| `generateCoroutineMethods`     | Boolean  |   `true`    |       No       | Generate suspend signatures for unary methods.  |
+| `generateBlockingUnaryMethods` | Boolean  |   `false`   |       No       | Generate blocking signatures for unary methods. |
 
 
 [available-plugins]: https://buf.build/plugins

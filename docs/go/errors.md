@@ -29,7 +29,7 @@ func (s *greetServer) Greet(
   req *connect.Request[greetv1.GreetRequest],
 ) (*connect.Response[greetv1.GreetResponse], error) {
   if err := ctx.Err(); err != nil {
-    return err // automatically coded correctly
+    return nil, err // automatically coded correctly
   }
   if err := validateGreetRequest(req.Msg); err != nil {
     return nil, connect.NewError(connect.CodeInvalidArgument, err)

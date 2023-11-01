@@ -20,20 +20,20 @@ Content-Type: application/json
 }
 ```
 
-Connect-Kotlin provides a common [`ConnectError`][connect-error-source] type
+Connect-Kotlin provides a common [`ConnectException`][connect-exception-source] type
 that represents errors consistently across all supported protocols.
 
-`ResponseMessage` values returned by unary API calls expose an
-optional `ConnectError?`, and `StreamResult` values returned by
-streaming APIs can also contain this type:
+`ResponseMessage` failure values returned by unary API calls expose a
+`cause` and streaming APIs throw a ConnectException if an error
+occurs while reading from the `responseChannel`:
 
 ```kotlin
 val request = SayRequest(sentence = sentence)
 val response = elizaClient.say(request)
-response.error {
-  print(error.code) // Code.INVALID_ARGUMENT
-  print(error.message) // "sentence cannot be empty"
-  print(error.metadata) // Dictionary of additional server-provided headers/trailers
+response.failure {
+  print(it.cause.code) // Code.INVALID_ARGUMENT
+  print(it.cause.message) // "sentence cannot be empty"
+  print(it.cause.metadata) // Dictionary of additional server-provided headers/trailers
 }
 ```
 
@@ -42,14 +42,14 @@ response.error {
 Additional strongly typed errors
 [may be specified by the server in responses](../protocol.md#error-end-stream).
 These are wrapped with the `google.protobuf.Any` type,
-and can be unpacked using the `ConnectError.unpackedDetails()` function by
+and can be unpacked using the `ConnectException.unpackedDetails()` function by
 specifying the expected error message class type:
 
 ```kotlin
 val request = SayRequest(sentence = sentence)
 val response = elizaClient.say(request)
-response.error {
-  val errorDetails = error.unpackedDetails(ErrorDetail::class)
+response.failure {
+  val errorDetails = it.cause.unpackedDetails(ErrorDetail::class)
   // Work with ErrorDetail.
 }
 ```
@@ -63,11 +63,11 @@ With the callback unary signature, the result is a canceling handler
 to give control to the user to manually cancel a request:
 
 ```kotlin
-val request = SayRequest(sentence = sentence)
-val cancelable = elizaClient.say(request) { response in
-  print(response.code) // Code.canceled.
+val request = sayRequest { sentence = sentence }
+val cancel = elizaServiceClient.say(request) { response ->
+  print(response.code) // Code.CANCELED.
 }
-cancelable.cancel()
+cancel()
 ```
 
-[connect-error-source]: https://github.com/connectrpc/connect-kotlin/blob/main/library/src/main/kotlin/com/connectrpc/ConnectError.kt
+[connect-exception-source]: https://github.com/connectrpc/connect-kotlin/blob/main/library/src/main/kotlin/com/connectrpc/ConnectException.kt

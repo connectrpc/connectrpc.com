@@ -88,7 +88,7 @@ lifecycleScope.launch(Dispatchers.IO) {
     val elizaSentence = success.message.sentence
     println(elizaSentence)
   }
-  response.error { error ->
+  response.failure { error ->
     // Handle any errors from the request.
   }
 }
@@ -102,18 +102,13 @@ and to iterate over updates from the server using a `RecieveChannel`:
 val stream = elizaServiceClient.converse()
 lifecycleScope.launch(Dispatchers.IO) {
   async {
-    for (streamResult in stream.resultChannel()) {
-      streamResult.maybeFold(
-        onMessage = { result ->
-          // Update the view with the response.
-          val elizaResponse = result.message
-          println(elizaResponse)
-        },
-      )
+    for (response in stream.resultChannel()) {
+        println(response.sentence)
     }
   }
   // Add the message the user is sending to the views.
   stream.send(ConverseRequest.newBuilder().setSentence("Hello, Eliza").build())
+  stream.sendClose()
 }
 ```
 

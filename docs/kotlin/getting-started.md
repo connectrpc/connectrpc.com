@@ -594,7 +594,7 @@ class MainActivity : AppCompatActivity() {
       success.message.sentence
     }
     response.failure { failure ->
-      Log.e("MainActivity", "Failed to talk to eliza", failure.error)
+      Log.e("MainActivity", "Failed to talk to eliza", failure.cause)
     }
     return elizaSentence
   }

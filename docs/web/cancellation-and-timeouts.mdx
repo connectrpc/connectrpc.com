@@ -63,7 +63,7 @@ When a timeout is reached before the request finishes, a `ConnectError` with
 code `DeadlineExceeded` is raised.
 
 When you specify a timeout, the value is sent to the server in a request header
-that is understood by Connect, gRCP, and gRPC-web servers. Servers _and_ clients
+that is understood by Connect, gRPC, and gRPC-web servers. Servers _and_ clients
 honor the timeout, which can be immensely helpful for streaming calls in a fragile
 network environment. Timeouts can also be propagated to upstream services.
 In gRPC, the concept is also known as [deadlines](https://grpc.io/docs/guides/deadlines/).
