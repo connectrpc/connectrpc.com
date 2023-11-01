@@ -175,19 +175,23 @@ mappings for your backend services. You can work around this problem using the
 
 If you're using the AWS [Application Load Balancer support for gRPC][alp-aws-grpc], 
 you will likely see an HTTP error response with code 464 for a Connect `GET` 
-request, or for a web browser making a CORS preflight `OPTIONS` request.
+request, or for a web browser making a CORS preflight `OPTIONS` request. The 
+reason for this behavior is is that target groups with "protocol version" set to 
+"gRPC" only accept `POST` requests. See the [troubleshooting document][alp-aws-troubleshooting] 
+for reference.
 
-If you only need the Connect protocol, you can simply change your target group 
-to HTTP/2.
+As a simple solution, you can configure the target group to use "HTTP2" instead. 
+It will support Connect as well as gRPC - you will only give up support for the 
+gRPC-specific add-on features.
 
-If you need both the Connect and gRPC protocols, you can use two target groups:
-Route HTTP GET requests and anything with the `application/proto`, `application/json`, 
-`application/connect+proto`, or `application/connect+json` Content-Types to the 
-HTTP/2 target group. Route anything else to the gRPC target group.
-
+In case you _do_ need the gRPC-specific add-ons, you can use two target groups:
+Route HTTP GET requests and anything with the `application/proto`, `application/json`,
+`application/connect+proto`, or `application/connect+json` Content-Types to the
+HTTP2 target group. Route anything else to the gRPC target group.
 
 [remote packages]: https://buf.build/docs/bsr/remote-packages/overview/
 [remote plugins]: https://buf.build/docs/bsr/remote-plugins/overview/
 [twirp-protocol]: https://github.com/twitchtv/twirp/blob/main/PROTOCOL.md
 [whatwg-streams-issue]: https://github.com/whatwg/fetch/issues/1438
 [alp-aws-grpc]: https://aws.amazon.com/blogs/aws/new-application-load-balancer-support-for-end-to-end-http-2-and-grpc/
+[alp-aws-troubleshooting]: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html#http-464-issues
