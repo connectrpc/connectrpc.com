@@ -171,7 +171,7 @@ mappings for your backend services. You can work around this problem using the
 `cluster_tag` property, as described in
 [emissary-ingress/emissary#3112](https://github.com/emissary-ingress/emissary/issues/3112).
 
-[generated sdks]: https://buf.build/docs/bsr/generated-sdks/overview/
+[generated SDKs]: https://buf.build/docs/bsr/generated-sdks/overview/
 [remote plugins]: https://buf.build/docs/bsr/remote-plugins/overview/
 [twirp-protocol]: https://github.com/twitchtv/twirp/blob/main/PROTOCOL.md
 [whatwg-streams-issue]: https://github.com/whatwg/fetch/issues/1438
