@@ -103,7 +103,8 @@ Access-Control-Expose-Headers: Grpc-Status,Grpc-Message,Grpc-Status-Details-Bin
 {"greeting": "Hello, Buf!"}
 ```
 
-All three exposed headers are necessary to support gRPC-Web.
+All three exposed headers are necessary to support gRPC-Web. Content-Type does 
+not need to be exposed explicitly, because it is a [CORS-safelisted response header](https://developer.mozilla.org/en-US/docs/Glossary/CORS-safelisted_response_header).
 
 > **Note:** If your application uses custom response headers, you must explicitly
 > expose them.  
