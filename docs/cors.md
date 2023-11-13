@@ -68,7 +68,7 @@ requests from connectrpc.com via https with the default port 443.
 Connect. gRPC-Web will only use POST. Connect uses POST and optionally GET.
 
 `Access-Control-Allow-Headers: Content-Type,Connect-Protocol-Version,Connect-Timeout-Ms,Grpc-Timeout,X-Grpc-Web,X-User-Agent`
-allows all necessary headers for Connect and gRPC-Web.
+allows all necessary request headers for Connect and gRPC-Web.
 
 > **Note:** If your application uses custom request headers, you must explicitly 
 > allow them. This includes commonly used headers such as `Authorization`.
