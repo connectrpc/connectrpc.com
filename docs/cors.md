@@ -5,10 +5,11 @@ sidebar_position: 985
 
 # Cross-Origin Resource Sharing with Connect and gRPC-Web
 
-CORS is a mechanism that allows servers to restrict requests from JavaScript 
-running in a web browser. For example, consider a malicious web page making 
-requests to an API on a different domain. Simply visiting this page could run
-arbitrary actions on your behalf.
+[CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is a mechanism 
+that allows servers to restrict requests from JavaScript running in a web 
+browser. For example, consider a malicious web page making requests to an API 
+on a different domain. Simply visiting this page could run arbitrary actions on 
+your behalf.
 
 To avoid this problem, browsers ask the target for permission to issue a request,
 if the request originates from somewhere else than the target. They send a
