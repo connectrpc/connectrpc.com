@@ -47,7 +47,7 @@ to cache the information:
 ```
 HTTP/1.1 204 No Content
 Access-Control-Allow-Origin: https://connectrpc.com
-Access-Control-Allow-Methods: POST, GET
+Access-Control-Allow-Methods: POST,GET
 Access-Control-Allow-Headers: Content-Type,Connect-Protocol-Version,Connect-Timeout-Ms,Grpc-Timeout,X-Grpc-Web,X-User-Agent
 Access-Control-Max-Age: 7200
 Vary: Origin,Access-Control-Request-Method,Access-Control-Request-Headers
@@ -64,7 +64,7 @@ requests from connectrpc.com via https with the default port 443.
 
 ### Allowing methods and headers
 
-`Access-Control-Allow-Methods: POST, GET` is required to support gRPC-Web and 
+`Access-Control-Allow-Methods: POST,GET` is required to support gRPC-Web and 
 Connect. gRPC-Web will only use POST. Connect uses POST and optionally GET.
 
 `Access-Control-Allow-Headers: Content-Type,Connect-Protocol-Version,Connect-Timeout-Ms,Grpc-Timeout,X-Grpc-Web,X-User-Agent`
