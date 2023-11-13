@@ -113,7 +113,7 @@ All three exposed headers are necessary to support gRPC-web.
 ## Connect GET
 
 For side-effect-free RPCs such as simple queries, Connect supports GET requests
-that do not require CORS preflights. Browser will immediately issue the actual 
+that do not require CORS preflights. Browsers will immediately issue the actual 
 request, but there are two requirements:
 
 1. No request headers must be set, including `Connect-Timeout-Ms` or `Grpc-Timeout`, 
