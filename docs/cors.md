@@ -113,7 +113,7 @@ All three exposed headers are necessary to support gRPC-Web.
 ## Connect GET
 
 For side-effect-free RPCs such as simple queries, Connect supports GET requests
-that do not require CORS preflights. Browser will immediately issue the actual 
+that do not require CORS preflights. Browsers will immediately issue the actual 
 request, but there are two requirements:
 
 1. No request headers must be set, including `Connect-Timeout-Ms` or `Grpc-Timeout`, 
@@ -130,7 +130,7 @@ requirement is not met, the request will error in the browser.
 While many CORS headers allow a wildcard `*`, they only do for requests without 
 credentials, such as cookies, TLS client certificates, or authorization headers.
 
-We recommend to avoid wildcards, especially in a production environment. CORS 
+It's best to avoid wildcards in production. CORS 
 libraries typically provide mechanism for common use cases like allowing 
 multiple origins.
 
