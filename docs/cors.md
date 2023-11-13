@@ -89,7 +89,7 @@ conditional preflight responses must be added to the `Vary` response header.
 
 ## Actual response
 
-Here is what an actual response might look like, after a successful preflight 
+Here is what an actual response will look like, after a successful preflight 
 request:
 
 ```
@@ -116,9 +116,10 @@ For side-effect-free RPCs such as simple queries, Connect supports GET requests
 that do not require CORS preflights. Browser will immediately issue the actual 
 request, but there are two requirements:
 
-1. No request headers must be set, including any application-specific header, or
-  `Connect-Timeout-Ms` or `Grpc-Timeout`.
-2. The response must set the header `Access-Control-Allow-Origin: *`.
+1. No request headers must be set, including `Connect-Timeout-Ms` or `Grpc-Timeout`, 
+   or any application-specific header.
+2. The response must allow the origin, for example with the response header 
+   `Access-Control-Allow-Origin: https://connectrpc.com`.
 
 If the first requirement is not met, a preflight request is issued. If the second
 requirement is not met, the request will error in the browser.
@@ -138,8 +139,8 @@ multiple origins.
 
 [Private network access](https://wicg.github.io/private-network-access/) is an 
 addition to CORS that restricts the ability of websites to send requests to 
-servers on private networks. Chrome has been leading the implementation, and 
-more information can be found in the [accompanying blog post](https://developer.chrome.com/blog/private-network-access-update/).
+servers on private networks. Chrome has been the first to implement the feature. 
+More information can be found in the [accompanying blog post](https://developer.chrome.com/blog/private-network-access-update/).
 
 If your application uses private network access, you will have to set the 
 preflight response header `Access-Control-Allow-Private-Network` accordingly, 
