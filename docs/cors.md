@@ -83,8 +83,9 @@ Firefox caps this value at 24h, and modern Chrome caps it at 2h (2700 seconds).
 
 `Vary: Origin,Access-Control-Request-Method,Access-Control-Request-Headers` is 
 used by the browser to cache CORS information based on the given header names.
-To avoid poisoning intermediate caches, all request headers resulting in
-conditional preflight responses must be added to the `Vary` response header.
+If the CORS preflight response is dynamic, all request headers resulting in
+conditional preflight responses must be added to the `Vary` response header to 
+avoid poisoning intermediate caches.
 
 
 ## Actual response
