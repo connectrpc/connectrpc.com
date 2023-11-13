@@ -3,7 +3,7 @@ title: CORS
 sidebar_position: 985
 ---
 
-# Cross-Origin Resource Sharing with Connect and gRPC-web
+# Cross-Origin Resource Sharing with Connect and gRPC-Web
 
 CORS is a mechanism that allows servers to restrict requests from JavaScript 
 running in a web browser. For example, consider a malicious web page making 
@@ -16,7 +16,7 @@ preflight request, and the server replies with CORS information. The browser
 decides whether to issue or deny the actual request, and will only expose 
 response headers to JavaScript that are explicitly allowed.
 
-Both Connect and gRPC-web require CORS preflights for cross-origin requests.
+Both Connect and gRPC-Web require CORS preflights for cross-origin requests.
 Note that we highly recommend to use a library like [rs/cors](https://github.com/rs/cors) 
 for Go to implement the logic. This document gives you the necessary information
 to configure CORS appropriately using any library.
@@ -41,7 +41,7 @@ header names of the actual request.
 ## Preflight response
 
 Here is an example for a CORS preflight response for the preflight above that
-allows all requests with the Connect and gRPC-web protocols, and asks the browser
+allows all requests with the Connect and gRPC-Web protocols, and asks the browser
 to cache the information:
 
 ```
@@ -64,11 +64,11 @@ requests from connectrpc.com via https with the default port 443.
 
 ### Allowing methods and headers
 
-`Access-Control-Allow-Methods: POST, GET` is required to support gRPC-web and 
-Connect. gRPC-web will only use POST. Connect uses POST and optionally GET.
+`Access-Control-Allow-Methods: POST, GET` is required to support gRPC-Web and 
+Connect. gRPC-Web will only use POST. Connect uses POST and optionally GET.
 
 `Access-Control-Allow-Headers: Content-Type,Connect-Protocol-Version,Connect-Timeout-Ms,Grpc-Timeout,X-Grpc-Web,X-User-Agent`
-allows all necessary headers for Connect and gRPC-web.
+allows all necessary headers for Connect and gRPC-Web.
 
 > **Note:** If your application uses custom request headers, you must explicitly 
 > allow them. This includes commonly used headers such as `Authorization`.
@@ -101,7 +101,7 @@ Access-Control-Expose-Headers: Grpc-Status,Grpc-Message,Grpc-Status-Details-Bin
 {"greeting": "Hello, Buf!"}
 ```
 
-All three exposed headers are necessary to support gRPC-web.
+All three exposed headers are necessary to support gRPC-Web.
 
 > **Note:** If your application uses custom response headers, you must explicitly
 > expose them.  
