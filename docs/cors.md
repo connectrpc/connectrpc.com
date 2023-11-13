@@ -130,7 +130,7 @@ requirement is not met, the request will error in the browser.
 While many CORS headers allow a wildcard `*`, they only do for requests without 
 credentials, such as cookies, TLS client certificates, or authorization headers.
 
-We recommend to avoid wildcards, especially in a production environment. CORS 
+It's best to avoid wildcards in production. CORS 
 libraries typically provide mechanism for common use cases like allowing 
 multiple origins.
 
