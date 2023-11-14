@@ -80,7 +80,7 @@ allows all necessary request headers for Connect and gRPC-Web.
 `Access-Control-Max-Age: 7200` lets browsers cache CORS information for longer, 
 which reduces the number of preflight requests. The value is given in seconds. 
 Any changes to your CORS setup won't take effect until the cached data expires. 
-Firefox caps this value at 24h, and modern Chrome caps it at 2h (2700 seconds).
+Firefox caps this value at 24h, and modern Chrome caps it at 2h (7200 seconds).
 
 `Vary: Origin,Access-Control-Request-Method,Access-Control-Request-Headers` is 
 used by the browser to cache CORS information based on the given header names.
