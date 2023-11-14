@@ -37,10 +37,10 @@ just call the client methods, rely on the generated types for compile-time
 type-safety and serialization, and focus on the application logic.
 
 
-## Remote packages
+## Generated SDKs
 
-In the tutorial, we have been using [remote packages](https://buf.build/docs/bsr/remote-packages/npm) with an `npm install`
-command. When the package was requested on the BSR NPM registry, it ran
+In the tutorial, we have been using [generated SDKs](https://buf.build/docs/bsr/generated-sdks/npm)
+with an `npm install` command. When the package was requested on the BSR NPM registry, it ran
 the schema through a code generator, and served the generated files as a
 package with all required dependencies.
 
@@ -48,7 +48,7 @@ If you want to use a Connect or gRPC service whose schema is published on the
 BSR, you can simply use `npm` to install the package, and hit the service with
 a Connect client.
 
-See our [documentation on remote packages](https://buf.build/docs/bsr/remote-packages/overview)
+See our [documentation on generated SDKs](https://buf.build/docs/bsr/generated-sdks/overview)
 for details.
 
 ## Local generation

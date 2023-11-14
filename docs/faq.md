@@ -100,8 +100,8 @@ This serves a few purposes:
   `protoc-gen-go-grpc` &mdash; generate code alongside the base types, so the
   package namespace becomes very crowded.
 * It keeps the contents of the base types package constant. This isn't critical
-  when generating code locally, but it's critical to making [remote packages] and [remote plugins]
-  work.
+  when generating code locally, but it's critical to making [generated SDKs] and
+  [remote plugins] work.
 
 ## TypeScript and JavaScript
 
@@ -189,7 +189,7 @@ Route HTTP GET requests and anything with the `application/proto`, `application/
 `application/connect+proto`, or `application/connect+json` Content-Types to the
 HTTP2 target group. Route anything else to the gRPC target group.
 
-[remote packages]: https://buf.build/docs/bsr/remote-packages/overview/
+[generated SDKs]: https://buf.build/docs/bsr/generated-sdks/overview/
 [remote plugins]: https://buf.build/docs/bsr/remote-plugins/overview/
 [twirp-protocol]: https://github.com/twitchtv/twirp/blob/main/PROTOCOL.md
 [whatwg-streams-issue]: https://github.com/whatwg/fetch/issues/1438
