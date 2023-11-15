@@ -22,35 +22,27 @@ OpenTelemetry can be quite complex, so this guide assumes that readers are famil
 Once you have OpenTelemetry set up in your application, enabling OpenTelemetry in a Connect project is as simple as adding the [otelconnect.NewInterceptor] option on Connect handler and client constructors. If you do not have OpenTelemetry in your application, you can refer to the [OpenTelemetry Go getting started guide](https://opentelemetry.io/docs/instrumentation/go/getting-started/).
 
 ```go
-func main() {
-	mux := http.NewServeMux()
-	mux.Handle(pingv1connect.NewPingServiceHandler(
-		&pingv1connect.UnimplementedPingServiceHandler{},
-		connect.WithInterceptor(
-			otelconnect.NewInterceptor(),
-		),
-	))
+// highlight-next-line
+import "connectrpc.com/otelconnect"
 
-	http.ListenAndServe("localhost:8080", mux)
-}
+path, handler := greetv1connect.NewGreetServiceHandler(
+	greeter,
+	// highlight-start
+	connect.WithInterceptors(
+		otelconnect.NewInterceptor(/* custom options */),
+	),
+	// highlight-end
+)
 
-func makeRequest() {
-	client := pingv1connect.NewPingServiceClient(
-		http.DefaultClient,
-		"http://localhost:8080",
-		connect.WithInterceptor(
-			otelconnect.NewInterceptor(),
-		),
-	)
-	resp, err := client.Ping(
-		context.Background(),
-		connect.NewRequest(&pingv1.PingRequest{}),
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Print(resp)
-}
+client := greetv1connect.NewGreetServiceClient(
+	http.DefaultClient,
+	"http://localhost:8080",
+	// highlight-start
+	connect.WithInterceptors(
+		otelconnect.NewInterceptor(/* custom options */),
+	),
+	// highlight-end
+)
 ```
 
 By default, this will use:
