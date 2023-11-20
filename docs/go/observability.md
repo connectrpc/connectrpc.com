@@ -29,7 +29,7 @@ path, handler := greetv1connect.NewGreetServiceHandler(
 	greeter,
 	// highlight-start
 	connect.WithInterceptors(
-		otelconnect.NewInterceptor(/* custom options */),
+		otelconnect.NewInterceptor(),
 	),
 	// highlight-end
 )
@@ -39,7 +39,7 @@ client := greetv1connect.NewGreetServiceClient(
 	"http://localhost:8080",
 	// highlight-start
 	connect.WithInterceptors(
-		otelconnect.NewInterceptor(/* custom options */),
+		otelconnect.NewInterceptor(),
 	),
 	// highlight-end
 )
