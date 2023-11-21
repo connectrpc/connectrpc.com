@@ -2,6 +2,11 @@
   "trailingSlash": true,
   "redirects": [
     {
+      "source": "/conformance/",
+      "destination": "/conformance.html",
+      "permanent": true
+    },
+    {
       "source": "/connect/",
       "destination": "/connect.html",
       "permanent": true
