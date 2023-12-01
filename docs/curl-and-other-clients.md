@@ -44,7 +44,7 @@ $ curl --get --data-urlencode 'encoding=json' \
 You can also [visit this URL](https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say?encoding=json&message=%7b%22sentence%22%3a+%22I+feel+happy.%22%7d)
 in your browser. Unary RPCs can opt in to support HTTP GET with an option.
 For details, take a look at the [blog post](https://buf.build/blog/introducing-connect-cacheable-rpcs)
-introducing the feature, or at the [protocol specification](./protocol.md#unary-get-request) 
+introducing the feature, and at the [protocol specification](./protocol.md#unary-get-request) 
 for Connect.
 
 ## fetch API
@@ -63,7 +63,7 @@ fetch("https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say", {
   .then(data => { console.log(data) })
 ```
 
-Just like with cURL above, you can make the same call with HTTP GET:
+The same call with HTTP GET:
 
 ```javascript
 const url = new URL("https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say");
