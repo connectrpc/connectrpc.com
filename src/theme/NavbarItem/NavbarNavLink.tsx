@@ -60,8 +60,8 @@ export default function NavbarNavLink({
             href: props.disabled
               ? undefined
               : prependBaseUrlToHref
-              ? normalizedHref
-              : href,
+                ? normalizedHref
+                : href,
           }
         : {
             isNavLink: true,
