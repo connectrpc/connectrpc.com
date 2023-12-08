@@ -105,6 +105,11 @@
       "source": "/docs/web/query/",
       "destination": "/docs/web/query/getting-started",
       "permanent": true
+    },
+    {
+      "source": "/docs/query/getting-started/",
+      "destination": "https://github.com/connectrpc/connect-query-es#quickstart",
+      "permanent": true
     }
   ]
 }
