@@ -28,7 +28,7 @@
     "@docusaurus/preset-classic": "^2.4.3",
     "@docusaurus/theme-search-algolia": "^2.4.3",
     "@react-hookz/web": "^24.0.2",
-    "clsx": "^2.0.0",
+    "clsx": "^2.1.0",
     "crt-terminal": "^1.0.13",
     "prism-react-renderer": "^2.3.1",
     "react": "^17.0.1",
@@ -45,8 +45,8 @@
     "eslint": "^8.56.0",
     "eslint-plugin-jsx-a11y": "^6.8.0",
     "eslint-plugin-react": "^7.33.2",
-    "prettier": "^3.1.0",
-    "typescript": "^5.3.2"
+    "prettier": "^3.1.1",
+    "typescript": "^5.3.3"
   },
   "licenseHeader": {
     "licenseType": "apache",
