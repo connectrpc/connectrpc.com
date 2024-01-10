@@ -201,7 +201,7 @@ for a detailed explanation and an example.
 ### How do I use an interceptor to configure CORS?
 
 Interceptors can't be used to configure CORS. CORS is a security feature of the
-browsers and involves `OPTION` requests. `OPTION` requests can't be matched as RPC
+browsers and involves `OPTIONS` requests. `OPTIONS` requests can't be matched as RPC
 requests, and so interceptors can't be used to configure CORS. It's purely an HTTP
 concern. Both [connect-go][cors-go] and [connect-es][cors-es] have
 docs that show how to configure CORS for their respective HTTP libraries.
