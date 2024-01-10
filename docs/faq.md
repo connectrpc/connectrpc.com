@@ -30,7 +30,7 @@ a demo here: https://github.com/connectrpc/envoy-demo
 
 ### How do I reliably call a server streaming RPC from a web browser?
 
-The answer is highly dependent on all of the netowkring parties involved. Generally,
+The answer is highly dependent on all of the networking parties involved. Generally,
 make sure that your server or your infrastructure does not apply timeouts within
 the expected duration of calls. If possible, pre-empt timeouts by setting short
 deadlines and by repeating the call when the deadline is exceeded. Read the
@@ -203,12 +203,13 @@ for a detailed explanation and an example.
 Interceptors can't be used to configure CORS. CORS is a security feature of the
 browsers and involves `OPTION` requests. `OPTION` requests can't be matched as RPC
 requests, and so interceptors can't be used to configure CORS. It's purely an HTTP
-concern. Both [connect-go][cors-go] and [cors-es][cors-es] have
+concern. Both [connect-go][cors-go] and [connect-es][cors-es] have
 docs that show how to configure CORS for their respective HTTP libraries.
 
 ### How does vanguard-go integrate with Connect interceptors?
 
-A [connect-go] handler wrapped with Vanguard can use connect-go interceptors like
+A [connect-go] handler wrapped with [Vanguard](https://github.com/connectrpc/vanguard-go)
+can use connect-go interceptors like
 any other connect-go handler, whether the incoming request is REST or one of the
 supported protocols. connect-go interceptors cannot be applied to gRPC handlers or
 proxy handlers. Use gRPC interceptors or net/http middleware instead.
