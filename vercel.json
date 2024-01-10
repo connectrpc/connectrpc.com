@@ -2,6 +2,11 @@
   "trailingSlash": true,
   "redirects": [
     {
+      "source": "/conformance/",
+      "destination": "/conformance.html",
+      "permanent": true
+    },
+    {
       "source": "/connect/",
       "destination": "/connect.html",
       "permanent": true
@@ -99,6 +104,11 @@
     {
       "source": "/docs/web/query/",
       "destination": "/docs/web/query/getting-started",
+      "permanent": true
+    },
+    {
+      "source": "/docs/query/getting-started/",
+      "destination": "https://github.com/connectrpc/connect-query-es#quickstart",
       "permanent": true
     }
   ]
