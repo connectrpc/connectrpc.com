@@ -12,7 +12,7 @@ also call Connect APIs using any gRPC or gRPC-Web client.)
 
 ## cURL
 
-`connect-go` handlers automatically support JSON. Because the Connect protocol
+Connect handlers automatically support JSON. Because the Connect protocol
 also uses standard HTTP headers for unary RPCs, calling your API is a cURL
 one-liner:
 
@@ -32,6 +32,21 @@ The demo service is live &mdash; you're welcome to give that command a try! You
 can also use `--verbose` to see all the response headers or `--http1.1` to
 prevent upgrading to HTTP/2.
 
+You can make the same call with HTTP GET, where the request message is encoded 
+in a query parameter: 
+
+```bash
+$ curl --get --data-urlencode 'encoding=json' \
+    --data-urlencode 'message={"sentence": "I feel happy."}' \
+    https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say
+```
+
+You can also [visit this URL](https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say?encoding=json&message=%7b%22sentence%22%3a+%22I+feel+happy.%22%7d)
+in your browser. Unary RPCs can opt in to support HTTP GET with an option.
+For details, take a look at the [blog post](https://buf.build/blog/introducing-connect-cacheable-rpcs)
+introducing the feature, and at the [protocol specification](./protocol.md#unary-get-request) 
+for Connect.
+
 ## fetch API
 
 We recommend `@connectrpc/connect-web` so that the compiler can type-check your code, but
@@ -44,6 +59,17 @@ fetch("https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say", {
   "headers": {"Content-Type": "application/json"},
   "body": JSON.stringify({"sentence": "I feel happy."})
 })
+  .then(response => { return response.json() })
+  .then(data => { console.log(data) })
+```
+
+The same call with HTTP GET:
+
+```javascript
+const url = new URL("https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say");
+url.searchParams.set("encoding", "json");
+url.searchParams.set("message", JSON.stringify({"sentence": "I feel happy."}));
+fetch(url)
   .then(response => { return response.json() })
   .then(data => { console.log(data) })
 ```

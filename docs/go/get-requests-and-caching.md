@@ -25,7 +25,7 @@ must mark it as being side-effect free using the
 
 ```protobuf
 service ElizaService {
-  rpc Say(stream SayRequest) returns (SayResponse) {
+  rpc Say(SayRequest) returns (SayResponse) {
     option idempotency_level = NO_SIDE_EFFECTS;
   }
 }
