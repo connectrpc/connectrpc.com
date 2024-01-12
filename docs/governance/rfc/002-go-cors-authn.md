@@ -13,25 +13,27 @@ organization:
 indicate whether web browsers should allow scripts to load resources from other
 domains. This is a common concern for single-page web applications, where the
 API and app are often hosted on different origins &mdash; for example,
-`app.acme.com` may need to call APIs hosted on `api.acme.com`. As part of its
-security model, CORS requires servers to allowlist individual request and
-response headers. 
+`app.acme.com` may need to call APIs hosted on `api.acme.com`. As part of the
+CORS flow, servers must be able to list their expected HTTP request and
+response header keys.
 
-For backend-to-backend communication, the Connect runtime abstracts away
-protocol-specific headers. But to correctly configure header allowlists for
-CORS, server authors must first understand quite a bit of the gRPC, gRPC-Web,
-and Connect protocols. The [resulting configuration][explicit-cors] is verbose
-and difficult to evolve with the underlying protocols.
+For backend-to-backend communication (where CORS isn't involved), the Connect
+runtime abstracts away protocol-specific headers. But to correctly configure
+CORS for browser-to-backend communication, server authors must explicitly list
+most of the headers used by the gRPC, gRPC-Web, and Connect protocols. The
+[resulting configuration][explicit-cors] is verbose and difficult to evolve
+with the underlying protocols.
 
 To make development of browser-facing Connect APIs easier in Go, we propose
 creating a small Go package of CORS helpers. This package will help users
-configure existing CORS packages (for example, [`github.com/rs/cors`][rs-cors]) without
-needing to explicitly list all the HTTP headers used by each RPC protocol.
+configure existing CORS packages (for example, [`github.com/rs/cors`][rs-cors])
+without needing to explicitly list all the HTTP headers used by each RPC
+protocol.
 
 ## Authentication
 
-HTTP servers use a variety of authentication schemes: mutual TLS, cookies,
-and various types of bearer tokens are particularly common. Often, the
+HTTP servers use a variety of authentication schemes: mutual TLS, cookies, and
+various types of bearer tokens are particularly common. Often, the
 authentication logic also requires some knowledge of the service schema &mdash;
 at least the name of the service and method, but sometimes more detailed
 information too.
