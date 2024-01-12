@@ -121,42 +121,36 @@ func newInsecureClient() *http.Client {
 ## CORS
 
 Cross-origin resource sharing (CORS) is needed to support web clients
-on other origins other than the server's own.
+on other origins other than the server's own. In Go, servers may configure CORS
+by using any popular third-party library or by writing a small `net/http`
+middleware to handle `OPTIONS` requests. In either case, the
+[`connectrpc.com/cors`](https://github.com/connectrpc/cors-go) package provides
+some useful helper functions.
 
-CORS can be configured outside of Connect's Go APIs by using popular go libraries. The following example
-shows how to configure CORS with the [`github.com/rs/cors`](https://github.com/rs/cors) package:
+The following example shows how to add CORS support to a Connect handler with
+the [`github.com/rs/cors`](https://github.com/rs/cors) package:
+
 ```go
-mux := http.NewServeMux()
-mux.Handle(pingv1connect.NewPingServiceHandler(&PingServer{}))
+import (
+	"net/http"
 
-corsHandler := cors.New(cors.Options{
-	AllowedMethods: []string{
-		http.MethodGet,
-		http.MethodPost,
-	},
-	AllowedOrigins: []string{"example.com"},
-	AllowedHeaders: []string{
-		"Accept-Encoding",
-		"Content-Encoding",
-		"Content-Type",
-		"Connect-Protocol-Version",
-		"Connect-Timeout-Ms",
-		"Connect-Accept-Encoding",  // Unused in web browsers, but added for future-proofing
-		"Connect-Content-Encoding", // Unused in web browsers, but added for future-proofing
-		"Grpc-Timeout",             // Used for gRPC-web
-		"X-Grpc-Web",               // Used for gRPC-web
-		"X-User-Agent",             // Used for gRPC-web
-	},
-	ExposedHeaders: []string{
-		"Content-Encoding",         // Unused in web browsers, but added for future-proofing
-		"Connect-Content-Encoding", // Unused in web browsers, but added for future-proofing
-		"Grpc-Status",              // Required for gRPC-web
-		"Grpc-Message",             // Required for gRPC-web
-	},
-})
-handler := corsHandler.Handler(mux)
-http.ListenAndServe(":8080", handler)
+	connectcors "connectrpc.com/cors"
+	"github.com/rs/cors"
+)
+
+// withCORS adds CORS support to a Connect HTTP handler.
+func withCORS(h http.Handler) http.Handler {
+	middleware := cors.New(cors.Options{
+		AllowedOrigins: []string{"example.com"},
+		AllowedMethods: connectcors.AllowedMethods(),
+		AllowedHeaders: connectcors.AllowedHeaders(),
+		ExposedHeaders: connectcors.ExposedHeaders(),
+	})
+	return middleware.Handler(mux)
+}
 ```
+
 Make sure to include application-specific request headers in the allowed headers,
 and response headers in the exposed headers. If your application uses trailers,
-they will be sent as header fields with a `Trailer-` prefix for Connect unary RPCs.
+they will be sent as header fields with a `Trailer-` prefix for unary Connect
+RPCs.
