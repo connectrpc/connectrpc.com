@@ -18,9 +18,13 @@ decides whether to issue or deny the actual request, and will only expose
 response headers to JavaScript that are explicitly allowed.
 
 Both Connect and gRPC-Web require CORS preflights for cross-origin requests.
-Note that we highly recommend to use a library like [rs/cors](https://github.com/rs/cors) 
-for Go to implement the logic. This document gives you the necessary information
-to configure CORS appropriately using any library.
+This document serves as a reference in case you want to learn more about the
+requirements, or need to configure CORS in a network component.
+
+If your server is written with `connect-go`, the [`connectrpc.com/cors`](https://github.com/connectrpc/cors-go)
+package makes it trivial to support CORS correctly. You can find an example [here](/docs/go/deployment#cors).
+A similar feature is available for connect-es with the [`cors` export](/docs/node/server-plugins/#cors).
+
 
 
 ## Preflight request
