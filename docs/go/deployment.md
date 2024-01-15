@@ -146,7 +146,7 @@ func withCORS(h http.Handler) http.Handler {
 		AllowedHeaders: connectcors.AllowedHeaders(),
 		ExposedHeaders: connectcors.ExposedHeaders(),
 	})
-	return middleware.Handler(mux)
+	return middleware.Handler(h)
 }
 ```
 
