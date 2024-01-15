@@ -22,7 +22,7 @@ This document serves as a reference in case you want to learn more about the
 requirements, or need to configure CORS in a network component.
 
 If your server is written with `connect-go`, the [`connectrpc.com/cors`](https://github.com/connectrpc/cors-go)
-package makes it trivial to support CORS correctly. You can find an example [here](docs/go/deployment#cors).
+package makes it trivial to support CORS correctly. You can find an example [here](/docs/go/deployment#cors).
 A similar feature is available for connect-es with the [`cors` export](/docs/node/server-plugins/#cors).
 
 
