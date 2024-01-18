@@ -61,11 +61,11 @@ When running multiple applications in a single binary, or if different sections 
 
 ```go
 // newInterceptor instruments Connect clients and handlers using custom OpenTelemetry metrics, tracing, and propagation.
-func newInterceptor(tp trace.TracerProvider, mp metric.MeterProvider, p propagation.TextMapPropagator) connect.Interceptor {
+func newInterceptor(tp trace.TracerProvider, mp metric.MeterProvider, p propagation.TextMapPropagator) (connect.Interceptor, error) {
 	return otelconnect.NewInterceptor(
 		otelconnect.WithTracerProvider(tp),
 		otelconnect.WithMeterProvider(mp),
-		otelconnect.WithTextMapPropagator(p),
+		otelconnect.WithPropagator(p),
 	)
 }
 ```
