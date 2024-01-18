@@ -2,6 +2,11 @@
   "trailingSlash": true,
   "redirects": [
     {
+      "source": "/authn/",
+      "destination": "/authn.html",
+      "permanent": true
+    },
+    {
       "source": "/conformance/",
       "destination": "/conformance.html",
       "permanent": true
@@ -9,6 +14,11 @@
     {
       "source": "/connect/",
       "destination": "/connect.html",
+      "permanent": true
+    },
+    {
+      "source": "/cors/",
+      "destination": "/cors.html",
       "permanent": true
     },
     {
