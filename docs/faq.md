@@ -19,10 +19,14 @@ using standard HTTP compression negotiation and eliminating binary framing from
 the body, the Connect protocol lets us make unary RPCs with web browsers, cURL,
 or any other HTTP client.
 
-### How do I serve gRPC services when they are already written in a language that doesn't have a Connect implementation?
+### How do I use the Connect protocol to call existing gRPC servers?
 
-Envoy is a popular and battle-tested proxy that supports gRPC very well. It's
-widely used, sometimes under the hood, of projects like Contour or Istio.
+Most Connect implementations support the gRPC protocol, so you have a choice:
+
+- Use the Connect runtime, but configure your client to use the gRPC protocol, or
+- Use the Connect runtime and Connect protocol, and have Envoy automatically
+  handle the Connect-to-gRPC translation. Envoy is a popular and widely used
+  proxy.
 
 Envoy v1.26 ships with a Connect-gRPC bridge that allows clients to speak the
 Connect protocol (including GET requests) to existing gRPC servers. You can find
@@ -39,10 +43,12 @@ the implications.
 
 ### How do I proxy the Connect protocol through NGINX?
 
-NGINX doesn't support end-to-end HTTP/2, so it's not possible to proxy the
-Connect protocol through NGINX properly. Some features such as bidirectional
-streaming will never work. Suitable reverse proxies include Envoy Proxy and
-Apache, or TCP-level load balancers like HAProxy.
+Request/response (unary) RPCS can be proxied through NGINX using Connect
+as long as they don't require end-to-end HTTP/2, which NGINX doesn't support.
+Bidirectional and client streaming can't be proxied through NGINX either
+because they require HTTP/2, so we recommend using Envoy Proxy, Apache, or
+TCP-level load balancers like HAProxy, which support all of the Connect
+protocol's features.
 
 ### Why not use HTTP status codes?
 
