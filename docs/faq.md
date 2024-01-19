@@ -5,6 +5,10 @@ sidebar_position: 1000
 
 ## The Connect protocol
 
+### Where can I find Connect implementations?
+
+All implementations are listed at the main [ConnectRPC repository][main-repo].
+
 ### Why special-case unary RPCs?
 
 The Connect protocol is effectively _two_ protocols, one for unary RPC and one
@@ -14,6 +18,36 @@ each direction. In practice, we've found the loss of purity well worth it. By
 using standard HTTP compression negotiation and eliminating binary framing from
 the body, the Connect protocol lets us make unary RPCs with web browsers, cURL,
 or any other HTTP client.
+
+### How do I use the Connect protocol to call existing gRPC servers?
+
+Most Connect implementations support the gRPC protocol, so you have a choice:
+
+- Use the Connect runtime, but configure your client to use the gRPC protocol, or
+- Use the Connect runtime and Connect protocol, and have Envoy automatically
+  handle the Connect-to-gRPC translation. Envoy is a popular and widely used
+  proxy.
+
+Envoy v1.26 ships with a Connect-gRPC bridge that allows clients to speak the
+Connect protocol (including GET requests) to existing gRPC servers. You can find
+a demo here: https://github.com/connectrpc/envoy-demo
+
+### How do I reliably call a server streaming RPC from a web browser?
+
+The answer is highly dependent on all of the networking parties involved. Generally,
+make sure that your server or your infrastructure does not apply timeouts within
+the expected duration of calls. If possible, pre-empt timeouts by setting short
+deadlines and by repeating the call when the deadline is exceeded. Read the
+[streaming docs](go/streaming.md) for the Go implementation to get an idea of
+the implications.
+
+### How do I proxy the Connect protocol through NGINX?
+
+Request-response (unary) RPCs made with the Connect protocol don't require
+end-to-end HTTP/2, so they can be proxied through NGINX. Streaming RPCs typically
+require end-to-end HTTP/2, which NGINX doesn't support. Rather than NGINX, we
+recommend using Envoy, Apache, or TCP-level load balancers like HAProxy, all of
+which support the full Connect protocol.
 
 ### Why not use HTTP status codes?
 
@@ -65,7 +99,6 @@ evolve without breaking existing clients: simply adding a field to a response wi
 Connect clients and servers will ignore unknown fields, provided that the
 underlying implementation allows us to do so.
 
-
 ## Go
 
 ### Why use generics?
@@ -73,12 +106,12 @@ underlying implementation allows us to do so.
 Generic code is inherently more complex than non-generic code. Still, introducing
 generics to `connect-go` eliminated two significant sources of complexity:
 
-* Generics let us generate less code, especially for streaming RPCs &mdash; if
+- Generics let us generate less code, especially for streaming RPCs &mdash; if
   you're willing to write out some long URLs, it's now just as easy to use
   Connect without `protoc-gen-connect-go`. The generic stream types, like
   `BidirectionalStream`, are much clearer than the equivalent code generation
   templates.
-* We don't need to attach any values to the context, because Connect's generic
+- We don't need to attach any values to the context, because Connect's generic
   `Request` and `Response` structs can carry headers and trailers explicitly.
   This makes data flow obvious and avoids any confusion about inbound and
   outbound metadata.
@@ -94,14 +127,21 @@ separate, Connect-specific Go package and imports the base types.
 
 This serves a few purposes:
 
-* It keeps the base types lightweight, so _every_ package that works with
+- It keeps the base types lightweight, so _every_ package that works with
   Protobuf messages doesn't drag along an RPC framework.
-* It avoids name collisions. Many Protobuf plugins &mdash; including
+- It avoids name collisions. Many Protobuf plugins &mdash; including
   `protoc-gen-go-grpc` &mdash; generate code alongside the base types, so the
   package namespace becomes very crowded.
-* It keeps the contents of the base types package constant. This isn't critical
+- It keeps the contents of the base types package constant. This isn't critical
   when generating code locally, but it's critical to making [generated SDKs] and
   [remote plugins] work.
+
+### Can connect-go clients be used in browser applications with WASM?
+
+It's technically possible, but please be aware that the WASM in Go is quite new,
+and the architecture has some fundamental limitations that may be surprising.
+We encourage you to give it a try and report any issues you find to Go or
+connect-go to help bring WASM in Go forward.
 
 ## TypeScript and JavaScript
 
@@ -151,7 +191,7 @@ compatible with existing gRPC-web backends. See [Choosing a protocol](/docs/web/
 
 Connect uses the Protobuf runtime provided by [Protobuf-ES](https://github.com/bufbuild/protobuf-es).
 Additionally, the code generator plugin used by Connect-ES is based on the plugin
-framework also provided by Protobuf-ES.  For any questions you may have about this library,
+framework also provided by Protobuf-ES. For any questions you may have about this library,
 visit the [Protobuf-ES FAQ page](https://github.com/bufbuild/protobuf-es/blob/main/docs/faq.md).
 
 ### How do I provide a type registry for sending or receiving Any?
@@ -163,6 +203,22 @@ for a detailed explanation and an example.
 
 ## Deployment
 
+### How do I use an interceptor to configure CORS?
+
+Interceptors can't be used to configure CORS. CORS is a security feature of the
+browsers and involves `OPTIONS` requests. `OPTIONS` requests can't be matched as RPC
+requests, and so interceptors can't be used to configure CORS. It's purely an HTTP
+concern. Both [connect-go][cors-go] and [connect-es][cors-es] have
+docs that show how to configure CORS for their respective HTTP libraries.
+
+### How does vanguard-go integrate with Connect interceptors?
+
+A [connect-go] handler wrapped with [Vanguard](https://github.com/connectrpc/vanguard-go)
+can use connect-go interceptors like
+any other connect-go handler, whether the incoming request is REST or one of the
+supported protocols. connect-go interceptors cannot be applied to gRPC handlers or
+proxy handlers. Use gRPC interceptors or net/http middleware instead.
+
 ### Missing trailers with Ambassador
 
 If you're using Ambassador for Kubernetes ingress and seeing "server closed the
@@ -173,15 +229,15 @@ mappings for your backend services. You can work around this problem using the
 
 ### HTTP 464 error with AWS
 
-If you're using the AWS [Application Load Balancer support for gRPC][alp-aws-grpc], 
-you will likely see an HTTP error response with code 464 for a Connect `GET` 
-request, or for a web browser making a CORS preflight `OPTIONS` request. The 
-reason for this behavior is that target groups with "protocol version" set to 
-"gRPC" only accept `POST` requests. See the [troubleshooting document][alp-aws-troubleshooting] 
+If you're using the AWS [Application Load Balancer support for gRPC][alp-aws-grpc],
+you will likely see an HTTP error response with code 464 for a Connect `GET`
+request, or for a web browser making a CORS preflight `OPTIONS` request. The
+reason for this behavior is that target groups with "protocol version" set to
+"gRPC" only accept `POST` requests. See the [troubleshooting document][alp-aws-troubleshooting]
 for reference.
 
-As a simple solution, you can configure the target group to use "HTTP2" instead. 
-It will support Connect as well as gRPC - you will only give up support for the 
+As a simple solution, you can configure the target group to use "HTTP2" instead.
+It will support Connect as well as gRPC - you will only give up support for the
 gRPC-specific add-on features.
 
 In case you _do_ need the gRPC-specific add-ons, you can use two target groups:
@@ -189,7 +245,10 @@ Route HTTP GET requests and anything with the `application/proto`, `application/
 `application/connect+proto`, or `application/connect+json` Content-Types to the
 HTTP2 target group. Route anything else to the gRPC target group.
 
+[cors-es]: https://connectrpc.com/docs/node/server-plugins/#cors
+[cors-go]: https://connectrpc.com/docs/go/deployment#cors
 [generated SDKs]: https://buf.build/docs/bsr/generated-sdks/overview/
+[main-repo]: https://github.com/connectrpc?view_as=public
 [remote plugins]: https://buf.build/docs/bsr/remote-plugins/overview/
 [twirp-protocol]: https://github.com/twitchtv/twirp/blob/main/PROTOCOL.md
 [whatwg-streams-issue]: https://github.com/whatwg/fetch/issues/1438
