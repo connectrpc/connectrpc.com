@@ -43,12 +43,11 @@ the implications.
 
 ### How do I proxy the Connect protocol through NGINX?
 
-Request/response (unary) RPCS can be proxied through NGINX using Connect
-as long as they don't require end-to-end HTTP/2, which NGINX doesn't support.
-Bidirectional and client streaming can't be proxied through NGINX either
-because they require HTTP/2, so we recommend using Envoy Proxy, Apache, or
-TCP-level load balancers like HAProxy, which support all of the Connect
-protocol's features.
+Request-response (unary) RPCs made with the Connect protocol don't require
+end-to-end HTTP/2, so they can be proxied through NGINX. Streaming RPCs typically
+require end-to-end HTTP/2, which NGINX doesn't support. Rather than NGINX, we
+recommend using Envoy, Apache, or TCP-level load balancers like HAProxy, all of
+which support the full Connect protocol.
 
 ### Why not use HTTP status codes?
 
