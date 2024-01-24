@@ -93,6 +93,9 @@ function say(req: SayRequest, context: HandlerContext) {
 }
 ```
 
+It can also be used to access arbitrary values that are passed from either server plugins or interceptors. Please refer
+to the docs on [interceptors](./interceptors.md#context-values) for learn more.
+
 ## Errors
 
 Instead of returning a response, your method can also raise an error:
