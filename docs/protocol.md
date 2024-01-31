@@ -508,18 +508,18 @@ gRPC. Only the codes below are valid &mdash; there are no user-defined codes.
 
 | Code | HTTP Status | Description |
 | ---- | ----------- | ----------- |
-| `canceled` | 408 Request Timeout | RPC canceled, usually by the caller. |
+| `canceled` | 499 Client Closed Request | RPC canceled, usually by the caller. |
 | `unknown` | 500 Internal Server Error | Catch-all for errors of unclear origin and errors without a more appropriate code. |
 | `invalid_argument` | 400 Bad Request | Request is invalid, regardless of system state. |
-| `deadline_exceeded` | 408 Request Timeout | Deadline expired before RPC could complete or before the client received the response. |
+| `deadline_exceeded` | 504 Gateway Timeout | Deadline expired before RPC could complete or before the client received the response. |
 | `not_found` | 404 Not Found | User requested a resource (for example, a file or directory) that can't be found. |
 | `already_exists` | 409 Conflict | Caller attempted to create a resource that already exists. |
 | `permission_denied` | 403 Forbidden | Caller isn't authorized to perform the operation. |
 | `resource_exhausted` | 429 Too Many Requests | Operation can't be completed because some resource is exhausted. Use unavailable if the server is temporarily overloaded and the caller should retry later. |
-| `failed_precondition` | 412 Precondition Failed | Operation can't be completed because the system isn't in the required state. |
+| `failed_precondition` | 400 Bad Request | Operation can't be completed because the system isn't in the required state. |
 | `aborted` | 409 Conflict | The operation was aborted, often because of concurrency issues like a database transaction abort. |
 | `out_of_range` | 400 Bad Request | The operation was attempted past the valid range. |
-| `unimplemented` | 404 Not Found | The operation isn't implemented, supported, or enabled. |
+| `unimplemented` | 501 Not Implemented | The operation isn't implemented, supported, or enabled. |
 | `internal` | 500 Internal Server Error | An invariant expected by the underlying system has been broken. Reserved for serious errors. |
 | `unavailable` | 503 Service Unavailable | The service is currently unavailable, usually transiently. Clients should back off and retry idempotent operations. |
 | `data_loss` | 500 Internal Server Error | Unrecoverable data loss or corruption. |
