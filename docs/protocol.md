@@ -561,17 +561,11 @@ unknown or internal), Connect maps to the semantically-equivalent error code.
 
 | HTTP Status | Inferred Code |
 | ----------- | ------------- |
-| 400 Bad Request | `invalid_argument` |
+| 400 Bad Request | `internal` |
 | 401 Unauthorized | `unauthenticated` |
 | 403 Forbidden | `permission_denied` |
 | 404 Not Found | `unimplemented` |
-| 408 Request Timeout | `deadline_exceeded` |
-| 409 Conflict | `aborted` |
-| 412 Precondition Failed | `failed_precondition` |
-| 413 Payload Too Large | `resource_exhausted` |
-| 415 Unsupported Media Type | `internal` |
 | 429 Too Many Requests | `unavailable` |
-| 431 Request Header Fields Too Large | `resource_exhausted` |
 | 502 Bad Gateway | `unavailable` |
 | 503 Service Unavailable | `unavailable` |
 | 504 Gateway Timeout | `unavailable` |
