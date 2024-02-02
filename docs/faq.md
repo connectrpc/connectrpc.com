@@ -1,5 +1,5 @@
 ---
-title: FAQ
+title: FAQs
 sidebar_position: 1000
 ---
 
@@ -142,6 +142,13 @@ It's technically possible, but please be aware that the WASM in Go is quite new,
 and the architecture has some fundamental limitations that may be surprising.
 We encourage you to give it a try and report any issues you find to Go or
 connect-go to help bring WASM in Go forward.
+
+### Why am I seeing a "stream error: stream ID 5; INTERNAL_ERROR; received from peer" error message after X seconds?
+
+The Go HTTP server has a read or write timeout configured. This timeout applies
+to the entire operation duration, even for streaming calls. So if an operation
+takes longer than that, the server closes the stream and clients can see the
+above error message.
 
 ## TypeScript and JavaScript
 
