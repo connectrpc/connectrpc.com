@@ -150,6 +150,21 @@ to the entire operation duration, even for streaming calls. So if an operation
 takes longer than that, the server closes the stream and clients can see the
 above error message.
 
+### How do I close a client response stream in connect-go?
+
+On reading the response, a client calling `CloseResponse` will attempt to
+gracefully close the connection. `Close` does this by reading all of the
+remaining messages sent from the server until the final status message is
+received. If the status is in error, `Close` will return the wire error.
+Alternatively, if you wish to cancel the operation and immediately stop
+the client stream, see [below](#cancel-stream) to cancel the connection.
+
+### How do I cancel a client response stream in Connect-go?
+
+To cancel and abort a stream, call the cancel function of the underlying
+context associated with the connection. This context is provided on stream
+creation. On cancel, the stream is aborted and any resources along with it.
+
 ## TypeScript and JavaScript
 
 ### Why do I need a proxy to call gRPC backends?
