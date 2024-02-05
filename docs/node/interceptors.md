@@ -76,7 +76,46 @@ async function* logEach(stream: AsyncIterable<AnyMessage>) {
 
 ## Context Values
 
-Context values are a type safe way to pass arbitary values from server plugins or one interceptor to the next all the way to the handler.
+Context values are a type safe way to pass arbitary values from server plugins or one interceptor to the next all the way to the handler. You can use `createContextValues` function to create a new `ContextValues`. Each request will have its own `ContextValues` instance. The `ContextValues` instance is passed to the handler via the interceptors and can be used to retrieve the values. Server plugins can also provide a `ContextValues` instance for each request by using the `contextValues` option of [server plugins](./server-plugins.md).
+
+`ContextValues` has methods to set, get, and delete values. The keys are `ContextKey` objects:
+
+### Context Keys
+
+`ContextKey` is a type safe and collision free way to use context values. It is defined using `createContextKey` function which takes a default value and returns a `ContextKey` object. The default value is used when the context value is not set.
+
+```ts
+import { createContextKey } from "@connectrpc/connect";
+
+type User = { name: string };
+
+const kUser = createContextKey<User>(
+  { name: "Anonymous" }, // Default value
+  {
+    description: "Current user", // Description useful for debugging
+  },
+);
+
+export { kUser };
+```
+
+For values where a default doesn't make sense you can just modify the type:
+
+```ts
+import { createContextKey } from "@connectrpc/connect";
+
+type User = { name: string };
+
+const kUser = createContextKey<User | undefined>(undefined, {
+  description: "Authenticated user",
+});
+
+export { kUser };
+```
+
+It is best to define context keys in a separate file and export them. This is better for code splitting and also avoids circular imports. This also helps in the case where the provider changes based on the environment. For example, in a test environment we could setup an interceptor that adds a mock user and in production we will have the actual user.
+
+### Example
 
 One of the common use cases of interceptors is to a handle logic that is common to many requests like authentication. We can add authentication logic like so:
 
@@ -173,37 +212,27 @@ export default (router: ConnectRouter) =>
   });
 ```
 
-### Context Keys
-
-`ContextKey` is a type safe and collision free way to use context values. It is defined using `createContextKey` function which takes a default value and returns a `ContextKey` object. The default value is used when the context value is not set.
+You can also pass the context value from the server plugin:
 
 ```ts
-import { createContextKey } from "@connectrpc/connect";
+import { fastify } from "fastify";
+import routes from "./connect";
+import { kUser } from "user-context.js";
+import { authenticate } from "authenticate.js";
+import { fastifyConnectPlugin } from "@connectrpc/connect-fastify";
 
-type User = { name: string };
+const server = fastify();
 
-const kUser = createContextKey<User>(
-  { name: "Anonymous" }, // Default value
-  {
-    description: "Current user", // Description useful for debugging
-  },
-);
-
-export { kUser };
-```
-
-For values where a default doesn't make sense you can just modify the type:
-
-```ts
-import { createContextKey } from "@connectrpc/connect";
-
-type User = { name: string };
-
-const kUser = createContextKey<User | undefined>(undefined, {
-  description: "Authenticated user",
+await server.register(fastifyConnectPlugin, {
+  routes,
+  contextValues: (req) =>
+    createContextValues().set(kUser, authenticate(req)),
 });
 
-export { kUser };
+await server.listen({
+  host: "localhost",
+  port: 8080,
+});
 ```
 
-It is best to define context keys in a separate file and export them. This is better for code splitting and also avoids circular imports. This also helps in the case where the provider changes based on the environment. For example, in a test environment we could setup an interceptor that adds a mock user and in production we will have the actual user.
+The request passed to the `contextValues` function is different for each server plugin, please refer to the documentation for the server plugin you are using.
