@@ -10,12 +10,13 @@ logs, or do nearly anything else.
 
 For client side interceptors, please refer to the documentation for [Web](../web/interceptors).
 
-For a simple example, this interceptor logs all requests:
+For a simple example, this interceptor logs every RPC:
 
 ```ts
 import * as http from "http";
 import routes from "./connect";
 import { connectNodeAdapter } from "@connectrpc/connect-node";
+import type { Interceptor } from "@connectrpc/connect";
 
 const logger: Interceptor = (next) => async (req) => {
   console.log(`recevied message on ${req.url}`);
@@ -32,7 +33,7 @@ http
   .listen(8080);
 ```
 
-You can think of interceptors like a layered onion. A request received by a server goes through the outermost layer first. Each call to next() traverses to the next layer. In the center, the request is handled by user provided implementation. The response then comes back through all layers and is returned to the client. In the array of interceptors passed adapter/router, the interceptor at the end of the array is applied first.
+You can think of interceptors like a layered onion. A request received by a server goes through the outermost layer first. Each call to `next()` traverses to the next layer. In the center, the request is handled by user provided implementation. The response then comes back through all layers and is returned to the client. In the array of interceptors passed adapter/router, the interceptor at the end of the array is applied first.
 
 To intercept responses, we simply look at the return value of `next()`:
 
@@ -73,14 +74,15 @@ async function* logEach(stream: AsyncIterable<AnyMessage>) {
 }
 ```
 
-# Context Values
+## Context Values
 
-Context values are a type safe way to pass arbitary values from one interceptor to the next all the way to the handler.
+Context values are a type safe way to pass arbitary values from server plugins or one interceptor to the next all the way to the handler.
 
 One of the common use cases of interceptors is to a handle logic that is common to many requests like authentication. We can add authentication logic like so:
 
 ```ts
-import { authenticate } from "./authenticate.js"; // This can come from an auth library like passport.js
+// This can come from an auth library like passport.js
+import { authenticate } from "./authenticate.js";
 
 const authenticator: Interceptor = (next) => async (req) => {
   // `authenticate` takes the authorization header value
@@ -93,7 +95,7 @@ const authenticator: Interceptor = (next) => async (req) => {
 };
 ```
 
-But what if we need the user info in one of our rpc implementations? One way is to parse the header again:
+But what if we need the user info in one of our RPC implementations? One way is to parse the header again:
 
 ```ts
 import { ConnectRouter } from "@connectrpc/connect";
@@ -113,12 +115,29 @@ export default (router: ConnectRouter) =>
   });
 ```
 
-But this means authentication happens twice, once in the Interceptor and second in our handler. This is where context values become useful, we
-can modify the interceptor to pass the user information:
+But this means authentication happens twice, once in the Interceptor and second in our handler. This is where context values come in. We can add the user as a context value which can then be retrieved in the handler. To do so we need to define a context key:
+
+```ts title=user-context.js
+import { createContextKey } from "@connectrpc/connect";
+
+type User = { name: string };
+
+const kUser = createContextKey<User>(
+  { name: "Anonymous" }, // Default value
+);
+
+export { kUser };
+```
+
+`ContextKey` is a type safe way to use context values. It also avoids collisions that are otherwise unavoidable with plain string keys. For more on context keys refer to the [Context Keys](#context-keys) section.
+
+We can modify the interceptor to pass the user information using the context key:
 
 ```ts
-import { authenticate } from "./authenticate.js"; // This can come from an auth library like passport.js
+import { authenticate } from "./authenticate.js";
 import { kUser } from "user-context.js";
+import type { Interceptor } from "@connectrpc/connect";
+import { ConnectError, Code } from "@connectrpc/connect";
 
 const authenticator: Interceptor = (next) => async (req) => {
   // `authenticate` takes the authorization header value
@@ -154,18 +173,37 @@ export default (router: ConnectRouter) =>
   });
 ```
 
-Here `kUser` is the key used to map the context values:
+### Context Keys
+
+`ContextKey` is a type safe and collision free way to use context values. It is defined using `createContextKey` function which takes a default value and returns a `ContextKey` object. The default value is used when the context value is not set.
 
 ```ts
 import { createContextKey } from "@connectrpc/connect";
-import type { User } from "./authenticate.js";
+
+type User = { name: string };
 
 const kUser = createContextKey<User>(
   { name: "Anonymous" }, // Default value
   {
-    description: "The current user", // Optional description, useful for debugging
+    description: "Current user", // Description useful for debugging
   },
 );
 
 export { kUser };
 ```
+
+For values where a default doesn't make sense you can just modify the type:
+
+```ts
+import { createContextKey } from "@connectrpc/connect";
+
+type User = { name: string };
+
+const kUser = createContextKey<User | undefined>(undefined, {
+  description: "Authenticated user",
+});
+
+export { kUser };
+```
+
+It is best to define context keys in a separate file and export them. This is better for code splitting and also avoids circular imports. This also helps in the case where the provider changes based on the environment. For example, in a test environment we could setup an interceptor that adds a mock user and in production we will have the actual user.
