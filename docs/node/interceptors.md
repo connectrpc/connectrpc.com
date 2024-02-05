@@ -89,14 +89,12 @@ import { createContextKey } from "@connectrpc/connect";
 
 type User = { name: string };
 
-const kUser = createContextKey<User>(
+export const kUser = createContextKey<User>(
   { name: "Anonymous" }, // Default value
   {
     description: "Current user", // Description useful for debugging
   },
 );
-
-export { kUser };
 ```
 
 For values where a default doesn't make sense you can just modify the type:
@@ -106,11 +104,9 @@ import { createContextKey } from "@connectrpc/connect";
 
 type User = { name: string };
 
-const kUser = createContextKey<User | undefined>(undefined, {
+export const kUser = createContextKey<User | undefined>(undefined, {
   description: "Authenticated user",
 });
-
-export { kUser };
 ```
 
 It is best to define context keys in a separate file and export them. This is better for code splitting and also avoids circular imports. This also helps in the case where the provider changes based on the environment. For example, in a test environment we could setup an interceptor that adds a mock user and in production we will have the actual user.
