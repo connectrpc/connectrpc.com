@@ -165,8 +165,8 @@ the client stream, see [below](#cancel-stream) to cancel the connection.
 ### How do I cancel a client response stream in Connect-go?
 
 To cancel and abort a stream, call the cancel function of the underlying
-context associated with the connection. This context is provided on stream
-creation. On cancel, the stream is aborted and any resources along with it.
+context associated with the stream. This context is provided on stream
+creation. On cancel, the stream is aborted and any resources are released along with it.
 
 ## TypeScript and JavaScript
 
