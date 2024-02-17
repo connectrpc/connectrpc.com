@@ -43,12 +43,10 @@ magnified with long timeouts. You may want to keep timeouts short and avoid
 streaming RPCs if your API is exposed to untrusted clients. For more detail,
 see [this Go issue][go-deadlines].
 
-The Go HTTP server timeout applies to the entire operation duration, even
-for streaming calls. So if an operation takes longer than that, the server
-closes the stream and clients can see the error message, which will look
-something like:
-
-`stream error: stream ID 5; INTERNAL_ERROR; received from peer`
+Also, if your [http.Server](https://pkg.go.dev/net/http#Server) has the
+`ReadTimeout` or `WriteTimeout` field configured, it applies to the entire
+operation duration, even for streaming calls. See the [FAQ](../faq.md#stream-error)
+for more information.
 
 ## Observability
 
