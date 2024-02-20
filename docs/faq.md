@@ -1,5 +1,5 @@
 ---
-title: FAQ
+title: FAQs
 sidebar_position: 1000
 ---
 
@@ -142,6 +142,32 @@ It's technically possible, but please be aware that the WASM in Go is quite new,
 and the architecture has some fundamental limitations that may be surprising.
 We encourage you to give it a try and report any issues you find to Go or
 connect-go to help bring WASM in Go forward.
+
+### Why am I seeing a "stream error: stream ID 5; INTERNAL_ERROR; received from peer" error message after X seconds? {#stream-error}
+
+It means that your [http.Server](https://pkg.go.dev/net/http#Server) has a
+`ReadTimeout` or `WriteTimeout` field configured. These fields apply
+to the entire operation duration, even for streaming calls. If an operation
+takes longer than the value specified, the server closes the stream and
+clients can see the above error message. The other timeout fields won't cause
+this error, and we
+encourage you to set `ReadHeaderTimeout` in particular.
+
+### How do I close a client response stream in connect-go?
+
+On reading the response, a client can call `CloseResponse` on bidirectional
+streams or `Close` on server streams to gracefully close the connection.
+This will discard any remaining messages sent from the server until the
+final status message is received. If the status is an error, the close function
+will return the wire error.
+Alternatively, if you wish to cancel the operation and immediately stop
+the client stream, see [below](#cancel-stream) to cancel the operation.
+
+### How do I cancel a client response stream in Connect-go?
+
+To cancel and abort a stream, call the cancel function of the underlying
+context associated with the stream. This context is provided on stream
+creation. On cancel, the stream is aborted and any resources are released along with it.
 
 ## TypeScript and JavaScript
 

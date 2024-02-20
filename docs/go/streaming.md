@@ -28,6 +28,11 @@ networking infrastructure and makes your application inaccessible to
 less-sophisticated clients. You can minimize these downsides by keeping
 streams short-lived.
 
+Also, if your [http.Server](https://pkg.go.dev/net/http#Server) has the
+`ReadTimeout` or `WriteTimeout` field configured, it applies to the entire
+operation duration, even for streaming calls. See the [FAQ](../faq.md#stream-error)
+for more information.
+
 All that said, `connect-go` fully supports all three types of streaming. All
 streaming subtypes work with the gRPC, gRPC-Web, and Connect protocols.
 
