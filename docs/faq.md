@@ -151,16 +151,17 @@ to the entire operation duration, even for streaming calls. If an operation
 takes longer than the value specified, the server closes the stream and
 clients can see the above error message. The other timeout fields won't cause
 this error, and we
-ncourage you to set `ReadHeaderTimeout` in particular.
+encourage you to set `ReadHeaderTimeout` in particular.
 
 ### How do I close a client response stream in connect-go?
 
-On reading the response, a client calling `CloseResponse` will attempt to
-gracefully close the connection. `Close` does this by reading all of the
-remaining messages sent from the server until the final status message is
-received. If the status is in error, `Close` will return the wire error.
+On reading the response, a client can call `CloseResponse` on bidirectional
+streams or `Close` on server streams to gracefully close the connection.
+This will discard any remaining messages sent from the server until the
+final status message is received. If the status is an error, the close function
+will return the wire error.
 Alternatively, if you wish to cancel the operation and immediately stop
-the client stream, see [below](#cancel-stream) to cancel the connection.
+the client stream, see [below](#cancel-stream) to cancel the operation.
 
 ### How do I cancel a client response stream in Connect-go?
 
