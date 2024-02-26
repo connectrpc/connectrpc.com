@@ -38,7 +38,7 @@ To propose a change that affects multiple Connect projects (for example, a
 significant change to the protocol), open a pull request that adds a proposal
 to `docs/governance/rfc`. Use a kebab-case filename with a three-digit prefix,
 like `047-websocket-streaming.md`. Choose the next available number, and use
-the [RFC template](RFC_TEMPLATE.md) to structure your proposal.
+the [RFC template](/RFC_TEMPLATE.md) to structure your proposal.
 
 When writing your RFC, be brief but complete. Get right to the point! Assume
 that readers are familiar with Connect, HTTP, gRPC, and (if applicable)
