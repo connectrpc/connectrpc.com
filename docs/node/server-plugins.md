@@ -35,6 +35,10 @@ ones:
   Serve all handlers under this prefix. For example, the prefix "/something"
   will serve the RPC foo.FooService/Bar under "/something/foo.FooService/Bar".
   Note that many gRPC client implementations do not allow for prefixes.
+- `contextValues?: (req: NodeServerRequest) => ContextValues`<br/>
+  A function that returns a set of context values for each request. The
+  context values are passed to the service implementation. See
+  [Context values](./interceptors.md#context-values) for more information.
 
 
 ## Fastify
@@ -65,7 +69,13 @@ await server.listen({
 });
 ```
 
-The plugin accepts all common options. Note that `@connectrpc/connect` and `@connectrpc/connect-node` are peer 
+The plugin accepts all common options, and the following additional ones:
+- `contextValues?: (req: FastifyRequest) => ContextValues`<br/>
+  A function that returns a set of context values for each request. The
+  context values are passed to the service implementation. See
+  [Context values](./interceptors.md#context-values) for more information.
+
+Note that `@connectrpc/connect` and `@connectrpc/connect-node` are peer 
 dependencies of  `@connectrpc/connect-fastify`.
 
 ## Next.js
@@ -91,6 +101,14 @@ export {handler as default, config};
 This file is a Next.js [catch-all API route](https://nextjs.org/docs/routing/dynamic-routes#catch-all-routes). It will
 serve your Connect RPCs with the `/api` prefix. Make sure to include the `/api` prefix in the `baseUrl` option for
 your client transport.
+
+The middleware accepts all common options, and the following additional
+one:
+
+- `contextValues?: (req: NextApiRequest) => ContextValues`<br/>
+  A function that returns a set of context values for each request. The
+  context values are passed to the service implementation. See
+  [Context values](./interceptors.md#context-values) for more information.
 
 Note that Next.js does not support the http2 module.
 
@@ -126,6 +144,10 @@ one:
 Serve all handlers under this prefix. For example, the prefix "/something"
 will serve the RPC foo.FooService/Bar under "/something/foo.FooService/Bar".
 Note that many gRPC client implementations do not allow for prefixes.
+- `contextValues?: (req: express.Request) => ContextValues`<br/>
+  A function that returns a set of context values for each request. The
+  context values are passed to the service implementation. See
+  [Context values](./interceptors.md#context-values) for more information.
 
 
 Note that Express does not support the `http2` module.
@@ -144,6 +166,8 @@ All adapters take a set of common options:
   Whether to enable the gRPC protocol for your routes. Enabled by default.
 - `grpc?: boolean`<br/>
   Whether to enable the gRPC protocol for your routes. Enabled by default.
+- `interceptors?: Interceptor[]`<br/>
+  An array of interceptors to apply to all requests. See [Interceptors](./interceptors.md) for more information.
 
 
 ## HTTP/2, TLS, and gRPC
