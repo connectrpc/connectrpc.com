@@ -1,6 +1,6 @@
 ---
 title: Using clients
-sidebar_position: 4
+sidebar_position: 5
 ---
 
 On Node.js, you use the same clients as you do with Connect for Web, but with
