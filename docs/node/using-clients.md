@@ -36,8 +36,8 @@ headers and trailers), please refer to the documentation for [Web](../web/using-
 
 Under the hood, the transports from [@connectrpc/connect-node](https://www.npmjs.com/package/@connectrpc/connect-node)
 use the built-in Node modules `http`, `https`, and `http2` instead of the fetch
-API. The allows us to provide a transport for gRPC and bidi streaming. Node.js
-v18 comes with fetch(), but it is limited to HTTP 1.1.
+API. They allow us to provide a transport for gRPC and to support bidi streaming. 
+Node.js v18 comes with `fetch()`, but it is limited to HTTP 1.1.
 
 
 ## Connect
