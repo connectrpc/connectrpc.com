@@ -27,7 +27,7 @@
     "@docusaurus/plugin-google-gtag": "^2.4.3",
     "@docusaurus/preset-classic": "^2.4.3",
     "@docusaurus/theme-search-algolia": "^2.4.3",
-    "@react-hookz/web": "^24.0.2",
+    "@react-hookz/web": "^24.0.4",
     "clsx": "^2.1.0",
     "crt-terminal": "^1.0.13",
     "prism-react-renderer": "^2.3.1",
