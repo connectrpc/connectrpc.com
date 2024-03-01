@@ -127,7 +127,7 @@ implementation:
 Create a new file `connect.ts` with the following contents:
 
 ```ts
-import { ConnectRouter } from "@connectrpc/connect";
+import type { ConnectRouter } from "@connectrpc/connect";
 import { ElizaService } from "./gen/eliza_connect";
 
 export default (router: ConnectRouter) =>
