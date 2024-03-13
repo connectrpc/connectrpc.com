@@ -331,7 +331,7 @@ Errors are sent with a non-200 **HTTP-Status**. In those cases,
 omitted or a JSON-serialized [Error](#error-end-stream), possibly compressed
 using **Content-Encoding** and sent on the wire as the HTTP response content.
 Clients must not attempt to decompress zero-length HTTP response content. If 
-**Bare-Message** is an Error, **HTTP-Status** must match Error.code as specified 
+**Bare-Message** is an Error, **HTTP-Status** should match Error.code as specified
 in [the table below](#error-codes). When reading data from the wire, client 
 implementations must use the [HTTP-to-Connect mapping](#http-to-error-code) to infer a Connect 
 error code if **Bare-Message** is missing or malformed.
