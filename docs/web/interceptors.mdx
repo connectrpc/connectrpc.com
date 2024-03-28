@@ -152,3 +152,40 @@ import { elizaClient } from "./eliza-client.js";
 
 const res = elizaClient.say({ sentence: "Hey!" }, { contextValues: createContextValues().set(kLogBody, true) });
 ```
+
+## Customizing Fetch
+
+Another valuable use case for interceptors is customizing the Fetch API for individual requests. Here is an example
+building off of the above [Context](#context-values) documentation which uses context values to set the
+Fetch API `keepalive` option from an individual call site.
+
+```ts title=keep-alive-context.js
+export const kKeepalive = createContextKey(false, {
+  description: "sets keepalive on the request",
+});
+```
+
+```ts title=transport.js
+import {kKeepalive} from "./keep-alive-context.js";
+
+const keepAlive: Interceptor = (next) => async (request) => {
+  return await next({
+    ...request,
+    init: {
+      ...request.init,
+      keepalive: request.contextValues.get(kKeepalive),
+    },
+  });
+};
+
+const client = createPromiseClient(ElizaService, createConnectTransport({
+  baseUrl: "https://demo.connectrpc.com",
+  interceptors: [keepAlive],
+}));
+
+// Usage
+client.Say(
+  { sentence: "hello" }, 
+  { contextValues: createContextValues().set(kKeepalive, true) }
+); 
+```
