@@ -153,39 +153,29 @@ import { elizaClient } from "./eliza-client.js";
 const res = elizaClient.say({ sentence: "Hey!" }, { contextValues: createContextValues().set(kLogBody, true) });
 ```
 
-## Customizing Fetch
+## Setting `fetch()` options
 
-Another valuable use case for interceptors is customizing the Fetch API for individual requests. Here is an example
-building off of the above [Context](#context-values) documentation which uses context values to set the
-Fetch API `keepalive` option from an individual call site.
+Another valuable use case for interceptors is customizing the Fetch API for individual requests by leveraging
+the `request.init` object.
 
-```ts title=keep-alive-context.js
-export const kKeepalive = createContextKey(false, {
-  description: "sets keepalive on the request",
-});
-```
+For example, by default, Connect sets the Fetch option `redirect` to `error`, which means that a network error will
+be returned when a request is met with a redirect. However, if you wish to change this value to `follow` for example,
+you can do so using an interceptor.
 
-```ts title=transport.js
-import {kKeepalive} from "./keep-alive-context.js";
-
-const keepAlive: Interceptor = (next) => async (request) => {
+```ts
+const redirectInterceptor: Interceptor = (next) => async (request) => {
   return await next({
     ...request,
     init: {
       ...request.init,
-      keepalive: request.contextValues.get(kKeepalive),
+      // Follow all redirects
+      redirect: "follow",
     },
   });
 };
 
 const client = createPromiseClient(ElizaService, createConnectTransport({
   baseUrl: "https://demo.connectrpc.com",
-  interceptors: [keepAlive],
+  interceptors: [redirectInterceptor],
 }));
-
-// Usage
-client.Say(
-  { sentence: "hello" }, 
-  { contextValues: createContextValues().set(kKeepalive, true) }
-); 
 ```
