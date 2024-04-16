@@ -77,7 +77,7 @@ that help working with timeouts:
   will be aborted as well. This gives implementations a chance to wrap up
   work before the server process is killed and shut down servers gracefully.
 
-An example of setting these values when using the [Fastify plugin](http://localhost:3001/docs/node/server-plugins#fastify):
+An example of setting these values when using the [Fastify plugin](https://connectrpc.com/docs/node/server-plugins#fastify):
 
 ```ts
 import { fastifyConnectPlugin } from "@connectrpc/connect-fastify";
