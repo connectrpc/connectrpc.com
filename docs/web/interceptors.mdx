@@ -152,3 +152,31 @@ import { elizaClient } from "./eliza-client.js";
 
 const res = elizaClient.say({ sentence: "Hey!" }, { contextValues: createContextValues().set(kLogBody, true) });
 ```
+
+## Setting `fetch()` options
+
+Another valuable use case for interceptors is customizing the Fetch API for individual requests by leveraging
+the `request.init` object.
+
+For example, by default, Connect sets the Fetch option [redirect](https://developer.mozilla.org/en-US/docs/Web/API/fetch#redirect) 
+to `error`, which means that a network error will be returned when a request is 
+met with a redirect. However, if you wish to change this value to `follow` for 
+example, you can do so using an interceptor.
+
+```ts
+const followRedirects: Interceptor = (next) => async (request) => {
+  return await next({
+    ...request,
+    init: {
+      ...request.init,
+      // Follow all redirects
+      redirect: "follow",
+    },
+  });
+};
+
+const client = createPromiseClient(ElizaService, createConnectTransport({
+  baseUrl: "https://demo.connectrpc.com",
+  interceptors: [followRedirects],
+}));
+```
