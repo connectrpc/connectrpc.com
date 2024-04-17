@@ -37,6 +37,9 @@ const transport = createConnectTransport({
   // By default, all requests use POST. Set this option to true to use GET
   // for side-effect free RPCs.
   useHttpGet: false,
+
+  // Optional override of the fetch implementation used by the transport.
+  fetch: globalThis.fetch;
 });
 ```
 
@@ -48,6 +51,15 @@ Connect supports optionally using HTTP GET requests for side-effect free RPC
 calls, to enable easy use of request caching and more. For more information on
 HTTP GET requests, see [Get Requests](./get-requests-and-caching.md).
 
+When creating your transport, you have the option of providing your own custom
+Fetch function. This can be useful for many different scenarios, such as a overriding
+or setting Fetch properties as well as working with frameworks such as Svelte that 
+come bundled with their own Fetch implementation. 
+
+It is also possible to configure individual Fetch properties when issuing requests. For 
+some examples of customizing Fetch within Connect, take a look at our 
+[Interceptors](./interceptors.mdx#setting-fetch-options) docs. In addition, to see how to work with Fetch in an SSR context
+with frameworks such as Svelte and Nextjs, visit our documentation on [SSR](./ssr.mdx).
 
 ## gRPC-web
 
@@ -75,5 +87,8 @@ const transport = createGrpcWebTransport({
 
   // Interceptors apply to all calls running through this transport.
   interceptors: [],
+
+  // Optional override of the fetch implementation used by the transport.
+  fetch: globalThis.fetch;
 });
 ```
