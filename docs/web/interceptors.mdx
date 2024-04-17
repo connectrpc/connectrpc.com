@@ -163,7 +163,7 @@ be returned when a request is met with a redirect. However, if you wish to chang
 you can do so using an interceptor.
 
 ```ts
-const redirectInterceptor: Interceptor = (next) => async (request) => {
+const followRedirects: Interceptor = (next) => async (request) => {
   return await next({
     ...request,
     init: {
