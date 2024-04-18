@@ -1,4 +1,4 @@
-# 001-Python Implementation
+# 004: Python Implementation
 
 I would like to propose adding an official Python ConnectRPC implementation. I propose a full server and client implementation that supports both threaded I/O and asyncio, targeting modern Python (TBD what versions, but as of today Python 3.12 is current).
 
