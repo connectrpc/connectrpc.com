@@ -188,7 +188,7 @@ will return the wire error.
 Alternatively, if you wish to cancel the operation and immediately stop
 the client stream, see [below](#cancel-stream) to cancel the operation.
 
-### How do I cancel a client response stream in Connect-go?
+### How do I cancel a client response stream in connect-go?
 
 To cancel and abort a stream, call the cancel function of the underlying
 context associated with the stream. This context is provided on stream
@@ -283,7 +283,7 @@ docs that show how to configure CORS for their respective HTTP libraries.
 
 ### How does vanguard-go integrate with Connect interceptors?
 
-A [connect-go] handler wrapped with [Vanguard](https://github.com/connectrpc/vanguard-go)
+A `connect-go` handler wrapped with [Vanguard](https://github.com/connectrpc/vanguard-go)
 can use connect-go interceptors like
 any other connect-go handler, whether the incoming request is REST or one of the
 supported protocols. connect-go interceptors cannot be applied to gRPC handlers or
