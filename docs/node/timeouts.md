@@ -65,4 +65,4 @@ const say = async (req: SayRequest, ctx: HandlerContext) => {
 
 In addition, to server-side support for timeouts, there are two related options on `ConnectRouter`
 that help working with timeouts: `maxTimeoutMs` and `shutdownSignal`. For an explanation of these options,
-see the docs on [Server Plugins](https://connectrpc.com/docs/node/server-plugins#common-options)
+see the docs on [Server Plugins](server-plugins#common-options)

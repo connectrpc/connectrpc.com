@@ -176,7 +176,7 @@ All adapters take a set of common options:
   If a client requests a timeout that is greater than `maxTimeoutMs`,
   the server responds with the error code `invalid_argument`.
 - `shutdownSignal?: AbortSignal`<br/>
-  To shut down servers gracefully, this option takes an AbortSignal.
+  To shut down servers gracefully, this option takes an [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal).
   If this signal is aborted, all signals in handler contexts will be aborted
   as well. This gives implementations a chance to wrap up work before the
   server process is killed.
