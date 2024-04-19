@@ -63,31 +63,6 @@ const say = async (req: SayRequest, ctx: HandlerContext) => {
 };
 ```
 
-## `ConnectRouter` options
-
 In addition, to server-side support for timeouts, there are two related options on `ConnectRouter`
-that help working with timeouts:
-
-- `maxTimeoutMs?: number`<br/>
-  The maximum value for timeouts that clients may specify.
-  If a client requests a timeout that is greater than `maxTimeoutMs`,
-  the server responds with the error code `invalid_argument`.
-- `shutdownSignal?: AbortSignal`<br/>
-  If this signal is aborted, all deadline-related `AbortSignals` in handler contexts
-  will be aborted as well. This gives implementations a chance to wrap up
-  work before the server process is killed and shut down servers gracefully.
-
-An example of setting these values when using the [Fastify plugin](https://connectrpc.com/docs/node/server-plugins#fastify):
-
-```ts
-import { fastifyConnectPlugin } from "@connectrpc/connect-fastify";
-import routes from "./connect.js";
-
-const controller = new AbortController();
-
-await server.register(fastifyConnectPlugin, { 
-    routes, 
-    maxTimeoutMs: 10*1000,
-    shutdownSignal: controller.signal
-});
-```
+that help working with timeouts: `maxTimeoutMs` and `shutdownSignal`. For an explanation of these options,
+see the docs on [Server Plugins](https://connectrpc.com/docs/node/server-plugins#common-options)

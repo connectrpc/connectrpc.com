@@ -171,6 +171,14 @@ All adapters take a set of common options:
 - `routes: (router: ConnectRouter) => void`<br/>
   The adapter will call this function, and lets you register your services.<br/>
   See [Implementing services](./implementing-services.md) for an example.
+- `maxTimeoutMs?: number`<br/>
+  The maximum value for timeouts that clients may specify.
+  If a client requests a timeout that is greater than `maxTimeoutMs`,
+  the server responds with the error code `invalid_argument`.
+- `shutdownSignal?: AbortSignal`<br/>
+  If this signal is aborted, all deadline-related `AbortSignals` in handler contexts
+  will be aborted as well. This gives implementations a chance to wrap up
+  work before the server process is killed and shut down servers gracefully.
 - `connect?: boolean`<br/>
   Whether to enable the Connect protocol for your routes. Enabled by default.
 - `grpcWeb?: boolean`<br/>
