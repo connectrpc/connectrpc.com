@@ -46,7 +46,8 @@ returns the remaining time.
 
 Using the `timeoutMs()` function is preferable when invoking upstream RPC calls 
 because it is more efficient and robust - you have a guarantee that the peer is 
-aware of the deadline, regardless of network issues.
+aware of the deadline, regardless of network issues. In gRPC, the concept is also
+known as [deadline propagation](https://grpc.io/docs/guides/deadlines/#deadline-propagation).
 
 ```ts
 import type { HandlerContext } from "@bufbuild/connect";
@@ -63,6 +64,21 @@ const say = async (req: SayRequest, ctx: HandlerContext) => {
 };
 ```
 
-In addition, to server-side support for timeouts, there are two related options on `ConnectRouter`
-that help working with timeouts: `maxTimeoutMs` and `shutdownSignal`. For an explanation of these options,
+In addition, to server-side support for timeouts, there is also a related option on `ConnectRouter`
+that helps constraining timeout values: `maxTimeoutMs`. For an explanation of this option,
 see the docs on [Server Plugins](server-plugins#common-options)
+
+Also note that while this page discusses timeouts in the context of a server, Connect-ES clients also
+honor timeout values and will raise a `ConnectError` with code `DeadlineExceeded`. Even if a connection 
+becomes unresponsive, the client call will still abort at the configured timeout.
+
+```ts
+try {
+  // If this call takes more than 200 milliseconds, it is canceled
+  await client.say({sentence: "Hello"}, { timeoutMs: 200 });
+} catch (err) {
+  if (err instanceof ConnectError && err.code === Code.DeadlineExceeded) {
+    // handle the timeout error
+  }
+}
+```

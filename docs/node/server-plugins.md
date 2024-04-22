@@ -175,12 +175,6 @@ All adapters take a set of common options:
   The maximum value for timeouts that clients may specify.
   If a client requests a timeout that is greater than `maxTimeoutMs`,
   the server responds with the error code `invalid_argument`.
-- `shutdownSignal?: AbortSignal`<br/>
-  To shut down servers gracefully, this option takes an [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal).
-  If this signal is aborted, all signals in handler contexts will be aborted
-  as well. This gives implementations a chance to wrap up work before the
-  server process is killed.
-  Abort this signal with a `ConnectError` to send a message and code to clients.
 - `connect?: boolean`<br/>
   Whether to enable the Connect protocol for your routes. Enabled by default.
 - `grpcWeb?: boolean`<br/>
