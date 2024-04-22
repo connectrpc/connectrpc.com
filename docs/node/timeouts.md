@@ -68,7 +68,7 @@ In addition, to server-side support for timeouts, there is also a related option
 that helps constraining timeout values: `maxTimeoutMs`. For an explanation of this option,
 see the docs on [Server Plugins](server-plugins#common-options)
 
-Also note that while this page discusses timeouts in the context of a server, Connect-ES clients also
+Also note that while this page discusses timeouts in the context of a server, Connect-ES clients
 honor timeout values and will raise a `ConnectError` with code `DeadlineExceeded`. Even if a connection 
 becomes unresponsive, the client call will still abort at the configured timeout.
 
