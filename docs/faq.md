@@ -169,6 +169,25 @@ To cancel and abort a stream, call the cancel function of the underlying
 context associated with the stream. This context is provided on stream
 creation. On cancel, the stream is aborted and any resources are released along with it.
 
+### My project is in Go using Buf and the BSR, and now we need to generate JavaScript stubs. How should this project be structured?
+
+If your project implements a service, a common approach is to keep the Protobuf files in the same repository as the
+server implementation, and automatically push the schema to the BSR. Other repositories can then take full advantage of
+generated SDKs for clients, and don't need to maintain Protobuf plugins or even the Buf CLI.
+
+For a simple example, you could take a look at the [examples-go](https://github.com/connectrpc/examples-go) repository,
+which defines the Eliza service (a simple chat bot) and implements a server. The server is deployed to
+https://demo.connectrpc.com/, and the schema in the `proto` directory is pushed to
+[buf.build/connectrpc/eliza](https://buf.build/connectrpc/eliza) on the BSR. It also includes a JavaScript client app
+hosted as a demo on the [home page](https://connectrpc.com) (you can type some text to chat with the Go server). The
+source for the demo is public as well, so you can
+[look at the client](https://github.com/connectrpc/connectrpc.com/blob/main/src/components/eliza-demo/index.tsx).
+The interesting bit is that we simply import from a generated SDK on the client side:
+
+```go
+import { ElizaService } from "@buf/connectrpc_eliza.connectrpc_es/connectrpc/eliza/v1/eliza_connect";
+```
+
 ## TypeScript and JavaScript
 
 ### Why do I need a proxy to call gRPC backends?
