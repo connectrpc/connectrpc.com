@@ -3,6 +3,18 @@ title: FAQs
 sidebar_position: 1000
 ---
 
+## General
+
+### How should I refer to Connect in a blog post or social media?
+
+**Connect** is the name of the project. If that's ambiguous in your context or seach ranking/uniqueness is
+important, please use **Connect RPC**.
+
+### How do I get the OpenAPI spec for the Connect APIs?
+
+Connect RPCs are defined using Protobuf, which serves as the specification/documentation. OpenAPI is meant for
+REST/HTTP endpoints and doesn't apply to RPC systems like Connect.
+
 ## The Connect protocol
 
 ### Where can I find Connect implementations?
@@ -75,6 +87,15 @@ In the end, we prioritized gRPC and gRPC-Web compatibility over Twirp support.
 We hope that Connect's unary protocol captures most of Twirp's magic while
 still allowing your code to interoperate with the larger gRPC ecosystem.
 
+### Is there a way to generate REST paths with Connect?
+
+The path is simply the fully qualified name of the service. There is no built-in option to modify this path, because it
+would break compatibility with gRPC and gRPC-Web.
+
+If you want more control over the path, one option would be to use
+[gRPC Transcoding](https://github.com/googleapis/googleapis/blob/738ff24cb9c00be062dc200c10426df7b13d1e65/google/api/http.proto#L44),
+which allows you to specify REST paths. You could use [vanguard-go](https://github.com/connectrpc/vanguard-go?tab=readme-ov-file#why-vanguard) or the [gRPC-Gateway](https://github.com/grpc-ecosystem/grpc-gateway#readme) to serve it.
+
 ## Serialization & compression
 
 ### Why are numbers serialized as strings in JSON?
@@ -98,6 +119,10 @@ behavior to be impractical for RPC because it means that the schema cannot
 evolve without breaking existing clients: simply adding a field to a response will break old clients. Therefore,
 Connect clients and servers will ignore unknown fields, provided that the
 underlying implementation allows us to do so.
+
+### How do I customize serialization errors returned by the Connect server?
+
+You can customize the error message by providing a different `Codec`. Code and details cannot be customized.
 
 ## Go
 
@@ -289,6 +314,11 @@ In case you _do_ need the gRPC-specific add-ons, you can use two target groups:
 Route HTTP GET requests and anything with the `application/proto`, `application/json`,
 `application/connect+proto`, or `application/connect+json` Content-Types to the
 HTTP2 target group. Route anything else to the gRPC target group.
+
+### How do I send metrics to Prometheus in connect-go?
+
+Connect has support package for OpenTelemetry: https://pkg.go.dev/connectrpc.com/otelconnect. Prometheus can be
+configured as an exporter.
 
 [cors-es]: https://connectrpc.com/docs/node/server-plugins/#cors
 [cors-go]: https://connectrpc.com/docs/go/deployment#cors
