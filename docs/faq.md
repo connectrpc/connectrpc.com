@@ -129,7 +129,7 @@ You can customize the error message by providing a different `Codec`. Code and d
 ### Why use generics?
 
 Generic code is inherently more complex than non-generic code. Still, introducing
-generics to `connect-go` eliminated two significant sources of complexity:
+generics to Connect-Go eliminated two significant sources of complexity:
 
 - Generics let us generate less code, especially for streaming RPCs &mdash; if
   you're willing to write out some long URLs, it's now just as easy to use
@@ -141,7 +141,7 @@ generics to `connect-go` eliminated two significant sources of complexity:
   This makes data flow obvious and avoids any confusion about inbound and
   outbound metadata.
 
-On balance, we find `connect-go` simpler with generics.
+On balance, we find Connect-Go simpler with generics.
 
 ### Why generate Connect-specific packages?
 
@@ -161,12 +161,12 @@ This serves a few purposes:
   when generating code locally, but it's critical to making [generated SDKs] and
   [remote plugins] work.
 
-### Can connect-go clients be used in browser applications with WASM?
+### Can Connect-Go clients be used in browser applications with WASM?
 
 It's technically possible, but please be aware that the WASM in Go is quite new,
 and the architecture has some fundamental limitations that may be surprising.
 We encourage you to give it a try and report any issues you find to Go or
-connect-go to help bring WASM in Go forward.
+Connect-Go to help bring WASM in Go forward.
 
 ### Why am I seeing a "stream error: stream ID 5; INTERNAL_ERROR; received from peer" error message after X seconds? {#stream-error}
 
@@ -178,7 +178,7 @@ clients can see the above error message. The other timeout fields won't cause
 this error, and we
 encourage you to set `ReadHeaderTimeout` in particular.
 
-### How do I close a client response stream in connect-go?
+### How do I close a client response stream in Connect-Go?
 
 On reading the response, a client can call `CloseResponse` on bidirectional
 streams or `Close` on server streams to gracefully close the connection.
@@ -186,7 +186,7 @@ This will discard any remaining messages sent from the server until the
 final status message is received. If the status is an error, the close function
 will return the wire error.
 Alternatively, if you wish to cancel the operation and immediately stop
-the client stream, see [below](#cancel-stream) to cancel the operation.
+the client stream, see below for how to cancel the operation.
 
 ### How do I cancel a client response stream in Connect-go?
 
@@ -226,7 +226,7 @@ don't support trailers, no code running in a browser can speak the gRPC protocol
 To work around this, the gRPC team introduced the gRPC-Web protocol, which
 encodes trailers at the end of the response body.
 
-Some gRPC servers (including those built with `connect-go`) support the
+Some gRPC servers (including those built with Connect-Go) support the
 gRPC-Web protocol natively, so browsers can communicate directly with your
 backend. Most of Google's gRPC implementations don't support gRPC-Web, so you
 must run a proxy like Envoy to translate to and from the standard gRPC
@@ -278,15 +278,15 @@ for a detailed explanation and an example.
 Interceptors can't be used to configure CORS. CORS is a security feature of the
 browsers and involves `OPTIONS` requests. `OPTIONS` requests can't be matched as RPC
 requests, and so interceptors can't be used to configure CORS. It's purely an HTTP
-concern. Both [connect-go][cors-go] and [connect-es][cors-es] have
+concern. Both [Connect-Go][cors-go] and [Connect-ES][cors-es] have
 docs that show how to configure CORS for their respective HTTP libraries.
 
 ### How does vanguard-go integrate with Connect interceptors?
 
-A [connect-go] handler wrapped with [Vanguard](https://github.com/connectrpc/vanguard-go)
-can use connect-go interceptors like
-any other connect-go handler, whether the incoming request is REST or one of the
-supported protocols. connect-go interceptors cannot be applied to gRPC handlers or
+A Connect-Go handler wrapped with [Vanguard](https://github.com/connectrpc/vanguard-go)
+can use Connect-Go interceptors like
+any other Connect-Go handler, whether the incoming request is REST or one of the
+supported protocols. Connect-Go interceptors cannot be applied to gRPC handlers or
 proxy handlers. Use gRPC interceptors or net/http middleware instead.
 
 ### Missing trailers with Ambassador
@@ -315,7 +315,7 @@ Route HTTP GET requests and anything with the `application/proto`, `application/
 `application/connect+proto`, or `application/connect+json` Content-Types to the
 HTTP2 target group. Route anything else to the gRPC target group.
 
-### How do I send metrics to Prometheus in connect-go?
+### How do I send metrics to Prometheus in Connect-Go?
 
 Connect has support package for OpenTelemetry: https://pkg.go.dev/connectrpc.com/otelconnect. Prometheus can be
 configured as an exporter.
