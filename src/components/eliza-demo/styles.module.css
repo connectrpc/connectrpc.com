@@ -70,3 +70,100 @@
     font-size: 14px;
   }
 }
+
+.terminalContainer {
+  font-family: var(--ifm-font-family-monospace);
+  height: 240px;
+  position: relative;
+}
+
+.terminal {
+  padding: 25px 40px;
+}
+.terminal p {
+  margin: 0;
+  padding: 5px 0;
+}
+.titleText {
+  font-weight: bold;
+  color: black;
+}
+.elizaText {
+  color: var(--buf-ink-blue-02);
+}
+.elizaText span {
+  visibility: hidden;
+}
+.userInput {
+  border: none;
+  opacity: 0;
+
+  font-weight: bold;
+  color: black;
+}
+.userText {
+  font-weight: bold;
+  color: black;
+}
+.terminalText {
+}
+.blinkingCursor {
+  font-weight: 100;
+  font-size: 30px;
+  color: #2e3d48;
+  -webkit-animation: 1s blink step-end infinite;
+  -moz-animation: 1s blink step-end infinite;
+  -ms-animation: 1s blink step-end infinite;
+  -o-animation: 1s blink step-end infinite;
+  animation: 1s blink step-end infinite;
+}
+
+@keyframes "blink" {
+  from,
+  to {
+    color: transparent;
+  }
+  50% {
+    color: black;
+  }
+}
+
+@-moz-keyframes blink {
+  from,
+  to {
+    color: transparent;
+  }
+  50% {
+    color: black;
+  }
+}
+
+@-webkit-keyframes "blink" {
+  from,
+  to {
+    color: transparent;
+  }
+  50% {
+    color: black;
+  }
+}
+
+@-ms-keyframes "blink" {
+  from,
+  to {
+    color: transparent;
+  }
+  50% {
+    color: black;
+  }
+}
+
+@-o-keyframes "blink" {
+  from,
+  to {
+    color: transparent;
+  }
+  50% {
+    color: black;
+  }
+}

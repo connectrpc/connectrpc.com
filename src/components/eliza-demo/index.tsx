@@ -25,6 +25,7 @@ import { createPromiseClient } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import styles from "./styles.module.css";
 import { TerminalHeader } from "../home/examples";
+import { Terminal as BufTerminal } from "./terminal";
 
 const host = "https://demo.connectrpc.com";
 
@@ -79,18 +80,21 @@ export const ElizaDemo: React.FC<{ focusOnMount?: boolean }> = ({
   );
 
   return (
-    <div className={styles.container} onClick={() => focus()}>
-      <TerminalHeader>Connect-Web</TerminalHeader>
-      <Terminal
-        queue={eventQueue}
-        onCommand={handleCommand}
-        effects={{
-          pixels: false,
-          screenEffects: true,
-          textEffects: false,
-        }}
-        focusOnMount={focusOnMount}
-      />
+    <div>
+      <BufTerminal focusOnMount={focusOnMount} />
+      <div className={styles.container} onClick={() => focus()}>
+        <TerminalHeader>Connect-Web</TerminalHeader>
+        <Terminal
+          queue={eventQueue}
+          onCommand={handleCommand}
+          effects={{
+            pixels: false,
+            screenEffects: true,
+            textEffects: false,
+          }}
+          focusOnMount={focusOnMount}
+        />
+      </div>
     </div>
   );
 };
