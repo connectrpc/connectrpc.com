@@ -33,7 +33,7 @@ import React, { PropsWithChildren } from "react";
 
 import IconGithub from "./icon-github--gray.svg";
 import IconSlack from "./icon-slack--gray.svg";
-import CncfSandbox from "./cncf-sandbox-horizontal-black.svg"
+import CncfSandbox from "./cncf-sandbox-horizontal-black.svg";
 import styles from "./styles.module.css";
 
 type LinkProps = {
@@ -135,7 +135,6 @@ function Footer(): JSX.Element | null {
     <footer className={clsx(styles.footer, "container")}>
       <div className={styles.container}>
         <div className={styles.socialGroup}>
-
           {socialLinks.map((item: FooterLinkItem, index: number) => {
             return (
               <div key={index}>
@@ -164,10 +163,10 @@ function Footer(): JSX.Element | null {
               __html: copyright ?? "",
             }}
           />
-          <span>We are a Cloud Native Computing Foundation sandbox project</span>
-          <CncfSandbox
-            width={200} opacity={0.2}
-            className={styles.cncfLogo} />
+          <span>
+            We are a Cloud Native Computing Foundation sandbox project
+          </span>
+          <CncfSandbox width={200} opacity={0.2} className={styles.cncfLogo} />
         </div>
       </div>
     </footer>
