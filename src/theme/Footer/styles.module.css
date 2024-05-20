@@ -24,6 +24,10 @@
   color: #93b4be;
 }
 
+.cncfLogo {
+  padding-top: 0.3rem;
+}
+
 .legalGroup {
   display: flex;
   flex-direction: row;
@@ -32,6 +36,9 @@
 }
 
 .copyright {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   font-size: 0.875rem;
   color: var(--buf-footer-color);
   font-family: var(--buf-sans-font);
@@ -54,6 +61,7 @@
     ease-in-out, ease-in-out, ease-in-out, ease-in-out;
   transition-delay: 0s, 0s, 0s, 0s, 0s, 0s, 0s, 0s;
 }
+
 .socialLink:hover {
   opacity: 0.75;
 }
@@ -73,6 +81,7 @@
     background-size 0.4s ease-in-out,
     opacity 0.4s ease-in-out;
 }
+
 .legalLink:hover {
   text-decoration: none;
   background-size: 100% 100%;
@@ -88,15 +97,18 @@
     justify-content: center;
     position: relative;
   }
+
   .legalGroup {
     position: absolute;
     left: 0;
     padding: 0;
     color: var(--buf-footer-color-light);
   }
+
   .copyright {
     color: var(--buf-footer-color-light);
     position: absolute;
+    align-items: end;
     right: 0;
   }
 }
