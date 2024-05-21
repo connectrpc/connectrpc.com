@@ -33,6 +33,7 @@ import React, { PropsWithChildren } from "react";
 
 import IconGithub from "./icon-github--gray.svg";
 import IconSlack from "./icon-slack--gray.svg";
+import CncfSandbox from "./cncf-sandbox-horizontal-black.svg";
 import styles from "./styles.module.css";
 
 type LinkProps = {
@@ -153,15 +154,20 @@ function Footer(): JSX.Element | null {
           })}
         </div>
 
-        <div
-          className={styles.copyright}
-          // Developer provided the HTML, so assume it's safe.
-          // eslint-disable-next-line react/no-danger
-          // ^^^ comment by FB
-          dangerouslySetInnerHTML={{
-            __html: copyright ?? "",
-          }}
-        />
+        <div className={styles.copyright}>
+          <div
+            // Developer provided the HTML, so assume it's safe.
+            // eslint-disable-next-line react/no-danger
+            // ^^^ comment by FB
+            dangerouslySetInnerHTML={{
+              __html: copyright ?? "",
+            }}
+          />
+          <span>
+            We are a Cloud Native Computing Foundation sandbox project
+          </span>
+          <CncfSandbox width={200} opacity={0.2} className={styles.cncfLogo} />
+        </div>
       </div>
     </footer>
   );
