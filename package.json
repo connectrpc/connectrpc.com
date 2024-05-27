@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@buf/connectrpc_eliza.connectrpc_es": "^1.1.2-20230726230109-bf1eaaff2a44.1",
-    "@bufbuild/protobuf": "^1.8.0",
+    "@bufbuild/protobuf": "^1.9.0",
     "@connectrpc/connect": "^1.4.0",
     "@connectrpc/connect-web": "^1.4.0",
     "@docusaurus/core": "^2.4.3",
@@ -28,7 +28,7 @@
     "@docusaurus/preset-classic": "^2.4.3",
     "@docusaurus/theme-search-algolia": "^2.4.3",
     "@react-hookz/web": "^24.0.4",
-    "clsx": "^2.1.0",
+    "clsx": "^2.1.1",
     "crt-terminal": "^1.0.13",
     "prism-react-renderer": "^2.3.1",
     "react": "^17.0.1",
@@ -46,7 +46,7 @@
     "eslint-plugin-jsx-a11y": "^6.8.0",
     "eslint-plugin-react": "^7.34.1",
     "prettier": "^3.2.5",
-    "typescript": "^5.4.3"
+    "typescript": "^5.4.5"
   },
   "licenseHeader": {
     "licenseType": "apache",
