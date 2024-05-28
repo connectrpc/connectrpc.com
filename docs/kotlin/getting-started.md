@@ -50,38 +50,32 @@ is not overridden, the rest of the example will need to replace `com.example.eli
 Create an Android application with Gradle and Android Studio. Now we can start
 defining a new API for talking with Eliza!
 
-## Define a Protobuf service
+## Define a service
 
-In the shell, create a proto directory to keep the `.proto` files in.
-
-```bash
-$ mkdir proto
-$ cd proto
-```
-
-Next, scaffold a basic [`buf.yaml`][buf.yaml] by running `buf mod init`.
+First, we need to add a Protobuf file that includes our service definition. For this tutorial, we are going to construct a unary endpoint for a service that is a stripped-down implementation of ELIZA, the famous natural language processing program.
 
 ```bash
-$ buf mod init
+$ mkdir -p proto && touch proto/eliza.proto
 ```
 
-We have already defined the `ElizaService` and have
-it [hosted on the Buf Schema Registry][eliza-proto] to use in this example.
-Export the Protobuf schema to use in our project.
+Open up the above file and add the following service definition:
 
-```bash title="~/.../Eliza/proto"
-$ buf export buf.build/connectrpc/eliza -o .
-```
+```proto
+syntax = "proto3";
 
-Our new `proto` directory should look like this:
+package connectrpc.eliza.v1;
 
-```
-proto
-├── connectrpc
-│   └── eliza
-│       └── v1
-│           └── eliza.proto
-└── buf.yaml
+message SayRequest {
+  string sentence = 1;
+}
+
+message SayResponse {
+  string sentence = 1;
+}
+
+service ElizaService {
+  rpc Say(SayRequest) returns (SayResponse) {}
+}
 ```
 
 Open the newly created `eliza.proto` file in the editor.
@@ -95,23 +89,37 @@ are the input and output for the `Say` RPC method.
 
 ## Generate code
 
-We're going to generate our code using [`buf`][buf], a modern replacement for
-Google's protobuf compiler.
+We're going to generate our code using [Buf][buf], a modern replacement for
+Google's protobuf compiler. We installed Buf earlier, but we also need a few
+configuration files to get going.
+
+First, initialize the basic buf.yaml configuration
 
 ```bash
-$ cd ..
-$ touch buf.gen.yaml
+$ buf config init
 ```
 
-We will use [_remote plugins_][remote-plugins], a feature of the [Buf Schema Registry][bsr] for generating code. Tell `buf`
-how to generate code by putting this into [`buf.gen.yaml`][buf.gen.yaml]:
+This will create a buf.yaml file with the following content:
+
+```yaml title=buf.yaml
+version: v2
+lint:
+  use:
+    - DEFAULT
+breaking:
+  use:
+    - FILE
+```
+
+Next, tell Buf how to generate code by putting this into
+[`buf.gen.yaml`][buf.gen.yaml]:
 
 ```yaml title=buf.gen.yaml
-version: v1
+version: v2
 plugins:
-  - plugin: buf.build/protocolbuffers/java
+  - remote: buf.build/protocolbuffers/java
     out: app/src/main/java
-  - plugin: buf.build/connectrpc/kotlin
+  - remote: buf.build/connectrpc/kotlin
     out: app/src/main/java
 ```
 
@@ -134,7 +142,8 @@ With those configuration files in place, generating Kotlin code
 can be easily done:
 
 ```bash
-$ buf generate proto
+$ buf lint
+$ buf generate
 ```
 
 In the `app/src/main/java` directory, there should now be some generated Java and Kotlin files:
@@ -668,9 +677,9 @@ the Connect-Kotlin repository on GitHub. These examples demonstrate:
 
 [buf-cli]: https://buf.build/docs/installation
 
-[buf.gen.yaml]: https://buf.build/docs/configuration/v1/buf-gen-yaml
+[buf.gen.yaml]: https://buf.build/docs/configuration/v2/buf-gen-yaml
 
-[buf.yaml]: https://buf.build/docs/configuration/v1/buf-yaml
+[buf.yaml]: https://buf.build/docs/configuration/v2/buf-yaml
 
 [connect-go]: https://github.com/connectrpc/connect-go
 
