@@ -29,38 +29,41 @@ to generate a Connect-Swift client.
 
 This tutorial should take ~10 minutes from start to finish.
 
-## Define a Protobuf service
+## Prerequisites
 
-We'll start by creating a Protobuf schema that defines the ELIZA
-API. In your shell, create a `.proto` file:
+* [The Buf CLI][buf-cli] installed, and include it in the `$PATH`.
+
+## Define a service
+
+First, we need to add a Protobuf file that includes our service definition. For this tutorial, we are going to construct a unary endpoint for a service that is a stripped-down implementation of ELIZA, the famous natural language processing program.
 
 ```bash
-touch eliza.proto
+$ mkdir -p proto && touch proto/eliza.proto
 ```
 
-Open the newly created `eliza.proto` file in your editor and add:
+Open up the above file and add the following service definition:
 
-```protobuf
+```proto
 syntax = "proto3";
 
 package connectrpc.eliza.v1;
 
 message SayRequest {
-    string sentence = 1;
+  string sentence = 1;
 }
 
 message SayResponse {
-    string sentence = 1;
+  string sentence = 1;
 }
 
 service ElizaService {
-    rpc Say(SayRequest) returns (SayResponse) {}
+  rpc Say(SayRequest) returns (SayResponse) {}
 }
 ```
 
+Open the newly created `eliza.proto` file in the editor.
 This file declares a `connectrpc.eliza.v1` Protobuf package,
-a service called `ElizaService`, and a single unary
-(single-request / single-response) method
+a service called `ElizaService`, and a single method
 called `Say`. Under the hood, these components will be used to form the path
 of the API's HTTP URL.
 
@@ -70,49 +73,49 @@ are the input and output for the `Say` RPC method.
 ## Generate code
 
 We're going to generate our code using [Buf][buf], a modern replacement for
-Google's protobuf compiler. Specifically, we will use
-[_remote plugins_][remote-plugins],
-a feature of the Buf Schema Registry. This requires installing
-[Buf's CLI][buf-cli]:
+Google's protobuf compiler. We installed Buf earlier, but we also need a few
+configuration files to get going.
+
+First, initialize the basic buf.yaml configuration
 
 ```bash
-brew install bufbuild/buf/buf
+$ buf config init
 ```
 
-To configure Buf, scaffold a basic [`buf.yaml`][buf.yaml] by running:
+This will create a buf.yaml file with the following content:
 
-```bash
-buf mod init
+```yaml title=buf.yaml
+version: v2
+lint:
+  use:
+    - DEFAULT
+breaking:
+  use:
+    - FILE
 ```
 
-Next, tell Buf how to generate code by creating a new
-[`buf.gen.yaml`][buf.gen.yaml] file:
-
-```bash
-touch buf.gen.yaml
-```
-
-...and adding this content to it:
+Next, tell Buf how to generate code by putting this into
+[`buf.gen.yaml`][buf.gen.yaml]:
 
 ```yaml
-version: v1
+version: v2
 plugins:
-  - plugin: buf.build/connectrpc/swift
+  - remote: buf.build/connectrpc/swift
+    out: Generated
     opt:
       - GenerateAsyncMethods=true
       - GenerateCallbackMethods=true
       - Visibility=Public
+  - remote: buf.build/apple/swift
     out: Generated
-  - plugin: buf.build/apple/swift
-    opt:
-      - Visibility=Public
-    out: Generated
+    opt: Visibility=Public
 ```
 
 With those configuration files in place, we can now generate code:
 
 ```bash
-buf generate
+$ buf lint
+$ buf generate
 ```
 
 In your `Generated` directory, you should now see some generated Swift files:
@@ -494,10 +497,11 @@ enabling you to use Connect-Swift without the SwiftNIO dependency.
 
 [buf]: https://buf.build/docs/
 [buf-cli]: https://buf.build/docs/installation
-[buf.gen.yaml]: https://buf.build/docs/configuration/v1/buf-gen-yaml
-[buf.yaml]: https://buf.build/docs/configuration/v1/buf-yaml
+[buf.gen.yaml]: https://buf.build/docs/configuration/v2/buf-gen-yaml
+[buf.yaml]: https://buf.build/docs/configuration/v2/buf-yaml
 [connect-go]: https://github.com/connectrpc/connect-go
 [connect-swift]: https://github.com/connectrpc/connect-swift
+[eliza-proto]: https://buf.build/connectrpc/eliza/file/main:connectrpc/eliza/v1/eliza.proto
 [envoy-grpc-bridge]: https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_filters/connect_grpc_bridge_filter
 [go-demo]: https://github.com/connectrpc/examples-go
 [grpc]: https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md
