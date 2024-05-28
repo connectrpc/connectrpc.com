@@ -64,14 +64,14 @@ the Protobuf-ES plugin and the Connect-ES plugin.
 For example, in your `buf.gen.yaml`:
 
 ```diff
-version: v1
+version: v2
 plugins:
-  - plugin: es
+  - local: protoc-gen-es
     out: gen
-+   opt: import_extension=none
-  - plugin: connect-es
+    opt: import_extension=none
+  - local: protoc-gen-connect-es
     out: gen
-+   opt: import_extension=none
+    opt: import_extension=none
 ```
 
 **Output JavaScript files**
