@@ -22,13 +22,6 @@ systems like Connect.
 
 All implementations are listed at the main [Connect RPC repository][main-repo].
 
-### Does Connect implement REST?
-
-Connect is an RPC protocol. It doesn't use HTTP verbs to model CRUD, and doesn't use
-resource-based URL routing, but a Connect service can meet the architectural constraints
-of a RESTful API. If you need CRUD verbs and resource-based URL routing, take a look at
-[Vanguard-Go](https://github.com/connectrpc/vanguard-go).
-
 ### Is there a way to generate REST paths with Connect?
 
 The path is simply the fully qualified name of the service. There is no built-in option to
@@ -122,9 +115,9 @@ still allowing your code to interoperate with the larger gRPC ecosystem.
 
 Yes, it offers Envoy support in several ways:
 
-- If you use gRPC and connect-go, there is built-in gRPC support
+- If you use gRPC and Connect-Go, there is built-in gRPC support
 - Connect-gRPC has an [Envoy filter](https://github.com/connectrpc/envoy-demo)
-- https://github.com/connectrpc/grpchealth-go
+- Connect-Go supports gRPC health checking via https://github.com/connectrpc/grpchealth-go
 
 ## Serialization & compression
 
@@ -150,11 +143,6 @@ evolve without breaking existing clients: simply adding a field to a response wi
 Connect clients and servers will ignore unknown fields, provided that the
 underlying implementation allows us to do so.
 
-### How do I customize serialization errors returned by the Connect server?
-
-You can customize the error message by providing a different `Codec`. Code
-and details can't be customized.
-
 ## Go
 
 ### Why use generics?
@@ -164,7 +152,7 @@ generics to Connect-Go eliminated two significant sources of complexity:
 
 - Generics let us generate less code, especially for streaming RPCs &mdash; if
   you're willing to write out some long URLs, it's now just as easy to use
-  Connect without `protoc-gen-Connect-Go`. The generic stream types, like
+  Connect without `protoc-gen-connect-go`. The generic stream types, like
   `BidirectionalStream`, are much clearer than the equivalent code generation
   templates.
 - We don't need to attach any values to the context, because Connect's generic
@@ -177,7 +165,7 @@ On balance, we find Connect-Go simpler with generics.
 ### Why generate Connect-specific packages?
 
 If you're familiar with Protobuf, you may have noticed that
-`protoc-gen-Connect-Go` behaves a little differently from many other plugins:
+`protoc-gen-connect-go` behaves a little differently from many other plugins:
 rather than adding code alongside the basic message types, it creates a
 separate, Connect-specific Go package and imports the base types.
 
@@ -269,6 +257,11 @@ func grpcOnlyMiddleware(next http.Handler) http.Handler {
 	})
 }
 ```
+
+### How do I customize serialization errors returned by the Connect server?
+
+You can customize the error message by providing a different `Codec`. Code
+and details can't be customized.
 
 ## TypeScript and JavaScript
 
