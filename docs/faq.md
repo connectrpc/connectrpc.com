@@ -190,12 +190,9 @@ protocol.
 
 ### Is streaming supported?
 
-While the Connect protocol supports _all_ types of streaming RPCs, web browsers
-do not support streaming from the client-side across the board. The fetch API
-_does_ specify streaming request bodies, but unfortunately, browser vendors have
-not come to an agreement to support streams from the client – see this
-[WHATWG issue on GitHub][whatwg-streams-issue]. This means you can use streaming
-from the browser, but only server-streaming.
+The Connect protocol supports _all_ types of streaming RPCs, but web browsers have
+some limitations with regard to client streaming. See the [Connect for Web](web/getting-started.mdx)
+section for details.
 
 ### Does generated code affect bundle size?
 
