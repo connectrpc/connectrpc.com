@@ -274,6 +274,5 @@ HTTP2 target group. Route anything else to the gRPC target group.
 [main-repo]: https://github.com/connectrpc?view_as=public
 [remote plugins]: https://buf.build/docs/bsr/remote-plugins/overview/
 [twirp-protocol]: https://github.com/twitchtv/twirp/blob/main/PROTOCOL.md
-[whatwg-streams-issue]: https://github.com/whatwg/fetch/issues/1438
 [alp-aws-grpc]: https://aws.amazon.com/blogs/aws/new-application-load-balancer-support-for-end-to-end-http-2-and-grpc/
 [alp-aws-troubleshooting]: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html#http-464-issues
