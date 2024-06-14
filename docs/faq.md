@@ -190,12 +190,9 @@ protocol.
 
 ### Is streaming supported?
 
-While the Connect protocol supports _all_ types of streaming RPCs, web browsers
-do not support streaming from the client-side across the board. The fetch API
-_does_ specify streaming request bodies, but unfortunately, browser vendors have
-not come to an agreement to support streams from the client – see this
-[WHATWG issue on GitHub][whatwg-streams-issue]. This means you can use streaming
-from the browser, but only server-streaming.
+The Connect protocol supports _all_ types of streaming RPCs, but web browsers have
+some limitations with regard to client streaming. See the [Connect for Web](web/getting-started.mdx)
+section for details.
 
 ### Does generated code affect bundle size?
 
@@ -277,6 +274,5 @@ HTTP2 target group. Route anything else to the gRPC target group.
 [main-repo]: https://github.com/connectrpc?view_as=public
 [remote plugins]: https://buf.build/docs/bsr/remote-plugins/overview/
 [twirp-protocol]: https://github.com/twitchtv/twirp/blob/main/PROTOCOL.md
-[whatwg-streams-issue]: https://github.com/whatwg/fetch/issues/1438
 [alp-aws-grpc]: https://aws.amazon.com/blogs/aws/new-application-load-balancer-support-for-end-to-end-http-2-and-grpc/
 [alp-aws-troubleshooting]: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html#http-464-issues

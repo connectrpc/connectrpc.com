@@ -11,6 +11,14 @@ a very simple natural language processor built in the 1960s to represent a
 psychotherapist. The ELIZA service is already up and running, and it defines
 a Protocol Buffer schema we'll use to generate a client.
 
+:::note
+Though the Connect protocol supports _all_ types of streaming RPCs, web browsers
+do not support streaming from the client side across the board. The fetch API
+_does_ specify streaming request bodies, but unfortunately, browser vendors have
+not come to an agreement to support streams from the client—see this
+[WHATWG issue on GitHub][whatwg-streams-issue]. This means you can use streaming
+from the browser, but only server streaming.
+:::
 
 ## Prerequisites
 
@@ -314,3 +322,5 @@ In case you mistype a request or response property — let's say you misspell
 As an application grows, this compile-time type-safety provided by the
 Protocol buffer schema becomes immensely useful. On the next page, we are
 going to look at the schema and explain remote and local code generation.
+
+[whatwg-streams-issue]: https://github.com/whatwg/fetch/issues/1438
