@@ -42,7 +42,7 @@ ones:
 
 :::note
 Over HTTP/2, Node.js can serve the Connect, gRPC, and gRPC-Web protocols with
-all variants of RPCs.
+all types of RPCs.
 Over HTTP 1.1, the gRPC protocol and bidirectional streaming RPCs are not
 supported.
 :::
@@ -83,7 +83,7 @@ The plugin accepts all common options, and the following additional ones:
 
 :::note
 Over HTTP/2, Fastify can serve the Connect, gRPC, and gRPC-Web protocols with
-all of RPCs.
+all types of RPCs.
 Over HTTP 1.1, the gRPC protocol and bidirectional streaming are not supported.
 :::
 
