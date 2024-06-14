@@ -37,7 +37,7 @@ headers and trailers), please refer to the documentation for [Web](../web/using-
 Under the hood, the transports from [@connectrpc/connect-node](https://www.npmjs.com/package/@connectrpc/connect-node)
 use the built-in Node modules `http`, `https`, and `http2` instead of the fetch
 API. With HTTP/2, clients can use the Connect, gRPC, or gRPC-Web protocol, and 
-call all variants of RPCs. With HTTP 1.1, the gRPC protocol and bidirectional 
+call all types of RPCs. With HTTP 1.1, the gRPC protocol and bidirectional 
 streaming are not supported.
 
 ## Connect
