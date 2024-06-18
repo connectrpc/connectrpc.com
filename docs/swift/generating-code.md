@@ -64,7 +64,7 @@ When developing a new project, 2 new files need to be created:
 The first file, `buf.yaml`, can be created by running:
 
 ```bash
-buf mod init
+buf config init
 ```
 
 The second file, `buf.gen.yaml`, needs to be created manually and specifies
@@ -72,18 +72,17 @@ which plugins should be used to generate code. An example of this
 file is shown below:
 
 ```yaml
-version: v1
+version: v2
 plugins:
-  - plugin: buf.build/connectrpc/swift
+  - remote: buf.build/connectrpc/swift
+    out: Generated
     opt:
       - GenerateAsyncMethods=true
       - GenerateCallbackMethods=true
       - Visibility=Public
+  - remote: buf.build/apple/swift
     out: Generated
-  - plugin: buf.build/apple/swift
-    opt:
-      - Visibility=Public
-    out: Generated
+    opt: Visibility=Public
 ```
 
 This file specifies that the [`connect-swift` plugin][connect-swift-plugin]
@@ -135,18 +134,17 @@ local generation, except the `buf.gen.yaml` file should be modified to use
 local plugins instead of remote plugins:
 
 ```yaml
-version: v1
+version: v2
 plugins:
-  - plugin: connect-swift # protoc-gen-connect-swift in your PATH
+  - local: protoc-gen-connect-swift # protoc-gen-connect-swift in your PATH
+    out: Generated
     opt:
       - GenerateAsyncMethods=true
       - GenerateCallbackMethods=true
       - Visibility=Public
+  - local: protoc-gen-swift # protoc-gen-swift in your PATH
     out: Generated
-  - plugin: swift # protoc-gen-swift in your PATH
-    opt:
-      - Visibility=Public
-    out: Generated
+    opt: Visibility=Public
 ```
 
 ## Using generated code
@@ -187,8 +185,8 @@ the `buf.gen.yaml` file as shown in the example above.
 
 [available-plugins]: https://buf.build/plugins
 [buf]: https://buf.build/docs/
-[buf.gen.yaml]: https://buf.build/docs/configuration/v1/buf-gen-yaml
-[buf.yaml]: https://buf.build/docs/configuration/v1/buf-yaml
+[buf.gen.yaml]: https://buf.build/docs/configuration/v2/buf-gen-yaml
+[buf.yaml]: https://buf.build/docs/configuration/v2/buf-yaml
 [buf-cli]: https://buf.build/docs/installation
 [connect-swift]: https://github.com/connectrpc/connect-swift
 [connect-swift-mocks-plugin]: https://buf.build/connectrpc/swift-mocks

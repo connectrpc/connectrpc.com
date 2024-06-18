@@ -64,7 +64,7 @@ When developing a new project, 2 new files need to be created:
 The first file, `buf.yaml`, can be created by running:
 
 ```bash
-buf mod init
+buf config init
 ```
 
 The second file, `buf.gen.yaml`, needs to be created manually and specifies
@@ -72,11 +72,11 @@ which plugins should be used to generate code. An example of this
 file is shown below:
 
 ```yaml
-version: v1
+version: v2
 plugins:
-  - plugin: buf.build/connectrpc/kotlin
+  - remote: buf.build/connectrpc/kotlin
     out: generated
-  - plugin: buf.build/protocolbuffers/java
+  - remote: buf.build/protocolbuffers/java
     out: generated
 ```
 
@@ -156,8 +156,8 @@ The following generation options can be combined in the `opt` field of the `buf.
 
 [available-plugins]: https://buf.build/plugins
 [buf]: https://buf.build/docs/
-[buf.gen.yaml]: https://buf.build/docs/configuration/v1/buf-gen-yaml
-[buf.yaml]: https://buf.build/docs/configuration/v1/buf-yaml
+[buf.gen.yaml]: https://buf.build/docs/configuration/v2/buf-gen-yaml
+[buf.yaml]: https://buf.build/docs/configuration/v2/buf-yaml
 [buf-cli]: https://buf.build/docs/installation
 [connect-kotlin]: https://github.com/connectrpc/connect-kotlin
 [connect-kotlin-plugin]: https://buf.build/connectrpc/kotlin

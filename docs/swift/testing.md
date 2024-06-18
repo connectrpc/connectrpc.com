@@ -17,27 +17,26 @@ interfaces and implementations into the `Generated` folder, and a corresponding
 set of mocks into the `GeneratedMocks` folder:
 
 ```yaml
-version: v1
+version: v2
 plugins:
   # Generated models
-  - plugin: buf.build/apple/swift
-    opt:
-      - Visibility=Public
+  - remote: buf.build/apple/swift
     out: Generated
+    opt: Visibility=Public
   # Production generated services/methods
-  - plugin: buf.build/connectrpc/swift
-    opt:
-      - GenerateAsyncMethods=true
-      - GenerateCallbackMethods=true
-      - Visibility=Public
+  - remote: buf.build/connectrpc/swift
     out: Generated
-  # Mock generated services/methods
-  - plugin: buf.build/connectrpc/swift-mocks
     opt:
       - GenerateAsyncMethods=true
       - GenerateCallbackMethods=true
       - Visibility=Public
+  # Mock generated services/methods
+  - remote: buf.build/connectrpc/swift-mocks
     out: GeneratedMocks
+    opt:
+      - GenerateAsyncMethods=true
+      - GenerateCallbackMethods=true
+      - Visibility=Public
 ```
 
 **The `GenerateAsyncMethods` and

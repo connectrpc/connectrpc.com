@@ -89,17 +89,17 @@ configuration files to get going. (If you'd prefer, you can skip this section
 and use `protoc` instead &mdash; `protoc-gen-connect-go` behaves like any other
 plugin.)
 
-First, scaffold a basic [`buf.yaml`][buf.yaml] by running `buf mod init`. Next,
+First, scaffold a basic [`buf.yaml`][buf.yaml] by running `buf config init`. Next,
 tell Buf how to generate code by putting this into
 [`buf.gen.yaml`][buf.gen.yaml]:
 
 ```yaml
-version: v1
+version: v2
 plugins:
-  - plugin: go
+  - local: protoc-gen-go
     out: gen
     opt: paths=source_relative
-  - plugin: connect-go
+  - local: protoc-gen-connect-go
     out: gen
     opt: paths=source_relative
 ```
@@ -333,8 +333,8 @@ query parameters. More importantly, your users got an idiomatic, type-safe
 client without *any* extra work on your part.
 
 [buf]: https://buf.build/
-[buf.gen.yaml]: https://buf.build/docs/configuration/v1/buf-gen-yaml
-[buf.yaml]: https://buf.build/docs/configuration/v1/buf-yaml
+[buf.gen.yaml]: https://buf.build/docs/configuration/v2/buf-gen-yaml
+[buf.yaml]: https://buf.build/docs/configuration/v2/buf-yaml
 [buf-cli]: https://github.com/bufbuild/buf
 [cURL]: https://curl.se/
 [godoc]: https://pkg.go.dev/connectrpc.com/connect
