@@ -96,7 +96,7 @@ tell Buf how to generate code by putting this into
 ```yaml
 version: v2
 plugins:
-  - protoc_builtin: go
+  - local: protoc-gen-go
     out: gen
     opt: paths=source_relative
   - local: protoc-gen-connect-go
