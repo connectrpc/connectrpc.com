@@ -92,11 +92,7 @@ are the input and output for the `Say` RPC method.
 We're going to generate our code using [`buf`][buf], a modern replacement for
 Google's protobuf compiler.
 
-```bash
-$ cd ..
-```
-
-First, scaffold a basic [`buf.yaml`][buf.yaml] by running `buf config init`. Then, edit `buf.yaml`
+First, scaffold a basic [`buf.yaml`][buf.yaml] by running `buf config init` at the root of your repository. Then, edit `buf.yaml`
 to use our `proto` directory:
 
 ```yaml title=buf.yaml
