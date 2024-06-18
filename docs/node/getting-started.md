@@ -39,10 +39,7 @@ $ npm install @bufbuild/buf @bufbuild/protoc-gen-es @bufbuild/protobuf @connectr
 
 ## Define a service
 
-First, we need to add a Protobuf file that includes our service definition. For
-this tutorial, we are going to construct a unary endpoint for a service that is
-a stripped-down implementation of [ELIZA](https://en.wikipedia.org/wiki/ELIZA),
-the famous natural language processing program.
+First, we need to add a Protobuf file that includes our service definition. For this tutorial, we are going to construct a unary endpoint for a service that is a stripped-down implementation of ELIZA, the famous natural language processing program.
 
 ```bash
 $ mkdir -p proto && touch proto/eliza.proto
@@ -50,7 +47,7 @@ $ mkdir -p proto && touch proto/eliza.proto
 
 Open up the above file and add the following service definition:
 
-```protobuf
+```proto
 syntax = "proto3";
 
 package connectrpc.eliza.v1;
@@ -76,24 +73,49 @@ but we also need a configuration file to get going. (If you'd prefer, you can
 skip this section and use `protoc` instead &mdash; `protoc-gen-connect-es`
 behaves like any other plugin.)
 
-First, tell Buf how to generate code with a `buf.gen.yaml` file:
-
-```yaml
-version: v1
-plugins:
-  - plugin: es
-    opt: target=ts
-    out: gen
-  - plugin: connect-es
-    opt: target=ts
-    out: gen
-```
-
-With this file in place, you can generate code from the schema in the `proto`
-directory:
+First, scaffold a basic [`buf.yaml`][buf.yaml] at the root of your repository:
 
 ```bash
-$ npx buf generate proto
+$ npx buf config init
+```
+
+Then, edit `buf.yaml` to use our `proto` directory:
+
+```yaml title=buf.yaml
+version: v2
+// highlight-next-line
+modules:
+// highlight-next-line
+  - path: proto
+lint:
+  use:
+    - DEFAULT
+breaking:
+  use:
+    - FILE
+```
+
+
+Next, tell Buf how to generate code by putting this into
+[`buf.gen.yaml`][buf.gen.yaml]:
+
+```yaml
+version: v2
+plugins:
+  - local: protoc-gen-es
+    out: gen
+    opt: target=ts
+  - local: protoc-gen-connect-es
+    out: gen
+    opt: target=ts
+```
+
+With those configuration files in place, you can lint your schema and generate
+code:
+
+```bash
+$ npx buf lint
+$ npx buf generate
 ```
 
 You should now see two generated TypeScript files:
@@ -101,17 +123,18 @@ You should now see two generated TypeScript files:
 ```diff
 .
 ├── buf.gen.yaml
+├── buf.yaml
 // highlight-next-line
 ├── gen
 // highlight-next-line
-│   ├── eliza_connect.ts
+│   ├── eliza_connect.ts
 // highlight-next-line
-│   └── eliza_pb.ts
+│   └── eliza_pb.ts
 ├── node_modules
 ├── package-lock.json
 ├── package.json
 ├── proto
-│   └── eliza.proto
+│   └── eliza.proto
 └── tsconfig.json
 ```
 
@@ -351,3 +374,8 @@ supports both the gRPC and Connect protocols. Unlike a hand-written REST service
 you didn't need to design a URL hierarchy, hand-write request and response
 objects, or parse typed values out of query parameters. More importantly,
 your users got an idiomatic, type-safe client without any extra work on your part.
+
+[buf]: https://www.npmjs.com/package/@bufbuild/buf
+[buf.gen.yaml]: https://buf.build/docs/configuration/v2/buf-gen-yaml
+[buf.yaml]: https://buf.build/docs/configuration/v2/buf-yaml
+[eliza-proto]: https://buf.build/connectrpc/eliza/file/main:connectrpc/eliza/v1/eliza.proto

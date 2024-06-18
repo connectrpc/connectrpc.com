@@ -77,24 +77,19 @@ Next, tell Buf to use the two plugins with a new configuration file:
 
 ```yaml title="buf.gen.yaml"
 # buf.gen.yaml defines a local generation template.
-# For details, see https://buf.build/docs/configuration/v1/buf-gen-yaml
-version: v1
+# For details, see https://buf.build/docs/configuration/v2/buf-gen-yaml
+version: v2
 plugins:
   # This will invoke protoc-gen-es and write output to src/gen
-  - plugin: es
+  - local: protoc-gen-es
     out: src/gen
-    opt:
-      # Add more plugin options here
-      - target=ts
+    opt: target=ts
   # This will invoke protoc-gen-connect-es
-  - plugin: connect-es
+  - local: protoc-gen-connect-es
     out: src/gen
-    opt:
-      # Add more plugin options here
-      - target=ts
+    # Add more plugin options here
+    opt: target=ts
 ```
-
-
 
 If desired, you can also skip local plugin installation and use [remote plugins](https://buf.build/docs/bsr/remote-plugins/overview).
 See the [connect-es example](https://buf.build/docs/bsr/remote-plugins/usage#connect-web)
