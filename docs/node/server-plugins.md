@@ -40,6 +40,12 @@ ones:
   context values are passed to the service implementation. See
   [Context values](./interceptors.md#context-values) for more information.
 
+:::note
+Over HTTP/2, Node.js can serve the Connect, gRPC, and gRPC-Web protocols with
+all types of RPCs.
+Over HTTP 1.1, the gRPC protocol and bidirectional streaming RPCs are not
+supported.
+:::
 
 ## Fastify
 
@@ -49,7 +55,7 @@ with your Connect RPCs. Use the plugin from [@connectrpc/connect-fastify](https:
 with Fastify:
 
 ```bash
-$ npm install fastify @connectrpc/connect-node @connectrpc/connect-fastify
+$ npm install fastify @connectrpc/connect @connectrpc/connect-node @connectrpc/connect-fastify
 ```
 
 ```ts
@@ -81,8 +87,12 @@ The plugin accepts all [common options](#common-options), and the following addi
   context values are passed to the service implementation. See
   [Context values](./interceptors.md#context-values) for more information.
 
-Note that `@connectrpc/connect` and `@connectrpc/connect-node` are peer 
-dependencies of  `@connectrpc/connect-fastify`.
+:::note
+Over HTTP/2, Fastify can serve the Connect, gRPC, and gRPC-Web protocols with
+all types of RPCs.
+Over HTTP 1.1, the gRPC protocol and bidirectional streaming are not supported.
+:::
+
 
 ## Next.js
 
@@ -91,7 +101,7 @@ using the latest React features. With [@connectrpc/connect-next](https://www.npm
 you can serve your Connect RPCs via Next.js API Routes.
 
 ```bash
-$ npm install next @connectrpc/connect-node @connectrpc/connect-next
+$ npm install next @connectrpc/connect @connectrpc/connect-node @connectrpc/connect-next
 ```
 
 To enable the server plugin, create the file `pages/api/[[...connect]].ts` in your project:
@@ -121,7 +131,10 @@ one:
   context values are passed to the service implementation. See
   [Context values](./interceptors.md#context-values) for more information.
 
-Note that Next.js does not support the http2 module.
+:::note
+Next.js does not support the `http2` module. You can serve the Connect protocol 
+and gRPC-Web. The gRPC protocol and bidirectional streaming are not supported.
+:::
 
 ## Express
 
@@ -130,7 +143,7 @@ popular because of its simplicity. Use the middleware provided by [@connectrpc/c
 to add your Connect RPCs to Express:
 
 ```bash
-$ npm install express @connectrpc/connect-node @connectrpc/connect-express
+$ npm install express @connectrpc/connect @connectrpc/connect-node @connectrpc/connect-express
 ```
 
 ```ts
@@ -160,8 +173,11 @@ one:
   context values are passed to the service implementation. See
   [Context values](./interceptors.md#context-values) for more information.
 
-
-Note that Express does not support the `http2` module.
+:::note
+Express does not support the `http2` module. You can serve the Connect protocol 
+and gRPC-Web. The gRPC protocol and bidirectional streaming RPCs are not 
+supported.
+:::
 
 
 ## Common options
