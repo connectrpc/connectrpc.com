@@ -76,16 +76,19 @@ We're going to generate our code using [Buf][buf], a modern replacement for
 Google's protobuf compiler. We installed Buf earlier, but we also need a few
 configuration files to get going.
 
-First, initialize the basic buf.yaml configuration
-
 ```bash
-$ buf config init
+$ cd ..
 ```
 
-This will create a buf.yaml file with the following content:
+First, scaffold a basic [`buf.yaml`][buf.yaml] by running `buf config init`. Then, edit `buf.yaml`
+to use our `proto` directory:
 
 ```yaml title=buf.yaml
 version: v2
+// highlight-next-line
+modules:
+// highlight-next-line
+  - path: proto
 lint:
   use:
     - DEFAULT
