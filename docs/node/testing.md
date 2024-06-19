@@ -1,6 +1,6 @@
 ---
 title: Testing
-sidebar_position: 6
+sidebar_position: 7
 ---
 
 When writing tests for your Connect for Node.js application, your approach will
