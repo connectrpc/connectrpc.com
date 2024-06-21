@@ -119,6 +119,13 @@ Yes, it offers Envoy support in several ways:
 - Connect-gRPC has an [Envoy filter](https://github.com/connectrpc/envoy-demo)
 - Connect-Go supports gRPC health checking via https://github.com/connectrpc/grpchealth-go
 
+### My web request fails but the response looks valid. Why isn't it going through?
+
+Web requests that attempt to load resources from a domain outside the domain of the page
+require you to configure Cross-Origin Resource Sharing (CORS). Not doing so may cause protocol
+errors like "missing trailer", etc. If the response is valid and the request is to a different
+domain, make sure the server has the correct [CORS configuration](./cors.md#configurations-by-protocol).
+
 ## Serialization & compression
 
 ### Why are numbers serialized as strings in JSON?
