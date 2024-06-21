@@ -318,7 +318,22 @@ Additionally, the code generator plugin used by Connect-ES is based on the plugi
 framework also provided by Protobuf-ES. For any questions you may have about this library,
 visit the [Protobuf-ES FAQ page](https://github.com/bufbuild/protobuf-es/blob/main/docs/faq.md).
 
-### How do I provide a type registry for sending or receiving Any?
+### How do I import types for `google.protobuf.Any`?
+
+Types not declared from the service's methods may need to be specified to ensure availability
+This often appears as a `google.protobuf.Any` failing to unmarshal with an unknown type error.
+To ensure the message can be used, add the type to the descriptor registry for your languages' runtimes.
+
+#### How do I add types to the descriptor registry for Go?
+
+The most pragmatic approach is to use the global type registry and import the generated Protobuf
+message using a blank import. For example, given a generated file `proto/path/mytype.pb.go`, add a
+Go import as `import _ proto/path/mytype.pb.go` to your Go application to ensure the type is registered.
+
+For types only available at runtime, please see the [protoregistry docs](https://pkg.go.dev/google.golang.org/protobuf@v1.33.0/reflect/protoregistry)
+to add messages dynamically.
+
+#### How do I add types to the descriptor registry for JavaScript?
 
 If a RPC in your schema uses `google.protobuf.Any` in a request or response
 message, you can provide a type registry so that they can be parsed from or
