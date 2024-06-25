@@ -14,6 +14,8 @@ For more on Connect, see the [announcement blog post][blog], the
 specification][protocol].
 
 ## Ecosystem
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fconnectrpc%2Fconnectrpc.com.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fconnectrpc%2Fconnectrpc.com?ref=badge_shield)
+
 
 * [connect-go]: Go servers and clients
 * [connect-es]: TypeScript servers and clients
@@ -41,3 +43,7 @@ Offered under the [Apache 2 license][license].
 [security]: https://connectrpc.com/docs/governance/security
 [rfc]: https://connectrpc.com/docs/governance/project-governance#project-wide-decisions
 [github-org]: https://github.com/connectrpc
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fconnectrpc%2Fconnectrpc.com.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fconnectrpc%2Fconnectrpc.com?ref=badge_large)
