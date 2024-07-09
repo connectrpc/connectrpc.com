@@ -12,9 +12,8 @@ changes ahead of time makes pull request review much smoother. In your issue,
 pull request, and any other communications, please remember to treat your
 fellow contributors with respect!
 
-Note that you'll need to sign the [Contributor License Agreement][cla] before
-we can accept any of your contributions. If necessary, a bot will remind you to
-accept the CLA when you open your pull request.
+Note that for a contribution to be accepted, you must sign off on all commits
+in order to affirm that they comply with the [Developer Certificate of Origin][dco].
 
 ## Documentation changes
 
@@ -53,7 +52,7 @@ required work in other repositories can begin.
 
 [fork]: https://github.com/connectrpc/connectrpc.com/fork
 [open-issue]: https://github.com/connectrpc/connectrpc.com/issues/new
-[cla]: https://cla-assistant.io/connectrpc/connectrpc.com
+[dco]: https://developercertificate.org
 [docusaurus]: https://docusaurus.io
 [vercel]: https://vercel.com
 [swizzling]: swizzling.md
