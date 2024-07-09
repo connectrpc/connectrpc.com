@@ -30,16 +30,16 @@ A similar feature is available for connect-es with the [`cors` export](/docs/nod
 ### gRPC-web
 
 ```
-"allow_methods": "POST",
-"allow_headers": "Content-Type, Grpc-Timeout, X-Grpc-Web, X-User-Agent",
-"expose_headers": "Grpc-Status, Grpc-Message, Grpc-Status-Details-Bin",
+Access-Control-Allow-Methods: POST
+Access-Control-Allow-Headers: Content-Type,Grpc-Timeout,X-Grpc-Web,X-User-Agent
+Access-Control-Expose-Headers: Grpc-Status, Grpc-Message, Grpc-Status-Details-Bin
 ```
 
 ### Connect
 
 ```
-"allow_methods": "GET, POST",
-"allow_headers": "Content-Type, Connect-Protocol-Version, Connect-Timeout-Ms, X-User-Agent",
+Access-Control-Allow-Methods: GET,POST
+Access-Control-Allow-Headers: Content-Type, Connect-Protocol-Version, Connect-Timeout-Ms, X-User-Agent
 ```
 
 ## Preflight request
