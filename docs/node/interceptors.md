@@ -200,7 +200,7 @@ export default (router: ConnectRouter) =>
   router.service(ElizaService, {
     // implements rpc Say
     async say(req, context) {
-      const user = values.get(kUser);
+      const user = context.values.get(kUser);
       return {
         sentence: `Hey ${user.name}! You said: ${req.sentence}`,
       };
