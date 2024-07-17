@@ -184,12 +184,30 @@ Unfortunately, if you still prefer to use `target=ts`, there is no workaround at
 ## React Native
 
 [React Native](https://reactnative.dev) does not offer great support for the Fetch API and the Text Encoding API.  As
-such, React Native requires a polyfill for these two implementations.  We recommend
-[react-native-polyfill-globals](https://github.com/acostalima/react-native-polyfill-globals) to accomplish this:
+such, React Native requires a polyfill for these two implementations.  We recommend the following to accomplish this:
 
-* Install the aforementioned [react-native-polyfill-globals](https://github.com/acostalima/react-native-polyfill-globals) project.
-* Next, follow the `Polyfill all automatically` instructions under **Usage**.
-* Finally, apply the patches included in the project.  It is recommended to use the `patch-package` instructions.
+1. Install the polyfills.
+
+```bash
+npm install react-native-fast-encoder react-native-fetch-api web-streams-polyfill
+```
+
+2. Apply the polyfills in the root of your app.
+
+```js
+import { polyfillGlobal } from "react-native/Libraries/Utilities/PolyfillFunctions"
+import TextEncoder from "react-native-fast-encoder"
+import { fetch, Headers, Request, Response } from "react-native-fetch-api"
+import { ReadableStream } from "web-streams-polyfill"
+
+polyfillGlobal("ReadableStream", () => ReadableStream)
+polyfillGlobal("TextDecoder", () => TextEncoder)
+polyfillGlobal("TextEncoder", () => TextEncoder)
+polyfillGlobal("fetch", () => fetch)
+polyfillGlobal("Headers", () => Headers)
+polyfillGlobal("Request", () => Request)
+polyfillGlobal("Response", () => Response)
+```
 
 Unfortunately, only unary requests via the [Connect protocol](../protocol.md) are supported in
 React Native due to some limitations in the above polyfills.
