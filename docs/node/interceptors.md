@@ -19,7 +19,7 @@ import { connectNodeAdapter } from "@connectrpc/connect-node";
 import type { Interceptor } from "@connectrpc/connect";
 
 const logger: Interceptor = (next) => async (req) => {
-  console.log(`recevied message on ${req.url}`);
+  console.log(`received message on ${req.url}`);
   return await next(req);
 };
 
@@ -39,7 +39,7 @@ To intercept responses, we simply look at the return value of `next()`:
 
 ```ts
 const logger: Interceptor = (next) => async (req) => {
-  console.log(`recevied message on ${req.url}`);
+  console.log(`received message on ${req.url}`);
   const res = await next(req);
   if (!res.stream) {
     console.log("message:", res.message);
@@ -200,7 +200,7 @@ export default (router: ConnectRouter) =>
   router.service(ElizaService, {
     // implements rpc Say
     async say(req, context) {
-      const user = values.get(kUser);
+      const user = context.values.get(kUser);
       return {
         sentence: `Hey ${user.name}! You said: ${req.sentence}`,
       };
