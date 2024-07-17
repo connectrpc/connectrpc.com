@@ -210,10 +210,8 @@ polyfillGlobal("Response", () => Response)
 ```
 
 Unfortunately, only unary requests via the [Connect protocol](../protocol.md) are supported in
-React Native due to some limitations in the above polyfills.
-
-If you would like to see improved support, please give us a +1 on [this issue](https://github.com/connectrpc/connect-es/issues/199)
-and we will prioritize it accordingly.
+React Native due to some limitations in React Native's implementation of the Fetch API. For more information, please see 
+[this issue](https://github.com/connectrpc/connect-es/issues/199)
 
 For a working example, see the [React Native project](https://github.com/connectrpc/examples-es/tree/main/react-native)
 in the [examples-es](https://github.com/connectrpc/examples-es) repo.
