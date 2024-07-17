@@ -263,3 +263,5 @@ export default (router: ConnectRouter) => {
 }
 ```
 
+Note that `ConnectRouter.service` allows you to omit methods. The router will automatically add a method that responds
+with an error code `unimplemented`. 
