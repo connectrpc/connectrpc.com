@@ -310,8 +310,6 @@ Types not declared from the service's methods may need to be specified to ensure
 This often appears as a `google.protobuf.Any` failing to unmarshal with an unknown type error.
 To ensure the message can be used, add the type to the descriptor registry for your languages' runtimes.
 
-#### How do I add types to the descriptor registry for Go?
-
 The most pragmatic approach is to use the global type registry and import the generated Protobuf
 message using a blank import. For example, given a generated file `proto/path/mytype.pb.go`, add a
 Go import as `import _ proto/path/mytype.pb.go` to your Go application to ensure the type is registered.
