@@ -25,7 +25,7 @@ http.createServer(
 ).listen(8080);
 ```
 
-The function accepts all common options, and the following additional
+The function accepts all [common options](#common-options), and the following additional
 ones:
 
 - `fallback?: NodeHandlerFn`<br/>
@@ -75,7 +75,13 @@ await server.listen({
 });
 ```
 
-The plugin accepts all common options, and the following additional ones:
+The plugin accepts all [common options](#common-options), and the following additional ones:
+- `shutdownTimeoutMs?: number`<br/>
+  If set, the server will wait for the specified duration before aborting any 
+  in-flight requests once [`fastify.close`](https://fastify.dev/docs/latest/Reference/Server/#close) is called.
+- `shutdownError?: unknown`<br/>
+  The reason to use when shutdown occurs. Note that if this is a `ConnectError` it will
+  be sent to the client.
 - `contextValues?: (req: FastifyRequest) => ContextValues`<br/>
   A function that returns a set of context values for each request. The
   context values are passed to the service implementation. See
@@ -112,9 +118,14 @@ This file is a Next.js [catch-all API route](https://nextjs.org/docs/routing/dyn
 serve your Connect RPCs with the `/api` prefix. Make sure to include the `/api` prefix in the `baseUrl` option for
 your client transport.
 
-The middleware accepts all common options, and the following additional
+The middleware accepts all [common options](#common-options), and the following additional
 one:
 
+- `prefix?: string`<br/>
+  Serve all handlers under this prefix. For example, the prefix "/something"
+  will serve the RPC foo.FooService/Bar under "/something/foo.FooService/Bar".
+  By default, this is `/api` for Next.js.<br/>
+  Note that many gRPC client implementations do not allow for prefixes.
 - `contextValues?: (req: NextApiRequest) => ContextValues`<br/>
   A function that returns a set of context values for each request. The
   context values are passed to the service implementation. See
@@ -150,13 +161,13 @@ app.use(expressConnectMiddleware({
 http.createServer(app).listen(8080);
 ```
 
-The middleware accepts all common options, and the following additional
+The middleware accepts all [common options](#common-options), and the following additional
 one:
 
 - `requestPathPrefix?: string`<br/>
-Serve all handlers under this prefix. For example, the prefix "/something"
-will serve the RPC foo.FooService/Bar under "/something/foo.FooService/Bar".
-Note that many gRPC client implementations do not allow for prefixes.
+  Serve all handlers under this prefix. For example, the prefix "/something"
+  will serve the RPC foo.FooService/Bar under "/something/foo.FooService/Bar".
+  Note that many gRPC client implementations do not allow for prefixes.
 - `contextValues?: (req: express.Request) => ContextValues`<br/>
   A function that returns a set of context values for each request. The
   context values are passed to the service implementation. See
@@ -176,10 +187,14 @@ All adapters take a set of common options:
 - `routes: (router: ConnectRouter) => void`<br/>
   The adapter will call this function, and lets you register your services.<br/>
   See [Implementing services](./implementing-services.md) for an example.
+- `maxTimeoutMs?: number`<br/>
+  The maximum value for [timeouts](./timeouts) that clients may specify.
+  If a client requests a timeout that is greater than `maxTimeoutMs`,
+  the server responds with the error code `invalid_argument`.
 - `connect?: boolean`<br/>
   Whether to enable the Connect protocol for your routes. Enabled by default.
 - `grpcWeb?: boolean`<br/>
-  Whether to enable the gRPC protocol for your routes. Enabled by default.
+  Whether to enable the gRPC-web protocol for your routes. Enabled by default.
 - `grpc?: boolean`<br/>
   Whether to enable the gRPC protocol for your routes. Enabled by default.
 - `interceptors?: Interceptor[]`<br/>
