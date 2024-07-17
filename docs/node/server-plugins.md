@@ -172,7 +172,7 @@ All adapters take a set of common options:
   The adapter will call this function, and lets you register your services.<br/>
   See [Implementing services](./implementing-services.md) for an example.
 - `maxTimeoutMs?: number`<br/>
-  The maximum value for timeouts that clients may specify.
+  The maximum value for [timeouts](./timeouts) that clients may specify.
   If a client requests a timeout that is greater than `maxTimeoutMs`,
   the server responds with the error code `invalid_argument`.
 - `connect?: boolean`<br/>
