@@ -126,6 +126,18 @@ require you to configure Cross-Origin Resource Sharing (CORS). Not doing so may 
 errors like "missing trailer", etc. If the response is valid and the request is to a different
 domain, make sure the server has the correct [CORS configuration](./cors.md#configurations-by-protocol).
 
+### Why does my Web client not receive the error code from my server?
+
+Most of the time, it's because the CORS setup of the server is incomplete. It's not enough to allow request origin, 
+methods, and headers—you also have to to expose response headers. See the [CORS documentation](./cors.md) for details.
+
+### Why does the network explorer in the browser show strange characters in payload?
+
+The Protobuf binary format is efficient, but can't be rendered as text by the browser. If you use a Connect-ES client, 
+you can switch to JSON with the [transport option](./web/choosing-a-protocol) `useBinaryFormat: false` to make 
+troubleshooting easier. Unary RPCs use pure JSON payloads with the Connect protocol.
+
+
 ## Serialization & compression
 
 ### Why are numbers serialized as strings in JSON?
@@ -270,6 +282,41 @@ func grpcOnlyMiddleware(next http.Handler) http.Handler {
 You can customize the error message by providing a different `Codec`. Code
 and details can't be customized.
 
+### How do I use custom JSON options like `EmitUnpopulated` in Connect-Go?
+
+You can use these options by customizing the codec. https://github.com/akshayjshah/connectproto is a handy project that 
+makes this easier.
+
+### Should graceful shutdown of streaming endpoints be manually handled in Connect-go?
+
+Yes. The [`http.Server.Shutdown`](https://pkg.go.dev/net/http#Server.Shutdown) method documentation has a special note 
+about this:
+
+> Shutdown does not attempt to close nor wait for hijacked connections such as WebSockets. The caller of Shutdown should 
+> separately notify such long-lived connections of shutdown and wait for them to close, if desired. See 
+> [Server.RegisterOnShutdown](https://pkg.go.dev/net/http#Server.RegisterOnShutdown) for a way to register shutdown 
+> notification functions.
+
+The same principle applies to gRPC streams. In your handlers, you could listen for the request context and another 
+global server context when waiting on streams. If your `Server.RegisterOnShutdown()` method cancelled that global 
+server context, then all of your handlers would know that the request should be completed soon because of a server shutdown.
+
+To reiterate, `Shutdown()` does not cancel all of the request contexts. Instead it stops accepting new connections 
+while letting the existing requests finish normally—shutting down "gracefully".
+
+### How do I import types for `google.protobuf.Any`?
+
+Types not declared from the service's methods may need to be specified to ensure availability
+This often appears as a `google.protobuf.Any` failing to unmarshal with an unknown type error.
+To ensure the message can be used, add the type to the descriptor registry for your languages' runtimes.
+
+The most pragmatic approach is to use the global type registry and import the generated Protobuf
+message using a blank import. For example, given a generated file `proto/path/mytype.pb.go`, add a
+Go import as `import _ proto/path/mytype.pb.go` to your Go application to ensure the type is registered.
+
+For types only available at runtime, please see the [protoregistry docs](https://pkg.go.dev/google.golang.org/protobuf@v1.33.0/reflect/protoregistry)
+to add messages dynamically.
+
 ## TypeScript and JavaScript
 
 ### Why do I need a proxy to call gRPC backends?
@@ -318,27 +365,21 @@ Additionally, the code generator plugin used by Connect-ES is based on the plugi
 framework also provided by Protobuf-ES. For any questions you may have about this library,
 visit the [Protobuf-ES FAQ page](https://github.com/bufbuild/protobuf-es/blob/main/docs/faq.md).
 
-### How do I import types for `google.protobuf.Any`?
-
-Types not declared from the service's methods may need to be specified to ensure availability
-This often appears as a `google.protobuf.Any` failing to unmarshal with an unknown type error.
-To ensure the message can be used, add the type to the descriptor registry for your languages' runtimes.
-
-#### How do I add types to the descriptor registry for Go?
-
-The most pragmatic approach is to use the global type registry and import the generated Protobuf
-message using a blank import. For example, given a generated file `proto/path/mytype.pb.go`, add a
-Go import as `import _ proto/path/mytype.pb.go` to your Go application to ensure the type is registered.
-
-For types only available at runtime, please see the [protoregistry docs](https://pkg.go.dev/google.golang.org/protobuf@v1.33.0/reflect/protoregistry)
-to add messages dynamically.
-
 #### How do I add types to the descriptor registry for JavaScript?
 
 If a RPC in your schema uses `google.protobuf.Any` in a request or response
 message, you can provide a type registry so that they can be parsed from or
 serialized to JSON. See [this GitHub discussion](https://github.com/connectrpc/connect-es/discussions/689#discussioncomment-6280653)
 for a detailed explanation and an example.
+
+### How do I set a cookie on the server?
+
+Every service method on the server receives the `HandlerContext` as the second argument, which provides access to 
+response headers. You can set cookies with the `Set-Cookie` response header—for example:
+
+```
+ctx.responseHeader.append("Set-Cookie", "foo=bar; Max=Age=120")
+```
 
 ## Deployment
 
