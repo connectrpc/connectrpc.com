@@ -261,3 +261,15 @@ func (i *authInterceptor) WrapStreamingHandler(next connect.StreamingHandlerFunc
 ```
 
 We apply our interceptor just as we did before, using `WithInterceptors`.
+
+## Stream Connection Timeout
+gRPC streams like tcp or websocket has connection timeout and need to be specified how long the connection would be alive. To set the connection timeout configuration set the `IdleTimeout` to your `&http.Server{}` instance.
+Example:
+
+```go
+server := &http.Server{
+  // IdleTimeout:  0,
+  // IdleTimeout:  1 * time.Minute,
+}
+```
+Zero idle timeout means connection would be alive until you close it, no timeout really.
