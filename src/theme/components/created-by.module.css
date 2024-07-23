@@ -6,7 +6,7 @@
 
 .bufLogo {
   display: flex;
-  margin-bottom: 3px;
+  margin-bottom: 1px;
 }
 .bufLogo > svg {
   height: 23px;
