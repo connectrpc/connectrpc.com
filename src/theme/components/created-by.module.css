@@ -4,6 +4,10 @@
   --buf-button-border-color-dark: #1a8870;
 }
 
+.bufLogo {
+  display: flex;
+  margin-bottom: 3px;
+}
 .bufLogo > svg {
   height: 23px;
   width: 51.12px;
