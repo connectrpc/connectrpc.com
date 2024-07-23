@@ -4,7 +4,7 @@
   --buf-button-border-color-dark: #1a8870;
 }
 
-.bufLogo {
+.bufLogo > svg {
   height: 23px;
   width: 51.12px;
 }
