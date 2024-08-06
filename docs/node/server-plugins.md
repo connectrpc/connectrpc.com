@@ -101,7 +101,7 @@ using the latest React features. With [@connectrpc/connect-next](https://www.npm
 you can serve your Connect RPCs via Next.js API Routes.
 
 ```bash
-$ npm install next @connectrpc/connect@"^1.0.0" @connectrpc/connect-node@"^1.0.0" @connectrpc/connect-next@"^1.0.0"
+$ npm install next@"^13.0.0" @connectrpc/connect@"^1.0.0" @connectrpc/connect-node@"^1.0.0" @connectrpc/connect-next@"^1.0.0"
 ```
 
 To enable the server plugin, create the file `pages/api/[[...connect]].ts` in your project:
