@@ -34,7 +34,7 @@ $ cd connect-example
 $ npm init -y
 $ npm install typescript tsx
 $ npx tsc --init
-$ npm install @bufbuild/buf @bufbuild/protoc-gen-es@"^1.10.0" @bufbuild/protobuf@"^1.10.0" @connectrpc/protoc-gen-connect-es @connectrpc/connect
+$ npm install @bufbuild/buf @bufbuild/protoc-gen-es@"^1.0.0" @bufbuild/protobuf@"^1.0.0" @connectrpc/protoc-gen-connect-es@"^1.0.0" @connectrpc/connect@"^1.0.0"
 ```
 
 ## Define a service
