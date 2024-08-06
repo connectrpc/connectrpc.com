@@ -69,8 +69,8 @@ The code we will generate has three runtime dependencies:
 First, let's install `buf`, the plugins and runtime dependencies:
 
 ```bash
-$ npm install --save-dev @bufbuild/buf @connectrpc/protoc-gen-connect-es @bufbuild/protoc-gen-es
-$ npm install @connectrpc/connect @connectrpc/connect-web @bufbuild/protobuf
+$ npm install --save-dev @bufbuild/buf @connectrpc/protoc-gen-connect-es@"^1.0.0" @bufbuild/protoc-gen-es@"^1.0.0"
+$ npm install @connectrpc/connect@"^1.0.0" @connectrpc/connect-web@"^1.0.0" @bufbuild/protobuf@"^1.0.0"
 ```
 
 Next, tell Buf to use the two plugins with a new configuration file:

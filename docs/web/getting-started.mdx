@@ -51,7 +51,7 @@ the types we need on the fly:
 
 ```bash
 $ npm config set @buf:registry https://buf.build/gen/npm/v1
-$ npm install @buf/connectrpc_eliza.connectrpc_es @connectrpc/connect @connectrpc/connect-web
+$ npm install @buf/connectrpc_eliza.connectrpc_es@1.4.0-20230913231627-233fca715f49.3 @connectrpc/connect@"^v1.0.0" @connectrpc/connect-web@"^v1.0.0"
 ```
 
 (You can generate code locally if you prefer. We'll explain remote and local
@@ -241,7 +241,7 @@ We ran the following commands to build the app:
 $ npm create vite@latest -- connect-example --template react-ts
 $ cd connect-example
 $ npm config set @buf:registry https://buf.build/gen/npm/v1
-$ npm install @buf/connectrpc_eliza.connectrpc_es @connectrpc/connect @connectrpc/connect-web
+$ npm install @buf/connectrpc_eliza.connectrpc_es@1.4.0-20230913231627-233fca715f49.3 @connectrpc/connect@"^1.0.0" @connectrpc/connect-web@"^1.0.0"
 $ npm run dev
 ```
 
