@@ -55,7 +55,7 @@ with your Connect RPCs. Use the plugin from [@connectrpc/connect-fastify](https:
 with Fastify:
 
 ```bash
-$ npm install fastify @connectrpc/connect @connectrpc/connect-node @connectrpc/connect-fastify
+$ npm install fastify @connectrpc/connect@"^1.0.0" @connectrpc/connect-node@"^1.0.0" @connectrpc/connect-fastify@"^1.0.0"
 ```
 
 ```ts
@@ -101,7 +101,7 @@ using the latest React features. With [@connectrpc/connect-next](https://www.npm
 you can serve your Connect RPCs via Next.js API Routes.
 
 ```bash
-$ npm install next @connectrpc/connect @connectrpc/connect-node @connectrpc/connect-next
+$ npm install next @connectrpc/connect@"^1.0.0" @connectrpc/connect-node@"^1.0.0" @connectrpc/connect-next@"^1.0.0"
 ```
 
 To enable the server plugin, create the file `pages/api/[[...connect]].ts` in your project:
@@ -143,7 +143,7 @@ popular because of its simplicity. Use the middleware provided by [@connectrpc/c
 to add your Connect RPCs to Express:
 
 ```bash
-$ npm install express @connectrpc/connect @connectrpc/connect-node @connectrpc/connect-express
+$ npm install express @connectrpc/connect@"^1.0.0" @connectrpc/connect-node@"^1.0.0" @connectrpc/connect-express@"^1.0.0"
 ```
 
 ```ts
