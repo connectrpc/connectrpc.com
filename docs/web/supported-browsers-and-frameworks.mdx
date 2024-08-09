@@ -203,7 +203,13 @@ import { ReadableStream } from "web-streams-polyfill"
 polyfillGlobal("ReadableStream", () => ReadableStream)
 polyfillGlobal("TextDecoder", () => TextEncoder)
 polyfillGlobal("TextEncoder", () => TextEncoder)
-polyfillGlobal("fetch", () => fetch)
+polyfillGlobal(
+  "fetch", () => (...args) => fetch(args[0], { 
+    ...args[1], 
+    // Inject textStreaming: https://github.com/react-native-community/fetch/issues/15
+    reactNative: { textStreaming: true }
+  }),
+)
 polyfillGlobal("Headers", () => Headers)
 polyfillGlobal("Request", () => Request)
 polyfillGlobal("Response", () => Response)
