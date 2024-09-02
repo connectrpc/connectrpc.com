@@ -199,6 +199,12 @@ All adapters take a set of common options:
   Whether to enable the gRPC protocol for your routes. Enabled by default.
 - `interceptors?: Interceptor[]`<br/>
   An array of interceptors to apply to all requests. See [Interceptors](./interceptors.md) for more information.
+- `jsonOptions`<br/>
+  Protobuf [JSON serialization options](https://github.com/bufbuild/protobuf-es/blob/v1/docs/runtime_api.md#json-serialization-options).
+  If your service uses `google.protobuf.Any`, provide a `typeRegistry` with the
+  allowed message types.
+- `binaryOptions`<br/>
+  Protobuf [binary serialization options](https://github.com/bufbuild/protobuf-es/blob/v1/docs/runtime_api.md#binary-serialization-options).
 
 
 ## HTTP/2, TLS, and gRPC
