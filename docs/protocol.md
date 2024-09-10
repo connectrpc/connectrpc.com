@@ -595,7 +595,7 @@ number of other properties. The "type" field contains the fully-qualified
 Protobuf message name as a UTF-8 string, and the "value" field contains
 unpadded, base64-encoded binary Protobuf data. For readability on the wire,
 server implementations may also serialize the detail to JSON and include the
-resulting object under the "debug" key. Clients must not depend on data in the
+resulting value under the "debug" key. Clients must not depend on data in the
 "debug" key when deserializing details.
 
 ```json
@@ -606,7 +606,7 @@ resulting object under the "debug" key. Clients must not depend on data in the
     {
       "type": "google.rpc.RetryInfo",
       "value": "CgIIPA",
-      "debug": {"retryDelay": "30s"},
+      "debug": {"retryDelay": "30s"}
     }
   ]
 }
