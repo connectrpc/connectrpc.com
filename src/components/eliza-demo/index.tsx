@@ -27,7 +27,7 @@ const transport = createConnectTransport({
 const elizaServicePromiseClient = createPromiseClient(ElizaService, transport);
 
 interface DemoProps {
-  focusOnMount: boolean;
+  focusOnMount?: boolean;
 }
 
 export const ElizaDemo: React.FC<DemoProps> = ({ focusOnMount = false }) => {
