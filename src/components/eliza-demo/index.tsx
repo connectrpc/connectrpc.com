@@ -82,6 +82,7 @@ export const ElizaDemo: React.FC<{ focusOnMount?: boolean }> = ({
   return (
     <div>
       <BufTerminal focusOnMount={focusOnMount} />
+      {/*
       <div className={styles.container} onClick={() => focus()}>
         <TerminalHeader>Connect-Web</TerminalHeader>
         <Terminal
@@ -95,6 +96,7 @@ export const ElizaDemo: React.FC<{ focusOnMount?: boolean }> = ({
           focusOnMount={focusOnMount}
         />
       </div>
+        */}
     </div>
   );
 };

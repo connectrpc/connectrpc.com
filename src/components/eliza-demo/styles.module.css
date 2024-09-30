@@ -1,97 +1,39 @@
-.container > :global(.crt-terminal) {
+.terminalContainer {
   font-family: var(--ifm-font-family-monospace);
   background: #f4f5fe;
   color: black;
-  padding-left: 40px;
-  padding-right: 40px;
   border-radius: 2px;
   box-shadow: none;
   text-shadow: none;
-  /* 0 0 1px #42dffb, 0 0 4px #42dffb;*/
-  border: none;
+  border: 1px solid #eee;
+  height: 300px;
+  margin-bottom: 15px;
 }
-
-.container > :global(.crt-terminal) ::selection {
-  color: black;
-  background: white;
-}
-
-.container :global(.crt-cursor-symbol) {
-  background-color: black;
-}
-
-.container :global(.crt-scanner) {
-  background: linear-gradient(
-    180deg,
-    transparent 0,
-    #fffcfc 85%,
-    #42dffb 0,
-    transparent
-  );
-}
-
-.container :global(.crt-terminal__overflow-container)::-webkit-scrollbar-thumb {
-  border-color: white;
-  background-color: white;
-}
-
-.elizaResponse {
-  color: var(--buf-ink-blue-02);
-  padding: 0 20px !important;
-}
-
-.container {
-  height: 240px;
-  position: relative;
-}
-
-.container :global(.crt-command-line) {
-  padding: 10px 0;
-}
-
-.fakeBrowserBar {
-  background-color: var(--buf-grey-01);
-  border-radius: 4px;
-  width: 50%;
-  padding: 4px 10px;
-  display: flex;
-  color: var(--buf-ink-blue-03);
-  gap: 6px;
-}
-
-.prefix {
-  color: var(--buf-grey-03);
-}
-
-@media screen and (max-width: 966px) {
-  .container > :global(.crt-terminal) {
-    padding-left: 20px;
-    padding-right: 20px;
-    font-size: 14px;
-  }
-}
-
-.terminalContainer {
-  font-family: var(--ifm-font-family-monospace);
-  height: 240px;
-  position: relative;
-}
-
 .terminal {
   padding: 25px 40px;
 }
-.terminal p {
+.terminalContainer p {
   margin: 0;
   padding: 5px 0;
 }
+.terminalBody {
+  color: black;
+  padding: 20px;
+  background: #f4f5fe;
+  height: 100%;
+}
 .titleText {
-  font-weight: bold;
+  font-weight: 400;
   color: black;
 }
 .elizaText {
   color: var(--buf-ink-blue-02);
+  white-space: nowrap;
+  overflow: hidden;
+  width: 30em;
+  animation: linearwipe 500ms steps(60, end);
 }
-.elizaText span {
+.elizaText .spacer {
   visibility: hidden;
 }
 .userInput {
@@ -105,12 +47,11 @@
   font-weight: bold;
   color: black;
 }
-.terminalText {
-}
-.blinkingCursor {
-  font-weight: 100;
-  font-size: 30px;
-  color: #2e3d48;
+.blink {
+  height: 20px;
+  width: 10px;
+  background-color: #111010;
+  animation: blink 1s step-start 0s infinite;
   -webkit-animation: 1s blink step-end infinite;
   -moz-animation: 1s blink step-end infinite;
   -ms-animation: 1s blink step-end infinite;
@@ -118,52 +59,14 @@
   animation: 1s blink step-end infinite;
 }
 
-@keyframes "blink" {
-  from,
-  to {
-    color: transparent;
-  }
+@keyframes blink {
   50% {
-    color: black;
+    opacity: 0;
   }
 }
 
-@-moz-keyframes blink {
-  from,
-  to {
-    color: transparent;
-  }
-  50% {
-    color: black;
-  }
-}
-
-@-webkit-keyframes "blink" {
-  from,
-  to {
-    color: transparent;
-  }
-  50% {
-    color: black;
-  }
-}
-
-@-ms-keyframes "blink" {
-  from,
-  to {
-    color: transparent;
-  }
-  50% {
-    color: black;
-  }
-}
-
-@-o-keyframes "blink" {
-  from,
-  to {
-    color: transparent;
-  }
-  50% {
-    color: black;
+@keyframes linearwipe {
+  from {
+    width: 0;
   }
 }
