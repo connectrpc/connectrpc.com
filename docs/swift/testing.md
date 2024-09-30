@@ -79,7 +79,10 @@ When the production `connect-swift` plugin is invoked, it outputs
 - A protocol interface ending with `*ClientInterface`
 - A production implementation that conforms to the protocol and ends with `*Client`
 
-<details><summary>Click to expand <code>eliza.connect.swift</code></summary>
+<details>
+<summary>
+Click to expand <code>eliza.connect.swift</code>
+</summary>
 
 ```swift
 import Connect
@@ -130,7 +133,10 @@ When the mock `connect-swift-mocks` plugin is invoked, it outputs a
 `.mock.swift` file which includes an implementation ending with `*ClientMock`
 that conforms to the same interface as the production client:
 
-<details><summary>Click to expand <code>eliza.mock.swift</code></summary>
+<details>
+<summary>
+Click to expand <code>eliza.mock.swift</code>
+</summary>
 
 ```swift
 import Combine

@@ -209,17 +209,17 @@ function CodeBlock({
                       lineProps.className += lineClassNames[i].join(" ");
                     }
 
+                    const { key: _, ...rest } = lineProps;
+
                     return (
-                      <span key={i} {...lineProps}>
-                        {line.map((token, key) => (
-                          <span
-                            key={key}
-                            {...getTokenProps({
-                              token,
-                              key,
-                            })}
-                          />
-                        ))}
+                      <span key={i} {...rest}>
+                        {line.map((token, key) => {
+                          const { key: _, ...restOf } = getTokenProps({
+                            token,
+                            key,
+                          });
+                          return <span key={key} {...restOf} />;
+                        })}
                         <br />
                       </span>
                     );
@@ -246,13 +246,19 @@ function CodeBlock({
                       // Do not apply syntax highlighting to console output
                       delete lineProps.style;
 
+                      const { key, ...rest } = lineProps;
+
                       return (
-                        <span key={i} {...lineProps}>
+                        <span key={i} {...rest}>
                           {line.map((token, key) => {
                             const tokenProps = getTokenProps({ token, key });
                             // Do not apply syntax highlighting to console output
                             delete tokenProps.style;
-                            return <span key={key} {...tokenProps} />;
+                            const { key: _, ...restOf } = getTokenProps({
+                              token,
+                              key,
+                            });
+                            return <span key={key} {...restOf} />;
                           })}
                         </span>
                       );

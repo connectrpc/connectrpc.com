@@ -143,23 +143,23 @@ general-purpose HTTP tools.
 * **Unary-Call-Specification** &rarr; Method-Post Path Unary-Content-Type \[Connect-Protocol-Version\] \[Timeout\] \[Content-Encoding\] \[Accept-Encoding\]
 * **Method-Post** &rarr; ":method POST"
 * **Path** &rarr; ":path" "/" [Routing-Prefix "/"] Procedure-Name ; case-sensitive
-* **Routing-Prefix** &rarr; {_arbitrary prefix_}
-* **Procedure-Name** &rarr; {_IDL-specific service &amp; method name_} ; see [Protocol Buffers](#protobuf)
-* **Message-Codec** &rarr; ("proto" / "json" / {_custom_})
+* **Routing-Prefix** &rarr; \{_arbitrary prefix_\}
+* **Procedure-Name** &rarr; \{_IDL-specific service &amp; method name_\} ; see [Protocol Buffers](#protobuf)
+* **Message-Codec** &rarr; ("proto" / "json" / \{_custom_\})
 * **Unary-Content-Type** &rarr; "content-type" "application/" Message-Codec
 * **Connect-Protocol-Version** &rarr; "connect-protocol-version" "1"
 * **Timeout** &rarr; "connect-timeout-ms" Timeout-Milliseconds
-* **Timeout-Milliseconds** &rarr; {_positive integer as ASCII string of at most 10 digits_}
+* **Timeout-Milliseconds** &rarr; \{_positive integer as ASCII string of at most 10 digits_\}
 * **Content-Encoding** &rarr; "content-encoding" Content-Coding
-* **Content-Coding** &rarr; "identity" / "gzip" / "br" / "zstd" / {_custom_}
+* **Content-Coding** &rarr; "identity" / "gzip" / "br" / "zstd" / \{_custom_\}
 * **Accept-Encoding** &rarr; "accept-encoding" Content-Coding \*("," [" "] Content-Coding) ; subset of HTTP quality value syntax
 * **Leading-Metadata** &rarr; Custom-Metadata
 * **Custom-Metadata** &rarr; ASCII-Metadata / Binary-Metadata
 * **ASCII-Metadata** &rarr; Header-Name ASCII-Value
-* **Binary-Metadata** &rarr; {Header-Name "-bin"} {base64-encoded value}
+* **Binary-Metadata** &rarr; \{Header-Name "-bin"\} \{base64-encoded value\}
 * **Header-Name** &rarr; 1\*( %x30-39 / %x61-7A / "\_" / "-" / ".") ; 0-9 a-z \_ - .
 * **ASCII-Value** &rarr; 1\*( %x20-%x7E ) ; space &amp; printable ASCII
-* **Bare-Message** &rarr; *{binary octet}
+* **Bare-Message** &rarr; *\{binary octet\}
 
 **Unary-Request-Headers** are sent as &mdash; and have the same semantics as
 &mdash; HTTP headers. Servers may respond with an error if the client sends too
@@ -215,7 +215,7 @@ content.
 * **Unary-Get-Call-Specification** &rarr; Method-Get Path "?" Query-Get \[Timeout\] \[Accept-Encoding\]
 * **Method-Get** &rarr; ":method GET"
 * **Query-Get** &rarr; Message-Query Encoding-Query \[Base64-Query\] \[Compression-Query\] \[Connect-Version-Query\]
-* **Message-Query** &rarr; "message=" (*{percent-encoded octet})
+* **Message-Query** &rarr; "message=" (*\{percent-encoded octet\})
 * **Base64-Query** &rarr; "&base64=1"
 * **Encoding-Query** &rarr; "&encoding=" Message-Codec
 * **Compression-Query** &rarr; "&compression=" Content-Coding
@@ -299,10 +299,10 @@ an HTTP status code of 400.
 
 * **Unary-Response** &rarr; Unary-Response-Headers Bare-Message
 * **Unary-Response-Headers** &rarr; HTTP-Status Unary-Content-Type \[Content-Encoding\] \[Accept-Encoding\] \*Leading-Metadata \*Prefixed-Trailing-Metadata
-* **HTTP-Status** &rarr; ":status" ("200" / {_error code translated to HTTP_})
+* **HTTP-Status** &rarr; ":status" ("200" / \{_error code translated to HTTP_\})
 * **Prefixed-Trailing-Metadata** &rarr; Prefixed-ASCII-Metadata / Prefixed-Binary-Metadata
 * **Prefixed-ASCII-Metadata** &rarr; Prefixed-Header-Name ASCII-Value
-* **Prefixed-Binary-Metadata** &rarr; {Prefixed-Header-Name "-bin"} {base64-encoded value}
+* **Prefixed-Binary-Metadata** &rarr; \{Prefixed-Header-Name "-bin"\} \{base64-encoded value\}
 * **Prefixed-Header-Name** &rarr; "trailer-" Header-Name
 
 **Unary-Response-Headers** are sent as &mdash; and have the same semantics as
@@ -422,13 +422,13 @@ RPC types may be unavailable.
 * **Streaming-Request** &rarr; Streaming-Request-Headers \*Enveloped-Message
 * **Streaming-Request-Headers** &rarr; Streaming-Call-Specification \*Leading-Metadata
 * **Streaming-Call-Specification** &rarr; Method-Post Path Streaming-Content-Type \[Connect-Protocol-Version\] \[Timeout\] \[Streaming-Content-Encoding\] \[Streaming-Accept-Encoding\]
-* **Streaming-Content-Type** &rarr; "content-type" "application/connect+" ("proto" / "json" / {_custom_})
+* **Streaming-Content-Type** &rarr; "content-type" "application/connect+" ("proto" / "json" / \{_custom_\})
 * **Streaming-Content-Encoding** &rarr; "connect-content-encoding" Content-Coding
 * **Streaming-Accept-Encoding** &rarr; "connect-accept-encoding" Content-Coding \*("," [" "] Content-Coding)
 * **Enveloped-Message** &rarr; Envelope-Flags Message-Length Message
 * **Envelope-Flags** &rarr; %d0-255 ; 8 bitwise flags encoded as 1 byte unsigned integer
-* **Message-Length** &rarr; {_length of Message_} ; encoded as 4 byte unsigned integer, big-endian
-* **Message** &rarr; *{binary octet}
+* **Message-Length** &rarr; \{_length of Message_\} ; encoded as 4 byte unsigned integer, big-endian
+* **Message** &rarr; *\{binary octet\}
 
 If **Streaming-Content-Type** does not begin with "application/connect+",
 servers should respond with an HTTP status of 415 Unsupported Media Type. This
@@ -643,7 +643,7 @@ After a successful RPC, `EndStreamResponse` can be as simple as `{}`.
 
 When used with Protocol Buffer IDL,
 
-* **Procedure-Name** &rarr; ?( {_proto package name_} "." ) {_service name_} "/" {_method name_}
+* **Procedure-Name** &rarr; ?( \{_proto package name_\} "." ) \{_service name_\} "/" \{_method name_\}
 * **Unary-Content-Type** &rarr; "content-type application/" ("proto" / "json")
 * **Streaming-Content-Type** &rarr; "content-type application/connect+" ("proto" / "json")
 

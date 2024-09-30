@@ -3,7 +3,7 @@ title: Getting started
 sidebar_position: 1
 ---
 
-Connect-Swift is a small library (<200KB!) that provides support for using
+Connect-Swift is a small library (\<200KB!) that provides support for using
 generated, type-safe, and idiomatic Swift APIs to communicate with your app's
 servers using [Protocol Buffers (Protobuf)][protobuf]. It works with the Connect, gRPC, and gRPC-Web protocols.
 
@@ -197,7 +197,11 @@ At this point, your app should build successfully.
 
 To create the chat view, replace the contents of `ContentView.swift` with:
 
-<details><summary>Click to expand <code>ContentView.swift</code></summary>
+<details>
+
+<summary>
+    Click to expand <code>ContentView.swift</code>
+</summary>
 
 ```swift
 import Combine
@@ -320,7 +324,10 @@ struct ContentView: View {
 
 Lastly, replace the contents of `ElizaApp.swift` with:
 
-<details><summary>Click to expand <code>ElizaApp.swift</code></summary>
+<details>
+<summary>
+Click to expand <code>ElizaApp.swift</code>
+</summary>
 
 ```swift
 import Connect
@@ -397,7 +404,9 @@ If you'd like to use gRPC as the transport protocol in the above example,
 simply change the following lines after ensuring you have
 [included the `ConnectNIO` library dependency](#add-the-connect-swift-package):
 
-<details><summary>Click to expand</summary>
+<details>
+
+<summary>Click to expand</summary>
 
 ```swift
 //highlight-next-line
@@ -483,7 +492,7 @@ using the gRPC protocol for a few reasons:
   as well as the ability to register custom
   [compression algorithms](./using-clients.md#compression)
   and [interceptors](./interceptors.md).
-- **Binary size.** The Connect-Swift library is very small (<200KB)
+- **Binary size.** The Connect-Swift library is very small (\<200KB)
   and does not require any third party networking dependencies when using
   it with the Connect and gRPC-Web protocols. When using it with gRPC,
   the binary size is a bit bigger (~2.4MB) due to the SwiftNIO dependency

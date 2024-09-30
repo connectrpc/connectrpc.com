@@ -14,13 +14,6 @@
 
 import { ElizaService } from "@buf/connectrpc_eliza.connectrpc_es/connectrpc/eliza/v1/eliza_connect";
 import React, { useCallback, useEffect, useRef } from "react";
-import {
-  Terminal,
-  useEventQueue,
-  textLine,
-  textWord,
-  commandLine,
-} from "crt-terminal";
 import { createPromiseClient } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import styles from "./styles.module.css";
@@ -37,26 +30,11 @@ const elizaServicePromiseClient = createPromiseClient(ElizaService, transport);
 export const ElizaDemo: React.FC<{ focusOnMount?: boolean }> = ({
   focusOnMount = false,
 }) => {
-  const eventQueue = useEventQueue();
-  const { print, focus } = eventQueue.handlers;
-
   const callbackRef = useRef(false);
   useEffect(() => {
     if (callbackRef.current) {
       return;
     }
-    print([
-      commandLine({
-        words: [textWord({ characters: "> Meet Eliza, our psychotherapist." })],
-      }),
-      textLine({
-        words: [
-          textWord({ characters: "Eliza: " }),
-          textWord({ characters: "Hi! How are you feeling?" }),
-        ],
-        className: styles.elizaResponse,
-      }),
-    ]);
     callbackRef.current = true;
   }, []);
 
@@ -65,32 +43,13 @@ export const ElizaDemo: React.FC<{ focusOnMount?: boolean }> = ({
       const response = await elizaServicePromiseClient.say({
         sentence: str,
       });
-      print([
-        textLine({
-          words: [
-            textWord({ characters: "Eliza: " }),
-            textWord({ characters: response.sentence }),
-          ],
-          className: styles.elizaResponse,
-        }),
-      ]);
     },
-    [elizaServicePromiseClient, print],
+    [elizaServicePromiseClient],
   );
 
   return (
     <div className={styles.container} onClick={() => focus()}>
       <TerminalHeader>Connect-Web</TerminalHeader>
-      <Terminal
-        queue={eventQueue}
-        onCommand={handleCommand}
-        effects={{
-          pixels: false,
-          screenEffects: true,
-          textEffects: false,
-        }}
-        focusOnMount={focusOnMount}
-      />
     </div>
   );
 };

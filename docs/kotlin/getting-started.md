@@ -226,7 +226,8 @@ The Protobuf dependency can be what the current project is already using. Make s
 versions between the runtime and the Google Java plugin version. Here we are using the latest version.
 :::
 
-<details><summary>Having trouble with Gradle files? Here is what one might look like: </summary>
+<details>
+<summary>Having trouble with Gradle files? Here is what one might look like: </summary>
 
 ```groovy title="app/build.gradle"
 plugins {
