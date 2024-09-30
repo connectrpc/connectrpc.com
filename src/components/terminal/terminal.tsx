@@ -75,9 +75,9 @@ export const Terminal: React.FC<TerminalProps> = ({
   };
 
   // Handler for pressing Enter key
-  const handleKeyPress = (event: KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyPress = async (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
-      handleCommand(inputText);
+      await handleCommand(inputText);
       setInputText("");
     }
   };
