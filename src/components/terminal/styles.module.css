@@ -1,0 +1,119 @@
+.terminalHeaderWrapper {
+  display: flex;
+  border-bottom: 1px solid #cbcbde;
+  height: 40px;
+  justify-content: flex-start;
+  align-items: center;
+  padding-left: 14px;
+  padding-right: 14px;
+  background-color: #f4f5fe;
+  width: 100%;
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px;
+}
+
+.terminalHeaderFakeButtons {
+  display: flex;
+  gap: 8px;
+  position: absolute;
+}
+
+.terminalHeaderFakeButton {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid #cbcbde;
+}
+
+.terminalHeaderText {
+  color: #9699b6;
+  font-family: var(--buf-mono-font);
+  text-transform: uppercase;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 18px;
+  text-align: center;
+  letter-spacing: 0.08em;
+  flex: 1 1 auto;
+  display: flex;
+  justify-content: center;
+}
+
+.terminalContainer {
+  font-family: var(--ifm-font-family-monospace);
+  background: #f4f5fe;
+  color: black;
+  box-shadow: none;
+  text-shadow: none;
+  height: 300px;
+  margin-bottom: 15px;
+}
+.terminal {
+  padding: 25px 40px;
+}
+.terminalContainer p {
+  margin: 0;
+  padding: 5px 0;
+}
+.terminalBody {
+  color: black;
+  padding: 20px;
+  background: #f4f5fe;
+  height: 100%;
+}
+.terminalOverflow {
+  overflow: auto;
+  height: 100%;
+}
+.inputElement {
+  opacity: 0;
+  position: absolute;
+}
+.spacer::after {
+  margin-right: 7px;
+  content: ">";
+}
+.prompt {
+  margin-top: 7px;
+  display: flex;
+  flex: 1 1 auto;
+  width: 100%;
+  align-items: center;
+}
+.elizaText {
+  color: var(--buf-ink-blue-02);
+  white-space: nowrap;
+  /* overflow: hidden; */
+  width: 100%;
+  animation: linearwipe 500ms steps(60, end);
+}
+.elizaText .spacer {
+  visibility: hidden;
+}
+.userText {
+  font-weight: 400;
+  color: black;
+}
+.blinkingCursor {
+  height: 20px;
+  width: 10px;
+  background-color: #111010;
+  animation: blink 1s step-start 0s infinite;
+  -webkit-animation: 1s blink step-end infinite;
+  -moz-animation: 1s blink step-end infinite;
+  -ms-animation: 1s blink step-end infinite;
+  -o-animation: 1s blink step-end infinite;
+  animation: 1s blink step-end infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes linearwipe {
+  from {
+    width: 0;
+  }
+}

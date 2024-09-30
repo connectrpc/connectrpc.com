@@ -13,19 +13,10 @@
 // limitations under the License.
 
 import { ElizaService } from "@buf/connectrpc_eliza.connectrpc_es/connectrpc/eliza/v1/eliza_connect";
-import React, { useCallback, useEffect, useRef } from "react";
-import {
-  Terminal,
-  useEventQueue,
-  textLine,
-  textWord,
-  commandLine,
-} from "crt-terminal";
+import React, { useCallback, useState } from "react";
 import { createPromiseClient } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
-import styles from "./styles.module.css";
-import { TerminalHeader } from "../home/examples";
-import { Terminal as BufTerminal } from "./terminal";
+import { Terminal as BufTerminal, Message } from "../terminal";
 
 const host = "https://demo.connectrpc.com";
 
@@ -35,68 +26,42 @@ const transport = createConnectTransport({
 
 const elizaServicePromiseClient = createPromiseClient(ElizaService, transport);
 
-export const ElizaDemo: React.FC<{ focusOnMount?: boolean }> = ({
-  focusOnMount = false,
-}) => {
-  const eventQueue = useEventQueue();
-  const { print, focus } = eventQueue.handlers;
+interface DemoProps {
+  focusOnMount: boolean;
+}
 
-  const callbackRef = useRef(false);
-  useEffect(() => {
-    if (callbackRef.current) {
-      return;
-    }
-    print([
-      commandLine({
-        words: [textWord({ characters: "> Meet Eliza, our psychotherapist." })],
-      }),
-      textLine({
-        words: [
-          textWord({ characters: "Eliza: " }),
-          textWord({ characters: "Hi! How are you feeling?" }),
-        ],
-        className: styles.elizaResponse,
-      }),
-    ]);
-    callbackRef.current = true;
-  }, []);
+export const ElizaDemo: React.FC<DemoProps> = ({ focusOnMount = false }) => {
+  const [conversation, setConversation] = useState<Message[]>([
+    {
+      sender: "user",
+      text: "Meet Eliza, our psychotherapist",
+    },
+    {
+      sender: "eliza",
+      text: "Hello, how are you feeling?",
+    },
+  ]);
 
   const handleCommand = useCallback(
-    async (str: string) => {
+    async (inputText: string) => {
       const response = await elizaServicePromiseClient.say({
-        sentence: str,
+        sentence: inputText,
       });
-      print([
-        textLine({
-          words: [
-            textWord({ characters: "Eliza: " }),
-            textWord({ characters: response.sentence }),
-          ],
-          className: styles.elizaResponse,
-        }),
-      ]);
+      const updated = [
+        { sender: "user", text: inputText } as Message,
+        { sender: "eliza", text: response.sentence } as Message,
+      ];
+      const updatedConvo = [...conversation, ...updated];
+      setConversation(updatedConvo);
     },
-    [elizaServicePromiseClient, print],
+    [elizaServicePromiseClient, conversation],
   );
 
   return (
-    <div>
-      <BufTerminal focusOnMount={focusOnMount} />
-      {/*
-      <div className={styles.container} onClick={() => focus()}>
-        <TerminalHeader>Connect-Web</TerminalHeader>
-        <Terminal
-          queue={eventQueue}
-          onCommand={handleCommand}
-          effects={{
-            pixels: false,
-            screenEffects: true,
-            textEffects: false,
-          }}
-          focusOnMount={focusOnMount}
-        />
-      </div>
-        */}
-    </div>
+    <BufTerminal
+      conversation={conversation}
+      handleCommand={handleCommand}
+      focusOnMount={focusOnMount}
+    />
   );
 };

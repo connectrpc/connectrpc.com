@@ -58,47 +58,6 @@
   align-items: center;
 }
 
-.terminalHeaderWrapper {
-  display: flex;
-  border-bottom: 1px solid #cbcbde;
-  height: 40px;
-  justify-content: flex-start;
-  align-items: center;
-  padding-left: 14px;
-  padding-right: 14px;
-  background-color: #f4f5fe;
-  width: 100%;
-  border-top-left-radius: 2px;
-  border-top-right-radius: 2px;
-}
-
-.terminalHeaderFakeButtons {
-  display: flex;
-  gap: 8px;
-  position: absolute;
-}
-
-.terminalHeaderFakeButton {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  border: 1px solid #cbcbde;
-}
-
-.terminalHeaderText {
-  color: #9699b6;
-  font-family: var(--buf-mono-font);
-  text-transform: uppercase;
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 18px;
-  text-align: center;
-  letter-spacing: 0.08em;
-  flex: 1 1 auto;
-  display: flex;
-  justify-content: center;
-}
-
 .codeFooter {
   padding-top: var(--ifm-pre-padding);
   padding-right: var(--ifm-pre-padding);
