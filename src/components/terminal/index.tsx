@@ -1,1 +1,1 @@
-export { TerminalHeader, Terminal } from "./terminal";
+export * from "./terminal";
