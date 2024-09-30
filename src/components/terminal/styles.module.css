@@ -83,7 +83,7 @@
 .elizaText {
   color: var(--buf-ink-blue-02);
   white-space: nowrap;
-  /* overflow: hidden; */
+  overflow: hidden;
   width: 100%;
   animation: linearwipe 500ms steps(60, end);
 }

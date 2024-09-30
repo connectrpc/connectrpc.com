@@ -16,7 +16,7 @@ import { ElizaService } from "@buf/connectrpc_eliza.connectrpc_es/connectrpc/eli
 import React, { useCallback, useState } from "react";
 import { createPromiseClient } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
-import { Terminal as BufTerminal, Message } from "../terminal";
+import { Terminal, Message } from "../terminal";
 
 const host = "https://demo.connectrpc.com";
 
@@ -58,7 +58,7 @@ export const ElizaDemo: React.FC<DemoProps> = ({ focusOnMount = false }) => {
   );
 
   return (
-    <BufTerminal
+    <Terminal
       conversation={conversation}
       handleCommand={handleCommand}
       focusOnMount={focusOnMount}
