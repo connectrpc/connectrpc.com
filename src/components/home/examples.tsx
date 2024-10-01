@@ -203,23 +203,23 @@ function CodeBlock({
 
                     const lineProps = getLineProps({
                       line,
-                      key: i,
                     });
 
                     if (lineClassNames[i]) {
                       lineProps.className += lineClassNames[i].join(" ");
                     }
 
-                    const { key: _, ...rest } = lineProps;
-
                     return (
-                      <span key={i} {...rest}>
+                      <span key={i} {...lineProps}>
                         {line.map((token, key) => {
-                          const { key: _, ...restOf } = getTokenProps({
-                            token,
-                            key,
-                          });
-                          return <span key={key} {...restOf} />;
+                          return (
+                            <span
+                              key={key}
+                              {...getTokenProps({
+                                token,
+                              })}
+                            />
+                          );
                         })}
                         <br />
                       </span>
@@ -243,23 +243,17 @@ function CodeBlock({
                         line[0].content = "\n"; // eslint-disable-line no-param-reassign
                       }
 
-                      const lineProps = getLineProps({ line, key: i });
+                      const lineProps = getLineProps({ line });
                       // Do not apply syntax highlighting to console output
                       delete lineProps.style;
 
-                      const { key, ...rest } = lineProps;
-
                       return (
-                        <span key={i} {...rest}>
+                        <span key={i} {...lineProps}>
                           {line.map((token, key) => {
-                            const tokenProps = getTokenProps({ token, key });
+                            const tokenProps = getTokenProps({ token });
                             // Do not apply syntax highlighting to console output
                             delete tokenProps.style;
-                            const { key: _, ...restOf } = getTokenProps({
-                              token,
-                              key,
-                            });
-                            return <span key={key} {...restOf} />;
+                            return <span key={key} {...tokenProps} />;
                           })}
                         </span>
                       );
