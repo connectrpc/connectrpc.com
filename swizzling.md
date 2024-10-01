@@ -34,20 +34,6 @@ components in [`src/theme`](./src/theme) and fully custom components in
 - All text for the front page is defined in
   [`src/components/home/text.tsx`](./src/components/home/text.tsx)
 
-## Vendored libraries
-
-We've vendored out `crt-terminal` in order to fix a focus issue on mount. We
-have added the prop `focusOnMount` to the `Terminal` component.
-
-In order to rebuild the package:
-
-```bash
-cd src/vendor/crt-terminal
-npm install
-npm run build
-rm -rf node_modules
-```
-
 [docusaurus]: https://docusaurus.io
 [swizzling]: https://docusaurus.io/docs/swizzling
 
