@@ -25,7 +25,7 @@ import styles from "./styles.module.css";
 
 interface TerminalProps {
   conversation: Message[];
-  handleCommand: (str: string) => void;
+  handleCommand: (str: string) => Promise<void>;
   focusOnMount: boolean;
 }
 
@@ -87,14 +87,14 @@ export const Terminal: React.FC<TerminalProps> = ({
     if (focusOnMount) {
       handleTerminalFocus();
     }
-  });
+  }, []);
 
   useEffect(() => {
     // If the terminal scroll container has a scroll visibile, scroll to the bottom
     if (terminalRef.current.scrollHeight > terminalRef.current.clientHeight) {
       terminalRef.current?.scrollTo(0, terminalRef.current?.scrollHeight);
     }
-  });
+  }, [conversation]);
 
   return (
     <div className={styles.terminalContainer} onClick={handleTerminalFocus}>

@@ -53,6 +53,7 @@ export const ElizaDemo: React.FC<DemoProps> = ({ focusOnMount = false }) => {
       ];
       const updatedConvo = [...conversation, ...updated];
       setConversation(updatedConvo);
+      return;
     },
     [elizaServicePromiseClient, conversation],
   );
