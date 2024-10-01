@@ -283,7 +283,7 @@ dependencies {
 
 :::note
 
-The default for my Android Studio isn't set up with Gradle `kts`. The examples here will is using
+The default for Android Studio isn't set up with Gradle `kts`. The examples here are using
 classic Gradle with Groovy. With Gradle `kts`, the changes are pretty similar for the dependency
 declarations.
 
