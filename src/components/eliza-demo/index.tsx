@@ -13,11 +13,10 @@
 // limitations under the License.
 
 import { ElizaService } from "@buf/connectrpc_eliza.connectrpc_es/connectrpc/eliza/v1/eliza_connect";
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useState } from "react";
 import { createPromiseClient } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
-import styles from "./styles.module.css";
-import { TerminalHeader } from "../home/examples";
+import { Terminal, Message } from "../terminal";
 
 const host = "https://demo.connectrpc.com";
 
@@ -27,29 +26,43 @@ const transport = createConnectTransport({
 
 const elizaServicePromiseClient = createPromiseClient(ElizaService, transport);
 
-export const ElizaDemo: React.FC<{ focusOnMount?: boolean }> = ({
-  focusOnMount = false,
-}) => {
-  const callbackRef = useRef(false);
-  useEffect(() => {
-    if (callbackRef.current) {
-      return;
-    }
-    callbackRef.current = true;
-  }, []);
+interface DemoProps {
+  focusOnMount?: boolean;
+}
+
+export const ElizaDemo: React.FC<DemoProps> = ({ focusOnMount = false }) => {
+  const [conversation, setConversation] = useState<Message[]>([
+    {
+      sender: "user",
+      text: "Meet Eliza, our psychotherapist",
+    },
+    {
+      sender: "eliza",
+      text: "Hello, how are you feeling?",
+    },
+  ]);
 
   const handleCommand = useCallback(
-    async (str: string) => {
+    async (inputText: string) => {
       const response = await elizaServicePromiseClient.say({
-        sentence: str,
+        sentence: inputText,
       });
+      const updated = [
+        { sender: "user", text: inputText } as Message,
+        { sender: "eliza", text: response.sentence } as Message,
+      ];
+      const updatedConvo = [...conversation, ...updated];
+      setConversation(updatedConvo);
+      return;
     },
-    [elizaServicePromiseClient],
+    [elizaServicePromiseClient, conversation],
   );
 
   return (
-    <div className={styles.container} onClick={() => focus()}>
-      <TerminalHeader>Connect-Web</TerminalHeader>
-    </div>
+    <Terminal
+      conversation={conversation}
+      handleCommand={handleCommand}
+      focusOnMount={focusOnMount}
+    />
   );
 };

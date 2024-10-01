@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import React, { useEffect, useState } from "react";
 import clsx from "clsx";
-import React, { PropsWithChildren, useEffect, useState } from "react";
 import classes from "./examples.module.css";
 import codeBlockStyles from "@site/src/theme/CodeBlock/styles.module.css";
 import {
@@ -32,6 +32,7 @@ import { Highlight } from "prism-react-renderer";
 import Translate, { translate } from "@docusaurus/Translate";
 import Tooltip from "../tooltip";
 import { ElizaDemo } from "../eliza-demo";
+import { TerminalHeader } from "../terminal";
 
 const plainHttpTerminalContent = `
 $ curl \\
@@ -315,21 +316,3 @@ function CodeBlock({
     </Highlight>
   );
 }
-
-type TerminalHeaderProps = {
-  children: React.ReactNode;
-};
-export const TerminalHeader: React.FC<TerminalHeaderProps> = ({
-  children,
-}: PropsWithChildren<TerminalHeaderProps>) => {
-  return (
-    <div className={clsx(classes.terminalHeaderWrapper)}>
-      <div className={classes.terminalHeaderFakeButtons}>
-        <div className={classes.terminalHeaderFakeButton} />
-        <div className={classes.terminalHeaderFakeButton} />
-        <div className={classes.terminalHeaderFakeButton} />
-      </div>
-      <div className={classes.terminalHeaderText}>{children}</div>
-    </div>
-  );
-};
