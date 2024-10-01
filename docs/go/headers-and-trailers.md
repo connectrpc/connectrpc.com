@@ -75,7 +75,7 @@ func call() {
     connect.NewRequest(&greetv1.GreetRequest{}),
   )
   if connectErr := new(connect.Error); errors.As(err, &connectErr) {
-    fmt.Println(err.Meta().Get("Greet-Version"))
+    fmt.Println(connectErr.Meta().Get("Greet-Version"))
   }
 }
 ```
