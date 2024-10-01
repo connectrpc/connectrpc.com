@@ -194,7 +194,6 @@ export default function CodeBlock({
 
                     const lineProps = getLineProps({
                       line,
-                      key: i,
                     });
 
                     if (lineClassNames[i]) {
@@ -208,7 +207,6 @@ export default function CodeBlock({
                             key={key}
                             {...getTokenProps({
                               token,
-                              key,
                             })}
                           />
                         ))}
@@ -245,7 +243,7 @@ export default function CodeBlock({
                         return (
                           <span key={i} {...lineProps}>
                             {line.map((token, key) => {
-                              const tokenProps = getTokenProps({ token, key });
+                              const tokenProps = getTokenProps({ token });
                               // Do not apply syntax highlighting to console output
                               delete tokenProps.style;
                               return <span key={key} {...tokenProps} />;

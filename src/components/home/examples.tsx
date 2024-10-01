@@ -203,7 +203,6 @@ function CodeBlock({
 
                     const lineProps = getLineProps({
                       line,
-                      key: i,
                     });
 
                     if (lineClassNames[i]) {
@@ -212,15 +211,16 @@ function CodeBlock({
 
                     return (
                       <span key={i} {...lineProps}>
-                        {line.map((token, key) => (
-                          <span
-                            key={key}
-                            {...getTokenProps({
-                              token,
-                              key,
-                            })}
-                          />
-                        ))}
+                        {line.map((token, key) => {
+                          return (
+                            <span
+                              key={key}
+                              {...getTokenProps({
+                                token,
+                              })}
+                            />
+                          );
+                        })}
                         <br />
                       </span>
                     );
@@ -243,14 +243,14 @@ function CodeBlock({
                         line[0].content = "\n"; // eslint-disable-line no-param-reassign
                       }
 
-                      const lineProps = getLineProps({ line, key: i });
+                      const lineProps = getLineProps({ line });
                       // Do not apply syntax highlighting to console output
                       delete lineProps.style;
 
                       return (
                         <span key={i} {...lineProps}>
                           {line.map((token, key) => {
-                            const tokenProps = getTokenProps({ token, key });
+                            const tokenProps = getTokenProps({ token });
                             // Do not apply syntax highlighting to console output
                             delete tokenProps.style;
                             return <span key={key} {...tokenProps} />;

@@ -226,7 +226,8 @@ The Protobuf dependency can be what the current project is already using. Make s
 versions between the runtime and the Google Java plugin version. Here we are using the latest version.
 :::
 
-<details><summary>Having trouble with Gradle files? Here is what one might look like: </summary>
+<details>
+<summary>Having trouble with Gradle files? Here is what one might look like: </summary>
 
 ```groovy title="app/build.gradle"
 plugins {
@@ -282,7 +283,7 @@ dependencies {
 
 :::note
 
-The default for my Android Studio isn't set up with Gradle `kts`. The examples here will is using
+The default for Android Studio isn't set up with Gradle `kts`. The examples here are using
 classic Gradle with Groovy. With Gradle `kts`, the changes are pretty similar for the dependency
 declarations.
 

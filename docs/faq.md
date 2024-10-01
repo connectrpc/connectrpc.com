@@ -226,7 +226,7 @@ will return the wire error.
 Alternatively, if you wish to cancel the operation and immediately stop
 the client stream, see [below](#cancel-stream) to cancel the operation.
 
-### How do I cancel a client response stream in Connect-Go?
+### How do I cancel a client response stream in Connect-Go? {#cancel-stream}
 
 To cancel and abort a stream, call the cancel function of the underlying
 context associated with the stream. This context is provided on stream

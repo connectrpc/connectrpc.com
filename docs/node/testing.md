@@ -131,7 +131,7 @@ We do not recommend using [`fastify.inject()`](https://fastify.dev/docs/v1.14.x/
 for testing Connect routes. `fastify.inject()` is a great tool, but using it means you have to handle details of the
 protocol like `Content-Type` headers and status codes yourself. This is rather straight-forward for Connect unary,
 but much less so for streaming RPCs, or the gRPC or gRPC-Web protocols.
-:::note
+:::
 
 ### Testing with an in-memory server
 
