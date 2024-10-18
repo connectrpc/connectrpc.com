@@ -35,15 +35,15 @@ To register this service, call `router.service()`:
 
 ```ts
 import { ConnectRouter, HandlerContext } from "@connectrpc/connect";
-import { ElizaService } from "./gen/eliza_connect";
-import { SayRequest, SayResponse } from "./gen/eliza_pb";
+import { ElizaService, SayRequest } from "./gen/eliza_pb";
+import { create } from "@bufbuild/protobuf";
 
 export default (router: ConnectRouter) =>
   router.service(ElizaService, {
     async say(req: SayRequest, context: HandlerContext) {
-      return new SayResponse({
+      return {
         sentence: `You said ${req.sentence}`,
-      });
+      };
     }
   });
 ```
@@ -59,7 +59,7 @@ message, or just an initializer for a response message:
 
 ```ts
 function say(req: SayRequest) {
-  return new SayResponse({ sentence: `You said ${req.sentence}` });
+  return create(SayResponseSchema, { sentence: `You said ${req.sentence}` });
 }
 ```
 
@@ -82,6 +82,7 @@ The context argument gives you access to headers and service metadata:
 
 ```ts
 import { HandlerContext } from "@connectrpc/connect";
+import { create } from "@bufbuild/protobuf";
 import { SayRequest } from "./gen/eliza_pb";
 
 function say(req: SayRequest, context: HandlerContext) {
@@ -89,7 +90,7 @@ function say(req: SayRequest, context: HandlerContext) {
   ctx.method.name; // the protobuf rpc name "Say"
   context.requestHeader.get("Foo");
   context.responseHeader.set("Foo", "Bar");
-  return new SayResponse({ sentence: `You said ${req.sentence}` });
+  return { sentence: `You said ${req.sentence}` };
 }
 ```
 
@@ -126,18 +127,24 @@ $ buf generate buf.build/googleapis/googleapis
 ```ts
 import { Code, ConnectError } from "@connectrpc/connect";
 import { ElizaService } from "./gen/eliza_connect";
-import { LocalizedMessage } from "./gen/google/rpc/error_details_pb";
+import { LocalizedMessageSchema } from "./gen/google/rpc/error_details_pb";
 
 function say() {
   const details = [
-    new LocalizedMessage({
-      locale: "fr-CH",
-      message: "Je n'ai plus de mots.",
-    }),
-    new LocalizedMessage({
-      locale: "ja-JP",
-      message: "もう言葉がありません。",
-    }),
+    {
+      desc: LocalizedMessageSchema,
+      value: {
+        locale: "fr-CH",
+        message: "Je n'ai plus de mots.",
+      }
+    },
+    {
+      desc: LocalizedMessageSchema,
+      value: {
+        locale: "ja-JP",
+        message: "もう言葉がありません。",
+      }
+    },    
   ];
   const metadata = new Headers({
     "words-left": "none"
@@ -222,14 +229,14 @@ away:
 ```typescript
 import type { MethodImpl, ServiceImpl } from "@connectrpc/connect";
 
-export const say: MethodImpl<typeof ElizaService.methods.say> = ...
+export const say: MethodImpl<typeof ElizaService.method.say> = ...
 
 export const eliza: ServiceImpl<typeof ElizaService> = {
   // ...
 };
 
 export class Eliza implements ServiceImpl<typeof ElizaService> {
-  async say(req: SayRequest) {
+  say(req: SayRequest) {
     return {
       sentence: `You said ${req.sentence}`,
     };
@@ -250,8 +257,7 @@ export default (router: ConnectRouter) => {
 
   // alternative for using const say
   router.rpc(
-    ElizaService,
-    ElizaService.methods.say,
+    ElizaService.method.say,
     say
   );
 
