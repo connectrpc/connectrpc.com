@@ -35,15 +35,15 @@ To register this service, call `router.service()`:
 
 ```ts
 import { ConnectRouter, HandlerContext } from "@connectrpc/connect";
-import { ElizaService, SayRequest, SayResponseSchema } from "./gen/eliza_pb";
+import { ElizaService, SayRequest } from "./gen/eliza_pb";
 import { create } from "@bufbuild/protobuf";
 
 export default (router: ConnectRouter) =>
   router.service(ElizaService, {
     async say(req: SayRequest, context: HandlerContext) {
-      return create(SayResponseSchema, {
+      return {
         sentence: `You said ${req.sentence}`,
-      });
+      };
     }
   });
 ```
@@ -83,14 +83,14 @@ The context argument gives you access to headers and service metadata:
 ```ts
 import { HandlerContext } from "@connectrpc/connect";
 import { create } from "@bufbuild/protobuf";
-import { SayRequest, SayResponseSchema } from "./gen/eliza_pb";
+import { SayRequest } from "./gen/eliza_pb";
 
 function say(req: SayRequest, context: HandlerContext) {
   ctx.service.typeName; // the protobuf type name "ElizaService"
   ctx.method.name; // the protobuf rpc name "Say"
   context.requestHeader.get("Foo");
   context.responseHeader.set("Foo", "Bar");
-  return create(SayResponseSchema, { sentence: `You said ${req.sentence}` });
+  return { sentence: `You said ${req.sentence}` };
 }
 ```
 
@@ -235,7 +235,7 @@ export const eliza: ServiceImpl<typeof ElizaService> = {
   // ...
 };
 
-export class Eliza implements Partial<ServiceImpl<typeof ElizaService>> {
+export class Eliza implements ServiceImpl<typeof ElizaService> {
   say(req: SayRequest) {
     return {
       sentence: `You said ${req.sentence}`,
