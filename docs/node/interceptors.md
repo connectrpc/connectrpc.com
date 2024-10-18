@@ -134,7 +134,7 @@ But what if we need the user info in one of our RPC implementations? One way is 
 
 ```ts
 import { ConnectRouter } from "@connectrpc/connect";
-import { ElizaService } from "./gen/eliza_connect";
+import { ElizaService } from "./gen/eliza_pb";
 import { authenticate } from "authenticate.js";
 
 export default (router: ConnectRouter) =>
@@ -191,7 +191,7 @@ And then in our handler we can use it:
 
 ```ts
 import { ConnectRouter } from "@connectrpc/connect";
-import { ElizaService } from "./gen/eliza_connect";
+import { ElizaService } from "./gen/eliza_pb";
 import { authenticate } from "authenticate.js";
 import { kUser } from "user-context.js";
 
