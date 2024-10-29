@@ -3,8 +3,6 @@ title: Errors
 sidebar_position: 4
 ---
 
-
-
 Similar to the familiar "404 Not Found" and "500 Internal Server Error" status
 codes you may have seen in HTTP, Connect uses a set of [16 error codes](/docs/protocol#error-codes).
 In the Connect protocol, an error is always represented as JSON, and is easily
@@ -100,28 +98,29 @@ err.metadata.get("Custom-Trailer-Value");
 
 On the wire, error details are wrapped with `google.protobuf.Any`, so that a
 server or middleware can attach arbitrary data to an error. Using the method
-`findDetails()`, you can decode the details from an error.
-
-The method takes a protobuf message type as an argument, and returns an array
-of decoded messages of this type.
+`findDetails()`, you can decode the details from an error. The method takes a
+message schema as an argument, and returns an array of decoded messages of this
+type.
 
 This example looks up a localized error message in the users preferred
 language:
 
 ```ts
 import { ConnectError } from "@connectrpc/connect";
-import { LocalizedMessage } from "./error_details_pb.js";
+import { LocalizedMessageSchema } from "./gen/google/rpc/error_details_pb";
 
 function handle(err: ConnectError) {
-  const localized = err.findDetails(LocalizedMessage)
+  const localized = err.findDetails(LocalizedMessageSchema)
     .find(i => i.locale === navigator.language);
   console.log(localized?.message);
 }
 ```
 
 We are using the protobuf message [`google.rpc.LocalizedMessage`](https://buf.build/googleapis/googleapis/file/main:google/rpc/error_details.proto#L241)
-in this example, but any protobuf message can be transmitted as error details.
+in this example - run `npx buf generate buf.build/googleapis/googleapis` to
+generate this message - but any Protobuf message can be transmitted as error
+details.
 
 Alternatively, `findDetails()` takes a registry as an argument. See the
-[protobuf-es documentation](https://github.com/bufbuild/protobuf-es/blob/main/docs/runtime_api.md#registries)
+[Protobuf-ES documentation](https://github.com/bufbuild/protobuf-es/blob/v2.2.1/MANUAL.md#registries)
 for details.

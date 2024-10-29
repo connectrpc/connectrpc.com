@@ -121,7 +121,7 @@ an error detail. Let's use [`google.rpc.LocalizedMessage`](https://buf.build/goo
 to localize our error message:
 
 ```bash
-$ buf generate buf.build/googleapis/googleapis
+$ npx buf generate buf.build/googleapis/googleapis
 ```
 
 ```ts
