@@ -65,14 +65,16 @@ headers.set(
 );
 ```
 
-For convenience, the function also accepts a protobuf message or UTF-8 text:
+For convenience, the function also accepts a Protobuf message or UTF-8 text:
 
 ```ts
-import { MyMessage } from "./my_message_pb.js";
+import { MyMessageSchema } from "./my_message_pb";
+
+const message = create(MyMessageSchema);
 
 headers.set(
   "My-Message-Bin",
-  encodeBinaryHeader(new MyMessage()),
+  encodeBinaryHeader(message, MyMessageSchema),
 );
 headers.set(
   "Greet-Emoji-Bin",
@@ -84,10 +86,11 @@ To decode response headers, use the function `decodeBinaryHeader()`:
 
 ```ts
 import { decodeBinaryHeader } from "@connectrpc/connect";
+import { type MyMessage, MyMessageSchema } from "./my_message_pb";
 
 const value = headers.get("My-Message-Bin");
 if (value != null) {
-  const message: MyMessage = decodeBinaryHeader(value, MyMessage);
+  const message: MyMessage = decodeBinaryHeader(value, MyMessageSchema);
 }
 ```
 
