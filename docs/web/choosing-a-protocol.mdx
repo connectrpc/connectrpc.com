@@ -26,11 +26,6 @@ const transport = createConnectTransport({
   // Set this option to true to use the binary format.
   useBinaryFormat: false,
 
-  // Controls what the fetch client will do with credentials, such as
-  // Cookies. The default value is "same-origin", which will not
-  // transmit Cookies in cross-origin requests.
-  credentials: "same-origin",
-
   // Interceptors apply to all calls running through this transport.
   interceptors: [],
 
@@ -39,7 +34,10 @@ const transport = createConnectTransport({
   useHttpGet: false,
 
   // Optional override of the fetch implementation used by the transport.
-  fetch: globalThis.fetch;
+  fetch: globalThis.fetch,
+
+  // Options for Protobuf JSON serialization.
+  jsonOptions: {},
 });
 ```
 
@@ -50,16 +48,6 @@ inspector.
 Connect supports optionally using HTTP GET requests for side-effect free RPC
 calls, to enable easy use of request caching and more. For more information on
 HTTP GET requests, see [Get Requests](./get-requests-and-caching.md).
-
-When creating your transport, you have the option of providing your own custom
-Fetch function. This can be useful for many different scenarios, such as a overriding
-or setting Fetch properties as well as working with frameworks such as Svelte that 
-come bundled with their own Fetch implementation. 
-
-It is also possible to configure individual Fetch properties when issuing requests. For 
-some examples of customizing Fetch within Connect, take a look at our 
-[Interceptors](./interceptors.mdx#setting-fetch-options) docs. In addition, to see how to work with Fetch in an SSR context
-with frameworks such as Svelte and Nextjs, visit our documentation on [SSR](./ssr.mdx).
 
 ## gRPC-web
 
@@ -80,15 +68,58 @@ const transport = createGrpcWebTransport({
   // not all gRPC-web implementations support JSON.
   useBinaryFormat: true,
 
-  // Controls what the fetch client will do with credentials, such as
-  // Cookies. The default value is "same-origin", which will not
-  // transmit Cookies in cross-origin requests.
-  credentials: "include",
-
   // Interceptors apply to all calls running through this transport.
   interceptors: [],
 
   // Optional override of the fetch implementation used by the transport.
-  fetch: globalThis.fetch;
+  fetch: globalThis.fetch,
+
+  // Options for Protobuf JSON serialization.
+  jsonOptions: {},
 });
 ```
+
+## `fetch()`
+
+When creating your transport, you have the option of providing your own custom
+Fetch function. You can use it to provide Fetch options, such as [redirect](https://developer.mozilla.org/en-US/docs/Web/API/RequestInit#redirect), or [credentials](https://developer.mozilla.org/en-US/docs/Web/API/RequestInit#credentials):
+
+```ts
+import { createConnectTransport } from "@connectrpc/connect-web";
+
+createConnectTransport({
+  baseUrl: "https://demo.connectrpc.com",
+  // Include cookies in cross-origin requests:
+  fetch: (input, init) => fetch(input, {...init, credentials: "include"}),
+});
+```
+
+If your framework provides a custom fetch function for server-side rendering, you can pass it to the transport - visit
+our documentation on [SSR](./ssr.mdx) to learn more.
+
+## JSON options
+
+With `jsonOptions`, you can pass any of the [JSON serialization options from Protobuf-ES](https://github.com/bufbuild/protobuf-es/blob/v2.2.1/MANUAL.md#json-serialization-options):
+
+```ts
+import { createRegistry } from "@bufbuild/protobuf";
+import { MyMessageSchema } from "./my_message_pb";
+
+createConnectTransport({
+  baseUrl: "https://demo.connectrpc.com",
+  jsonOptions: {
+    ignoreUnknownFields: true,
+    alwaysEmitImplicit: false,
+    enumAsInteger: false,
+    useProtoFieldName: false,
+    registry: createRegistry(MyMessageSchema),
+  },
+});
+```
+
+The registry is important if you use `google.protobuf.Any`. It's a special message that can hold any message. But to
+serialize it to JSON and to parse it from JSON, it's necessary to look up the contained message by name, and the registry
+provides this lookup.
+
+Note that all transports use `ignoreUnknownFields: true` by default. Otherwise, adding a field to a response would cause
+clients to fail until they are updated.
