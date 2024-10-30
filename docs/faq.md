@@ -381,6 +381,24 @@ response headers. You can set cookies with the `Set-Cookie` response header—fo
 ctx.responseHeader.append("Set-Cookie", "foo=bar; Max=Age=120")
 ```
 
+### Parcel fails to resolve imports
+
+Connect-ES and Protobuf-ES use [package exports](https://nodejs.org/docs/latest-v12.x/api/packages.html#packages_exports).
+If you see the following error with Parcel, make sure to [enable package exports](https://parceljs.org/features/dependency-resolution/#package-exports):
+
+```
+@parcel/core: Failed to resolve '@bufbuild/protobuf/codegenv1'
+```
+
+### Metro fails to resolve imports
+
+Connect-ES and Protobuf-ES use [package exports](https://nodejs.org/docs/latest-v12.x/api/packages.html#packages_exports).
+If you see the following error with Metro or Expo, make sure to [enable package exports](https://metrobundler.dev/docs/package-exports/):
+
+```
+Metro error: Unable to resolve module @bufbuild/protobuf/codegenv1
+```
+
 ## Deployment
 
 ### How do I handle Authorization Bearer headers through middleware/interceptors?
