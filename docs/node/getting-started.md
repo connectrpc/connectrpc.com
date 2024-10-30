@@ -34,7 +34,7 @@ $ cd connect-example
 $ npm init -y
 $ npm install typescript tsx
 $ npx tsc --init
-$ npm install @bufbuild/buf @bufbuild/protoc-gen-es@"^1.0.0" @bufbuild/protobuf@"^1.0.0" @connectrpc/protoc-gen-connect-es@"^1.0.0" @connectrpc/connect@"^1.0.0"
+$ npm install @bufbuild/buf @bufbuild/protobuf @bufbuild/protoc-gen-es @connectrpc/connect
 ```
 
 ## Define a service
@@ -70,7 +70,7 @@ service ElizaService {
 We're going to generate our code using [Buf](https://www.npmjs.com/package/@bufbuild/buf),
 a modern replacement for Google's protobuf compiler. We installed Buf earlier,
 but we also need a configuration file to get going. (If you'd prefer, you can
-skip this section and use `protoc` instead &mdash; `protoc-gen-connect-es`
+skip this section and use `protoc` instead &mdash; `protoc-gen-es`
 behaves like any other plugin.)
 
 First, scaffold a basic [`buf.yaml`][buf.yaml] at the root of your repository:
@@ -105,9 +105,6 @@ plugins:
   - local: protoc-gen-es
     out: gen
     opt: target=ts
-  - local: protoc-gen-connect-es
-    out: gen
-    opt: target=ts
 ```
 
 With those configuration files in place, you can lint your schema and generate
@@ -118,7 +115,7 @@ $ npx buf lint
 $ npx buf generate
 ```
 
-You should now see two generated TypeScript files:
+You should now see a generated TypeScript file:
 
 ```diff
 .
@@ -126,8 +123,6 @@ You should now see two generated TypeScript files:
 ├── buf.yaml
 // highlight-next-line
 ├── gen
-// highlight-next-line
-│   ├── eliza_connect.ts
 // highlight-next-line
 │   └── eliza_pb.ts
 ├── node_modules
@@ -228,7 +223,7 @@ You can also make requests using a Connect client. Create a new file `client.ts`
 with the following contents:
 
 ```ts
-import { createPromiseClient } from "@connectrpc/connect";
+import { createClient } from "@connectrpc/connect";
 import { ElizaService } from "./gen/eliza_connect";
 import { createConnectTransport } from "@connectrpc/connect-node";
 
@@ -238,7 +233,7 @@ const transport = createConnectTransport({
 });
 
 async function main() {
-  const client = createPromiseClient(ElizaService, transport);
+  const client = createClient(ElizaService, transport);
   const res = await client.say({ sentence: "I feel happy." });
   console.log(res);
 }
@@ -262,7 +257,7 @@ You can run the same client from a web browser, just by swapping out the
 Transport:
 
 ```ts
-import { createPromiseClient } from "@connectrpc/connect";
+import { createClient } from "@connectrpc/connect";
 import { ElizaService } from "./gen/eliza_connect";
 // highlight-next-line
 import { createConnectTransport } from "@connectrpc/connect-web";
@@ -276,7 +271,7 @@ const transport = createConnectTransport({
 });
 
 async function main() {
-  const client = createPromiseClient(ElizaService, transport);
+  const client = createClient(ElizaService, transport);
   const res = await client.say({ sentence: "I feel happy." });
   console.log(res);
 }
