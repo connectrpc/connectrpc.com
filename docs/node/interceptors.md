@@ -117,7 +117,7 @@ One of the common use cases of interceptors is to a handle logic that is common 
 
 ```ts
 // This can come from an auth library like passport.js
-import { authenticate } from "./authenticate.js";
+import { authenticate } from "./authenticate";
 
 const authenticator: Interceptor = (next) => async (req) => {
   // `authenticate` takes the authorization header value
@@ -135,7 +135,7 @@ But what if we need the user info in one of our RPC implementations? One way is 
 ```ts
 import { ConnectRouter } from "@connectrpc/connect";
 import { ElizaService } from "./gen/eliza_pb";
-import { authenticate } from "authenticate.js";
+import { authenticate } from "authenticate";
 
 export default (router: ConnectRouter) =>
   // registers connectrpc.eliza.v1.ElizaService
@@ -152,7 +152,7 @@ export default (router: ConnectRouter) =>
 
 But this means authentication happens twice, once in the Interceptor and second in our handler. This is where context values come in. We can add the user as a context value which can then be retrieved in the handler. To do so we need to define a context key:
 
-```ts title=user-context.js
+```ts title=user-context.ts
 import { createContextKey } from "@connectrpc/connect";
 
 type User = { name: string };
@@ -169,8 +169,8 @@ export { kUser };
 We can modify the interceptor to pass the user information using the context key:
 
 ```ts
-import { authenticate } from "./authenticate.js";
-import { kUser } from "user-context.js";
+import { authenticate } from "./authenticate";
+import { kUser } from "./user-context";
 import type { Interceptor } from "@connectrpc/connect";
 import { ConnectError, Code } from "@connectrpc/connect";
 
@@ -192,8 +192,8 @@ And then in our handler we can use it:
 ```ts
 import { ConnectRouter } from "@connectrpc/connect";
 import { ElizaService } from "./gen/eliza_pb";
-import { authenticate } from "authenticate.js";
-import { kUser } from "user-context.js";
+import { authenticate } from "./authenticate";
+import { kUser } from "./user-context";
 
 export default (router: ConnectRouter) =>
   // registers connectrpc.eliza.v1.ElizaService
@@ -213,8 +213,8 @@ You can also pass the context value from the server plugin:
 ```ts
 import { fastify } from "fastify";
 import routes from "./connect";
-import { kUser } from "user-context.js";
-import { authenticate } from "authenticate.js";
+import { kUser } from "./user-context";
+import { authenticate } from "./authenticate";
 import { fastifyConnectPlugin } from "@connectrpc/connect-fastify";
 
 const server = fastify();
