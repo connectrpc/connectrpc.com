@@ -381,18 +381,6 @@ response headers. You can set cookies with the `Set-Cookie` response header—fo
 ctx.responseHeader.append("Set-Cookie", "foo=bar; Max=Age=120")
 ```
 
-### Access to fetch from origin has been blocked by CORS policy
-
-When a web page requests a resource from another origin, the restrictions for Cross-Origin Resource Sharing apply. 
-The server has to allow the client to send and receive protocol-specific headers. We show how to set up a server in the [CORS documentation](./cors.md).
-
-One specific gotcha to be aware of involves a new header `Connect-Protocol-Version`.  With the [v0.6.0 release](https://github.com/connectrpc/connect-es/releases/tag/v0.6.0) 
-of `@connectrpc/connect-web`, this header was added to all requests sent via the library. As a result, Connect clients
-that were working prior may start experiencing CORS errors upon upgrading to `v0.6.0`.  Note that this also only affects
-Connect traffic.  gRPC-Web traffic is unaffected.
-
-For more information on the `Connect-Protocol-Version` header, see [this PR](https://github.com/connectrpc/connect-go/pull/416).
-
 ## Deployment
 
 ### How do I handle Authorization Bearer headers through middleware/interceptors?
