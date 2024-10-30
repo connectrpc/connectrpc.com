@@ -17,9 +17,9 @@ If the signal triggers, the network call is cancelled, and the response promise
 for your call is rejected:
 
 ```ts
-import { createPromiseClient, ConnectError, Code } from "@connectrpc/connect";
+import { createClient, ConnectError, Code } from "@connectrpc/connect";
 
-const client = createPromiseClient(ElizaService, ...);
+const client = createClient(ElizaService, ...);
 
 // For the sake of this example, let's cancel the request right away
 const abort = new AbortController();
