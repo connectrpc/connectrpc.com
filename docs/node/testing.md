@@ -50,7 +50,7 @@ server with the supplied routes. So, you can provide your own RPC implementation
 To illustrate, let's set up a very simple ELIZA service:
 
 ```ts
-import { ElizaService } from "@buf/connectrpc_eliza.bufbuild_es/connectrpc/eliza/v1/eliza_connect";
+import { ElizaService } from "@buf/connectrpc_eliza.bufbuild_es/connectrpc/eliza/v1/eliza_pb";
 import { createRouterTransport } from "@connectrpc/connect";
 
 const mockTransport = createRouterTransport(({ service }) => {

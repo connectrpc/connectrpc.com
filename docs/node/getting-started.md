@@ -146,7 +146,7 @@ Create a new file `connect.ts` with the following contents:
 
 ```ts
 import type { ConnectRouter } from "@connectrpc/connect";
-import { ElizaService } from "./gen/eliza_connect";
+import { ElizaService } from "./gen/eliza_pb";
 
 export default (router: ConnectRouter) =>
   // registers connectrpc.eliza.v1.ElizaService
@@ -224,7 +224,7 @@ with the following contents:
 
 ```ts
 import { createClient } from "@connectrpc/connect";
-import { ElizaService } from "./gen/eliza_connect";
+import { ElizaService } from "./gen/eliza_pb";
 import { createConnectTransport } from "@connectrpc/connect-node";
 
 const transport = createConnectTransport({
@@ -258,7 +258,7 @@ Transport:
 
 ```ts
 import { createClient } from "@connectrpc/connect";
-import { ElizaService } from "./gen/eliza_connect";
+import { ElizaService } from "./gen/eliza_pb";
 // highlight-next-line
 import { createConnectTransport } from "@connectrpc/connect-web";
 

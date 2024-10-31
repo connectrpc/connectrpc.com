@@ -23,7 +23,7 @@ To illustrate, let's set up a very simple ELIZA service:
 
 ```ts
 import { createRouterTransport } from "@connectrpc/connect";
-import { ElizaService } from "@buf/connectrpc_eliza.bufbuild_es/connectrpc/eliza/v1/eliza_connect";
+import { ElizaService } from "@buf/connectrpc_eliza.bufbuild_es/connectrpc/eliza/v1/eliza_pb";
 
 const mockTransport = createRouterTransport(({ service }) => {
   service(ElizaService, {

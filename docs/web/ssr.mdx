@@ -53,7 +53,7 @@ In the following example, we use the proto3 message `SayResponse`, which is JSON
 ```tsx
 import type { InferGetServerSidePropsType } from 'next'
 import { create } from '@bufbuild/protobuf';
-import { SayRequestSchema } from "@buf/connectrpc_eliza.bufbuild_es/connectrpc/eliza/v1/eliza_connect";
+import { SayRequestSchema } from "@buf/connectrpc_eliza.bufbuild_es/connectrpc/eliza/v1/eliza_pb";
 
 export const getServerSideProps = (async () => {
   const sayRequest = create(SayRequestSchema, {

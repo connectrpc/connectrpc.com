@@ -10,7 +10,7 @@ code in a natural and easily readable way:
 
 ```ts
 import { createClient } from "@connectrpc/connect";
-import { ElizaService } from "@buf/connectrpc_eliza.bufbuild_es/connectrpc/eliza/v1/eliza_connect";
+import { ElizaService } from "@buf/connectrpc_eliza.bufbuild_es/connectrpc/eliza/v1/eliza_pb";
 
 const client = createClient(ElizaService, transport);
 
@@ -37,7 +37,7 @@ If you prefer a callback-based approach, the client returned by the function
 
 ```ts
 import { createCallbackClient } from "@connectrpc/connect";
-import { ElizaService } from "@buf/connectrpc_eliza.bufbuild_es/connectrpc/eliza/v1/eliza_connect";
+import { ElizaService } from "@buf/connectrpc_eliza.bufbuild_es/connectrpc/eliza/v1/eliza_pb";
 
 const client = createCallbackClient(ElizaService, transport);
 
