@@ -26,13 +26,11 @@ Array, Number, String, and Boolean.
 - Do not use `int64` or any other 64-bit integer field (unless they have the [option `jstype = JS_STRING`](https://github.com/bufbuild/protobuf-es/blob/v2.2.1/MANUAL.md#scalar-fields)).
 - Do not rely on Infinity, or NaN in `double` or `float` fields.
 
-React Server components use a [more capable serialization logic](https://react.dev/reference/rsc/use-server#serializable-parameters-and-return-values).
-In addition to regular JSON-serializable types, it also supports BigInt, Infinity, NaN, and - with caveats - typed
-arrays such as Uint8Array.
+React Server components with Next.js use a more capable serialization logic. In addition to regular JSON-serializable
+types, it also supports BigInt, Infinity, NaN, and Uint8Array.
 
 **Protobuf messages are serializable by React out of the box if they:**
 - Use the "proto3" syntax (which does not require the [prototype chain to track field presence](https://github.com/bufbuild/protobuf-es/blob/v2.2.1/MANUAL.md#field-presence-and-default-values)) or the Editions equivalent.
-- Do not rely on `bytes` fields to keep their Uint8Array properties (they turn into plain Arrays).
 
 If your Protobuf messages are not serializable, there's a simple solution: You convert them to JSON with the
 [toJson function](https://github.com/bufbuild/protobuf-es/blob/v2.2.1/MANUAL.md#serializing-messages) from
@@ -173,10 +171,13 @@ When the page is rendered on the server, the props for the component `Client` ar
 rendered in the browser. The `payload` prop crosses the boundary, but since it's a proto3 message, React can serialize
 and hydrate it without issues. It handles the BigInt value `123n` correctly.
 
+:::note
+If you use Next.js earlier than version 15, be careful with Protobuf `bytes` fields. A Uint8Array turns into a plain
+Array when crossing the boundary. This issue is fixed with Next.js 15.
+:::
+
 For a working example of React Server Components with Next.js, check out the [Next.js](https://github.com/connectrpc/examples-es/tree/main/nextjs) project in our
 [examples-es](https://github.com/connectrpc/examples-es) repo.
-
-
 
 
 ## Svelte
