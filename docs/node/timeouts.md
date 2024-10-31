@@ -17,10 +17,10 @@ Depending on your needs, there are a few ways to approach it:
 The first way is via an [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) 
 on the context. Using this signal, route handlers can then tell if the timeout specified 
 by the client was reached and abort their processes accordingly. The `AbortSignal` can be found
-via the property name `signal`.
+via the property name `signal`. 
 
-The signal can be passed to other functions or used to gracefully stop processes when the timeout is reached.
-Using `signal` works for any operation you might want to call as long as the API supports it. 
+The signal can be passed to other functions or used to gracefully stop processes when the timeout is reached or when the
+RPC returns. Using `signal` works for any operation you might want to call as long as the API supports it. 
 
 ```ts
 import type { HandlerContext } from "@bufbuild/connect";
@@ -36,7 +36,7 @@ const say = async (req: SayRequest, ctx: HandlerContext) => {
     // the AbortSignal can be passed to other functions
     await longRunning(ctx.signal);
 
-    return new SayResponse({sentence: `You said: ${req.sentence}`});
+    return {sentence: `You said: ${req.sentence}`};
 };
 ```
 
@@ -60,7 +60,7 @@ const say = async (req: SayRequest, ctx: HandlerContext) => {
     // Passing the value to an upstream client call propagates the timeout.
     await upstreamClient.someCall({}, { timeoutMs: ctx.timeoutMs() });
 
-    return new SayResponse({sentence: `You said: ${req.sentence}`});
+    return {sentence: `You said: ${req.sentence}`};
 };
 ```
 

@@ -55,7 +55,7 @@ with your Connect RPCs. Use the plugin from [@connectrpc/connect-fastify](https:
 with Fastify:
 
 ```bash
-$ npm install fastify @connectrpc/connect@"^1.0.0" @connectrpc/connect-node@"^1.0.0" @connectrpc/connect-fastify@"^1.0.0"
+$ npm install fastify @connectrpc/connect @connectrpc/connect-node @connectrpc/connect-fastify
 ```
 
 ```ts
@@ -101,7 +101,7 @@ using the latest React features. With [@connectrpc/connect-next](https://www.npm
 you can serve your Connect RPCs via Next.js API Routes.
 
 ```bash
-$ npm install next@"^13.0.0" @connectrpc/connect@"^1.0.0" @connectrpc/connect-node@"^1.0.0" @connectrpc/connect-next@"^1.0.0"
+$ npm install next@"^13.0.0" @connectrpc/connect @connectrpc/connect-node @connectrpc/connect-next
 ```
 
 To enable the server plugin, create the file `pages/api/[[...connect]].ts` in your project:
@@ -143,7 +143,7 @@ popular because of its simplicity. Use the middleware provided by [@connectrpc/c
 to add your Connect RPCs to Express:
 
 ```bash
-$ npm install express @connectrpc/connect@"^1.0.0" @connectrpc/connect-node@"^1.0.0" @connectrpc/connect-express@"^1.0.0"
+$ npm install express @connectrpc/connect @connectrpc/connect-node @connectrpc/connect-express
 ```
 
 ```ts
@@ -200,11 +200,11 @@ All adapters take a set of common options:
 - `interceptors?: Interceptor[]`<br/>
   An array of interceptors to apply to all requests. See [Interceptors](./interceptors.md) for more information.
 - `jsonOptions`<br/>
-  Protobuf [JSON serialization options](https://github.com/bufbuild/protobuf-es/blob/v1/docs/runtime_api.md#json-serialization-options).
+  Protobuf [JSON serialization options](https://github.com/bufbuild/protobuf-es/blob/v2.2.1/MANUAL.md#json-serialization-options).
   If your service uses `google.protobuf.Any`, provide a `typeRegistry` with the
   allowed message types.
 - `binaryOptions`<br/>
-  Protobuf [binary serialization options](https://github.com/bufbuild/protobuf-es/blob/v1/docs/runtime_api.md#binary-serialization-options).
+  Protobuf [binary serialization options](https://github.com/bufbuild/protobuf-es/blob/v2.2.1/MANUAL.md#binary-serialization-options).
 
 
 ## HTTP/2, TLS, and gRPC

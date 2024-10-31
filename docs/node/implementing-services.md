@@ -121,12 +121,12 @@ an error detail. Let's use [`google.rpc.LocalizedMessage`](https://buf.build/goo
 to localize our error message:
 
 ```bash
-$ buf generate buf.build/googleapis/googleapis
+$ npx buf generate buf.build/googleapis/googleapis
 ```
 
 ```ts
 import { Code, ConnectError } from "@connectrpc/connect";
-import { ElizaService } from "./gen/eliza_connect";
+import { ElizaService } from "./gen/eliza_pb";
 import { LocalizedMessageSchema } from "./gen/google/rpc/error_details_pb";
 
 function say() {
@@ -248,7 +248,7 @@ Registering the examples above:
 
 ```typescript
 import { ConnectRouter } from "@connectrpc/connect";
-import { ElizaService } from "./gen/eliza_connect";
+import { ElizaService } from "./gen/eliza_pb";
 import { say, eliza, Eliza } from "./other-file";
 
 export default (router: ConnectRouter) => {
