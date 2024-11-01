@@ -45,7 +45,7 @@
     "eslint-plugin-jsx-a11y": "^6.9.0",
     "eslint-plugin-react": "^7.35.0",
     "prettier": "^3.3.2",
-    "typescript": "^5.5.4"
+    "typescript": "^5.6.3"
   },
   "licenseHeader": {
     "licenseType": "apache",
