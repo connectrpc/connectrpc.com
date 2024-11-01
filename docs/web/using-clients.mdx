@@ -102,3 +102,16 @@ Usage:
 ```ts
 await useClient(ElizaService).say({sentence: "I feel happy."});
 ```
+
+## Roll your own client
+
+If you find that neither client suits your needs perfectly, it might be an
+option for you to roll your own. For example, you might prefer [Rust-style
+result types](https://doc.rust-lang.org/rust-by-example/error/result.html)
+over promise rejections, and could write your own constructor function that
+uses the [neverthrow library](https://github.com/supermacro/neverthrow) for
+method return values.
+
+For a working example, see the [custom-client](https://github.com/connectrpc/examples-es/tree/main/custom-client)
+in the [examples-es](https://github.com/connectrpc/examples-es) repo, or take
+a look at the implementation of `createClient` and `createCallbackClient`.
