@@ -25,12 +25,17 @@ Once you have OpenTelemetry set up in your application, enabling OpenTelemetry i
 // highlight-next-line
 import "connectrpc.com/otelconnect"
 
+// highlight-start
+otelInterceptor, err := otelconnect.NewInterceptor()
+if err != nil {
+	log.Fatal(err)
+}
+// highlight-end
+
 path, handler := greetv1connect.NewGreetServiceHandler(
 	greeter,
 	// highlight-start
-	connect.WithInterceptors(
-		otelconnect.NewInterceptor(),
-	),
+	connect.WithInterceptors(otelInterceptor),
 	// highlight-end
 )
 
@@ -38,9 +43,7 @@ client := greetv1connect.NewGreetServiceClient(
 	http.DefaultClient,
 	"http://localhost:8080",
 	// highlight-start
-	connect.WithInterceptors(
-		otelconnect.NewInterceptor(),
-	),
+	connect.WithInterceptors(otelInterceptor),
 	// highlight-end
 )
 ```
@@ -81,7 +84,6 @@ If your server is deployed as an internal microservice, configure [otelconnect] 
 By default, the [OpenTelemetry RPC conventions](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/rpc.md) produce high-cardinality server-side metric and tracing output. In particular, servers tag all metrics and trace data with the server's IP address and the remote port number. To drop these attributes, use [otelconnect.WithoutServerPeerAttributes]. For more customizable attribute filtering, use [otelconnect.WithFilter].
 
 [otelconnect]: https://pkg.go.dev/connectrpc.com/otelconnect
-[connect-go]: https://github.com/connectrpc/connect-go
 [OpenTelemetry]: https://opentelemetry.io/
 [trace.Link]: https://pkg.go.dev/go.opentelemetry.io/otel/trace#Link
 [otelconnect.WithTracerProvider]: https://pkg.go.dev/connectrpc.com/otelconnect#WithTracerProvider
