@@ -16,132 +16,222 @@ reducing the time to [First Contentful Paint](https://developer.mozilla.org/en-U
 which is a metric that measures the time from when the page starts loading to when any part of the page's content is
 rendered on the screen
 
-Unfortunately, the ecosystem supporting SSR is still in its infancy. Each framework offers wildly different approaches
-to implementing it, so there is a lot of nuance involved.
-
 The main thing to be aware of when dealing with SSR is that any data that crosses a network boundary (i.e. from server
-to client) must be able to be serialized to JSON. With most regular JavaScript primitives, this is not
-an issue, but if you want to return your entire response message or more complex data structures, you will need to
-convert them into a form that is JSON-serializable. This can be done one of two ways:
+to client) must typically be JSON-serializable by JSON.stringify and JSON.parse, which only supports plain Objects,
+Array, Number, String, and Boolean.
 
-### `toPlainMessage`
+**Protobuf message are JSON-serializable out of the box if they:**
+- Use the "proto3" syntax (which does not require the [prototype chain to track field presence](https://github.com/bufbuild/protobuf-es/blob/v2.2.1/MANUAL.md#field-presence-and-default-values)) or the Editions equivalent.
+- Do not use `bytes` fields.
+- Do not use `int64` or any other 64-bit integer field (unless they have the [option `jstype = JS_STRING`](https://github.com/bufbuild/protobuf-es/blob/v2.2.1/MANUAL.md#scalar-fields)).
+- Do not rely on Infinity, or NaN in `double` or `float` fields.
 
-The `toPlainMessage` is a function exposed by the [`@bufbuild/protobuf`](https://www.npmjs.com/package/@bufbuild/protobuf)
-package. This function will convert a Connect-ES response into its [`PlainMessage`](https://github.com/bufbuild/protobuf-es/blob/main/docs/runtime_api.md#plainmessage) equivalent, which is an object containing just the fields of a message and none of the message's
-methods. Additionally, you can safely convert a `PlainMessage` to a full message again with the message constructor.
+React Server components with Next.js use a more capable serialization logic. In addition to regular JSON-serializable
+types, it also supports BigInt, Infinity, NaN, and Uint8Array.
 
+**Protobuf messages are serializable by React out of the box if they:**
+- Use the "proto3" syntax (which does not require the [prototype chain to track field presence](https://github.com/bufbuild/protobuf-es/blob/v2.2.1/MANUAL.md#field-presence-and-default-values)) or the Editions equivalent.
+
+If your Protobuf messages are not serializable, there's a simple solution: You convert them to JSON with the
+[toJson function](https://github.com/bufbuild/protobuf-es/blob/v2.2.1/MANUAL.md#serializing-messages) from
+[`@bufbuild/protobuf`](https://www.npmjs.com/package/@bufbuild/protobuf). You can either use the JSON objects (the
+[JSON types](https://github.com/bufbuild/protobuf-es/blob/v2.2.1/MANUAL.md#json-types) feature will be helpful), or
+parse them again with `fromJson`.
+
+Let's walk through a few examples in various setups:
+
+## Next.js
+
+### getServerSideProps
+
+The function [getServerSideProps](https://nextjs.org/docs/pages/building-your-application/data-fetching/get-server-side-props)
+is invoked at request time and is used to fetch data when a page is requested. The returned data is then passed to your
+component in props. `getServiceSideProps` must return JSON.
+
+In the following example, we use the proto3 message `SayResponse`, which is JSON serializable:
+
+```tsx
+import type { InferGetServerSidePropsType } from 'next'
+import { create } from '@bufbuild/protobuf';
+import { SayRequestSchema } from "@buf/connectrpc_eliza.bufbuild_es/connectrpc/eliza/v1/eliza_pb";
+
+export const getServerSideProps = (async () => {
+  const sayRequest = create(SayRequestSchema, {
+    sentence: "hi",
+  });
+  return { props: { sayRequest } }
+});
+
+export default function Page({
+  sayRequest,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  return (
+    <main>
+      <p>{sayRequest.sentence}</p>
+    </main>
+  )
+}
+```
+
+The following example uses the message `Payload`, which is not JSON serializable. We convert it to JSON to cross the
+boundary:
+
+```tsx
+import type { InferGetServerSidePropsType } from 'next'
+import { create, toJson, fromJson } from '@bufbuild/protobuf';
+import { PayloadSchema } from "./gen/payload_pb";
+
+export const getServerSideProps = (async () => {
+  const payload = create(PayloadSchema, {
+    largeNumber: 123n,
+  });
+  return { props: {
+    //highlight-next-line
+    payloadJson: toJson(payload, PayloadSchema)
+  }}
+});
+
+export default function Page({
+  payloadJson,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  //highlight-next-line
+  const payload = fromJson(PayloadSchema, payloadJson);
+  return (
+    <main>
+      <p>{payload.largeNumber.toString()}</p>
+    </main>
+  )
+}
+```
+
+The same principle applies to the function [getStaticProps](https://nextjs.org/docs/pages/building-your-application/data-fetching/get-static-props).
+For a working example of `getServerSideProps` with Next.js, check out the [Next.js](https://github.com/connectrpc/examples-es/tree/main/nextjs) project in our
+[examples-es](https://github.com/connectrpc/examples-es) repo.
+
+
+### React Server Components
+
+Version 13 of Next.js adds the new App Router, which uses React Server Components. By default, everything is rendered on
+the server. In the following example, the Protobuf message we use never crosses the boundary, and there are no limitations
+of serialization to consider:
+
+```tsx
+import { create } from "@bufbuild/protobuf";
+import { PayloadSchema } from "./gen/payload_pb";
+
+export default function Page() {
+  const payload = create(PayloadSchema, {
+    largeNumber: 123n,
+  });
+  return (
+    <main>
+      <p>{payload.largeNumber.toString()}</p>
+    </main>
+  )
+}
+```
+
+Let's add a component that runs in the browser:
+
+```tsx
+"use client";
+
+import { Payload } from "./gen/payload_pb";
+
+export default function Client({ payload }: { payload: Payload }) {
+  return (
+    <div>
+      <h5>Payload rendered on the client</h5>
+      <p>{payload.largeNumber.toString()}</p>
+    </div>
+  );
+}
+```
+
+```tsx
+import { create } from "@bufbuild/protobuf";
+import { PayloadSchema } from "./gen/payload_pb";
+// highlight-next-line
+import Client from "./client";
+
+export default function Page() {
+  const payload = create(PayloadSchema, {
+    largeNumber: 123n,
+  });
+  return (
+    <main>
+      // highlight-next-line
+      <Client payload={payload}></Client>
+    </main>
+  );
+}
+```
+
+When the page is rendered on the server, the props for the component `Client` are serialized, and the component is
+rendered in the browser. The `payload` prop crosses the boundary, but since it's a proto3 message, React can serialize
+and hydrate it without issues. It handles the BigInt value `123n` correctly.
 
 :::note
-This approach will leave any `BigInt` or `Uint8Array` types in your messages as-is.
+If you use Next.js earlier than version 15, be careful with Protobuf `bytes` fields. A Uint8Array turns into a plain
+Array when crossing the boundary. This issue is fixed with Next.js 15.
 :::
 
-### `toJson`
+For a working example of React Server Components with Next.js, check out the [Next.js](https://github.com/connectrpc/examples-es/tree/main/nextjs) project in our
+[examples-es](https://github.com/connectrpc/examples-es) repo.
 
-In addition to `toPlainMessage`, you can also convert your message to JSON explicitly using the
-[`toJson`](https://github.com/bufbuild/protobuf-es/blob/main/docs/runtime_api.md#json) method that every message provides. The downside to this approach
-is that you lose all type information when converted to JSON, but you can get it back in your client by simply
-converting into the original message type using `fromJson`.
 
-:::note
-This approach will work for any messages which contain a `BigInt` or `Uint8Array` type, because the `toJson` method will
-convert them to their correct JSON representation.
-:::
+## Svelte
 
-## Examples
+### fetch
 
-Let's walk through a few examples in various setups and discuss some gotchas when using Connect-ES as part of your
-data fetching strategy with SSR.
-
-### Svelte
-
-Svelte allows you to customize your data fetching strategy by defining `load` functions which do the actual fetching. All `load` functions provide a custom [`fetch`](https://kit.svelte.dev/docs/load#making-fetch-requests) function, which behaves identical to the native Fetch API with a few added benefits.
-There are two types of `load` functions you can define: **server** and **universal**.
-
-#### Server load functions
-
-Server load functions always run on the server and the data they return is then made available to your page via
-props. Because of this, any data you fetch with Connect-ES and return from your server load function must be
-serializable to JSON since it is crossing the aforementioned network boundary. This is where the usage of [`toPlainMessage`](#toplainmessage)
-or [`toJson`](#tojson) come into play.
-
-An example of using both in a Svelte server load function:
+Svelte's `load` functions can run on the server, and receive a fetch function that inherits cookies and can make
+relative requests. We can pass `fetch` to a transport to make use of this data:
 
 ```ts
-import { toPlainMessage } from "@bufbuild/protobuf";
-import { createPromiseClient } from "@connectrpc/connect";
+import type { PageServerLoad } from "./$types";
 import { createConnectTransport } from "@connectrpc/connect-web";
-import { ElizaService } from "./gen/connectrpc/eliza/v1/eliza_connect";
 
-export const load = async ({ fetch, params }) => {
-    const transport = createConnectTransport({
-        // All transports accept a custom fetch implementation.
-        fetch,
-        // With Svelte's custom fetch function, we could alternatively
-        // use a relative base URL here.
-        baseUrl: "https://demo.connectrpc.com",
-    });
-    const client = createPromiseClient(ElizaService, transport);
-    const request = { sentence: "Hello from the server" };
-    const response = await client.say(request);
-
-    // This returned object will be available to your page via props.
-    return {
-        // Use toPlainMessage to make the response serializable
-        response: toPlainMessage(response),
-        // Or use toJson to convert it to JSON explicitly
-        // Just remember to convert it back using fromJson if you want your original message types
-        responseAsJson: response.toJson(),
-    };
+export const load: PageServerLoad = async ({ fetch }) => {
+  const transport = createConnectTransport({
+    baseUrl: "/api",
+    fetch,
+  });
+  // call RPCs here
+  return {};
 };
 ```
 
-#### Universal load functions
+### Server load
 
-Universal load functions run on the server on page load. The fetched data is then serialized and embedded into the
-page. Universal load functions are then invoked again during hydration of the page and all subsequent invocations are done on the client.
-Because of this, you do not need to make your messages JSON-serializable using the above methods.
+Server load functions always run on the server. The data they return is serialized by Svelte, embedded into the document
+sent to the web browser, and hydrated on page load. Svelte 5 uses [devalue](https://github.com/rich-harris/devalue) to
+serialize data, which fully supports BigInt, Infinity, NaN, and Uint8Array.
 
-However, with universal load functions, you will be constrained to using the Connect transport only. With gRPC-Web or
-any other binary data (this includes the Protobuf binary format and all streaming RPCs), Svelte falls back to always
-run the function in the browser. For details, see [this issue](https://github.com/sveltejs/kit/issues/8302).
+As long as you use the "proto3" syntax (which does not require the [prototype chain to track field presence](https://github.com/bufbuild/protobuf-es/blob/v2.2.1/MANUAL.md#field-presence-and-default-values)) or the Editions equivalent, you can
+safely return Protobuf messages from a server load function.
+
+
+### Universal load
+
+Universal load functions run on the server when the page is first visited. Instead of serializing the data that the
+function returns, Svelte serializes the responses from any fetch requests that the function makes. It transparently
+hydrates the responses when it runs the load function again in the browser, avoiding additional network requests.
+
+You can safely return any Protobuf message from a universal load function.
+
+By default, [Svelte removes all response headers](https://svelte.dev/docs/kit/hooks#Server-hooks-handle) from serialized
+fetch responses. You can configure the behavior with a `hooks.server.ts` file. You must allow at least the `Content-Type`
+header for Connect:
+
+```ts
+import type { Handle } from "@sveltejs/kit";
+
+export const handle: Handle = async ({ event, resolve }) =>
+  await resolve(event, {
+    filterSerializedResponseHeaders: (name) => name === "content-type",
+  });
+```
 
 For full working examples of both universal and server load functions check out the [Svelte](https://github.com/connectrpc/examples-es/tree/main/svelte)
 project in our [examples-es](https://github.com/connectrpc/examples-es) repo.
 
-
-### Next.js
-
-The Next.js framework provides SSR support in a variety of ways. Similar to Svelte, you can architect your SSR
-data-fetching strategy by defining one of two functions depending on your use case. The function `getStaticProps`
-is invoked at build time when running `next build` and can be used to fetch data that is available and applicable to
-retrieve during your build process. This data is then used to render the page and the fully-built HTML is available
-at runtime.
-
-The function `getServerSideProps` is invoked at request time and is used to fetch data when a page is requested. The
-returned data is then passed to your component in props. Because of this, though, we have the same issue as above with
-crossing the serialization boundary. All data returned from this function will need to be converted to
-something JSON-serializable. This can be accomplished through the use of [`toPlainMessage`](#toplainmessage)
-or [`toJson`](#tojson) discussed above.
-
-Note that `getStaticProps` and `getServerSideProps` are features of the Next.js Pages Router. Version 13 of Next.js adds the new App Router, which uses React Server Components instead.
-
-For a working example of `getServerSideProps` with Next.js, check out the [Next.js](https://github.com/connectrpc/examples-es/tree/main/nextjs) project in our
-[examples-es](https://github.com/connectrpc/examples-es) repo.
-
-### React Server Components
-
-React Server Components (RSC) are an additional mechanism for server-side rendering. While a few frameworks offer
-support for them, only Next.js is mentioned on React's own page for
-[Bleeding-Edge Frameworks](https://react.dev/learn/start-a-new-react-project#bleeding-edge-react-frameworks), so we
-will discuss them here in the context of a Next.js application.
-
-By default in Next.js, all components are considered React Server Components. Rendering is done on the server and to
-render on the client, you must explicitly opt-in to do so. Note though that when using React Server Components in
-Next.js, you aren't necessarily subject to the same restrictions regarding JSON serialization. You can
-fetch data and render it server-side without needing to serialize it since it is not crossing a boundary using just RSC.
-
-However, keep in mind that you *do* cross the network boundary if you interleave server and client components. In this
-case, the same restrictions apply as mentioned above. You cannot pass full `Message` instances, but you can use
-`toPlainMessage` to convert them to their `PlainMessage` counterparts. React Server Components in Next.js handle `BigInt`
-properly, but be careful with `Uint8Array`, as they are converted to regular arrays. You can restore them by wrapping
-them with a call to the `Uint8Array` constructor.

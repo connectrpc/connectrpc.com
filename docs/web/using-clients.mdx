@@ -3,24 +3,16 @@ title: Using clients
 sidebar_position: 3
 ---
 
-Connect ships with two client shapes for TypeScript, one with classic callbacks,
-one that is promise based. You create a client for a service using one of the
-provided constructor functions, and you do not need to generate additional
-code.
-
-
-## Promises
-
-We have already been using the function `createPromiseClient` in the
-tutorial. The function gives us a client that uses ECMAScript promise objects.
-In combination with the `await` keyword, this lets you write asynchronous
+We have already been using the function `createClient` in the tutorial. The
+function gives us a client that uses ECMAScript promise objects. In combination
+with the `await` keyword, this lets you write asynchronous
 code in a natural and easily readable way:
 
 ```ts
-import { createPromiseClient } from "@connectrpc/connect";
-import { ElizaService } from "@buf/connectrpc_eliza.connectrpc_es/connectrpc/eliza/v1/eliza_connect";
+import { createClient } from "@connectrpc/connect";
+import { ElizaService } from "@buf/connectrpc_eliza.bufbuild_es/connectrpc/eliza/v1/eliza_pb";
 
-const client = createPromiseClient(ElizaService, transport);
+const client = createClient(ElizaService, transport);
 
 const res = await client.say({
   sentence: "I feel happy.",
@@ -45,7 +37,7 @@ If you prefer a callback-based approach, the client returned by the function
 
 ```ts
 import { createCallbackClient } from "@connectrpc/connect";
-import { ElizaService } from "@buf/connectrpc_eliza.connectrpc_es/connectrpc/eliza/v1/eliza_connect";
+import { ElizaService } from "@buf/connectrpc_eliza.bufbuild_es/connectrpc/eliza/v1/eliza_pb";
 
 const client = createCallbackClient(ElizaService, transport);
 
@@ -89,7 +81,7 @@ For example, you can easily create a custom hook in React:
 import { useMemo } from "react";
 import { ServiceType } from "@bufbuild/protobuf";
 import { createConnectTransport } from "@connectrpc/connect-web";
-import { createPromiseClient, PromiseClient } from "@connectrpc/connect";
+import { createClient, PromiseClient } from "@connectrpc/connect";
 
 // This transport is going to be used throughout the app
 const transport = createConnectTransport({
@@ -101,7 +93,7 @@ const transport = createConnectTransport({
 */
 export function useClient<T extends ServiceType>(service: T): PromiseClient<T> {
   // We memoize the client, so that we only create one instance per service.
-  return useMemo(() => createPromiseClient(service, transport), [service]);
+  return useMemo(() => createClient(service, transport), [service]);
 }
 ```
 
@@ -120,11 +112,6 @@ over promise rejections, and could write your own constructor function that
 uses the [neverthrow library](https://github.com/supermacro/neverthrow) for
 method return values.
 
-Implementing a client constructor takes about 100 lines of code. By
-convention, every client constructor function must accept call options, and
-should be named `provideXClient`.
-
-Connect provides some helpful utilities to implement your own clients.
-Take a look at the implementation of [promise-client.ts](https://github.com/connectrpc/connect-es/blob/1c1dc4cfd300e120d07a486f488d5693139f9dee/packages/connect/src/promise-client.ts#L35)
-to get started.
-
+For a working example, see the [custom-client](https://github.com/connectrpc/examples-es/tree/main/custom-client)
+in the [examples-es](https://github.com/connectrpc/examples-es) repo, or take
+a look at the implementation of `createClient` and `createCallbackClient`.

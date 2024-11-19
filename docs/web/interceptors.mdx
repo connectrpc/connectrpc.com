@@ -116,9 +116,9 @@ It is best to define context keys in a separate file and export them. This is be
 
 Let's say you want to log the response body. But you don't want to do it for every request. You only want to do it from a specific component. You can use context values to achieve this.
 
-First create a context key:
+First create a context key in `log-body-context.ts`:
 
-```ts title=log-body-context.js
+```ts
 import { createContextKey } from "@connectrpc/connect";
 
 const kLogBody = createContextKey<boolean>(false, {
@@ -130,9 +130,9 @@ export { kLogBody };
 
 Then in your interceptor, check the context value:
 
-```ts 
+```ts
 import type { Interceptor } from "@connectrpc/connect";
-import { kLogBody } from "./log-body-context.js";
+import { kLogBody } from "./log-body-context";
 
 const logger: Interceptor = (next) => async (req) => {
   console.log(`sending message to ${req.url}`);
@@ -147,36 +147,8 @@ const logger: Interceptor = (next) => async (req) => {
 Then in your component, set the context value:
 
 ```ts
-import { kLogBody } from "./log-body-context.js";
-import { elizaClient } from "./eliza-client.js";
+import { kLogBody } from "./log-body-context";
+import { elizaClient } from "./eliza-client";
 
 const res = elizaClient.say({ sentence: "Hey!" }, { contextValues: createContextValues().set(kLogBody, true) });
-```
-
-## Setting `fetch()` options
-
-Another valuable use case for interceptors is customizing the Fetch API for individual requests by leveraging
-the `request.init` object.
-
-For example, by default, Connect sets the Fetch option [redirect](https://developer.mozilla.org/en-US/docs/Web/API/fetch#redirect) 
-to `error`, which means that a network error will be returned when a request is 
-met with a redirect. However, if you wish to change this value to `follow` for 
-example, you can do so using an interceptor.
-
-```ts
-const followRedirects: Interceptor = (next) => async (request) => {
-  return await next({
-    ...request,
-    init: {
-      ...request.init,
-      // Follow all redirects
-      redirect: "follow",
-    },
-  });
-};
-
-const client = createPromiseClient(ElizaService, createConnectTransport({
-  baseUrl: "https://demo.connectrpc.com",
-  interceptors: [followRedirects],
-}));
 ```

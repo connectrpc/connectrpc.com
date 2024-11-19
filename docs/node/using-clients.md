@@ -8,7 +8,7 @@ a transport from [@connectrpc/connect-node](https://www.npmjs.com/package/@conne
 instead of from [@connectrpc/connect-web](https://www.npmjs.com/package/@connectrpc/connect-web):
 
 ```typescript
-import { createPromiseClient } from "@connectrpc/connect";
+import { createClient } from "@connectrpc/connect";
 // highlight-next-line
 import { createConnectTransport } from "@connectrpc/connect-node";
 
@@ -22,7 +22,7 @@ const transport = createConnectTransport({
 });
 
 async function main() {
-  const client = createPromiseClient(ElizaService, transport);
+  const client = createClient(ElizaService, transport);
   const res = await client.say({
     sentence: "I feel happy.",
   });
@@ -74,15 +74,14 @@ const transport = createGrpcTransport({
   // Requests will be made to <baseUrl>/<package>.<service>/method
   baseUrl: "https://demo.connectrpc.com",
 
-  // You have to tell the Node.js http API which HTTP version to use.
-  httpVersion: "2",
-
   // Interceptors apply to all calls running through this transport.
   interceptors: [],
 });
 ```
 
-
+:::note
+The gRPC transport requires HTTP/2.
+:::
 
 ## gRPC-web
 

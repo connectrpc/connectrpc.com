@@ -47,16 +47,15 @@ function.
 As mentioned, the function `createRouterTransport` from `@connectrpc/connect` creates an in-memory
 server with the supplied routes. So, you can provide your own RPC implementations just for testing purposes.
 
-To illustrate, let's setup a very simple ELIZA service:
+To illustrate, let's set up a very simple ELIZA service:
 
 ```ts
-import { ElizaService } from "@buf/connectrpc_eliza.connectrpc_es/connectrpc/eliza/v1/eliza_connect";
-import { SayResponse } from "@buf/connectrpc_eliza.connectrpc_es/connectrpc/eliza/v1/eliza_pb";
+import { ElizaService } from "@buf/connectrpc_eliza.bufbuild_es/connectrpc/eliza/v1/eliza_pb";
 import { createRouterTransport } from "@connectrpc/connect";
 
 const mockTransport = createRouterTransport(({ service }) => {
   service(ElizaService, {
-    say: () => new SayResponse({ sentence: "I feel happy." }),
+    say: () => ({ sentence: "I feel happy." }),
   });
 });
 ```
@@ -113,7 +112,7 @@ to pass options like [interceptors](docs/web/interceptors.mdx).
 
 ### Examples
 
-For a working example of all three approaches in vanilla Node.js, check out the [client.test.ts file](https://github.com/connectrpc/examples-es/blob/b5d3f6822330f6b7816fac697b64ed4214aabafe/vanilla-node/client.test.ts) in the `vanilla-node` project of our [examples-es](https://github.com/connectrpc/examples-es) repo.
+For a working example of all three approaches in vanilla Node.js, check out the [client.test.ts file](https://github.com/connectrpc/examples-es/blob/main/vanilla-node/client.test.ts) in the `vanilla-node` project of our [examples-es](https://github.com/connectrpc/examples-es) repo.
 
 ## Services
 

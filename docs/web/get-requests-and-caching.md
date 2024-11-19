@@ -22,7 +22,7 @@ const transport = createConnectTransport({
   baseUrl: "https://demo.connectrpc.com",
   useHttpGet: true,
 });
-const client = createPromiseClient(ElizaService, transport);
+const client = createClient(ElizaService, transport);
 const response = await client.say(request);
 console.log(response);
 ```
