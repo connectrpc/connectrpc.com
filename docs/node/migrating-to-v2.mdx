@@ -1,0 +1,15 @@
+---
+title: Migrating to v2
+sidebar_position: 0
+---
+
+Version 2 of Connect-ES is available. They key changes are:
+
+- **We're upgrading to Protobuf-ES version 2.** It's the largest change in this release.
+- **Connect-ES no longer needs its own code generator plugin.**
+- **We're adding support for Next.js 15, Fastify 5, and Express 5.**
+- **We're dropping support for old versions of Node.js and TypeScript.** You'll need at least Node.js 18.14.1 and TypeScript 4.9.6.
+
+The upgrade of the Protobuf runtime brings support for [Editions](https://buf.build/blog/protobuf-editions-are-here) and new APIs for Protobuf messages with support for custom options. Messages are now plain TypeScript types, which greatly improves compatibility with the ecosystem. For example, messages can be passed from a server-side component in Next.js to a client-side component without losing any data or types. To learn more about the enhancements, see the [release blog post for Protobuf-ES v2](https://buf.build/blog/protobuf-es-v2).
+
+If you are using version 1, see our [migration guide](https://github.com/connectrpc/connect-es/blob/main/MIGRATING.md) to upgrade to version 2.
