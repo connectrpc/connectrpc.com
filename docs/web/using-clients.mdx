@@ -79,9 +79,9 @@ For example, you can easily create a custom hook in React:
 ```ts
 // use-client.ts
 import { useMemo } from "react";
-import { ServiceType } from "@bufbuild/protobuf";
+import { type DescService } from "@bufbuild/protobuf";
 import { createConnectTransport } from "@connectrpc/connect-web";
-import { createClient, PromiseClient } from "@connectrpc/connect";
+import { createClient, type Client } from "@connectrpc/connect";
 
 // This transport is going to be used throughout the app
 const transport = createConnectTransport({
@@ -91,7 +91,7 @@ const transport = createConnectTransport({
 /**
 * Get a promise client for the given service.
 */
-export function useClient<T extends ServiceType>(service: T): PromiseClient<T> {
+export function useClient<T extends DescService>(service: T): Client<T> {
   // We memoize the client, so that we only create one instance per service.
   return useMemo(() => createClient(service, transport), [service]);
 }
