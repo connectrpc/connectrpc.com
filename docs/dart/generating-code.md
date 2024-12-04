@@ -106,22 +106,22 @@ buf generate
 ```
 
 Given the above config and example `eliza.proto` file, you should now see some
-generated Swift files in the `Generated` directory:
+generated Dart files in the `lib/gen` directory:
 
 ```
 lib/gen
     ├── eliza.connect.spec.dart
     ├── eliza.connect.client.dart
-    ├── eliza.pb.swift
-    ├── eliza.pbenum.swift
-    ├── eliza.pbjson.swift
+    ├── eliza.pb.dart
+    ├── eliza.pbenum.dart
+    ├── eliza.pbjson.dart
     └── eliza.pbserver.dart
 ```
 
 ## Local generation
 
-The [`connect-dart`][connect-dart-plugin] plugin are regular
-Protobuf plugins which can be used with `protoc` and `buf` to generate
+The [`connect-dart`][connect-dart-plugin] plugin is a regular
+Protobuf plugin which can be used with `protoc` and `buf` to generate
 code locally.
 
 The easiest way to install these plugins is to add `connectrpc` and `protobuf` as a dependency
