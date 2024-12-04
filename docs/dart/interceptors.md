@@ -25,7 +25,7 @@ final Interceptor logger = <I extends Object, O extends Object>(next) {
 
 final transport = protocol.Transport(
   baseUrl: "https://demo.connectrpc.com",
-  codec: const JsonCodec(), // Or JsonCodec()
+  codec: const ProtoCodec(), // Or JsonCodec()
   httpClient: createHttpClient(),
   interceptors: [
     //highlight-next-line
@@ -124,7 +124,7 @@ class LoggingInterceptor {
 
 final transport = protocol.Transport(
   baseUrl: "https://demo.connectrpc.com",
-  codec: const JsonCodec(), // Or JsonCodec()
+  codec: const ProtoCodec(), // Or JsonCodec()
   httpClient: createHttpClient(),
   interceptors: [
     const LoggingInterceptor(print),
