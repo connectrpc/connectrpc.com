@@ -104,8 +104,6 @@ version: v2
 plugins:
   - local: protoc-gen-es
     out: gen
-    # Also generate any well-known type dependencies
-    include_wkt: true
     # Also generate any imported dependencies
     include_imports: true
     opt: target=ts
