@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ElizaService } from "@buf/connectrpc_eliza.connectrpc_es/connectrpc/eliza/v1/eliza_connect";
+import { ElizaService } from "@buf/connectrpc_eliza.bufbuild_es/connectrpc/eliza/v1/eliza_pb";
 import React, { useCallback, useState } from "react";
-import { createPromiseClient } from "@connectrpc/connect";
+import { createClient } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { Terminal, Message } from "../terminal";
 
@@ -24,7 +24,7 @@ const transport = createConnectTransport({
   baseUrl: host,
 });
 
-const elizaServicePromiseClient = createPromiseClient(ElizaService, transport);
+const elizaServicePromiseClient = createClient(ElizaService, transport);
 
 interface DemoProps {
   focusOnMount?: boolean;
