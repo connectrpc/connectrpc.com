@@ -10,7 +10,7 @@ will go through a couple of alternatives.
 
 ## Widget Testing
 
-For widgets that interface with Connect, it will generally be desirable to mock your RPCs since a backend may not be
+For widgets that interface with Connect, it will generally be preferable to mock your RPCs since a backend may not be
 available or desirable to access in a unit test. The easiest way to do this is via Connect's `FakeTransportBuilder`
 
 ### Mocking Transports
