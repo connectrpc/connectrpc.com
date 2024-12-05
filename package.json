@@ -19,10 +19,10 @@
     "publish": "npm install && npm run lint && npm run check:types && npm run build"
   },
   "dependencies": {
-    "@buf/connectrpc_eliza.connectrpc_es": "^1.1.2-20230726230109-bf1eaaff2a44.1",
-    "@bufbuild/protobuf": "^1.10.0",
-    "@connectrpc/connect": "^1.4.0",
-    "@connectrpc/connect-web": "^1.4.0",
+    "@buf/connectrpc_eliza.bufbuild_es": "^2.2.2-20230913231627-233fca715f49.2",
+    "@bufbuild/protobuf": "^2.2.2",
+    "@connectrpc/connect": "^2.0.0",
+    "@connectrpc/connect-web": "^2.0.0",
     "@docusaurus/core": "^3.5.2",
     "@docusaurus/plugin-google-gtag": "^3.5.2",
     "@docusaurus/preset-classic": "^3.5.2",
