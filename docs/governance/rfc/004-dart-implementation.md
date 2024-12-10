@@ -1,4 +1,4 @@
-# 005: Dart Implementation
+# 004: Dart Implementation
 
 This RFC proposes adding a Dart implementation of Connect starting with support for clients.
 This will be similar in scope to Connect-Swift and Connect-Kotlin implementations.
