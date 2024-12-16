@@ -6,8 +6,7 @@ This will be similar in scope to Connect-Swift and Connect-Kotlin implementation
 ## Why
 
 Dart is a popular programming language powering frameworks like Flutter which
-is used for cross-platform app development. This will help grow Connect's
-adoption.
+is used for cross-platform app development. This project will bring Connect support to the growing Flutter and Dart ecosystem.
 
 ## Anticipated complications
 
