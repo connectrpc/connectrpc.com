@@ -25,9 +25,11 @@ implementations using the following:
 - [`dart:js_interop`][dart-js-interop]: This is part of the std library and can be used to create
   bindings for web APIs. We can use the `fetch` APIs to support Connect and gRPC-Web.
 
-Platforms like Android and iOS have their own HTTP stack, and it is desirable to use them. [`package:http`][pub-http] 
+Platforms like Android and iOS have their own HTTP stack, and it is desirable to use them. [`package:http`][pub-http]
 can be used as a cross platform client to support both. It is maintained by the Dart team. The only blocker
-is the missing support for [aborting requests][http-abort-issue].
+is the missing support for [aborting requests][http-abort-issue]. The `dart:io` based client will run on these devices.
+Depending on the how the issue progresses we may have to provide ancillary packages to support native stacks.
+This however, need not block v1 as we won't need API changes to support them.
 
 ## Supported features
 
@@ -60,4 +62,3 @@ The project can be maintained by:
 [http-abort-issue]: https://github.com/dart-lang/http/issues/424
 [pub-http2]: https://pub.dev/packages/http2
 [pub-http]: https://pub.dev/packages/http
-
