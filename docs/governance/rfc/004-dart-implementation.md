@@ -21,7 +21,7 @@ implementations using the following:
 - [`HttpClient`][dart-io-client] from `dart:io`. This is part of the std library and runs on native platforms.
   This only supports HTTP/1.
 - [`package:http2`][pub-http2]. This is a HTTP/2 implementation maintained by the Dart team. This can be used
-  to support gRPC. Connection management has to be implemented on top of this.
+  to support bidirectional streaming and gRPC. Connection management has to be implemented on top of this.
 - [`dart:js_interop`][dart-js-interop]: This is part of the std library and can be used to create
   bindings for web APIs. We can use the `fetch` APIs to support Connect and gRPC-Web.
 
