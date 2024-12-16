@@ -13,7 +13,7 @@ adoption.
 
 Dart runs on several platforms: Web, Android, and iOS to name a few. Most of the platforms
 have their own HTTP stack with varying levels of support for HTTP specs. It doesn't have a
-unified abstration and APIs for common HTTP constructs like headers and cancellation.
+unified abstraction and APIs for common HTTP constructs like headers and cancellation.
 
 We have to create a minimal HTTP abstraction to support various platforms. We can then have concrete
 implementations using the following:
@@ -39,9 +39,9 @@ Clients should support all three protocols and four RPC kinds where possible:
   - Should be supported on all platforms.
   - On the web, unary and server stream can be supported.
 - gRPC:
-  - Can be supported on native playforms with support for HTTP/2
+  - Can be supported on native platforms with support for HTTP/2
 
-These should be continously tested using the [conformance suite][conformance] on both native and web platforms.
+These should be continuously tested using the [conformance suite][conformance] on both native and web platforms.
 
 ### Others
 
