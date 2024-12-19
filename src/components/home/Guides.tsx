@@ -100,6 +100,13 @@ export default function Guides() {
             title="Android guide"
             description="Kotlin clients available"
           />
+          <Guide
+            enabled
+            href="/docs/dart/getting-started"
+            logos={["/img/logos/dart.svg"]}
+            title="Flutter guide"
+            description="Dart clients available"
+          />
         </div>
       </div>
     </div>
