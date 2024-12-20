@@ -28,7 +28,11 @@ This tutorial should take ~10 minutes from start to finish.
 ## Prerequisites
 
 - [The Buf CLI][buf-cli] installed, and include it in the `$PATH`.
-- [Flutter][flutter] installed and setup for atleast one platform.
+- [Flutter][flutter] installed and setup for atleast one platform other than web.
+  For web related setup please see [HTTP stack](using-clients#http-stack), after the getting started guide.
+
+> **Note:** Some platforms might need [additional configuration][network-permissions] to
+> make HTTP requests.
 
 ## Create a new Flutter app
 
@@ -400,7 +404,7 @@ using the gRPC protocol for a few reasons:
   enabling remote code generation without having to install and configure
   local dependencies.
 - **Flexibility.** Connect-Dart supports swapping http clients with built in
-  support for `dart:io`, `fetch` and `http2`. It also supports unified  [interceptors](./interceptors.md).
+  support for `dart:io`, `fetch` and `http2`. It also supports unified [interceptors](./interceptors.md).
 - **Binary size.** The Connect-Dart library is very small (\<100KB)
   and tree shakable to only include the protocol code in use.
 
@@ -421,4 +425,5 @@ enabling you to use Connect-Dart without the [http2][http2] dependency.
 [grpc-dart]: https://pub.dev/packages/grpc
 [grpc-web]: https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-WEB.md
 [http2]: https://pub.dev/packages/http2
+[network-permissions]: https://docs.flutter.dev/data-and-backend/networking#platform-notes
 [protobuf]: https://developers.google.com/protocol-buffers
