@@ -28,7 +28,7 @@ This tutorial should take ~10 minutes from start to finish.
 ## Prerequisites
 
 - [The Buf CLI][buf-cli] installed, and include it in the `$PATH`.
-- [Flutter][flutter] installed and setup for atleast one platform other than web.
+- [Flutter][flutter] installed and setup for at least one platform other than web.
   For web related setup please see [HTTP stack](using-clients#http-stack), after the getting started guide.
 
 > **Note:** Some platforms might need [additional configuration][network-permissions] to
