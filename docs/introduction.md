@@ -72,8 +72,8 @@ in production. You can get started now on the [web][web-getting-started] or in
 
 ## Swift and Kotlin
 
-For mobile applications, [`connect-swift`][connect-swift] and
-[`connect-kotlin`][connect-kotlin] are now available in beta. Get started today
+For mobile applications, [`connect-swift`][connect-swift] (stable) and
+[`connect-kotlin`][connect-kotlin] (beta) are available. Get started today
 with our [Swift guide][swift-getting-started] and [Kotlin
 guide][kotlin-getting-started].
 
