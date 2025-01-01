@@ -29,7 +29,7 @@
     "@docusaurus/theme-search-algolia": "^3.5.2",
     "@react-hookz/web": "^24.0.4",
     "clsx": "^2.1.1",
-    "prism-react-renderer": "^2.4.0",
+    "prism-react-renderer": "^2.4.1",
     "react": "^18.0.0",
     "react-dom": "^18.0.0"
   },
