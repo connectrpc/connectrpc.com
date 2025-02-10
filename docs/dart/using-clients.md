@@ -50,6 +50,12 @@ final transport = protocol.Transport(
 different protocols with different APIs, create one `Transport` for each
 protocol.**
 
+### Compression
+
+Request compression and response decompression can be enabled for io platforms by providing the
+`compression` transport option. Gzip compression is provided in `package:connectrpc/io.dart`, and
+support for other compression algorithms can be added by implementing the `Compression` interface.
+
 ### HTTP stack
 
 Connect-Dart provides three different HTTP client implementations out of
@@ -96,7 +102,7 @@ print(response.message.sentence);
 ```
 
 For server-streaming RPCs, the corresponding method on the client returns
-a `Stream` object which allows the caller to iterate over updates from 
+a `Stream` object which allows the caller to iterate over updates from
 the server using the `await for`:
 
 ```dart
