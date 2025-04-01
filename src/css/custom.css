@@ -53,23 +53,27 @@
   --buf-ink-blue-03-disabled: #090a3a;
 
   /* Fonts */
-  --ifm-font-family-base: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol";
-  --ifm-font-family-monospace: ui-monospace, "SFMono-Regular", Monaco, Consolas,
-    "Liberation Mono", "Courier New", monospace;
-  --ifm-heading-font-family: system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol";
-  --buf-mono-font: "DM Mono", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --buf-sans-font: "Work Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --ifm-font-family-base:
+    "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol";
+  --ifm-font-family-monospace:
+    ui-monospace, "SFMono-Regular", Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+  --ifm-heading-font-family:
+    system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
+    sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  --buf-mono-font:
+    "DM Mono", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji";
+  --buf-sans-font:
+    "Work Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji";
 
-  --ifm-global-shadow-md: 0px 2px 4px rgba(0, 0, 0, 0.08),
-    0px 8px 20px rgba(0, 0, 0, 0.03);
+  --ifm-global-shadow-md:
+    0px 2px 4px rgba(0, 0, 0, 0.08), 0px 8px 20px rgba(0, 0, 0, 0.03);
   --ifm-navbar-height: 85px;
 
   --ifm-menu-link-sublist-icon: url('data:image/svg+xml;utf8,<svg width="100%" height="100%" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><g transform="matrix(0.88,0,0,0.88,1.3,1.3)"><path d="M11.505,8.838L11.071,9.271L8,6.2L4.929,9.271L4.496,8.837L8,5.333L11.505,8.838Z" style="fill:rgb(9,10,58);"/></g></svg>');
