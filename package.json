@@ -20,9 +20,9 @@
   },
   "dependencies": {
     "@buf/connectrpc_eliza.bufbuild_es": "^2.2.2-20230913231627-233fca715f49.2",
-    "@bufbuild/protobuf": "^2.2.3",
-    "@connectrpc/connect": "^2.0.1",
-    "@connectrpc/connect-web": "^2.0.1",
+    "@bufbuild/protobuf": "^2.2.5",
+    "@connectrpc/connect": "^2.0.2",
+    "@connectrpc/connect-web": "^2.0.2",
     "@docusaurus/core": "^3.5.2",
     "@docusaurus/plugin-google-gtag": "^3.5.2",
     "@docusaurus/preset-classic": "^3.5.2",
