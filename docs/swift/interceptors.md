@@ -37,6 +37,13 @@ Implementations should be thread-safe (hence the `Sendable` requirements),
 as functions can be invoked from different threads during the span of a request or
 stream due to the asynchronous nature of other interceptors which may be present in the chain.
 
+When using interceptors with streams, it is important to remember that a single interceptor
+chain exists for the lifetime of the stream and will be used for all messages sent to that stream
+until it is closed. If an interceptor in the chain is performing asynchronous work, that
+interceptor is responsible for maintaining the order of data flows out of it. If the order of
+data out needs to match the order in which the data was received, consider using a queue, such as
+a serial `DispatchQueue` (or other queuing mechanism if using Swift Concurrency).
+
 As an example, here is an interceptor that adds an `Authorization` header to
 all outbound requests that are destined for the `demo.connectrpc.com` host:
 
