@@ -398,7 +398,7 @@ The same RPC again, but with a Protobuf-encoded request and an error response:
 >
 > <uncompressed binary Protobuf>
 
-< HTTP/1.1 404 Not Found
+< HTTP/1.1 501 Not Implemented
 < Content-Type: application/json
 <
 < {
