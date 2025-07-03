@@ -65,14 +65,14 @@ The code we will generate has three runtime dependencies:
 - [@connectrpc/connect-web](https://www.npmjs.com/package/@connectrpc/connect-web) — provides the Connect and gRPC-web protocols for web browsers
 - [@bufbuild/protobuf](https://www.npmjs.com/package/@bufbuild/protobuf) — provides Protobuf serialization and more
 
-First, let's install `buf`, the plugins and runtime dependencies:
+First, let's install `buf`, the plugin, and runtime dependencies:
 
 ```bash
 $ npm install --save-dev @bufbuild/buf @bufbuild/protoc-gen-es
 $ npm install @connectrpc/connect @connectrpc/connect-web @bufbuild/protobuf
 ```
 
-Next, tell Buf to use the two plugins with a new configuration file:
+Next, tell Buf to use the plugin with a new configuration file:
 
 ```yaml title="buf.gen.yaml"
 # buf.gen.yaml defines a local generation template.
