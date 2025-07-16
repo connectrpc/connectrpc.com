@@ -128,13 +128,13 @@ domain, make sure the server has the correct [CORS configuration](./cors.md#conf
 
 ### Why does my Web client not receive the error code from my server?
 
-Most of the time, it's because the CORS setup of the server is incomplete. It's not enough to allow request origin, 
+Most of the time, it's because the CORS setup of the server is incomplete. It's not enough to allow request origin,
 methods, and headers—you also have to to expose response headers. See the [CORS documentation](./cors.md) for details.
 
 ### Why does the network explorer in the browser show strange characters in payload?
 
-The Protobuf binary format is efficient, but can't be rendered as text by the browser. If you use a Connect-ES client, 
-you can switch to JSON with the [transport option](./web/choosing-a-protocol) `useBinaryFormat: false` to make 
+The Protobuf binary format is efficient, but can't be rendered as text by the browser. If you use a Connect-ES client,
+you can switch to JSON with the [transport option](./web/choosing-a-protocol) `useBinaryFormat: false` to make
 troubleshooting easier. Unary RPCs use pure JSON payloads with the Connect protocol.
 
 
@@ -254,7 +254,7 @@ import { ElizaService } from "@buf/connectrpc_eliza.bufbuild_es/connectrpc/eliza
 ### Does Connect-Go provide the equivalent of gRPC's `WithBlock` option when connecting to servers?
 
 No, because under the hood Connect-Go is just using an `*http.Client`, but we are evaluating potentially
-adding similar functionality to Connect-Go. In the meantime, you can take a look at [github.com/bufbuild/httplb].
+adding similar functionality to Connect-Go. In the meantime, you can take a look at [github.com/bufbuild/httplb][httplb].
 It's an `*http.Client` that's not specific to Connect, but solves a lot of the gotchas with using the stdlib
 client/transport for RPC, especially if you're using k8s. Keep in mind that it's still in Alpha so the APIs are
 unstable, but it's important, so we're continuing to work on it.
@@ -265,7 +265,7 @@ It's currently not a supported option. As a workaround for now, you can inspect 
 to classify the request as a grpc/grpcWeb request and return a `415 Unsupported Media Type` status
 otherwise. Here is an example in HTTP middleware:
 
-```
+```go
 func grpcOnlyMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !strings.HasPrefix(r.Header.Get("Content-Type"), "application/grpc") {
@@ -284,24 +284,24 @@ and details can't be customized.
 
 ### How do I use custom JSON options like `EmitUnpopulated` in Connect-Go?
 
-You can use these options by customizing the codec. https://github.com/akshayjshah/connectproto is a handy project that 
+You can use these options by customizing the codec. https://github.com/akshayjshah/connectproto is a handy project that
 makes this easier.
 
 ### Should graceful shutdown of streaming endpoints be manually handled in Connect-go?
 
-Yes. The [`http.Server.Shutdown`](https://pkg.go.dev/net/http#Server.Shutdown) method documentation has a special note 
+Yes. The [`http.Server.Shutdown`](https://pkg.go.dev/net/http#Server.Shutdown) method documentation has a special note
 about this:
 
-> Shutdown does not attempt to close nor wait for hijacked connections such as WebSockets. The caller of Shutdown should 
-> separately notify such long-lived connections of shutdown and wait for them to close, if desired. See 
-> [Server.RegisterOnShutdown](https://pkg.go.dev/net/http#Server.RegisterOnShutdown) for a way to register shutdown 
+> Shutdown does not attempt to close nor wait for hijacked connections such as WebSockets. The caller of Shutdown should
+> separately notify such long-lived connections of shutdown and wait for them to close, if desired. See
+> [Server.RegisterOnShutdown](https://pkg.go.dev/net/http#Server.RegisterOnShutdown) for a way to register shutdown
 > notification functions.
 
-The same principle applies to gRPC streams. In your handlers, you could listen for the request context and another 
-global server context when waiting on streams. If your `Server.RegisterOnShutdown()` method cancelled that global 
+The same principle applies to gRPC streams. In your handlers, you could listen for the request context and another
+global server context when waiting on streams. If your `Server.RegisterOnShutdown()` method cancelled that global
 server context, then all of your handlers would know that the request should be completed soon because of a server shutdown.
 
-To reiterate, `Shutdown()` does not cancel all of the request contexts. Instead it stops accepting new connections 
+To reiterate, `Shutdown()` does not cancel all of the request contexts. Instead it stops accepting new connections
 while letting the existing requests finish normally—shutting down "gracefully".
 
 ### How do I import types for `google.protobuf.Any`?
@@ -314,7 +314,7 @@ The most pragmatic approach is to use the global type registry and import the ge
 message using a blank import. For example, given a generated file `proto/path/mytype.pb.go`, add a
 Go import as `import _ proto/path/mytype.pb.go` to your Go application to ensure the type is registered.
 
-For types only available at runtime, please see the [protoregistry docs](https://pkg.go.dev/google.golang.org/protobuf@v1.33.0/reflect/protoregistry)
+For types only available at runtime, please see the [protoregistry docs](https://pkg.go.dev/google.golang.org/protobuf/reflect/protoregistry)
 to add messages dynamically.
 
 ## TypeScript and JavaScript
@@ -374,7 +374,7 @@ for a detailed explanation and an example.
 
 ### How do I set a cookie on the server?
 
-Every service method on the server receives the `HandlerContext` as the second argument, which provides access to 
+Every service method on the server receives the `HandlerContext` as the second argument, which provides access to
 response headers. You can set cookies with the `Set-Cookie` response header—for example:
 
 ```
@@ -460,3 +460,4 @@ Prometheus can be configured as an exporter.
 [twirp-protocol]: https://github.com/twitchtv/twirp/blob/main/PROTOCOL.md
 [alp-aws-grpc]: https://aws.amazon.com/blogs/aws/new-application-load-balancer-support-for-end-to-end-http-2-and-grpc/
 [alp-aws-troubleshooting]: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html#http-464-issues
+[httplb]: https://github.com/bufbuild/httplb
