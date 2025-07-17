@@ -76,7 +76,7 @@ async function* logEach(stream: AsyncIterable<AnyMessage>) {
 
 ## Context Values
 
-Context values are a type safe way to pass arbitary values from server plugins or one interceptor to the next all the way to the handler. You can use `createContextValues` function to create a new `ContextValues`. Each request will have its own `ContextValues` instance. The `ContextValues` instance is passed to the handler via the interceptors and can be used to retrieve the values. Server plugins can also provide a `ContextValues` instance for each request by using the `contextValues` option of [server plugins](./server-plugins.md).
+Context values are a type safe way to pass arbitrary values from server plugins or one interceptor to the next all the way to the handler. You can use `createContextValues` function to create a new `ContextValues`. Each request will have its own `ContextValues` instance. The `ContextValues` instance is passed to the handler via the interceptors and can be used to retrieve the values. Server plugins can also provide a `ContextValues` instance for each request by using the `contextValues` option of [server plugins](./server-plugins.md).
 
 `ContextValues` has methods to set, get, and delete values. The keys are `ContextKey` objects:
 

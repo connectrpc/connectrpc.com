@@ -247,7 +247,7 @@ source for the demo is public as well, so you can
 [look at the client](https://github.com/connectrpc/connectrpc.com/blob/main/src/components/eliza-demo/index.tsx).
 The interesting bit is that we simply import from a generated SDK on the client side:
 
-```go
+```js
 import { ElizaService } from "@buf/connectrpc_eliza.bufbuild_es/connectrpc/eliza/v1/eliza_pb";
 ```
 
@@ -306,7 +306,7 @@ while letting the existing requests finish normally—shutting down "gracefully"
 
 ### How do I import types for `google.protobuf.Any`?
 
-Types not declared from the service's methods may need to be specified to ensure availability
+Types not declared from the service's methods may need to be specified to ensure availability.
 This often appears as a `google.protobuf.Any` failing to unmarshal with an unknown type error.
 To ensure the message can be used, add the type to the descriptor registry for your languages' runtimes.
 

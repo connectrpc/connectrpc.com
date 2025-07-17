@@ -96,7 +96,7 @@ lifecycleScope.launch(Dispatchers.IO) {
 
 For server-streaming RPCs, the corresponding method on the client returns
 a `*StreamInterface` object which allows the caller to send data over the stream
-and to iterate over updates from the server using a `RecieveChannel`:
+and to iterate over updates from the server using a `ReceiveChannel`:
 
 ```kotlin
 val stream = elizaServiceClient.converse()
