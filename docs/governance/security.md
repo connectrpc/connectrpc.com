@@ -49,7 +49,7 @@ response process.
 ## Initial response
 
 For each reported vulnerability, a Connect maintainer volunteers to coordinate
-our response. 
+our response.
 
 * The response coordinator makes a preliminary decision as to whether the
   report identifies a vulnerability. This may require asking the reporter for
@@ -96,10 +96,10 @@ released binaries (if any), and a mitigation guide for affected users.
 
 GitHub release notes (and the associated notification emails) are the primary
 method by which security patches are communicated to users. Where possible, the
-response coordinator also posts annoucements on relevant mailing lists, Slack
+response coordinator also posts announcements on relevant mailing lists, Slack
 channels, and other community hubs.
 
-## Retrospective 
+## Retrospective
 
 Within a week of releasing the fix, the response coordinator organizes a
 blameless post-mortem with maintainers and any relevant contributors. Together,
