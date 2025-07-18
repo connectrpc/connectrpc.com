@@ -50,11 +50,7 @@ for more information.
 
 ## Observability
 
-Because Connect stays close to `net/http`, any logging, tracing, or metrics
-that work with an `http.Handler` or `http.Client` also work with Connect. In
-particular, the [`otelhttp`][otelhttp] OpenTelemetry package and the
-[`ochttp`][ochttp] OpenCensus package both work seamlessly with Connect servers
-and clients.
+Check out our [Observability page](./observability.md).
 
 ## HTTP/2 without TLS {#h2c}
 
@@ -120,8 +116,6 @@ func newInsecureClient() *http.Client {
 
 [cloudflare-timeouts]: https://blog.cloudflare.com/the-complete-guide-to-golang-net-http-timeouts/
 [go-deadlines]: https://github.com/golang/go/issues/16100
-[otelhttp]: https://pkg.go.dev/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp
-[ochttp]: https://pkg.go.dev/go.opencensus.io/plugin/ochttp
 
 ## CORS
 
