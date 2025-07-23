@@ -143,4 +143,4 @@ Analagous methods would be available on the asynchronous client.
 The project can be maintained by:
 
 - [Spencer Nelson](https://github.com/spenczar), [Firetiger](https://firetiger.com)
-- [Peter Edge](https://github.com/bufdev), [Buf](https://buf.build)
+- [Stefan VanBuren](https://github.com/stefanvanburen), [Buf](https://buf.build)
