@@ -26,7 +26,7 @@ In order to make incremental progress, we explicitly cross off certain features 
 1. *No cross-protocol support*: this will only be a client and server of the Connect protocol, not gRPC or grpc-web.
 2. *No full-duplex streams*: http/2 transport is hard to support on both client and server; half-duplex is fine though
 
-### Justification for only supporting Connect on the server
+### Justification for not supporting gRPC on the server
 
 gRPC is a poor match to Python's most commonly used asynchronous server framework, ASGI.
 A correct gRPC implementation requires control over very low-level details of the connection state and http/2 transport.
@@ -34,7 +34,7 @@ These details are not exposed by ASGI, so supporting them would prevent connect-
 
 That's an unacceptable trade-off to make because ASGI interoperability is important for integrating connect servers into larger applications, like those running on Django, Starlette or FastAPI.
 
-### Justification for only supporting Connect on the client
+### Justification for not supporting gRPC on the client
 
 Implementing a correct gRPC client again requires low-level control over the transport stack.
 The connect client would need to accept an extremely low-level and generic transport, even when contacting connect servers, just to support gRPC.
@@ -43,9 +43,21 @@ This is more acceptable than the server case, but still unpleasant.
 Users will expect that they can pass an httpx.Client or similar to configure instrumentation, authentication, and so on.
 If we use a low-level library like hyper-h2 to implement the client, we'd likely need to build a bespoke abstraction supporting features like authentication which would be quite a bit more scope to cover.
 
+### Justification for not support grpc-web
+
+The grpc-web project lacks a standalone specification.
+It is defined [only in relation to gRPC](https://github.com/grpc/grpc/blob/6c7e2a94f99747950397258a8de005a3d90210a1/doc/PROTOCOL-WEB.md).
+
+As a result, most Connect implementations of grpc-web do so by treating it as a special case of gRPC.
+But without a gRPC implementation to base off of, a Python Connect library would need to implement grpc-web "from scratch" which is much more complex.
+
+The benefits of doing this are outweighed by its complexity for now.
+grpc-web users choose it because it is compatible with browsers, but so is Connect.
+grpc-web could be a useful later addition to the features provided by a Python implementation, but it need not be in the initial implementation.
+
 ### Justification for only supporting half-duplex streams
 
-This is related to the above two justifications: http/2 is poorly supported in Python today.
+This is related to the previous justifications on gRPC: http/2 is poorly supported in Python today.
 
 ## Goals
 
