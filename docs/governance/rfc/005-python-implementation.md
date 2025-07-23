@@ -124,4 +124,4 @@ class ElizaServiceClient:
 
 The `UnaryOutput` and `StreamOutput` generic wrapper types provide access to response headers, trailers, and Connect protocol errors, as well as the wrapped message.
 
-Analagous methods would be available on the asynchronous client.
+Analogous methods would be available on the asynchronous client.
