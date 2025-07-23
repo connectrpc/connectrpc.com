@@ -43,7 +43,7 @@ This is more acceptable than the server case, but still unpleasant.
 Users will expect that they can pass an httpx.Client or similar to configure instrumentation, authentication, and so on.
 If we use a low-level library like hyper-h2 to implement the client, we'd likely need to build a bespoke abstraction supporting features like authentication which would be quite a bit more scope to cover.
 
-### Justification for not support grpc-web
+### Justification for not supporting grpc-web
 
 The grpc-web project lacks a standalone specification.
 It is defined [only in relation to gRPC](https://github.com/grpc/grpc/blob/6c7e2a94f99747950397258a8de005a3d90210a1/doc/PROTOCOL-WEB.md).
