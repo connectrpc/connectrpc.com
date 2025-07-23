@@ -99,7 +99,7 @@ In certain circumstances, they can also inspect or send trailers.
 Full support of this is enforced by the conformance test suite.
 
 But these advanced features can cloud the API for typical usage.
-Headers and trailers are uinused in the majority of RPC usage; the RPC's message types typically encode all the relevant information.
+Headers and trailers are unused in the majority of RPC usage; the RPC's message types typically encode all the relevant information.
 
 So, we will provide clients with both high-level simple methods which operate directly on the request and response types, and also low-level methods that wrap request and response types in classes that permit handling of headers and trailers.
 
