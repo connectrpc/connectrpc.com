@@ -30,7 +30,7 @@ In order to make incremental progress, we explicitly cross off certain features 
 
 gRPC is a poor match to Python's most commonly used asynchronous server framework, ASGI.
 A correct gRPC implementation requires control over very low-level details of the connection state and http/2 transport.
-These details are not exposed by ASGI, so supporting them would prevent connect-python's servers from being ASGI applications.
+These details are not exposed by ASGI, so supporting them would prevent this library's servers from being ASGI applications.
 
 That's an unacceptable trade-off to make because ASGI interoperability is important for integrating connect servers into larger applications, like those running on Django, Starlette or FastAPI.
 
@@ -87,9 +87,9 @@ features:
 
 ## General design
 
-Most of the code for both servers and clients will be in a connect-python runtime library, installable with `pip install connect-python`.
+Most of the code for both servers and clients will be in a runtime library, installable with `pip install connectrpc`.
 
-A code generator, written in Python and installable with `pip install connect-python[compiler]`, will be available to generate a few functions:
+A code generator, written in Python and installable with `pip install connectrpc[compiler]`, will be available to generate a few functions:
 
 1. Synchronous and asynchronous client constructors
 2. Synchronous and asynchronous `typing.Protocol` that defines the method set that server implementations must follow
