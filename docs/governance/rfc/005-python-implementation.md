@@ -15,7 +15,7 @@ The Python ecosystem has a big split between asynchronous and synchronous I/O, w
 Supporting both is important; Python applications tend to commit to one of the two sides of the split and have difficulty using the other.
 
 Further complicating matters is the Python community is divided regarding the right asynchronous implementation.
-[asyncio](https://docs.python.org/3/library/asyncio.html) is the standard library's answer, but you can find adherents of [https://trio.readthedocs.io/en/stable/](trio) and other asynchronous event loops.
+[asyncio](https://docs.python.org/3/library/asyncio.html) is the standard library's answer, but you can find adherents of [trio](https://trio.readthedocs.io/en/stable/) and other asynchronous event loops.
 
 Python's immature support for http/2 is also a major challenge, particularly for servers.
 
