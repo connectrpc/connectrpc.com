@@ -1,6 +1,6 @@
 # 005: Python Implementation
 
-I propose an official Python implementation of Connect, based on the prototype at https://github.com/firetiger-oss/connect-python/.
+The RFC proposes an official Python implementation of Connect.
 This should include both the client and server side.
 
 ## Why
