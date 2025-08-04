@@ -50,9 +50,9 @@ client := greetv1connect.NewGreetServiceClient(
 
 By default, this will use:
 
-- TextMapPropagator from `otel.GetTextMapPropagator()`
-- MeterProvider from `global.MeterProvider()`
-- TracerProvider from `otel.GetTracerProvider()`
+- TextMapPropagator from [otel.GetTextMapPropagator]
+- MeterProvider from [otel.GetMeterProvider]
+- TracerProvider from [otel.GetTracerProvider]
 
 ## Using custom MeterProvider, TraceProvider and TextMapPropagators
 
@@ -86,6 +86,9 @@ By default, the [OpenTelemetry RPC conventions](https://github.com/open-telemetr
 [otelconnect]: https://pkg.go.dev/connectrpc.com/otelconnect
 [OpenTelemetry]: https://opentelemetry.io/
 [trace.Link]: https://pkg.go.dev/go.opentelemetry.io/otel/trace#Link
+[otel.GetMeterProvider]: https://pkg.go.dev/go.opentelemetry.io/otel#GetMeterProvider
+[otel.GetTracerProvider]: https://pkg.go.dev/go.opentelemetry.io/otel#GetTracerProvider
+[otel.GetTextMapPropagator]: https://pkg.go.dev/go.opentelemetry.io/otel#GetTextMapPropagator
 [otelconnect.WithTracerProvider]: https://pkg.go.dev/connectrpc.com/otelconnect#WithTracerProvider
 [otelconnect.WithMeterProvider]: https://pkg.go.dev/connectrpc.com/otelconnect#WithMeterProvider
 [otelconnect.WithPropagator]: https://pkg.go.dev/connectrpc.com/otelconnect#WithPropagator
