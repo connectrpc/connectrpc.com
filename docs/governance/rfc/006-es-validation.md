@@ -2,7 +2,7 @@
 
 This RFC proposes adding an ancillary EcmaScript project to the Connect Github organization:
 
-* `@connectrpc/validate-es`, which provides request validation for Connect-ES services using protovalidate.
+* `@connectrpc/validate`, which provides request validation for Connect-ES services using protovalidate.
 
 ## Request Validation
 
