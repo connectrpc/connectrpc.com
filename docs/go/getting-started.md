@@ -139,7 +139,7 @@ interfaces and constructors. Feel free to poke around if you're interested
 The examples here show the usage of the `simple` flag when generating code with 
 Connect, which was introduced in vX.X.X. Prior to the introduction of the `simple` flag,
 Connect examples involved the usage of a `connect.Request` and `connect.Response` wrapper type
-to interact with metadata. To view the old docs for this approach, see [here](TODO).
+to interact with metadata. To view the old docs for this approach, see TODO.
 :::
 
 
