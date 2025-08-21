@@ -101,8 +101,12 @@ plugins:
     opt: paths=source_relative
   - local: protoc-gen-connect-go
     out: gen
-    opt: paths=source_relative
+    opt:
+      - paths=source_relative
+      - simple
 ```
+
+
 
 With those configuration files in place, you can lint your schema and generate
 code:
@@ -130,6 +134,15 @@ structs and the associated marshaling code. The package
 by `protoc-gen-connect-go`, and it contains the HTTP handler and client
 interfaces and constructors. Feel free to poke around if you're interested
 &mdash; `greet.connect.go` is less than 100 lines of code, including comments.
+
+:::note
+The examples here show the usage of the `simple` flag when generating code with 
+Connect, which was introduced in vX.X.X. Prior to the introduction of the `simple` flag,
+Connect examples involved the usage of a `connect.Request` and `connect.Response` wrapper type
+to interact with metadata. To view the old docs for this approach, see [here](TODO).
+:::
+
+
 
 ## Implement handler
 
@@ -160,13 +173,11 @@ type GreetServer struct{}
 
 func (s *GreetServer) Greet(
 	ctx context.Context,
-	req *connect.Request[greetv1.GreetRequest],
-) (*connect.Response[greetv1.GreetResponse], error) {
-	log.Println("Request headers: ", req.Header())
-	res := connect.NewResponse(&greetv1.GreetResponse{
-		Greeting: fmt.Sprintf("Hello, %s!", req.Msg.Name),
-	})
-	res.Header().Set("Greet-Version", "v1")
+	req *greetv1.GreetRequest,
+) (*greetv1.GreetResponse, error) {
+	res := &greetv1.GreetResponse{
+		Greeting: fmt.Sprintf("Hello, %s!", req.Name),
+	}
 	return res, nil
 }
 
@@ -182,13 +193,6 @@ func main() {
 	)
 }
 ```
-
-As you've probably noticed, the `Greet` method uses generics: the
-`connect.Request` and `connect.Response` types offer direct access to headers
-and trailers, while still providing strongly-typed access to the generated
-`greetv1.GreetRequest` and `greetv1.GreetResponse` structs. Generics simplify
-many portions of Connect, and even let advanced users skip using
-`protoc-gen-connect-go`.
 
 In a separate terminal window, you can now update `go.mod` and start your
 server:
@@ -258,13 +262,13 @@ func main() {
 	)
 	res, err := client.Greet(
 		context.Background(),
-		connect.NewRequest(&greetv1.GreetRequest{Name: "Jane"}),
+		&greetv1.GreetRequest{Name: "Jane"},
 	)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	log.Println(res.Msg.Greeting)
+	log.Println(res.Greeting)
 }
 ```
 

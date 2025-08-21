@@ -14,24 +14,25 @@ documentation](streaming.md) covers headers and trailers for streaming RPCs.
 ## Headers
 
 Connect headers are just HTTP headers, modeled using the familiar `Header`
-type from `net/http`. Connect's `Request` and `Response` structs have explicit
-access to headers, and the APIs work identically regardless of the RPC protocol
-in use. In handlers:
+type from `net/http`. Access to the headers is done via context, which should be
+familiar to Go developers. On the server, the `CallInfoForHandlerContext` function
+can be used, which returns a `CallInfo` type providing methods for header operations:
 
 ```go
 func (s *greetServer) Greet(
   ctx context.Context,
-  req *connect.Request[greetv1.GreetRequest],
-) (*connect.Response[greetv1.GreetResponse], error) {
-  fmt.Println(req.Header().Get("Acme-Tenant-Id"))
-  res := connect.NewResponse(&greetv1.GreetResponse{})
-  res.Header().Set("Greet-Version", "v1")
+  req *greetv1.GreetRequest,
+) (*greetv1.GreetResponse, error) {
+  callInfo, ok := connect.CallInfoForHandlerContext(ctx)
+  fmt.Println(callInfo.RequestHeader().Get("Acme-Tenant-Id"))
+  res := &greetv1.GreetResponse{}
+  callInfo.ResponseHeader().Set("Greet-Version", "v1")
   return res, nil
 }
 ```
 
-We find this much simpler than attaching headers to the context. Headers look
-similar from the client's perspective:
+From the client's perspective, use the `NewClientContext` function, which creates
+the `CallInfo` type in context:
 
 ```go
 func call() {
@@ -39,14 +40,14 @@ func call() {
     http.DefaultClient,
     "https://api.acme.com",
   )
-  req := connect.NewRequest(&greetv1.GreetRequest{})
-  req.Header().Set("Acme-Tenant-Id", "1234")
-  res, err := client.Greet(context.Background(), req)
+  ctx, callInfo := connect.NewClientContext(context.Background())
+  callInfo.RequestHeader().Set("Acme-Tenant-Id", "1234")
+  res, err := client.Greet(ctx, &greetv1.GreetRequest{})
   if err != nil {
     fmt.Println(err)
     return
   }
-  fmt.Println(res.Header().Get("Greet-Version"))
+  fmt.Println(callInfo.ResponseHeader().Get("Greet-Version"))
 }
 ```
 
@@ -56,8 +57,8 @@ to access headers:
 ```go
 func (s *greetServer) Greet(
   ctx context.Context,
-  req *connect.Request[greetv1.GreetRequest],
-) (*connect.Response[greetv1.GreetResponse], error) {
+  req *greetv1.GreetRequest,
+) (*greetv1.GreetResponse, error) {
   err := connect.NewError(
     connect.CodeUnknown,
     errors.New("oh no!"),
@@ -72,7 +73,7 @@ func call() {
     "https://api.acme.com",
   ).Greet(
     context.Background(),
-    connect.NewRequest(&greetv1.GreetRequest{}),
+    &greetv1.GreetRequest{},
   )
   if connectErr := new(connect.Error); errors.As(err, &connectErr) {
     fmt.Println(connectErr.Meta().Get("Greet-Version"))
@@ -100,30 +101,31 @@ base64 encoding. Suffix your key with "-Bin" and use Connect's
 ```go
 func (s *greetServer) Greet(
   ctx context.Context,
-  req *connect.Request[greetv1.GreetRequest],
-) (*connect.Response[greetv1.GreetResponse], error) {
-  fmt.Println(req.Header().Get("Acme-Tenant-Id"))
-  res := connect.NewResponse(&greetv1.GreetResponse{})
-  res.Header().Set(
+  req *greetv1.GreetRequest,
+) (*greetv1.GreetResponse, error) {
+  callInfo, ok := connect.CallInfoForHandlerContext(ctx)
+  fmt.Println(callInfo.RequestHeader().Get("Acme-Tenant-Id"))
+  callInfo.ResponseHeader().Set(
     "Greet-Emoji-Bin",
     connect.EncodeBinaryHeader([]byte("👋")),
   )
-  return res, nil
+  return &greetv1.GreetResponse{}, nil
 }
 
 func call() {
+  ctx, callInfo := connect.NewClientContext(context.Background())
   res, err := greetv1connect.NewGreetServiceClient(
     http.DefaultClient,
     "https://api.acme.com",
   ).Greet(
-    context.Background(),
-    connect.NewRequest(&greetv1.GreetRequest{}),
+    ctx,
+    &greetv1.GreetRequest{},
   )
   if err != nil {
     fmt.Println(err)
     return
   }
-  encoded := res.Header().Get("Greet-Emoji-Bin")
+  encoded := callInfo.ResponseHeader().Get("Greet-Emoji-Bin")
   if emoji, err := connect.DecodeBinaryHeader(encoded); err == nil {
     fmt.Println(string(emoji))
   }
@@ -147,21 +149,22 @@ them much like headers:
 ```go
 func (s *greetServer) Greet(
   ctx context.Context,
-  req *connect.Request[greetv1.GreetRequest],
-) (*connect.Response[greetv1.GreetResponse], error) {
-  res := connect.NewResponse(&greetv1.GreetResponse{})
+  req *greetv1.GreetRequest,
+) (*greetv1.GreetResponse, error) {
+  callInfo, ok := connect.CallInfoForHandlerContext(ctx)
   // Sent as the HTTP header Trailer-Greet-Version.
-  res.Trailer().Set("Greet-Version", "v1")
-  return res, nil
+  callInfo.ResponseTrailer().Set("Greet-Version", "v1")
+  return &greetv1.GreetResponse{}, nil
 }
 
 func call() {
+  ctx, callInfo := connect.NewClientContext(context.Background())
   res, err := greetv1connect.NewGreetServiceClient(
     http.DefaultClient,
     "https://api.acme.com",
   ).Greet(
-    context.Background(),
-    connect.NewRequest(&greetv1.GreetRequest{}),
+    ctx,
+    &greetv1.GreetRequest{},
   )
   if err != nil {
     fmt.Println(err)
@@ -169,8 +172,8 @@ func call() {
   }
   // Empty, because any HTTP headers prefixed with Trailer- are treated as
   // trailers.
-  fmt.Println(res.Header())
+  fmt.Println(callInfo.ResponseHeader())
   // Prefixes are automatically stripped.
-  fmt.Println(res.Trailer().Get("Greet-Version"))
+  fmt.Println(callInfo.ResponseTrailer().Get("Greet-Version"))
 }
 ```
