@@ -4,9 +4,8 @@ sidebar_position: 60
 ---
 
 Interceptors are similar to the middleware or decorators you may be familiar
-with from other frameworks: they're the primary way of extending Connect. They
-can modify the context, the request, the response, and any errors. Interceptors
-are often used to add logging, metrics, tracing, retries, and other
+with from other frameworks: they're the primary way of extending Connect and are 
+often used to add logging, metrics, tracing, retries, and other
 functionality. This document covers unary interceptors &mdash; more complex use
 cases are covered in the [streaming documentation](streaming.md).
 
@@ -15,10 +14,9 @@ interceptors can make debugging difficult.
 
 ## Interceptors are functions
 
-Unary interceptors are built on two interfaces: `AnyRequest` and `AnyResponse`.
-They're nearly identical to `Request` and `Response`, but provide access to the
-request and response data only as an `any`. With those interfaces, we can model
-all unary RPCs as:
+Unary interceptors are built on two interfaces: `AnyRequest` and `AnyResponse`
+and provide access to the request and response data only as an `any`. With these 
+interfaces, we can model all unary RPCs as:
 
 ```go
 type UnaryFunc func(context.Context, AnyRequest) (AnyResponse, error)

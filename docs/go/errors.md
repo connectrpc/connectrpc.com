@@ -26,21 +26,21 @@ Handlers should return coded errors; if they don't, Connect will use the
 ```go
 func (s *greetServer) Greet(
   ctx context.Context,
-  req *connect.Request[greetv1.GreetRequest],
-) (*connect.Response[greetv1.GreetResponse], error) {
+  req *greetv1.GreetRequest,
+) (*greetv1.GreetResponse, error) {
   if err := ctx.Err(); err != nil {
     return nil, err // automatically coded correctly
   }
-  if err := validateGreetRequest(req.Msg); err != nil {
+  if err := validateGreetRequest(req); err != nil {
     return nil, connect.NewError(connect.CodeInvalidArgument, err)
   }
-  greeting, err := doGreetWork(ctx, req.Msg)
+  greeting, err := doGreetWork(ctx, req)
   if err != nil {
     return nil, connect.NewError(connect.CodeUnknown, err)
   }
-  return connect.NewResponse(&greetv1.GreetResponse{
+  return &greetv1.GreetResponse{
     Greeting: greeting,
-  }), nil
+  }, nil
 }
 ```
 
@@ -55,7 +55,7 @@ client := greetv1connect.NewGreetServiceClient(
 )
 _, err := client.Greet(
   context.Background(),
-  connect.NewRequest(&greetv1.GreetRequest{}),
+  &greetv1.GreetRequest{},
 )
 if err != nil {
   fmt.Println(connect.CodeOf(err))
