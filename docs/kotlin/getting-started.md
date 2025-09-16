@@ -60,7 +60,7 @@ $ mkdir -p proto && touch proto/eliza.proto
 
 Open up the above file and add the following service definition:
 
-```proto
+```protobuf
 syntax = "proto3";
 
 package connectrpc.eliza.v1;
@@ -187,9 +187,9 @@ import TabItem from '@theme/TabItem';
 <Tabs>
   <TabItem value="apple" label="java" default>
 
-```
+```groovy
 dependencies {
-  ...
+  // ...
   implementation 'androidx.recyclerview:recyclerview:1.2.1'
   implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
   implementation "com.squareup.okhttp3:okhttp:4.10.0"
@@ -203,9 +203,9 @@ dependencies {
   </TabItem>
   <TabItem value="orange" label="javalite">
 
-```
+```groovy
 dependencies {
-  ...
+  // ...
   implementation 'androidx.recyclerview:recyclerview:1.2.1'
   implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
   implementation "com.squareup.okhttp3:okhttp:4.10.0"
@@ -639,7 +639,7 @@ Now the app can be built and run via the play button on Android Studio. This wil
 
 import ElizaChatScreenshot from './success-request-finish.png';
 
-<img  src={ElizaChatScreenshot} width="300px" alt="Chat with Eliza!"/>
+<img src={ElizaChatScreenshot} width="300px" alt="Chat with Eliza!"/>
 
 ## Using the gRPC or gRPC-Web protocol
 
