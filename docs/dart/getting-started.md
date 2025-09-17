@@ -59,7 +59,7 @@ $ mkdir -p proto && touch proto/eliza.proto
 
 Open up the above file and add the following service definition:
 
-```proto
+```protobuf
 syntax = "proto3";
 
 package connectrpc.eliza.v1;
