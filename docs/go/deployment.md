@@ -58,64 +58,61 @@ In many environments, you'll need to use the HTTP/2 protocol _without_ TLS,
 usually called h2c. For example, GCP's Cloud Run service only supports
 end-to-end HTTP/2 if your server supports h2c. Similarly, you may want to
 interoperate with `grpc-go` servers and clients using h2c (via the `insecure`
-package). Because `net/http` doesn't expose configuration knobs for h2c
-directly, Connect servers and clients must use `golang.org/x/net/http2`.
+package).
 
-You can add h2c support to any `http.Handler` by wrapping it in
-`h2c.NewHandler`. You'll typically do this when creating your server:
+You can add h2c support to any `http.Server` and client `http.Transport` using
+[`http.Protocols`][http-protocols]. You'll typically do this when creating
+your server:
 
 ```go
 package main
 
 import (
   "net/http"
-
-  "golang.org/x/net/http2"
-  "golang.org/x/net/http2/h2c"
 )
 
 func main() {
   mux := http.NewServeMux()
   // Mount some handlers here.
+  p := new(http.Protocols)
+  p.SetHTTP1(true)
+  p.SetUnencryptedHTTP2(true)
   server := &http.Server{
-    Addr: ":http",
-    Handler: h2c.NewHandler(mux, &http2.Server{}),
+    Addr:      ":http",
+    Handler:   mux,
+    Protocols: p,
     // Don't forget timeouts!
   }
 }
 ```
 
-Configuring your clients to use h2c is only a bit more complex:
+Then configure your clients to use h2c:
 
 ```go
 package main
 
 import (
-  "crypto/tls"
-  "net"
   "net/http"
-
-  "golang.org/x/net/http2"
 )
 
 func newInsecureClient() *http.Client {
+  p := new(http.Protocols)
+  p.SetUnencryptedHTTP2(true)
+  // This client will not work for HTTP/1-only servers.
+  // And if HTTP/1 is enabled, H2C will not be used, as the deprecated
+  // `Upgrade: h2c` is not supported.
   return &http.Client{
-    Transport: &http2.Transport{
-      AllowHTTP: true,
-      DialTLS: func(network, addr string, _ *tls.Config) (net.Conn, error) {
-        // If you're also using this client for non-h2c traffic, you may want
-        // to delegate to tls.Dial if the network isn't TCP or the addr isn't
-        // in an allowlist.
-        return net.Dial(network, addr)
-      },
-      // Don't forget timeouts!
+    Transport: &http.Transport{
+      Protocols: p,
     },
+    // Don't forget timeouts!
   }
 }
 ```
 
 [cloudflare-timeouts]: https://blog.cloudflare.com/the-complete-guide-to-golang-net-http-timeouts/
 [go-deadlines]: https://github.com/golang/go/issues/16100
+[http-protocols]: https://pkg.go.dev/net/http#Protocols
 
 ## CORS
 
