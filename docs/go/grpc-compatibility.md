@@ -12,7 +12,7 @@ version][connect-conformance] of Google's own interoperability tests.
 Handlers support the gRPC protocol by default: they work with `grpc-go`,
 `grpcurl`, and any other gRPC client using TLS without any special
 configuration. To support gRPC clients using HTTP/2 without TLS, use
-`golang.org/x/net/http2/h2c` as described in [the deployment
+`Protocols.SetUnencryptedHTTP2` as described in [the deployment
 documentation](deployment.md#h2c).
 
 Handlers also automatically support the binary gRPC-Web protocol directly,
@@ -38,8 +38,8 @@ Clients default to using the Connect protocol. To use the gRPC or gRPC-Web
 protocols, use the `WithGRPC` or `WithGRPCWeb` options during client
 construction. If the gRPC server is using TLS, Connect clients work with no
 further configuration. If the gRPC server is using HTTP/2 without TLS,
-configure your HTTP client using `golang.org/x/net/http2` as described in the
-[deployment documentation](deployment.md#h2c).
+configure your HTTP client using `Protocols.SetUnencryptedHTTP2` as described
+in the [deployment documentation](deployment.md#h2c).
 
 ## Migration
 
