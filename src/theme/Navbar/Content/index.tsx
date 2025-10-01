@@ -77,6 +77,7 @@ export default function NavbarContent() {
           <NavbarLogo />
           <NavbarItems items={leftItems} />
           <div className={styles.rightWrapper}>
+            <NavbarColorModeToggle />
             <div className={styles.searchWrapper}>
               <NavbarSearch>
                 <SearchBar {...(siteConfig.themeConfig.algolia as any)} />
@@ -91,7 +92,6 @@ export default function NavbarContent() {
         // Ask the user to add the respective navbar items => more flexible
         <>
           <NavbarItems items={rightItems} />
-          <NavbarColorModeToggle className={styles.colorModeToggle} />
         </>
       }
     />

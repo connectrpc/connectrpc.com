@@ -57,6 +57,18 @@
   margin: 0;
 }
 
+html[data-theme="dark"] .featureTitle {
+  color: var(--buf-ink-blue-02);
+}
+
+html[data-theme="dark"] .featureExpandButton {
+  color: var(--buf-ink-blue-02);
+}
+
+html[data-theme="dark"] .featureDescription {
+  color: #b0b0b0;
+}
+
 @media screen and (max-width: 650px) {
   .features {
     flex-direction: column;
