@@ -83,13 +83,65 @@
 }
 
 html[data-theme="dark"] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
+  /* Primary colors */
+  --ifm-color-primary: #77e1ff;
+  --ifm-color-primary-dark: #5cd9ff;
+  --ifm-color-primary-darker: #4dd5ff;
+  --ifm-color-primary-darkest: #1fc6ff;
+  --ifm-color-primary-light: #92e9ff;
+  --ifm-color-primary-lighter: #a1edff;
+  --ifm-color-primary-lightest: #ccf6ff;
+
+  /* Text colors */
+  --ifm-heading-color: #ffffff;
+  --ifm-font-color-base: #e3e3e3;
+  --ifm-navbar-link-color: #e3e3e3;
+
+  /* Background colors */
+  --ifm-background-color: #1a1a1a;
+  --ifm-background-surface-color: #242424;
+  --ifm-navbar-background-color: #1a1a1a;
+
+  /* Custom design colors for dark mode */
+  --buf-footer-color: #93b4be;
+  --buf-footer-color-light: #acb3b6;
+
+  --buf-white-00: #1a1a1a;
+  --buf-white-01: #242424;
+
+  --buf-grey-01: #333333;
+  --buf-grey-02: #666666;
+  --buf-grey-03: #999999;
+  --buf-grey-04: #cccccc;
+
+  --buf-ink-blue-00: #1a1a2e;
+  --buf-ink-blue-01: #16213e;
+  --buf-ink-blue-02: #77e1ff;
+  --buf-ink-blue-03: #ffffff;
+  --buf-ink-blue-04: #8a8acc;
+
+  --buf-marine-blue-01: #0f2832;
+  --buf-marine-blue-05: #648b99;
+
+  --buf-ink-blue-01-hover: #1f2a4a;
+  --buf-ink-blue-01-active: #2a3960;
+  --buf-ink-blue-01-disabled: #16213e;
+  --buf-ink-blue-02-hover: #92e9ff;
+  --buf-ink-blue-02-active: #5cd9ff;
+  --buf-ink-blue-02-disabled: #3a7a8c;
+  --buf-ink-blue-03-hover: #e3e3e3;
+  --buf-ink-blue-03-active: #cccccc;
+  --buf-ink-blue-03-disabled: #666666;
+
+  /* Code highlighting */
+  --docusaurus-highlighted-code-line-bg: rgba(255, 255, 255, 0.1);
+
+  /* Shadows */
+  --ifm-global-shadow-md:
+    0px 2px 4px rgba(0, 0, 0, 0.3), 0px 8px 20px rgba(0, 0, 0, 0.2);
+
+  /* Menu icon for dark mode */
+  --ifm-menu-link-sublist-icon: url('data:image/svg+xml;utf8,<svg width="100%" height="100%" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><g transform="matrix(0.88,0,0,0.88,1.3,1.3)"><path d="M11.505,8.838L11.071,9.271L8,6.2L4.929,9.271L4.496,8.837L8,5.333L11.505,8.838Z" style="fill:rgb(227,227,227);"/></g></svg>');
 }
 
 .docusaurus-highlight-code-line {
@@ -193,6 +245,10 @@ h6 {
   background-color: #dbdcec;
 }
 
+html[data-theme="dark"] .dropdown__menu > li + li:before {
+  background-color: #333333;
+}
+
 /* Convert mobile nav to slide down */
 .navbar-sidebar {
   transform: translate3d(0, -100%, 0);
@@ -244,6 +300,15 @@ h6 {
   border-bottom: 1px solid var(--buf-grey-01);
 }
 
+html[data-theme="dark"]
+  .navbar-sidebar
+  .menu__list-item:not(.menu__list-item--collapsed)
+  > .menu__link.menu__link--sublist,
+html[data-theme="dark"] .navbar-sidebar .menu__list-item > .menu__list {
+  background-color: var(--buf-ink-blue-00);
+  border-bottom: 1px solid var(--buf-grey-01);
+}
+
 .navbar-sidebar .menu__list-item > ul > li > a {
   text-transform: none;
   font-size: 1rem;
@@ -257,6 +322,10 @@ h6 {
 
 .navbar-sidebar .navbar-sidebar__backdrop {
   background: rgba(9, 10, 58, 0.15);
+}
+
+html[data-theme="dark"] .navbar-sidebar .navbar-sidebar__backdrop {
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .navbar-sidebar .navbar-sidebar__back {
