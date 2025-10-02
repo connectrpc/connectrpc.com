@@ -182,6 +182,7 @@ func main() {
 		Handler:   mux,
 		Protocols: p,
 	}
+	s.ListenAndServe()
 }
 ```
 
