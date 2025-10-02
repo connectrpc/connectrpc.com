@@ -86,6 +86,10 @@
   color: #6f7377;
 }
 
+html[data-theme="dark"] .bufTerminalOutput {
+  color: #b0b0b0;
+}
+
 .bufTerminalOutputSeparator {
   float: left;
   width: 100%;
@@ -103,6 +107,10 @@
   padding-left: 0.5rem;
   padding-right: 0.5rem;
   color: #6f7377;
+}
+
+html[data-theme="dark"] .bufTerminalOutputSeparator > span {
+  color: #b0b0b0;
 }
 
 .bufTerminalOutputSeparator::before,

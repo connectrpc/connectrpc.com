@@ -84,12 +84,12 @@ const config = {
   plugins: [
     gaTrackingID !== ""
       ? [
-          "@docusaurus/plugin-google-gtag",
-          {
-            trackingID: gaTrackingID,
-            anonymizeIP: true,
-          },
-        ]
+        "@docusaurus/plugin-google-gtag",
+        {
+          trackingID: gaTrackingID,
+          anonymizeIP: true,
+        },
+      ]
       : null,
   ],
   themeConfig:
@@ -135,7 +135,7 @@ const config = {
       ],
       colorMode: {
         // We can re-enable later if/when we have design assets
-        disableSwitch: true,
+        disableSwitch: false,
       },
       algolia: {
         appId: process.env.ALGOLIA_APP_ID || "none",
@@ -166,9 +166,8 @@ const config = {
       footer: {
         style: "dark",
         links: [],
-        copyright: `Copyright © ${
-          new Date().getFullYear() != 2022 ? "2022&ndash;" : ""
-        }${new Date().getFullYear()} The Connect Authors`,
+        copyright: `Copyright © ${new Date().getFullYear() != 2022 ? "2022&ndash;" : ""
+          }${new Date().getFullYear()} The Connect Authors`,
       },
       prism: {
         theme: lightCodeTheme,

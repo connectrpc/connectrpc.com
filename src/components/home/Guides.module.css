@@ -31,6 +31,11 @@
   flex-direction: column;
 }
 
+html[data-theme="dark"] .guideCard {
+  background-color: var(--buf-white-01);
+  box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.3);
+}
+
 .logoContainer {
   height: 2rem;
   display: flex;
@@ -53,6 +58,14 @@
   font-size: var(--card-description-font-size);
   margin-top: 5px;
   margin-bottom: 0;
+}
+
+html[data-theme="dark"] .title {
+  color: var(--ifm-heading-color);
+}
+
+html[data-theme="dark"] .description {
+  color: var(--ifm-font-color-base);
 }
 
 .divider {
@@ -105,6 +118,11 @@
   color: #8d8da9;
   top: 0;
   transform: translateY(-50%);
+}
+
+html[data-theme="dark"] .comingSoonTag {
+  background-color: #333333;
+  color: #b0b0b0;
 }
 
 .titleAndIcon {

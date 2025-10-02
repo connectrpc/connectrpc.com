@@ -20,6 +20,18 @@
   color: #090a3a;
 }
 
+html[data-theme="dark"] .callout {
+  background: linear-gradient(
+    137.72deg,
+    #1a2a3a 34.3%,
+    rgba(26, 42, 58, 0) 114.26%
+  );
+}
+
+html[data-theme="dark"] .text {
+  color: var(--ifm-heading-color);
+}
+
 .button {
   background-color: var(--ifm-color-primary);
   font-family: var(--buf-mono-font);
