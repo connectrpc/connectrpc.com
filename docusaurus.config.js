@@ -136,6 +136,7 @@ const config = {
       colorMode: {
         // We can re-enable later if/when we have design assets
         disableSwitch: false,
+        respectPrefersColorScheme: true,
       },
       algolia: {
         appId: process.env.ALGOLIA_APP_ID || "none",
