@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import React from "react";
-import NavbarColorModeToggle from "@theme/Navbar/ColorModeToggle";
 import IconClose from "@theme/Icon/Close";
 import { useNavbarMobileSidebar } from "@docusaurus/theme-common/internal";
 import styles from "./styles.module.css";
@@ -40,7 +39,6 @@ export default function NavbarMobileSidebarHeader() {
       }}
     >
       <div className={styles.menuTitle}>Menu</div>
-      <NavbarColorModeToggle className="margin-right--md" />
       <CloseButton />
     </div>
   );
