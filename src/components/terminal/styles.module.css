@@ -41,7 +41,6 @@
 
 .terminalContainer {
   font-family: var(--ifm-font-family-monospace);
-  background: #f4f5fe;
   color: black;
   box-shadow: none;
   text-shadow: none;
@@ -115,5 +114,23 @@
 @keyframes linearwipe {
   from {
     width: 0;
+  }
+}
+
+html[data-theme="dark"] {
+  .terminalHeaderWrapper {
+    background-color: var(--buf-grey-01);
+    border-color: #444444;
+  }
+  /* colors used via style attributes by the pre in the static code blocks */
+  .terminalBody {
+    background: rgb(40, 42, 54);
+  }
+  .terminalBody,
+  .userText {
+    color: rgb(248, 248, 242);
+  }
+  .blinkingCursor {
+    background-color: rgb(248, 248, 242);
   }
 }

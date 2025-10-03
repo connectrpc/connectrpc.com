@@ -38,3 +38,18 @@
   border: 1px solid var(--buf-ink-blue-01-active);
   background-color: var(--buf-ink-blue-00);
 }
+
+html[data-theme="dark"] {
+  .bufButton {
+    background-color: transparent;
+    color: var(--ifm-navbar-link-color);
+    &:hover {
+      background-color: var(--buf-grey-01);
+      border-color: var(--buf-button-border-color);
+    }
+
+    span {
+      color: var(--ifm-navbar-link-color);
+    }
+  }
+}
