@@ -52,6 +52,16 @@
   background-size: cover;
 }
 
+/* Dark mode: simple gradient background instead of complex SVG */
+html[data-theme="dark"] .footerBackground {
+  background-image: none;
+  background: linear-gradient(
+    180deg,
+    var(--ifm-background-color) 0%,
+    #0f1419 100%
+  );
+}
+
 .moreDocsLinksIcons {
   display: flex;
 }
@@ -99,8 +109,21 @@
   background-color: var(--buf-ink-blue-00);
 }
 
+html[data-theme="dark"] .communityLinkItem {
+  background-color: var(--buf-white-01);
+  color: var(--ifm-font-color-base);
+}
+
+html[data-theme="dark"] .communityLinkItem:hover {
+  background-color: var(--buf-ink-blue-00);
+}
+
 .gradient {
   background: linear-gradient(0deg, #f9f9fd 58.43%, #fefeff 100%);
+}
+
+html[data-theme="dark"] .gradient {
+  background: linear-gradient(0deg, #1a1a1a 58.43%, #242424 100%);
 }
 
 @media screen and (max-width: 650px) {

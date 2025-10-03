@@ -53,6 +53,19 @@
   margin-bottom: 0;
 }
 
+html[data-theme="dark"] .exampleHeader {
+  border-bottom-color: #444444;
+  color: #999999;
+}
+
+html[data-theme="dark"] .exampleHeader > span {
+  color: #ffffff;
+}
+
+html[data-theme="dark"] .exampleText {
+  color: #e3e3e3;
+}
+
 .elizaExample {
   display: flex;
   align-items: center;
@@ -124,6 +137,12 @@ pre.codeBlock {
   background-attachment: local, local, scroll, scroll;
 }
 
+/* Dark mode: Let Prism theme handle the background */
+html[data-theme="dark"] .horizontalScrollBox {
+  background: none;
+  background-color: transparent;
+}
+
 .tooltip {
   position: absolute;
   bottom: -5px;
@@ -166,6 +185,16 @@ pre.codeBlock {
 
 .copyButton:hover {
   border-color: #161ede;
+}
+
+/* Dark mode copy button styles */
+html[data-theme="dark"] .copyButton {
+  border-color: #444444;
+  color: var(--buf-ink-blue-02);
+}
+
+html[data-theme="dark"] .copyButton:hover {
+  border-color: var(--buf-ink-blue-02);
 }
 
 .exampleTextContainer {

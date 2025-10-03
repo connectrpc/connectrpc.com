@@ -157,12 +157,10 @@ import (
   "net/http"
   "strings"
 
+  "connectrpc.com/connect"
+
   greetv1 "example/gen/greet/v1"
   "example/gen/greet/v1/greetv1connect"
-
-  "connectrpc.com/connect"
-  "golang.org/x/net/http2"
-  "golang.org/x/net/http2/h2c"
 )
 
 type GreetServer struct{}
@@ -195,11 +193,16 @@ func main() {
   mux := http.NewServeMux()
   path, handler := greetv1connect.NewGreetServiceHandler(greeter)
   mux.Handle(path, handler)
-  http.ListenAndServe(
-   "localhost:8080",
-   // Use h2c so we can serve HTTP/2 without TLS.
-    h2c.NewHandler(mux, &http2.Server{}),
-  )
+  p := new(http.Protocols)
+  p.SetHTTP1(true)
+  // Use h2c so we can serve HTTP/2 without TLS.
+  p.SetUnencryptedHTTP2(true)
+  s := http.Server{
+    Addr:      "localhost:8080",
+    Handler:   mux,
+    Protocols: p,
+  }
+  s.ListenAndServe()
 }
 ```
 

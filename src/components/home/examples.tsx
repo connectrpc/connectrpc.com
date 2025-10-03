@@ -185,7 +185,7 @@ function CodeBlock({
                   classes.codeBlock,
                   classes.horizontalScrollBox,
                 )}
-                style={{ ...style, backgroundColor: "#F4F5FE" }}
+                style={style}
               >
                 <code className={classes.codeBlockLines}>
                   {mainTokens.map((line, i) => {

@@ -28,6 +28,17 @@
   padding-top: 0.3rem;
 }
 
+/* Fix CNCF logo visibility in dark mode */
+:global(html[data-theme="dark"]) .cncfLogo {
+  fill: white;
+  stroke: white;
+}
+
+:global(html[data-theme="light"]) .cncfLogo {
+  fill: black;
+  stroke: black;
+}
+
 .legalGroup {
   display: flex;
   flex-direction: row;
