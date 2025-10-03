@@ -367,6 +367,13 @@ html[data-theme="dark"] .navbar-sidebar .navbar-sidebar__backdrop {
 
 .navbar__brand {
   height: 50px;
+  color: #090A3A;
+}
+
+html[data-theme="dark"] {
+  .navbar__brand {
+    color: var(--ifm-navbar-link-color);
+  }
 }
 
 .navbar__brand > .navbar__logo {
