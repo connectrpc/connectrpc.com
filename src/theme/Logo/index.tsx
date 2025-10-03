@@ -67,9 +67,7 @@ export default function Logo(props: {
   );
 }
 
-const MainLogo: React.FC<{ style: CSSProperties }> = ({
-  style,
-}) => (
+const MainLogo: React.FC<{ style: CSSProperties }> = ({ style }) => (
   <svg
     width="151"
     height="50"
@@ -125,9 +123,7 @@ const MainLogo: React.FC<{ style: CSSProperties }> = ({
   </svg>
 );
 
-const DocsLogo: React.FC<{ style: CSSProperties }> = ({
-  style,
-}) => (
+const DocsLogo: React.FC<{ style: CSSProperties }> = ({ style }) => (
   <svg
     width="151"
     height="50"
