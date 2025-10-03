@@ -141,7 +141,7 @@ html[data-theme="dark"] {
     0px 2px 4px rgba(0, 0, 0, 0.3), 0px 8px 20px rgba(0, 0, 0, 0.2);
 
   /* Menu icon for dark mode */
-  --ifm-menu-link-sublist-icon: url('data:image/svg+xml;utf8,<svg width="100%" height="100%" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><g transform="matrix(0.88,0,0,0.88,1.3,1.3)"><path d="M11.505,8.838L11.071,9.271L8,6.2L4.929,9.271L4.496,8.837L8,5.333L11.505,8.838Z" style="fill:rgb(227,227,227);"/></g></svg>');
+  --ifm-menu-link-sublist-icon: url('data:image/svg+xml;utf8,<svg width="100%" height="100%" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><g transform="matrix(0.88,0,0,0.88,1.3,1.3)"><path d="M11.505,8.838L11.071,9.271L8,6.2L4.929,9.271L4.496,8.837L8,5.333L11.505,8.838Z" style="fill:rgb(0,0,0);"/></g></svg>');
 }
 
 .docusaurus-highlight-code-line {
@@ -296,16 +296,6 @@ html[data-theme="dark"] .dropdown__menu > li + li:before {
   .menu__list-item:not(.menu__list-item--collapsed)
   > .menu__link.menu__link--sublist,
 .navbar-sidebar .menu__list-item > .menu__list {
-  background-color: var(--buf-ink-blue-00);
-  border-bottom: 1px solid var(--buf-grey-01);
-}
-
-html[data-theme="dark"]
-  .navbar-sidebar
-  .menu__list-item:not(.menu__list-item--collapsed)
-  > .menu__link.menu__link--sublist,
-html[data-theme="dark"] .navbar-sidebar .menu__list-item > .menu__list {
-  background-color: var(--buf-ink-blue-00);
   border-bottom: 1px solid var(--buf-grey-01);
 }
 
