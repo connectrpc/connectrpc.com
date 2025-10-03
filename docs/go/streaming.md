@@ -170,6 +170,9 @@ func (s *GreetServer) Greet(
   stream *connect.ClientStream[greetv1.GreetRequest],
 ) (*greetv1.GreetResponse, error) {
   callInfo, ok := connect.CallInfoForHandlerContext(ctx)
+  if !ok {
+    return nil, errors.New("can't access headers: no CallInfo for handler context")
+  }
   log.Println("Request headers: ", callInfo.RequestHeader())
   var greeting strings.Builder
   for stream.Receive() {

@@ -24,8 +24,8 @@ must mark it as being side-effect free using the
 [`MethodOptions.IdempotencyLevel`][idempotency-level] option:
 
 ```protobuf
-service ElizaService {
-  rpc Say(SayRequest) returns (SayResponse) {
+service GreetService {
+  rpc Greet(GreetRequest) returns (GreetResponse) {
     option idempotency_level = NO_SIDE_EFFECTS;
   }
 }
@@ -40,9 +40,10 @@ using a Go client, you would specify the `WithHTTPGet` option when creating the
 Connect client.
 
 ```go
-client := elizav1connect.NewElizaServiceClient(
-	http.DefaultClient,
-	connect.WithHTTPGet(),
+client := greetv1connect.NewGreetServiceClient(
+  http.DefaultClient,
+  "http://localhost:8080",
+  connect.WithHTTPGet(),
 )
 ```
 
@@ -65,8 +66,10 @@ For example, you may wish to set the `Cache-Control` header with a `max-age`
 directive:
 
 ```go
-ctx, callInfo := connect.NewClientContext(context.Background())
-callInfo.RequestHeader().Set("Cache-Control", "max-age=604800")
+callInfo, ok := connect.CallInfoForHandlerContext(ctx)
+if ok {
+  callInfo.ResponseHeader().Set("Cache-Control", "max-age=604800")
+}
 ```
 
 This would instruct agents and proxies that the request may be cached for up to
@@ -85,7 +88,7 @@ on the `CallInfo` type in context:
 
 ```go
 callInfo, ok := connect.CallInfoForHandlerContext(ctx)
-if callInfo.HTTPMethod() == http.MethodGet {
+if ok && callInfo.HTTPMethod() == http.MethodGet {
   callInfo.ResponseHeader().Set("Cache-Control", "max-age=604800")
 }
 ```

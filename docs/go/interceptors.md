@@ -81,13 +81,13 @@ interceptors := connect.WithInterceptors(NewAuthInterceptor())
 // For handlers:
 mux := http.NewServeMux()
 mux.Handle(greetv1connect.NewGreetServiceHandler(
-  &greetServer{},
+  &GreetServer{},
   interceptors,
 ))
 // For clients:
 client := greetv1connect.NewGreetServiceClient(
   http.DefaultClient,
-  "https://api.acme.com",
+  "http://localhost:8080",
   interceptors,
 )
 ```

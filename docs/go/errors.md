@@ -51,7 +51,7 @@ standard library's `errors.As` to inspect errors:
 ```go
 client := greetv1connect.NewGreetServiceClient(
   http.DefaultClient,
-  "https://api.acme.com",
+  "http://localhost:8080",
 )
 _, err := client.Greet(
   context.Background(),
