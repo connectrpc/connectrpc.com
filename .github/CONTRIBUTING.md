@@ -58,4 +58,4 @@ required work in other repositories can begin.
 [dco]: https://developercertificate.org
 [docusaurus]: https://docusaurus.io
 [vercel]: https://vercel.com
-[swizzling]: swizzling.md
+[swizzling]: https://docusaurus.io/docs/swizzling
