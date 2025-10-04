@@ -27,7 +27,7 @@ your client.
 ```go
 client := greetv1connect.NewGreetServiceClient(
   http.DefaultClient, // though you may also need h2c, see below
-  "https://api.acme.com",
+  "http://localhost:8080",
   connect.WithGRPC(),
 )
 ```
@@ -70,7 +70,7 @@ client := greetv1connect.NewGreetServiceClient(
       },
     },
   },
-  "http://api.acme.com",
+  "http://localhost:8080",
   connect.WithGRPC(),
 )
 ```

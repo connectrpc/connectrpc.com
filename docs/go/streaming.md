@@ -108,10 +108,8 @@ trailers, a block of HTTP-formatted data at the end of the response body, or a
 blob of JSON at the end of the body. Regardless of the wire encoding, all three
 protocols give trailers the same semantics and restrictions as headers.
 
-Each of `connect-go`'s stream types either exposes headers and trailers on a
-`Request` or `Response` (just like unary RPCs), or the stream itself has
-methods to access metadata. These APIs work identically regardless of the
-protocol in use.
+Headers and trailers are exposed on streaming RPCs in the same way as unary, via
+a `CallInfo` type in context. 
 
 ## Interceptors
 
@@ -170,8 +168,12 @@ type GreetServer struct{}
 func (s *GreetServer) Greet(
   ctx context.Context,
   stream *connect.ClientStream[greetv1.GreetRequest],
-) (*connect.Response[greetv1.GreetResponse], error) {
-  log.Println("Request headers: ", stream.RequestHeader())
+) (*greetv1.GreetResponse, error) {
+  callInfo, ok := connect.CallInfoForHandlerContext(ctx)
+  if !ok {
+    return nil, errors.New("can't access headers: no CallInfo for handler context")
+  }
+  log.Println("Request headers: ", callInfo.RequestHeader())
   var greeting strings.Builder
   for stream.Receive() {
     g := fmt.Sprintf("Hello, %s!\n", stream.Msg().Name)
@@ -182,10 +184,10 @@ func (s *GreetServer) Greet(
   if err := stream.Err(); err != nil {
     return nil, connect.NewError(connect.CodeUnknown, err)
   }
-  res := connect.NewResponse(&greetv1.GreetResponse{
+  callInfo.ResponseHeader().Set("Greet-Version", "v1")
+  res := &greetv1.GreetResponse{
     Greeting: greeting.String(),
-  })
-  res.Header().Set("Greet-Version", "v1")
+  }
   return res, nil
 }
 

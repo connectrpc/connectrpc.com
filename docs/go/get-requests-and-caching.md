@@ -24,8 +24,8 @@ must mark it as being side-effect free using the
 [`MethodOptions.IdempotencyLevel`][idempotency-level] option:
 
 ```protobuf
-service ElizaService {
-  rpc Say(SayRequest) returns (SayResponse) {
+service GreetService {
+  rpc Greet(GreetRequest) returns (GreetResponse) {
     option idempotency_level = NO_SIDE_EFFECTS;
   }
 }
@@ -40,9 +40,10 @@ using a Go client, you would specify the `WithHTTPGet` option when creating the
 Connect client.
 
 ```go
-client := elizav1connect.NewElizaServiceClient(
-	http.DefaultClient,
-	connect.WithHTTPGet(),
+client := greetv1connect.NewGreetServiceClient(
+  http.DefaultClient,
+  "http://localhost:8080",
+  connect.WithHTTPGet(),
 )
 ```
 
@@ -65,8 +66,10 @@ For example, you may wish to set the `Cache-Control` header with a `max-age`
 directive:
 
 ```go
-response := connect.NewResponse(&elizav1.SayResponse{})
-response.Header().Set("Cache-Control", "max-age=604800")
+callInfo, ok := connect.CallInfoForHandlerContext(ctx)
+if ok {
+  callInfo.ResponseHeader().Set("Cache-Control", "max-age=604800")
+}
 ```
 
 This would instruct agents and proxies that the request may be cached for up to
@@ -80,17 +83,16 @@ appropriate, for example, for authenticated requests.
 ## Distinguishing GET Requests
 
 In some cases, you might want to introduce behavior that only occurs when
-handling HTTP GET requests. This can be accomplished using
-[`Request.HTTPMethod`][request-httpmethod]:
+handling HTTP GET requests. This can be accomplished using the `HTTPMethod` method
+on the `CallInfo` type in context:
 
 ```go
-response := connect.NewResponse(&elizav1.SayResponse{})
-if request.HTTPMethod() == http.MethodGet {
-  response.Header().Set("Cache-Control", "max-age=604800")
+callInfo, ok := connect.CallInfoForHandlerContext(ctx)
+if ok && callInfo.HTTPMethod() == http.MethodGet {
+  callInfo.ResponseHeader().Set("Cache-Control", "max-age=604800")
 }
 ```
 
 [connect-grpc-bridge-docs]: https://www.envoyproxy.io/docs/envoy/v1.26.0/configuration/http/http_filters/connect_grpc_bridge_filter#config-http-filters-connect-grpc-bridge
 [cache-control-response-directives]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#response_directives
 [idempotency-level]: https://github.com/protocolbuffers/protobuf/blob/e5679c01e8f47e8a5e7172444676bda1c2ada875/src/google/protobuf/descriptor.proto#L795
-[request-httpmethod]: https://pkg.go.dev/connectrpc.com/connect#Request.HTTPMethod
