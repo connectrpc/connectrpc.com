@@ -182,7 +182,7 @@ import (
 type GreetServer struct{}
 
 func (s *GreetServer) Greet(
-  ctx context.Context,
+  _ context.Context,
   req *greetv1.GreetRequest,
 ) (*greetv1.GreetResponse, error) {
   res := &greetv1.GreetResponse{
@@ -196,9 +196,8 @@ func main() {
   mux := http.NewServeMux()
   path, handler := greetv1connect.NewGreetServiceHandler(
     greeter,
-    connect.WithInterceptors(
-      validate.NewInterceptor(),
-    ),
+    // Validation via Protovalidate is almost always recommended
+    connect.WithInterceptors(validate.NewInterceptor()),
   )
   mux.Handle(path, handler)
   p := new(http.Protocols)
