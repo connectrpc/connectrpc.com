@@ -128,10 +128,13 @@ syntax = "proto3";
 
 package greet.v1;
 
-option go_package = "example/gen/greet/v1;greetv1";
+import "buf/validate/validate.proto";
 
 message GreetRequest {
-  string name = 1;
+  string name = 1 [(buf.validate.field).string = {
+    min_len: 1,
+    max_len: 50,
+  }];
 }
 
 message GreetResponse {
@@ -158,6 +161,7 @@ import (
   "strings"
 
   "connectrpc.com/connect"
+  "connectrpc.com/validate"
 
   greetv1 "example/gen/greet/v1"
   "example/gen/greet/v1/greetv1connect"
@@ -194,7 +198,11 @@ func (s *GreetServer) Greet(
 func main() {
   greeter := &GreetServer{}
   mux := http.NewServeMux()
-  path, handler := greetv1connect.NewGreetServiceHandler(greeter)
+  path, handler := greetv1connect.NewGreetServiceHandler(
+    greeter,
+    // Validation via Protovalidate is almost always recommended
+    connect.WithInterceptors(validate.NewInterceptor()),
+  )
   mux.Handle(path, handler)
   p := new(http.Protocols)
   p.SetHTTP1(true)
@@ -218,7 +226,7 @@ const tokenHeader = "Acme-Token"
 
 var errNoToken = errors.New("no token provided")
 
-type authInterceptor struct {}
+type authInterceptor struct{}
 
 func NewAuthInterceptor() *authInterceptor {
   return &authInterceptor{}
@@ -226,7 +234,7 @@ func NewAuthInterceptor() *authInterceptor {
 
 func (i *authInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc {
   // Same as previous UnaryInterceptorFunc.
-  return connect.UnaryFunc(func(
+  return func(
     ctx context.Context,
     req connect.AnyRequest,
   ) (connect.AnyResponse, error) {
@@ -238,22 +246,22 @@ func (i *authInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc {
       return nil, connect.NewError(connect.CodeUnauthenticated, errNoToken)
     }
     return next(ctx, req)
-  })
+  }
 }
 
 func (*authInterceptor) WrapStreamingClient(next connect.StreamingClientFunc) connect.StreamingClientFunc {
-  return connect.StreamingClientFunc(func(
+  return func(
     ctx context.Context,
     spec connect.Spec,
   ) connect.StreamingClientConn {
     conn := next(ctx, spec)
     conn.RequestHeader().Set(tokenHeader, "sample")
     return conn
-  })
+  }
 }
 
 func (i *authInterceptor) WrapStreamingHandler(next connect.StreamingHandlerFunc) connect.StreamingHandlerFunc {
-  return connect.StreamingHandlerFunc(func(
+  return func(
     ctx context.Context,
     conn connect.StreamingHandlerConn,
   ) error {
@@ -261,7 +269,7 @@ func (i *authInterceptor) WrapStreamingHandler(next connect.StreamingHandlerFunc
       return connect.NewError(connect.CodeUnauthenticated, errNoToken)
     }
     return next(ctx, conn)
-  })
+  }
 }
 ```
 
