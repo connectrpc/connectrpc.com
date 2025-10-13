@@ -321,7 +321,7 @@ It's rejected because you've included Protovalidate rules in your schema:
 ```json
 {
   "code": "invalid_argument",
-  "message": "validation error:\n - name: value length must be at least 1 characters [string.min_len]",
+  "message": "validation error:\n - name: value length must be at least 1 characters [string.min_len]"
 }
 ```
 
