@@ -170,13 +170,13 @@ Create a new file `connect.ts` with the following contents:
 
 ```ts
 import type { ConnectRouter } from "@connectrpc/connect";
-import { ElizaService } from "./gen/connectrpc/eliza/v1/eliza_pb"
+import { ElizaService, SayRequest } from "./gen/connectrpc/eliza/v1/eliza_pb";
 
 export default (router: ConnectRouter) =>
   // registers connectrpc.eliza.v1.ElizaService
   router.service(ElizaService, {
     // implements rpc Say
-    async say(req) {
+    async say(req: SayRequest, context: HandlerContext) {
       return {
         sentence: `You said: ${req.sentence}`
       }
