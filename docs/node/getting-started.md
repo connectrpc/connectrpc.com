@@ -34,7 +34,7 @@ $ cd connect-example
 $ npm init -y
 $ npm install typescript tsx
 $ npx tsc --init
-$ npm install @bufbuild/buf @bufbuild/protobuf @bufbuild/protoc-gen-es @connectrpc/connect
+$ npm install @bufbuild/buf @bufbuild/protobuf @bufbuild/protoc-gen-es @connectrpc/connect @connectrpc/validate
 ```
 
 ## Define a service
@@ -42,7 +42,7 @@ $ npm install @bufbuild/buf @bufbuild/protobuf @bufbuild/protoc-gen-es @connectr
 First, we need to add a Protobuf file that includes our service definition. For this tutorial, we are going to construct a unary endpoint for a service that is a stripped-down implementation of ELIZA, the famous natural language processing program.
 
 ```bash
-$ mkdir -p proto && touch proto/eliza.proto
+$ mkdir -p proto/connectrpc/eliza/v1 && touch proto/connectrpc/eliza/v1/eliza.proto
 ```
 
 Open up the above file and add the following service definition:
@@ -52,8 +52,13 @@ syntax = "proto3";
 
 package connectrpc.eliza.v1;
 
+import "buf/validate/validate.proto";
+
 message SayRequest {
-  string sentence = 1;
+  string sentence = 1 [
+    (buf.validate.field).string.min_len = 1,
+    (buf.validate.field).string.max_len = 250
+  ];
 }
 
 message SayResponse {
@@ -79,7 +84,7 @@ First, scaffold a basic [`buf.yaml`][buf.yaml] at the root of your repository:
 $ npx buf config init
 ```
 
-Then, edit `buf.yaml` to use our `proto` directory:
+Then, edit `buf.yaml` to depend on [Protovalidate](https://protovalidate.com) and use our `proto` directory:
 
 ```yaml title=buf.yaml
 version: v2
@@ -87,9 +92,13 @@ version: v2
 modules:
 // highlight-next-line
   - path: proto
+// highlight-next-line
+deps:
+// highlight-next-line
+  - buf.build/bufbuild/protovalidate
 lint:
   use:
-    - DEFAULT
+    - STANDARD
 breaking:
   use:
     - FILE
@@ -113,11 +122,12 @@ With those configuration files in place, you can lint your schema and generate
 code:
 
 ```bash
+$ npx buf dep update
 $ npx buf lint
 $ npx buf generate
 ```
 
-You should now see a generated TypeScript file:
+You should now see generated TypeScript files:
 
 ```diff
 .
@@ -126,7 +136,19 @@ You should now see a generated TypeScript file:
 // highlight-next-line
 ├── gen
 // highlight-next-line
-│   └── eliza_pb.ts
+│ ├── buf
+// highlight-next-line
+│ │ └── validate
+// highlight-next-line
+│ │     └── validate_pb.ts
+// highlight-next-line
+│ └── connectrpc
+// highlight-next-line
+│     └── eliza
+// highlight-next-line
+│         └── v1
+// highlight-next-line
+│             └── eliza_pb.ts
 ├── node_modules
 ├── package-lock.json
 ├── package.json
@@ -148,7 +170,7 @@ Create a new file `connect.ts` with the following contents:
 
 ```ts
 import type { ConnectRouter } from "@connectrpc/connect";
-import { ElizaService } from "./gen/eliza_pb";
+import { ElizaService } from "./gen/connectrpc/eliza/v1/eliza_pb"
 
 export default (router: ConnectRouter) =>
   // registers connectrpc.eliza.v1.ElizaService
@@ -180,6 +202,7 @@ $ npm install fastify @connectrpc/connect-node @connectrpc/connect-fastify
 Create a new file `server.ts` with the following contents:
 
 ```ts
+import { createValidateInterceptor } from "@connectrpc/validate";
 import { fastify } from "fastify";
 import { fastifyConnectPlugin } from "@connectrpc/connect-fastify";
 import routes from "./connect";
@@ -187,6 +210,8 @@ import routes from "./connect";
 async function main() {
   const server = fastify();
   await server.register(fastifyConnectPlugin, {
+    // Validation via Protovalidate is almost always recommended
+    interceptors: [createValidateInterceptor()],
     routes,
   });
   server.get("/", (_, reply) => {
@@ -221,12 +246,24 @@ $ curl \
 {"sentence":"You said: I feel happy."}
 ```
 
+Now try sending a request with an empty `sentence`. 
+It's rejected because you've included Protovalidate rules in your schema.
+
+```terminal
+$ curl \
+  --header 'Content-Type: application/json' \
+  --data '{"sentence": ""}' \
+   http://localhost:8080/connectrpc.eliza.v1.ElizaService/Say
+---
+{"code":"invalid_argument","message":"sentence: value length must be at least 1 characters [string.min_len]..."
+```
+
 You can also make requests using a Connect client. Create a new file `client.ts`
 with the following contents:
 
 ```ts
 import { createClient } from "@connectrpc/connect";
-import { ElizaService } from "./gen/eliza_pb";
+import { ElizaService } from "./gen/connectrpc/eliza/v1/eliza_pb"
 import { createConnectTransport } from "@connectrpc/connect-node";
 
 const transport = createConnectTransport({
@@ -260,7 +297,7 @@ Transport:
 
 ```ts
 import { createClient } from "@connectrpc/connect";
-import { ElizaService } from "./gen/eliza_pb";
+import { ElizaService } from "./gen/connectrpc/eliza/v1/eliza_pb"
 // highlight-next-line
 import { createConnectTransport } from "@connectrpc/connect-web";
 
@@ -320,6 +357,7 @@ for our example server.
 Let's update our `server.ts` to use this certificate:
 
 ```ts
+import { createValidateInterceptor } from "@connectrpc/validate";
 import { fastify } from "fastify";
 import { fastifyConnectPlugin } from "@connectrpc/connect-fastify";
 import routes from "./connect";
@@ -340,6 +378,7 @@ async function main() {
     }
   });
   await server.register(fastifyConnectPlugin, {
+    interceptors: [createValidateInterceptor()],
     routes,
   });
   // highlight-next-line
