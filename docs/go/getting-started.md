@@ -226,7 +226,7 @@ $ go run ./cmd/server/main.go
 ## Make requests
 
 The simplest way to consume your new API is an HTTP/1.1 POST with a JSON
-payload. If you have a recent version of cURL installed, it's a one-liner:
+payload:
 
 ```bash
 $ curl \
@@ -260,7 +260,7 @@ This responds:
 }
 ```
 
-But it's easiest to just use the Connect protocol:
+Or, with the Connect protocol:
 
 ```bash
 $ buf curl \
