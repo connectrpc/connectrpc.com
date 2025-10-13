@@ -33,7 +33,7 @@ http
   .listen(8080);
 ```
 
-You can think of interceptors like a layered onion. A request received by a server goes through the outermost layer first. Each call to `next()` traverses to the next layer. In the center, the request is handled by user provided implementation. The response then comes back through all layers and is returned to the client. In the array of interceptors passed adapter/router, the interceptor at the end of the array is applied first.
+You can think of interceptors like a layered onion. A request received by a server goes through the outermost layer first. Each call to `next()` traverses to the next layer. In the center, the request is handled by user provided implementation. The response then comes back through all layers and is returned to the client. In the array of interceptors passed to the adapter/router, the interceptor at the end of the array is the first applied to the response.
 
 To intercept responses, we simply look at the return value of `next()`:
 
@@ -109,11 +109,11 @@ export const kUser = createContextKey<User | undefined>(undefined, {
 });
 ```
 
-It is best to define context keys in a separate file and export them. This is better for code splitting and also avoids circular imports. This also helps in the case where the provider changes based on the environment. For example, in a test environment we could setup an interceptor that adds a mock user and in production we will have the actual user.
+It's best to define context keys in a separate file and export them. This is better for code splitting and also avoids circular imports. This also helps in the case where the provider changes based on the environment. For example, in a test environment we could set up an interceptor that adds a mock user and in production we will have the actual user.
 
 ### Example
 
-One of the common use cases of interceptors is to a handle logic that is common to many requests like authentication. We can add authentication logic like so:
+One of the common use cases of interceptors is to a handle logic that is common to many requests, like authentication. We can add authentication logic like so:
 
 ```ts
 // This can come from an auth library like passport.js
@@ -210,25 +210,30 @@ export default (router: ConnectRouter) =>
 
 You can also pass the context value from the server plugin:
 
+
 ```ts
 import { fastify } from "fastify";
-import routes from "./connect";
+import { createContextValues } from "@connectrpc/connect";
+import { fastifyConnectPlugin } from "@connectrpc/connect-fastify";
+import { createValidateInterceptor } from "@connectrpc/validate";
 import { kUser } from "./user-context";
 import { authenticate } from "./authenticate";
-import { fastifyConnectPlugin } from "@connectrpc/connect-fastify";
+import routes from "./connect";
 
-const server = fastify();
-
-await server.register(fastifyConnectPlugin, {
-  routes,
-  contextValues: (req) =>
-    createContextValues().set(kUser, authenticate(req)),
-});
-
-await server.listen({
-  host: "localhost",
-  port: 8080,
-});
+async function main() {
+  const server = fastify();
+  await server.register(fastifyConnectPlugin, {
+    // Validation via Protovalidate is almost always recommended
+    interceptors: [createValidateInterceptor()],
+    routes,
+    contextValues: (req) => 
+      createContextValues().set(kUser, authenticate(req)),
+  });
+  await server.listen({ host: "localhost", port: 8080 });
+}
+// You can remove the main() wrapper if you set type: module in your package.json,
+// and update your tsconfig.json with target: es2017 and module: es2022.
+void main();
 ```
 
 The request passed to the `contextValues` function is different for each server plugin, please refer to the documentation for the server plugin you are using.

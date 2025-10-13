@@ -70,13 +70,13 @@ import { createValidateInterceptor } from "@connectrpc/validate";
 import routes from "./connect";
 
 async function main() {
-    const server = fastify();
-    await server.register(fastifyConnectPlugin, {
-        // Validation via Protovalidate is almost always recommended
-        interceptors: [createValidateInterceptor()],
-        routes,
-    });
-    await server.listen({ host: "localhost", port: 8080 });
+  const server = fastify();
+  await server.register(fastifyConnectPlugin, {
+    // Validation via Protovalidate is almost always recommended
+    interceptors: [createValidateInterceptor()],
+    routes,
+  });
+  await server.listen({ host: "localhost", port: 8080 });
 }
 // You can remove the main() wrapper if you set type: module in your package.json,
 // and update your tsconfig.json with target: es2017 and module: es2022.
@@ -119,9 +119,9 @@ import { createValidateInterceptor } from "@connectrpc/validate";
 import routes from "./connect";
 
 const {handler, config} = nextJsApiRouter({
-    // Validation via Protovalidate is almost always recommended
-    interceptors: [createValidateInterceptor()],
-    routes
+  // Validation via Protovalidate is almost always recommended
+  interceptors: [createValidateInterceptor()],
+  routes
 });
 export {handler as default, config};
 ```
