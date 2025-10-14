@@ -25,7 +25,7 @@ http.createServer(
   connectNodeAdapter({
     // Validation via Protovalidate is almost always recommended
     interceptors: [createValidateInterceptor()],
-    // responds with 404 for other requests
+    // The connectNodeAdapter responds with 404 to requests that don't match a route
     routes
   })
 ).listen(8080);
