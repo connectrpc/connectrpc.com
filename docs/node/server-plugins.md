@@ -45,7 +45,7 @@ The function accepts all [common options](#common-options) as well as:
   context values are passed to the service implementation. See
   [Context values](./interceptors.md#context-values) for more information.
 
-#### Node.js Protocol Support by HTTP Version
+#### Protocol support in Node.js by HTTP version
 
 Over HTTP/2, Node.js can serve the Connect, gRPC, and gRPC-Web protocols with
 all types of RPCs.
@@ -95,7 +95,7 @@ The plugin accepts all [common options](#common-options) as well as:
   context values are passed to the service implementation. See
   [Context values](./interceptors.md#context-values) for more information.
 
-#### Fastify Protocol Support by HTTP Version
+#### Protocol support in Fastify by HTTP version
 
 Over HTTP/2, Fastify can serve the Connect, gRPC, and gRPC-Web protocols with
 all types of RPCs.
@@ -142,7 +142,7 @@ The middleware accepts all [common options](#common-options) as well as:
   context values are passed to the service implementation. See
   [Context values](./interceptors.md#context-values) for more information.
 
-#### Next.js Protocol Support
+#### Protocol support in Next.js
 
 Next.js does not support the `http2` module. You can serve the Connect protocol 
 and gRPC-Web. The gRPC protocol and bidirectional streaming are not supported.
@@ -187,7 +187,7 @@ The middleware accepts all [common options](#common-options) as well as:
   context values are passed to the service implementation. See
   [Context values](./interceptors.md#context-values) for more information.
 
-#### Express Protocol Support
+#### Protocol support in Express
 
 Express does not support the `http2` module. You can serve the Connect protocol 
 and gRPC-Web. The gRPC protocol and bidirectional streaming RPCs are not 
