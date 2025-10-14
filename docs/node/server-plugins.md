@@ -45,7 +45,7 @@ The function accepts all [common options](#common-options) as well as:
   context values are passed to the service implementation. See
   [Context values](./interceptors.md#context-values) for more information.
 
-#### Node Protocol Support by HTTP Version
+#### Node.js Protocol Support by HTTP Version
 
 Over HTTP/2, Node.js can serve the Connect, gRPC, and gRPC-Web protocols with
 all types of RPCs.
