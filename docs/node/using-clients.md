@@ -9,6 +9,7 @@ instead of from [@connectrpc/connect-web](https://www.npmjs.com/package/@connect
 
 ```typescript
 import { createClient } from "@connectrpc/connect";
+import { ElizaService } from "@buf/connectrpc_eliza.bufbuild_es/connectrpc/eliza/v1/eliza_pb";
 // highlight-next-line
 import { createConnectTransport } from "@connectrpc/connect-node";
 
@@ -17,7 +18,7 @@ const transport = createConnectTransport({
 // highlight-next-line
   httpVersion: "1.1",
 // highlight-next-line
-  baseUrl: "http://demo.connectrpc.com",
+  baseUrl: "https://demo.connectrpc.com",
 // highlight-next-line
 });
 

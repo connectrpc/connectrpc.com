@@ -6,27 +6,32 @@ sidebar_position: 3
 If you just need an API server, using a built-in Node.js server might be
 sufficient, but Connect also supports several server frameworks on Node.js.
 
-The following code snippets expect that you have already added a file `connect.ts` with your Connect RPCs to your
-project. See [Implementing services](./implementing-services.md) for more information.
+The following code snippets expect that you've already added a `connect.ts` file with your Connect RPCs to your
+project. See [Implementing services](./implementing-services.md) for more.
 
 
 ## Vanilla Node.js
 
-Run your Connect RPCs on the Node.js built in HTTP modules with the function
+Run your Connect RPCs on the Node.js built-in HTTP modules with
 `connectNodeAdapter()` from [@connectrpc/connect-node](https://www.npmjs.com/package/@connectrpc/connect-node):
 
 ```ts
 import * as http from "http";
 import routes from "./connect";
 import { connectNodeAdapter } from "@connectrpc/connect-node";
+import { createValidateInterceptor } from "@connectrpc/validate";
 
 http.createServer(
-  connectNodeAdapter({ routes }) // responds with 404 for other requests
+  connectNodeAdapter({
+    // Validation via Protovalidate is almost always recommended
+    interceptors: [createValidateInterceptor()],
+    // The connectNodeAdapter responds with 404 to requests that don't match a route
+    routes
+  })
 ).listen(8080);
 ```
 
-The function accepts all [common options](#common-options), and the following additional
-ones:
+The function accepts all [common options](#common-options) as well as:
 
 - `fallback?: NodeHandlerFn`<br/>
   If none of the handler request paths match, a 404 is served. This option
@@ -40,16 +45,16 @@ ones:
   context values are passed to the service implementation. See
   [Context values](./interceptors.md#context-values) for more information.
 
-:::note
+#### Protocol support in Node.js by HTTP version
+
 Over HTTP/2, Node.js can serve the Connect, gRPC, and gRPC-Web protocols with
 all types of RPCs.
 Over HTTP 1.1, the gRPC protocol and bidirectional streaming RPCs are not
 supported.
-:::
 
 ## Fastify
 
-[Fastify](https://www.fastify.io/) is a fast and low overhead web framework,
+[Fastify](https://www.fastify.io/) is a fast and low overhead web framework
 for Node.js. We highly recommend it if you want to serve anything else along
 with your Connect RPCs. Use the plugin from [@connectrpc/connect-fastify](https://www.npmjs.com/package/@connectrpc/connect-fastify)
 with Fastify:
@@ -60,22 +65,25 @@ $ npm install fastify @connectrpc/connect @connectrpc/connect-node @connectrpc/c
 
 ```ts
 import { fastify } from "fastify";
-import routes from "./connect";
 import { fastifyConnectPlugin } from "@connectrpc/connect-fastify";
+import { createValidateInterceptor } from "@connectrpc/validate";
+import routes from "./connect";
 
-const server = fastify();
-
-await server.register(fastifyConnectPlugin, {
- routes
-});
-
-await server.listen({
-  host: "localhost",
-  port: 8080,
-});
+async function main() {
+  const server = fastify();
+  await server.register(fastifyConnectPlugin, {
+    // Validation via Protovalidate is almost always recommended
+    interceptors: [createValidateInterceptor()],
+    routes,
+  });
+  await server.listen({ host: "localhost", port: 8080 });
+}
+// You can remove the main() wrapper if you set type: module in your package.json,
+// and update your tsconfig.json with target: es2017 and module: es2022.
+void main();
 ```
 
-The plugin accepts all [common options](#common-options), and the following additional ones:
+The plugin accepts all [common options](#common-options) as well as:
 - `shutdownTimeoutMs?: number`<br/>
   If set, the server will wait for the specified duration before aborting any 
   in-flight requests once [`fastify.close`](https://fastify.dev/docs/latest/Reference/Server/#close) is called.
@@ -87,12 +95,11 @@ The plugin accepts all [common options](#common-options), and the following addi
   context values are passed to the service implementation. See
   [Context values](./interceptors.md#context-values) for more information.
 
-:::note
+#### Protocol support in Fastify by HTTP version
+
 Over HTTP/2, Fastify can serve the Connect, gRPC, and gRPC-Web protocols with
 all types of RPCs.
 Over HTTP 1.1, the gRPC protocol and bidirectional streaming are not supported.
-:::
-
 
 ## Next.js
 
@@ -108,9 +115,14 @@ To enable the server plugin, create the file `pages/api/[[...connect]].ts` in yo
 
 ```ts
 import { nextJsApiRouter } from "@connectrpc/connect-next";
+import { createValidateInterceptor } from "@connectrpc/validate";
 import routes from "./connect";
 
-const {handler, config} = nextJsApiRouter({ routes });
+const {handler, config} = nextJsApiRouter({
+  // Validation via Protovalidate is almost always recommended
+  interceptors: [createValidateInterceptor()],
+  routes
+});
 export {handler as default, config};
 ```
 
@@ -118,8 +130,7 @@ This file is a Next.js [catch-all API route](https://nextjs.org/docs/routing/dyn
 serve your Connect RPCs with the `/api` prefix. Make sure to include the `/api` prefix in the `baseUrl` option for
 your client transport.
 
-The middleware accepts all [common options](#common-options), and the following additional
-one:
+The middleware accepts all [common options](#common-options) as well as:
 
 - `prefix?: string`<br/>
   Serve all handlers under this prefix. For example, the prefix "/something"
@@ -131,10 +142,10 @@ one:
   context values are passed to the service implementation. See
   [Context values](./interceptors.md#context-values) for more information.
 
-:::note
+#### Protocol support in Next.js
+
 Next.js does not support the `http2` module. You can serve the Connect protocol 
 and gRPC-Web. The gRPC protocol and bidirectional streaming are not supported.
-:::
 
 ## Express
 
@@ -151,18 +162,20 @@ import http from "http";
 import express from "express";
 import routes from "./connect";
 import { expressConnectMiddleware } from "@connectrpc/connect-express";
+import { createValidateInterceptor } from "@connectrpc/validate";
 
 const app = express();
 
 app.use(expressConnectMiddleware({
- routes
+  // Validation via Protovalidate is almost always recommended
+  interceptors: [createValidateInterceptor()],
+  routes
 }));
 
 http.createServer(app).listen(8080);
 ```
 
-The middleware accepts all [common options](#common-options), and the following additional
-one:
+The middleware accepts all [common options](#common-options) as well as:
 
 - `requestPathPrefix?: string`<br/>
   Serve all handlers under this prefix. For example, the prefix "/something"
@@ -173,37 +186,36 @@ one:
   context values are passed to the service implementation. See
   [Context values](./interceptors.md#context-values) for more information.
 
-:::note
+#### Protocol support in Express
+
 Express does not support the `http2` module. You can serve the Connect protocol 
 and gRPC-Web. The gRPC protocol and bidirectional streaming RPCs are not 
 supported.
-:::
-
 
 ## Common options
 
 All adapters take a set of common options:
 
-- `routes: (router: ConnectRouter) => void`<br/>
-  The adapter will call this function, and lets you register your services.<br/>
+- `routes: (router: ConnectRouter) => void`
+  The adapter will call this function, and lets you register your services.
   See [Implementing services](./implementing-services.md) for an example.
-- `maxTimeoutMs?: number`<br/>
+- `maxTimeoutMs?: number`
   The maximum value for [timeouts](./timeouts) that clients may specify.
   If a client requests a timeout that is greater than `maxTimeoutMs`,
   the server responds with the error code `invalid_argument`.
-- `connect?: boolean`<br/>
+- `connect?: boolean`
   Whether to enable the Connect protocol for your routes. Enabled by default.
-- `grpcWeb?: boolean`<br/>
+- `grpcWeb?: boolean`
   Whether to enable the gRPC-web protocol for your routes. Enabled by default.
-- `grpc?: boolean`<br/>
+- `grpc?: boolean`
   Whether to enable the gRPC protocol for your routes. Enabled by default.
-- `interceptors?: Interceptor[]`<br/>
+- `interceptors?: Interceptor[]`
   An array of interceptors to apply to all requests. See [Interceptors](./interceptors.md) for more information.
-- `jsonOptions`<br/>
+- `jsonOptions`
   Protobuf [JSON serialization options](https://github.com/bufbuild/protobuf-es/blob/v2.2.1/MANUAL.md#json-serialization-options).
   If your service uses `google.protobuf.Any`, provide a `typeRegistry` with the
   allowed message types.
-- `binaryOptions`<br/>
+- `binaryOptions`
   Protobuf [binary serialization options](https://github.com/bufbuild/protobuf-es/blob/v2.2.1/MANUAL.md#binary-serialization-options).
 
 
@@ -228,7 +240,7 @@ For example, you would use the flag `--http2-prior-knowledge` with cURL or
 Unfortunately, web browsers do not have such a flag, and flat out refuse HTTP/2
 over cleartext. If you want to use gRPC clients _and_ browser clients during
 local development, we recommend to set up locally-trusted development
-certificates and run HTTP/2 with TLS. This actually only takes a minute to set
+certificates and run HTTP/2 with TLS. This only takes a minute to set
 up if you follow the steps in [Getting Started](getting-started.md#use-the-grpc-protocol-instead-of-the-connect-protocol).
 
 ## CORS

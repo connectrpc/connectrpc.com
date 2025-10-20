@@ -6,8 +6,8 @@ sidebar_position: 2
 Connect handles HTTP routes and most plumbing for you, but implementing the
 actual business logic is still up to you.
 
-You always register your implementation on the `ConnectRouter`. We recommend to
-create a file `connect.ts` with a registration function in your project:
+You always register your implementation on the `ConnectRouter`. We recommend
+creating a `connect.ts` file with a registration function in your project:
 
 ```ts
 import { ConnectRouter } from "@connectrpc/connect";
@@ -18,10 +18,13 @@ export default (router: ConnectRouter) => {}
 ## Register a service
 
 
-Let's say you have defined a simple service in Protobuf:
+Let's say you've defined a simple service in Protobuf:
 ```protobuf
 message SayRequest {
-  string sentence = 1;
+  string sentence = 1 [
+    (buf.validate.field).string.min_len = 1,
+    (buf.validate.field).string.max_len = 250
+  ];
 }
 message SayResponse {
   string sentence = 1;
@@ -35,7 +38,7 @@ To register this service, call `router.service()`:
 
 ```ts
 import { ConnectRouter, HandlerContext } from "@connectrpc/connect";
-import { ElizaService, SayRequest } from "./gen/eliza_pb";
+import { ElizaService, SayRequest } from "./gen/connectrpc/eliza/v1/eliza_pb";
 import { create } from "@bufbuild/protobuf";
 
 export default (router: ConnectRouter) =>
@@ -49,7 +52,7 @@ export default (router: ConnectRouter) =>
 ```
 
 Your method `say()` receives the request message and a context object, and
-returns a response message. It is a plain function!
+returns a response message. It's a plain function!
 
 
 ## Plain functions
@@ -83,19 +86,18 @@ The context argument gives you access to headers and service metadata:
 ```ts
 import { HandlerContext } from "@connectrpc/connect";
 import { create } from "@bufbuild/protobuf";
-import { SayRequest } from "./gen/eliza_pb";
+import { SayRequest } from "./gen/connectrpc/eliza/v1/eliza_pb";
 
 function say(req: SayRequest, context: HandlerContext) {
-  ctx.service.typeName; // the protobuf type name "ElizaService"
-  ctx.method.name; // the protobuf rpc name "Say"
-  context.requestHeader.get("Foo");
+  console.log("Handling", context.service.typeName, context.method.name)
+  console.log("Foo:", context.requestHeader.get("Foo"))
   context.responseHeader.set("Foo", "Bar");
   return { sentence: `You said ${req.sentence}` };
 }
 ```
 
 It can also be used to access arbitrary values that are passed from either server plugins or interceptors. Please refer
-to the docs on [interceptors](./interceptors.md#context-values) for learn more.
+to the docs on [interceptors](./interceptors.md#context-values) to learn more.
 
 ## Errors
 
@@ -105,18 +107,18 @@ Instead of returning a response, your method can also raise an error:
 import { Code, ConnectError } from "@connectrpc/connect";
 
 function say() {
-  throw new ConnectError("I have no words anymore.", Code.ResourceExhausted);
+  throw new ConnectError("I have no more words.", Code.ResourceExhausted);
 }
 ```
 
-`Code` is one of Connects [error codes](/docs/protocol#error-codes). Besides
+`Code` is one of Connect's [error codes](/docs/protocol#error-codes). Besides
 the code and a message, errors can also contain metadata (a Headers object)
 and error details.
 
 
 ## Error details
 
-Error details are a powerful feature. Any protobuf message can be transmitted as
+Error details are a powerful feature. Any Protobuf message can be transmitted as
 an error detail. Let's use [`google.rpc.LocalizedMessage`](https://buf.build/googleapis/googleapis/file/main:google/rpc/error_details.proto#L241)
 to localize our error message:
 
@@ -126,7 +128,7 @@ $ npx buf generate buf.build/googleapis/googleapis
 
 ```ts
 import { Code, ConnectError } from "@connectrpc/connect";
-import { ElizaService } from "./gen/eliza_pb";
+import { ElizaService } from "./gen/connectrpc/eliza/v1/eliza_pb";
 import { LocalizedMessageSchema } from "./gen/google/rpc/error_details_pb";
 
 function say() {
@@ -150,7 +152,7 @@ function say() {
     "words-left": "none"
   });
   throw new ConnectError(
-    "I have no words anymore.",
+    "I have no more words.",
     Code.ResourceExhausted,
     metadata,
     details
@@ -163,7 +165,7 @@ function say() {
 
 Before showing the various handlers for streaming endpoints, we'd like to
 reference the [Streaming](../go/streaming.md) page from Connect-Go as a caveat.
-Because while Connect for Node.js does support all three variations of
+While Connect for Node.js does support all three variations of
 streaming endpoints, there are tradeoffs that should be considered before
 diving in.
 
@@ -204,7 +206,7 @@ asynchronous iterable of response messages, typically with a
 
 ```ts
 async function *introduce(req: IntroduceRequest) {
-  yield { sentence: `Hi ${req.name}, I'm eliza` };
+  yield { sentence: `Hi ${req.name}, I'm Eliza` };
   yield { sentence: `How are you feeling today?` };
 }
 ```
@@ -248,7 +250,7 @@ Registering the examples above:
 
 ```typescript
 import { ConnectRouter } from "@connectrpc/connect";
-import { ElizaService } from "./gen/eliza_pb";
+import { ElizaService } from "./gen/connectrpc/eliza/v1/eliza_pb";
 import { say, eliza, Eliza } from "./other-file";
 
 export default (router: ConnectRouter) => {
