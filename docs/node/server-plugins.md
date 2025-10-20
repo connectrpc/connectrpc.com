@@ -169,7 +169,6 @@ const app = express();
 app.use(expressConnectMiddleware({
   // Validation via Protovalidate is almost always recommended
   interceptors: [createValidateInterceptor()],
-  // responds with 404 for other requests
   routes
 }));
 
