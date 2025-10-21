@@ -35,7 +35,8 @@ api.Handle(greetv1connect.NewGreetServiceHandler(&greetServer{}))
 
 mux := http.NewServeMux()
 mux.Handle("/", newHTMLHandler())
-mux.Handle("/grpc/", http.StripPrefix("/grpc", api))
+//highlight-next-line
+mux.Handle("/api/", http.StripPrefix("/api", api))
 http.ListenAndServe(":http", mux)
 ```
 

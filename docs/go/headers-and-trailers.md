@@ -21,7 +21,7 @@ can be used, which returns a `CallInfo` type providing methods for header operat
 ```go
 func (s *GreetServer) Greet(
   ctx context.Context,
-  req *greetv1.GreetRequest,
+  _ *greetv1.GreetRequest,
 ) (*greetv1.GreetResponse, error) {
   callInfo, ok := connect.CallInfoForHandlerContext(ctx)
   if !ok {
@@ -45,7 +45,9 @@ func main() {
   )
   ctx, callInfo := connect.NewClientContext(context.Background())
   callInfo.RequestHeader().Set("Acme-Tenant-Id", "1234")
-  _, err := client.Greet(ctx, &greetv1.GreetRequest{})
+  _, err := client.Greet(ctx, &greetv1.GreetRequest{
+    Name: "Jane",
+  })
   if err != nil {
     fmt.Println(err)
     return
@@ -58,9 +60,10 @@ When sending or receiving errors, handlers and clients may use `Error.Meta()`
 to access headers:
 
 ```go
+// Handler
 func (s *GreetServer) Greet(
-  ctx context.Context,
-  req *greetv1.GreetRequest,
+  _ context.Context,
+  _ *greetv1.GreetRequest,
 ) (*greetv1.GreetResponse, error) {
   err := connect.NewError(
     connect.CodeUnknown,
@@ -69,14 +72,19 @@ func (s *GreetServer) Greet(
   err.Meta().Set("Greet-Version", "v1")
   return nil, err
 }
+```
 
+```go
+// Client
 func main() {
   _, err := greetv1connect.NewGreetServiceClient(
     http.DefaultClient,
     "http://localhost:8080",
   ).Greet(
     context.Background(),
-    &greetv1.GreetRequest{},
+    &greetv1.GreetRequest{
+      Name: "Jane",
+    },
   )
   if connectErr := new(connect.Error); errors.As(err, &connectErr) {
     fmt.Println(connectErr.Meta().Get("Greet-Version"))
@@ -102,6 +110,7 @@ base64 encoding. Suffix your key with "-Bin" and use Connect's
 `EncodeBinaryHeader` and `DecodeBinaryHeader` functions:
 
 ```go
+// Handler
 func (s *GreetServer) Greet(
   ctx context.Context,
   req *greetv1.GreetRequest,
@@ -117,7 +126,10 @@ func (s *GreetServer) Greet(
   )
   return &greetv1.GreetResponse{}, nil
 }
+```
 
+```go
+// Client
 func main() {
   ctx, callInfo := connect.NewClientContext(context.Background())
   _, err := greetv1connect.NewGreetServiceClient(
@@ -125,7 +137,9 @@ func main() {
     "http://localhost:8080",
   ).Greet(
     ctx,
-    &greetv1.GreetRequest{},
+    &greetv1.GreetRequest{
+      Name: "Jane",
+    },
   )
   if err != nil {
     fmt.Println(err)
@@ -153,6 +167,7 @@ If you find yourself needing trailers, unary handlers and clients can access
 them much like headers:
 
 ```go
+// Handler
 func (s *GreetServer) Greet(
   ctx context.Context,
   req *greetv1.GreetRequest,
@@ -165,7 +180,10 @@ func (s *GreetServer) Greet(
   callInfo.ResponseTrailer().Set("Greet-Version", "v1")
   return &greetv1.GreetResponse{}, nil
 }
+```
 
+```go
+// Client
 func main() {
   ctx, callInfo := connect.NewClientContext(context.Background())
   _, err := greetv1connect.NewGreetServiceClient(
@@ -173,7 +191,9 @@ func main() {
     "http://localhost:8080",
   ).Greet(
     ctx,
-    &greetv1.GreetRequest{},
+    &greetv1.GreetRequest{
+      Name: "Jane",
+    },
   )
   if err != nil {
     fmt.Println(err)

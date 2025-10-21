@@ -6,7 +6,11 @@ sidebar_position: 60
 Interceptors are similar to the middleware or decorators you may be familiar
 with from other frameworks: they're the primary way of extending Connect and are 
 often used to add logging, metrics, tracing, retries, and other
-functionality. This document covers unary interceptors &mdash; more complex use
+functionality. 
+If you followed the [getting started](getting-started.md) guide, you've already seen an interceptor in action:
+the [validate-go](https://github.com/connectrpc/validate-go/) interceptor powers the Protovalidate integration that made sure every `GreetRequest` contained a valid name.
+
+On this page you'll learn how to build unary interceptors &mdash; more complex use
 cases are covered in the [streaming documentation](streaming.md).
 
 Take care when writing interceptors! They're powerful, but overly complex
@@ -51,8 +55,8 @@ import (
 const tokenHeader = "Acme-Token"
 
 func NewAuthInterceptor() connect.UnaryInterceptorFunc {
-  interceptor := func(next connect.UnaryFunc) connect.UnaryFunc {
-    return connect.UnaryFunc(func(
+  return func(next connect.UnaryFunc) connect.UnaryFunc {
+    return func(
       ctx context.Context,
       req connect.AnyRequest,
     ) (connect.AnyResponse, error) {
@@ -67,9 +71,8 @@ func NewAuthInterceptor() connect.UnaryInterceptorFunc {
         )
       }
       return next(ctx, req)
-    })
+    }
   }
-  return connect.UnaryInterceptorFunc(interceptor)
 }
 ```
 
@@ -77,17 +80,23 @@ To apply our new interceptor to handlers or clients, we can use
 `WithInterceptors`:
 
 ```go
-interceptors := connect.WithInterceptors(NewAuthInterceptor())
 // For handlers:
+interceptors := connect.WithInterceptors(
+    NewAuthInterceptor(),
+    validate.NewInterceptor(),
+)
 mux := http.NewServeMux()
 mux.Handle(greetv1connect.NewGreetServiceHandler(
   &GreetServer{},
   interceptors,
 ))
+```
+
+```go
 // For clients:
 client := greetv1connect.NewGreetServiceClient(
   http.DefaultClient,
   "http://localhost:8080",
-  interceptors,
+  connect.WithInterceptors(NewAuthInterceptor()),
 )
 ```

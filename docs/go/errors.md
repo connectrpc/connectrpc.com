@@ -24,7 +24,7 @@ Handlers should return coded errors; if they don't, Connect will use the
 `context.Canceled`, and `unknown` for all other errors. For example:
 
 ```go
-func (s *greetServer) Greet(
+func (s *GreetServer) Greet(
   ctx context.Context,
   req *greetv1.GreetRequest,
 ) (*greetv1.GreetResponse, error) {
@@ -55,7 +55,9 @@ client := greetv1connect.NewGreetServiceClient(
 )
 _, err := client.Greet(
   context.Background(),
-  &greetv1.GreetRequest{},
+  &greetv1.GreetRequest{
+    Name: "Jane",
+  },
 )
 if err != nil {
   fmt.Println(connect.CodeOf(err))
