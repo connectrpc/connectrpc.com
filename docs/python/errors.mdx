@@ -109,7 +109,7 @@ except ConnectError as e:
 
 ## Error details
 
-Errors can include strongly-typed details using protobuf messages:
+Errors can include strongly-typed details using Protobuf messages:
 
 ```python
 from connectrpc.code import Code
@@ -197,8 +197,8 @@ Content-Type: application/json
 
 The `details` array contains error detail messages, where each entry has:
 
-- `type`: The fully-qualified protobuf message type (e.g., `google.protobuf.Struct`)
-- `value`: The protobuf message serialized in binary format and then base64-encoded
+- `type`: The fully-qualified Protobuf message type (e.g., `google.protobuf.Struct`)
+- `value`: The Protobuf message serialized in binary format and then base64-encoded
 
 ## See also
 

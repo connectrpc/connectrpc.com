@@ -27,13 +27,13 @@ If your service uses bidirectional or otherwise want to use HTTP/2, the above se
 HTTP/2 support in the Python ecosystem is still relatively young - servers known to support HTTP/2
 with bidirectional streaming are:
 
+- [pyvoy](https://github.com/curioswitch/pyvoy)
 - [granian](https://github.com/emmett-framework/granian)
 - [hypercorn](https://hypercorn.readthedocs.io/en/latest/)
-- [pyvoy](https://github.com/curioswitch/pyvoy)
 
 Connect has an extensive test suite to verify compatibility of connect-python with the Connect protocol.
-Unfortunately, we are only able to reliably pass the suite with pyvoy, with other servers occasionally
-having hung requests or stream ordering issues. pyvoy was built with connect-python in mind but is
+Unfortunately, **only pyvooy reliably passes conformance tests**: other servers occasionally
+have hung requests or stream ordering issues. pyvoy was built with connect-python in mind, but is
 very new and needs more time with real-world applications to verify stability.
 
 Keep the above in mind when picking an HTTP/2 server and let us know how it goes if you give any a try.
@@ -41,8 +41,9 @@ When in doubt, if you do not use bidirectional streaming, we recommend one of th
 
 ## CORS
 
-Connect services are standard ASGI and WSGI applications so any CORS middleware can be used to
-enable it.
+Cross-origin resource sharing (CORS) is needed to support web clients on other origins other than the server's own.
+Connect services are standard ASGI and WSGI applications, so any CORS middleware can be used to
+enable CORS.
 
 For example, with an ASGI application using the [asgi-cors](https://pypi.org/project/asgi-cors/)
 middleware:

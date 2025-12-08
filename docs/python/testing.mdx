@@ -10,7 +10,7 @@ This guide covers testing connect-python services and clients.
 
 ## Setup
 
-For pytest examples in this guide, you'll need pytest and pytest-asyncio. unittest requires no additional dependencies.
+For [pytest](https://docs.pytest.org/en/stable/) examples in this guide, you'll need pytest and [pytest-asyncio](https://pypi.org/project/pytest-asyncio/). unittest requires no additional dependencies.
 
 ## Recommended approach: In-memory testing
 
@@ -265,7 +265,7 @@ This pattern:
 - Follows pytest best practices
 - Matches the pattern used in connect-python's own test suite
 
-With your test client setup, you can use any connect code for interacting with the service under test including [streaming](./streaming.mdx), reading [headers and trailers](./headers-and-trailers.mdx), or checking [errors](./errors.mdx). For example, to test error handling:
+With your test client setup, you can use any Connect code for interacting with the service under test including [streaming](./streaming.mdx), reading [headers and trailers](./headers-and-trailers.mdx), or checking [errors](./errors.mdx). For example, to test error handling:
 
 ```python
 with pytest.raises(ConnectError) as exc_info:

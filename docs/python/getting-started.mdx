@@ -6,7 +6,7 @@ sidebar_position: 1
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-Connect is a slim library for building HTTP APIs consumable anywhere, including browsers.
+Connect is a slim library for building browser- and gRPC-compatible HTTP APIs consumable anywhere, including browsers.
 You define your service with a Protocol Buffer schema, and Connect generates type-safe server
 and client code. Fill in your server's business logic and you're done — no hand-written
 marshaling, routing, or client code required!
@@ -17,13 +17,13 @@ and how to call your new API.
 
 ## Prerequisites
 
-- [uv](https://docs.astral.sh/uv/#installation) installed. Any package manager including pip can also be used.
+- [uv](https://docs.astral.sh/uv/#installation) installed. Any package manager, including [pip](https://pip.pypa.io/en/stable/), can also be used.
 - [The Buf CLI](https://buf.build/docs/installation) installed, and include it in the `$PATH`.
 - We'll also use [cURL](https://curl.se/). It's available from Homebrew and most Linux package managers.
 
 ## Set up Python environment
 
-First, we'll setup the Python environment and dependencies.
+First, we'll set up the Python environment and dependencies.
 
 <Tabs groupId="python-type">
   <TabItem value="async" label="ASGI">
@@ -97,8 +97,8 @@ breaking:
 ```
 
 We will use [remote plugins](https://buf.build/docs/bsr/remote-plugins/usage), a feature of the
-[Buf Schema Registry](https://buf.build/docs/tutorials/getting-started-with-bsr) for generating code. Tell buf how to
-generate code by creating a buf.gen.yaml:
+[Buf Schema Registry](https://buf.build/docs/tutorials/getting-started-with-bsr) for generating code.
+Tell Buf how to generate code by creating a `buf.gen.yaml`:
 
 ```bash
 touch buf.gen.yaml
@@ -144,7 +144,7 @@ poke around if you're interested - `greet_connect.py` is standard Python code.
 
 The code we've generated takes care of the boring boilerplate, but we still need to implement our greeting logic.
 In the generated code, this is represented as the `greet_connect.GreetService` and `greet_connect.GreetServiceSync`
-interfaces for async ASGI and sync WSGI servers respectively. Since the interface is so small, we can do everything
+interfaces for async ASGI and sync WSGI servers. Since the interface is so small, we can do everything
 in one Python file. `touch server.py` and add:
 
 <Tabs groupId="python-type">

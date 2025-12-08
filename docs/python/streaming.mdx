@@ -16,13 +16,10 @@ Temper your enthusiasm. Streaming also comes with many drawbacks:
 - It requires excellent HTTP libraries. At the very least, the client and server must be able to stream HTTP/1.1
   request and response bodies. For bidirectional streaming, both parties must support HTTP/2. Long-lived streams are
   much more likely to encounter bugs and edge cases in HTTP/2 flow control.
-
 - It requires excellent proxies. Every proxy between the server and client — including those run by cloud providers —
   must support HTTP/2.
-
 - It weakens the protections offered to your unary handlers, since streaming typically requires proxies to be
   configured with much longer timeouts.
-
 - It requires complex tools. Streaming RPC protocols are much more involved than unary protocols, so cURL and your
   browser's network inspector are useless.
 
@@ -58,7 +55,14 @@ service GreetService {
 In _bidirectional streaming_ (often called bidi), the client and server may both send multiple messages. Often, the
 exchange is structured like a conversation: the client sends a message, the server responds, the client sends another
 message, and so on. Keep in mind that this always requires end-to-end HTTP/2 support!
+In Protobuf schemas, bidi streaming methods look like this:
 
+```protobuf
+service GreetService {
+  rpc Greet(stream GreetRequest) returns (stream GreetResponse) {}
+}
+
+```
 ## HTTP representation
 
 Streaming responses always have an HTTP status of 200 OK. This may seem unusual, but it's unavoidable: the server may

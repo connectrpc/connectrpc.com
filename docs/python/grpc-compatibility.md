@@ -9,7 +9,7 @@ in a transition without downtime, you will need a way for the gRPC servers to be
 gRPC and Connect clients at the same time. Envoy is a widely used proxy server with support for translating
 the Connect protocol to gRPC via the [Connect-gRPC Bridge](https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_filters/connect_grpc_bridge_filter).
 
-For example, if you have a gRPC server currently listening on port 8080, you update it to use port 8081
+For example, if you have a gRPC server currently listening on port 8080, you can update it to use port 8081
 and expose the service for both Connect and gRPC clients on port 8080 with this config.
 
 ```yaml
@@ -93,9 +93,9 @@ type checker, any changes to parameter names and such should be quite easy to sp
 1. Complete deployment of all servers using Connect client. After this is done, your gRPC servers will only
    be receiving traffic using the Connect protocol.
 
-1. Migrate service implementations to Connect generated stubs. It is recommended to extend the protocol classes
+1. Migrate service implementations to Connect generated stubs. It's recommended to extend the protocol classes
    to have type checking find differences in method names. Change uses of `abort` to directly `raise ConnectError` -
-   for Connect services, it will be uncommon to pass the `RequestContext` into business logic code.
+   for Connect services, it's uncommon to pass the `RequestContext` into business logic code.
 
 1. Reconfigure server deployment to remove the Envoy proxy and deploy. You're done! You can stop generating code with
    gRPC.
