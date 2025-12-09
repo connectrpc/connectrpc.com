@@ -175,16 +175,17 @@ generated clients, should send this header. Servers and proxies may reject
 traffic without this header with an HTTP status code of 400.
 
 Following standard HTTP semantics, servers must assume "identity" if the client
-omits **Content-Encoding**. If the client omits **Accept-Encoding**, servers
-must assume that the client accepts the **Content-Encoding** used for the
-request. Servers must assume that all clients accept "identity" as their least
-preferred encoding. Server implementations may choose to accept the full HTTP
-quality value syntax for **Accept-Encoding**, but client implementations must
-restrict themselves to sending the easy-to-parse subset outlined here. Servers
-should treat **Accept-Encoding** as an ordered list, with the client's most
-preferred encoding first and least preferred encoding last. If the client uses
-an unsupported **Content-Encoding**, servers should return an error with code
-"unimplemented" and a message listing the supported encodings.
+omits **Content-Encoding**.
+
+If the client omits **Accept-Encoding**, servers must assume that the client
+accepts the **Content-Encoding** used for the request if present. Servers must
+assume that all clients accept "identity" as their least preferred encoding,
+even when **Accept-Encoding** is omitted. Servers should treat **Accept-Encoding**
+as an ordered list, with the client's most preferred encoding first and least
+preferred encoding last. This is a simplification fo standard HTTP semantics
+that excludes quality values. If the client uses an unsupported **Content-Encoding**,
+servers should return an error with code "unimplemented" and a message listing the
+supported encodings.
 
 If **Timeout** is omitted, the server should assume an infinite timeout. The
 protocol accommodates timeouts of more than 100 days. Client implementations

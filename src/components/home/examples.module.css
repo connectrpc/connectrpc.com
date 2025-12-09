@@ -107,7 +107,7 @@ pre.codeBlock {
     linear-gradient(90deg, #f4f5fe 0%, transparent 100%),
     linear-gradient(270deg, #f4f5fe 0%, transparent 100%) 0 100%,
     /* Shadows */
-      linear-gradient(
+    linear-gradient(
         90deg,
         rgba(99, 100, 102, 0.1) 0%,
         transparent 50%,
