@@ -32,7 +32,7 @@ with bidirectional streaming are:
 - [hypercorn](https://hypercorn.readthedocs.io/en/latest/)
 
 Connect has an extensive test suite to verify compatibility of connect-python with the Connect protocol.
-Unfortunately, **only pyvooy reliably passes conformance tests**: other servers occasionally
+Unfortunately, **only pyvoy reliably passes conformance tests**: other servers occasionally
 have hung requests or stream ordering issues. pyvoy was built with connect-python in mind, but is
 very new and needs more time with real-world applications to verify stability.
 
