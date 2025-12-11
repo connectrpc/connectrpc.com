@@ -27,7 +27,7 @@ If your service uses bidirectional or otherwise want to use HTTP/2, the above se
 HTTP/2 support in the Python ecosystem is still relatively young - servers known to support HTTP/2
 with bidirectional streaming are:
 
-- [pyvoy](https://github.com/curioswitch/pyvoy)
+- [pyvoy](https://pyvoy.dev)
 - [granian](https://github.com/emmett-framework/granian)
 - [hypercorn](https://hypercorn.readthedocs.io/en/latest/)
 
