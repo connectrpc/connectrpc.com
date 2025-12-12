@@ -1,6 +1,6 @@
 ---
 title: Serialization & compression
-sidebar_position: 10
+sidebar_position: 2
 ---
 
 Connect can work with any schema definition language, but it comes with

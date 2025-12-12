@@ -1,6 +1,6 @@
 ---
 title: gRPC Compatibility
-sidebar_position: 8
+sidebar_position: 9
 ---
 
 Connect-Python currently does not support the gRPC protocol due to lack of support for HTTP/2 trailers
