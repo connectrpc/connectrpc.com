@@ -3,6 +3,10 @@ title: gRPC Compatibility
 sidebar_position: 9
 ---
 
+import VersionWarning from './_version-warning.mdx';
+
+<VersionWarning />
+
 Connect-Python currently does not support the gRPC protocol due to lack of support for HTTP/2 trailers
 in the Python ecosystem. If you have an existing codebase using grpc-python and want to introduce Connect
 in a transition without downtime, you will need a way for the gRPC servers to be accessible from both
