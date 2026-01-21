@@ -3,6 +3,8 @@ title: gRPC Compatibility
 sidebar_position: 9
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 import VersionWarning from './_version-warning.mdx';
 
 <VersionWarning />
@@ -36,7 +38,7 @@ for its support of HTTP/2 trailers and bidirectional streaming. It can be config
       ```bash
       async with (
           HTTPTransport(http_version = HTTPVersion.HTTP2) as transport,
-          GreetServiceClient(url, http_client=Client(transport)) as client,
+          GreetServiceClient(url, grpc=True, http_client=Client(transport)) as client,
       ):
           res = await client.greet(GreetRequest(name="Jane))
       ```
@@ -47,7 +49,7 @@ for its support of HTTP/2 trailers and bidirectional streaming. It can be config
     ```bash
       with (
           SyncHTTPTransport(http_version = HTTPVersion.HTTP2) as transport,
-          GreetServiceClientSync(url, http_client=SyncClient(transport)) as client,
+          GreetServiceClientSync(url, grpc=True, http_client=SyncClient(transport)) as client,
       ):
           res = client.greet(GreetRequest(name="Jane))
     ```
