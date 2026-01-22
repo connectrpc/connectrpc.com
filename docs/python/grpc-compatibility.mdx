@@ -35,7 +35,7 @@ for its support of HTTP/2 trailers and bidirectional streaming. It can be config
 <Tabs groupId="python-type">
   <TabItem value="async" label="async">
 
-      ```bash
+      ```python
       async with (
           HTTPTransport(http_version = HTTPVersion.HTTP2) as transport,
           GreetServiceClient(url, grpc=True, http_client=Client(transport)) as client,
@@ -46,7 +46,7 @@ for its support of HTTP/2 trailers and bidirectional streaming. It can be config
   </TabItem>
   <TabItem value="sync" label="sync">
 
-    ```bash
+    ```python
       with (
           SyncHTTPTransport(http_version = HTTPVersion.HTTP2) as transport,
           GreetServiceClientSync(url, grpc=True, http_client=SyncClient(transport)) as client,
