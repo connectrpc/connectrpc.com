@@ -15,22 +15,21 @@ using [an extended version](https://github.com/connectrpc/conformance) of Google
 ## Services
 
 Running services with gRPC compatibility requires using a server that supports HTTP/2 trailers.
-In Python, this typically means using [pyvoy](https://pyvoy.dev/), which is also what we run gRPC
-compatibility tests with.
+In Python, this typically means using [pyvoy](https://pyvoy.dev/), the same server we use in our gRPC compatibility tests.
 
 If using a server with trailers support, there is no other setup required to support gRPC. If you
-run in a server that doesn't support it, you will get an error at runtime when making a request.
+run in a server that doesn't support it, you will get a runtime error when making a request.
 
-Connect-Python currently does not provide implementations of gRPC standard endpoints like reflection
-and health check but likely will in the future.
+Connect-Python does not currently provide implementations of gRPC standard endpoints like reflection
+and health check, but likely will in the future.
 
 ## Clients
 
 Clients default to using the Connect protocol. To use the gRPC protocol, set `grpc = True` during
 client construction. If the gRPC server is using TLS, Connect clients work with no further configuration.
-If the gRPC server is using HTTP/2 without TLS, you will need to additionally pass in a transport
-configured to explicitly use HTTP2. Connect-Python uses [pyqwest](https://pyqwest.dev/) as its transport
-for its support of HTTP/2 trailers and bidirectional streaming. It can be configured for HTTP/2 with
+If the gRPC server is using HTTP/2 without TLS, you'll need to configure the transport to explicitly use HTTP/2.
+Connect-Python uses [pyqwest](https://pyqwest.dev/) as its transport for its support of HTTP/2 trailers and bidirectional streaming.
+Configure it for HTTP/2 like this:
 
 <Tabs groupId="python-type">
   <TabItem value="async" label="async">
@@ -40,7 +39,7 @@ for its support of HTTP/2 trailers and bidirectional streaming. It can be config
           HTTPTransport(http_version = HTTPVersion.HTTP2) as transport,
           GreetServiceClient(url, grpc=True, http_client=Client(transport)) as client,
       ):
-          res = await client.greet(GreetRequest(name="Jane))
+          res = await client.greet(GreetRequest(name="Jane"))
       ```
 
   </TabItem>
@@ -51,7 +50,7 @@ for its support of HTTP/2 trailers and bidirectional streaming. It can be config
           SyncHTTPTransport(http_version = HTTPVersion.HTTP2) as transport,
           GreetServiceClientSync(url, grpc=True, http_client=SyncClient(transport)) as client,
       ):
-          res = client.greet(GreetRequest(name="Jane))
+          res = client.greet(GreetRequest(name="Jane"))
     ```
 
   </TabItem>
@@ -59,7 +58,7 @@ for its support of HTTP/2 trailers and bidirectional streaming. It can be config
 
 ## Migration
 
-There's no ironclad guide to migrating an existing `connect-python` service to
+There's no ironclad guide to migrating an existing `grpc-python` service to
 `connect-python` &mdash; every codebase uses a different subset of `grpc-python`
 features and will need a slightly different approach. Unlike many RPC framework
 migrations, remember that you do _not_ need to modify your service's clients:
@@ -68,20 +67,20 @@ schema will also work without modification.
 
 The particulars of your codebase will be unique, but most migrations include a few common steps:
 
-1. Begin generating code with `protoc-gen-connect-python`. During the migration, your code can import 
+1. Begin generating code with `protoc-gen-connect-python`. During the migration, your code can import
   `connect-python` and `grpc-python` code without any problems.
-1. Migrate service implementations to Connect generated stubs. It's recommended to extend the protocol classes
+1. Migrate service implementations to Connect's generated stubs. It's recommended to extend the protocol classes
    to have type checking find differences in method names. Change uses of `abort` to directly `raise ConnectError` -
    for Connect services, it's uncommon to pass the `RequestContext` into business logic code.
 1. Once you've migrated your service implementations to Connect, replace your `main` function which starts
    a gRPC server with module-level initialization of an `app` or similarly named variable set to the
-   WSGI or ASGI application corresponding to your service. For ASGI applications needing async initailization,
+   WSGI or ASGI application corresponding to your service. For ASGI applications needing async initialization,
    pass an `async def` function that yields your initialized service to the application constructor.
-1. Setup your local development and production scripts such as Dockerfile to run the application with pyvoy
+1. Set up your local development and production scripts, such as Dockerfile, to run the application with pyvoy
    and release. You now have a server handling requests with `connect-python` that supports both Connect and
    gRPC clients.
-1. Next migrate clients to use Connect. Replace any special configuration of `ManagedChannel` with configured
-  `pyqwest.HTTPTransport` or `pyqwest.SyncHTTPTransport` and switch to Connect's generated client types. If
-   passing `metadata` at the call site, change to `headers` - lists of string tuples can be passed directly to a
-   `Headers` constructor, or can be changed to a raw dictionary. Update any error handling to catch `ConnectError`.
+1. Next, migrate clients to use Connect:
+      1. Replace any special configuration of `ManagedChannel` with configured `pyqwest.HTTPTransport` or `pyqwest.SyncHTTPTransport` and switch to Connect's generated client types.
+      1. If passing `metadata` at the call site, change to `headers` - lists of string tuples can be passed directly to a `Headers` constructor, or can be changed to a raw dictionary.
+      1. Update any error handling to catch `ConnectError`.
 1. You're done! When all your services have been deployed, you can stop generating code with gRPC.
