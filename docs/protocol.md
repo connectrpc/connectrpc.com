@@ -185,6 +185,13 @@ as a list of equal preference and decide an appropriate encoding based on it.
 This is a simplification fo standard HTTP semantics that excludes quality values.
 If a user configures a server with an ordered list of encodings, it should be compared
 in order to client's **Accept-Encoding** to determine the encoding for a response.
+
+For example, if the client's **Accept-Encoding** is **gzip,br,zstd**,
+
+- If the server is configured with **gzip**, the selected encoding is **gzip**
+- If the server is configured **gzip,zstd,br**, the selected encoding is **gzip**
+- If the server is configured **br,zstd,gzip**, the selected encoding is **br**
+
 If the client uses an unsupported **Content-Encoding**, servers should return an
 error with code "unimplemented" and a message listing the supported encodings.
 
