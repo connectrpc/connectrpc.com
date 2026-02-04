@@ -181,11 +181,12 @@ If the client omits **Accept-Encoding**, servers must assume that the client
 accepts the **Content-Encoding** used for the request if present. Servers must
 assume that all clients accept "identity" as their least preferred encoding,
 even when **Accept-Encoding** is omitted. Servers should treat **Accept-Encoding**
-as an ordered list, with the client's most preferred encoding first and least
-preferred encoding last. This is a simplification fo standard HTTP semantics
-that excludes quality values. If the client uses an unsupported **Content-Encoding**,
-servers should return an error with code "unimplemented" and a message listing the
-supported encodings.
+as a list of equal preference and decide an appropriate encoding based on it.
+This is a simplification fo standard HTTP semantics that excludes quality values.
+If a user configures a server with an ordered list of encodings, it should be compared
+in order to client's **Accept-Encoding** to determine the encoding for a response.
+If the client uses an unsupported **Content-Encoding**, servers should return an
+error with code "unimplemented" and a message listing the supported encodings.
 
 If **Timeout** is omitted, the server should assume an infinite timeout. The
 protocol accommodates timeouts of more than 100 days. Client implementations
