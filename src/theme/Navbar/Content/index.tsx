@@ -81,7 +81,12 @@ export default function NavbarContent() {
             <NavbarColorModeToggle />
             <div className={styles.searchWrapper}>
               <NavbarSearch>
-                <SearchBar {...(siteConfig.themeConfig.algolia as any)} />
+                <SearchBar
+                  {...(siteConfig.themeConfig.algolia as Record<
+                    string,
+                    unknown
+                  >)}
+                />
               </NavbarSearch>
             </div>
             <CreatedBy className="desktop-only" />

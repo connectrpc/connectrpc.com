@@ -26,7 +26,7 @@ import {
 } from "@site/src/theme/CodeBlock/utils";
 import clsx from "clsx";
 import copy from "copy-text-to-clipboard";
-import { Highlight } from "prism-react-renderer";
+import { Highlight, type Language } from "prism-react-renderer";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { ElizaDemo } from "../eliza-demo";
@@ -124,7 +124,7 @@ function CodeBlock({
 
   const content = Array.isArray(children) ? children.join("") : children;
   const language = "bash";
-  const { lineClassNames, code } = parseLines(content as any, {
+  const { lineClassNames, code } = parseLines(content as string, {
     metastring: undefined,
     language,
     magicComments: [],
@@ -152,7 +152,7 @@ function CodeBlock({
       key={String(mounted)}
       theme={prismTheme}
       code={code}
-      language={language ?? ("text" as any)}
+      language={language ?? ("text" as Language)}
     >
       {({ className, style, tokens, getLineProps, getTokenProps }) => {
         const mainTokens =

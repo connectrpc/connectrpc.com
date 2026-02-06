@@ -48,20 +48,5 @@
     "parser": {
       "cssModules": true
     }
-  },
-  "overrides": [
-    {
-      "includes": ["**/*.tsx", "**/*.ts", "**/*.jsx", "**/*.js"],
-      "linter": {
-        "rules": {
-          "style": {
-            "useNamingConvention": "off"
-          },
-          "suspicious": {
-            "noExplicitAny": "off"
-          }
-        }
-      }
-    }
-  ]
+  }
 }
