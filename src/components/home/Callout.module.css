@@ -1,11 +1,9 @@
 .callout {
-  background-color: #eff9fc;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 84px;
   padding: 48px 50px;
-  /* biome-ignore lint/suspicious/noShorthandPropertyOverrides: background-color is fallback for gradient */
   background: linear-gradient(
     137.72deg,
     #cdf2ff 34.3%,
