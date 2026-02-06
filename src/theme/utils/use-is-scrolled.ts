@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { useLayoutEffect, useState } from "react";
 import { useIsMounted } from "@react-hookz/web";
+import { useLayoutEffect, useState } from "react";
 
 export function useIsScrolled({ threshold }: { threshold: number }) {
   const getIsMounted = useIsMounted();
@@ -25,7 +25,7 @@ export function useIsScrolled({ threshold }: { threshold: number }) {
   });
   useLayoutEffect(() => {
     let timer: number | undefined;
-    const onScroll = (e: Event) => {
+    const onScroll = (_e: Event) => {
       if (timer !== undefined) {
         clearTimeout(timer);
       }
@@ -43,6 +43,6 @@ export function useIsScrolled({ threshold }: { threshold: number }) {
       }
       window.removeEventListener("scroll", onScroll);
     };
-  }, [threshold]);
+  }, [threshold, getIsMounted]);
   return isScrolled;
 }

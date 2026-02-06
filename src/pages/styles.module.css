@@ -55,6 +55,7 @@
 /* Dark mode: simple gradient background instead of complex SVG */
 html[data-theme="dark"] .footerBackground {
   background-image: none;
+  /* biome-ignore lint/suspicious/noShorthandPropertyOverrides: intentionally override background-image with gradient */
   background: linear-gradient(
     180deg,
     var(--ifm-background-color) 0%,

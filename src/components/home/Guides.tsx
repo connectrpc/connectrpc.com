@@ -15,7 +15,6 @@
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import { GuideProps } from "@site/src/components/home/text";
 import clsx from "clsx";
-import React from "react";
 import { Divider } from "./divider";
 import styles from "./Guides.module.css";
 
@@ -29,6 +28,7 @@ const Guide = ({ title, description, logos, href }: GuideProps) => {
         }}
       >
         <div className={styles.logoContainer}>
+          {/* biome-ignore-start lint/correctness/useHookAtTopLevel: useBaseUrl is safe in stable render */}
           {logos.map((logo) => {
             return (
               <img
@@ -39,6 +39,7 @@ const Guide = ({ title, description, logos, href }: GuideProps) => {
               />
             );
           })}
+          {/* biome-ignore-end lint/correctness/useHookAtTopLevel: useBaseUrl is safe in stable render */}
         </div>
         <div>
           <p className={styles.title}>{title}</p>
@@ -114,7 +115,7 @@ export default function Guides() {
 }
 
 // Keeping this here as a template to use for other ComingSoon features in the future.
-const ComingSoon = () => {
+const _ComingSoon = () => {
   return (
     <div className={clsx(styles.guideCard, styles.comingSoonCard)}>
       <div className={styles.comingSoonTag}>Coming soon</div>

@@ -13,10 +13,10 @@
 // limitations under the License.
 
 import { ElizaService } from "@buf/connectrpc_eliza.bufbuild_es/connectrpc/eliza/v1/eliza_pb";
-import React, { useCallback, useState } from "react";
 import { createClient } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
-import { Terminal, Message } from "../terminal";
+import React, { useCallback, useState } from "react";
+import { Message, Terminal } from "../terminal";
 
 const host = "https://demo.connectrpc.com";
 
@@ -55,7 +55,7 @@ export const ElizaDemo: React.FC<DemoProps> = ({ focusOnMount = false }) => {
       setConversation(updatedConvo);
       return;
     },
-    [elizaServicePromiseClient, conversation],
+    [conversation]
   );
 
   return (

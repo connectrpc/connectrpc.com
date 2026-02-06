@@ -12,27 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import React, { useEffect, useState } from "react";
-import clsx from "clsx";
-import classes from "./examples.module.css";
-import codeBlockStyles from "@site/src/theme/CodeBlock/styles.module.css";
+import Translate, { translate } from "@docusaurus/Translate";
 import {
   parseLines,
   ThemeClassNames,
   usePrismTheme,
 } from "@docusaurus/theme-common/internal";
+import codeBlockStyles from "@site/src/theme/CodeBlock/styles.module.css";
 import {
   stripSeparatedTerminalOutput,
   stripShellPromptForClipboard,
   terminalOutputSeparator,
 } from "@site/src/theme/CodeBlock/utils";
+import clsx from "clsx";
 import copy from "copy-text-to-clipboard";
-// @ts-ignore
 import { Highlight } from "prism-react-renderer";
-import Translate, { translate } from "@docusaurus/Translate";
-import Tooltip from "../tooltip";
+import React, { useEffect, useState } from "react";
 import { ElizaDemo } from "../eliza-demo";
 import { TerminalHeader } from "../terminal";
+import Tooltip from "../tooltip";
+import classes from "./examples.module.css";
 
 const plainHttpTerminalContent = `
 $ curl \\
@@ -132,7 +131,7 @@ function CodeBlock({
   const lines = code.split("\n");
 
   const terminalSeparatorIndex = lines.findIndex(
-    (l) => l.trim() === terminalOutputSeparator,
+    (l) => l.trim() === terminalOutputSeparator
   );
   const handleCopyCode = () => {
     let textToCopy = code;
@@ -170,24 +169,23 @@ function CodeBlock({
               codeBlockStyles.codeBlockContainer,
               classes.codeBlockContainer,
               `language-${language}`,
-              ThemeClassNames.common.codeBlock,
+              ThemeClassNames.common.codeBlock
             )}
           >
             <TerminalHeader>{title}</TerminalHeader>
             <div className={clsx(codeBlockStyles.codeBlockContent, language)}>
               <pre
-                /* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex */
-                tabIndex={0}
                 className={clsx(
                   className,
                   codeBlockStyles.codeBlock,
                   "thin-scrollbar",
                   classes.codeBlock,
-                  classes.horizontalScrollBox,
+                  classes.horizontalScrollBox
                 )}
                 style={style}
               >
                 <code className={classes.codeBlockLines}>
+                  {/* biome-ignore-start lint/suspicious/noArrayIndexKey: tokens are stable */}
                   {mainTokens.map((line, i) => {
                     // If the terminal separator is used, we only render the lines up to the separator here
                     if (
@@ -225,6 +223,7 @@ function CodeBlock({
                       </span>
                     );
                   })}
+                  {/* biome-ignore-end lint/suspicious/noArrayIndexKey: tokens are stable */}
                 </code>
                 {/* If the terminal separator is used, we render the content following the separator separately,
                   allowing us to style it differently */}
@@ -232,32 +231,31 @@ function CodeBlock({
                   <code
                     className={clsx(
                       classes.codeBlockLines,
-                      classes.bufTerminalOutput,
+                      classes.bufTerminalOutput
                     )}
                   >
+                    {/* biome-ignore-start lint/suspicious/noArrayIndexKey: tokens are stable */}
                     {terminalOutputTokens.map((line, i) => {
-                      // adjust line index with offset of separator, plus 1 for the separator line which we don't render
-                      i += terminalSeparatorIndex + 1;
-
                       if (line.length === 1 && line[0].content === "") {
-                        line[0].content = "\n"; // eslint-disable-line no-param-reassign
+                        line[0].content = "\n";
                       }
 
                       const lineProps = getLineProps({ line });
                       // Do not apply syntax highlighting to console output
-                      delete lineProps.style;
+                      lineProps.style = undefined;
 
                       return (
                         <span key={i} {...lineProps}>
                           {line.map((token, key) => {
                             const tokenProps = getTokenProps({ token });
                             // Do not apply syntax highlighting to console output
-                            delete tokenProps.style;
+                            tokenProps.style = undefined;
                             return <span key={key} {...tokenProps} />;
                           })}
                         </span>
                       );
                     })}
+                    {/* biome-ignore-end lint/suspicious/noArrayIndexKey: tokens are stable */}
                   </code>
                 )}
                 <div className={classes.codeFooter}>
@@ -284,6 +282,7 @@ function CodeBlock({
                           Copied
                         </Translate>
                       ) : (
+                        // biome-ignore lint/a11y/noSvgWithoutTitle: decorative icon
                         <svg
                           width="14"
                           height="14"

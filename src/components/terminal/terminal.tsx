@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import clsx from "clsx";
 import React, {
   ChangeEvent,
   KeyboardEvent,
@@ -20,7 +21,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import clsx from "clsx";
 import styles from "./styles.module.css";
 
 interface TerminalProps {
@@ -83,20 +83,24 @@ export const Terminal: React.FC<TerminalProps> = ({
   };
 
   // If focusOnMount is true, focus the terminal input when the component mounts
+  // biome-ignore-start lint/correctness/useExhaustiveDependencies: focusOnMount and handleTerminalFocus are stable
   useEffect(() => {
     if (focusOnMount) {
       handleTerminalFocus();
     }
-  }, []);
+  }, [focusOnMount, handleTerminalFocus]);
+  // biome-ignore-end lint/correctness/useExhaustiveDependencies: focusOnMount and handleTerminalFocus are stable
 
   useEffect(() => {
     // If the terminal scroll container has a scroll visibile, scroll to the bottom
     if (terminalRef.current.scrollHeight > terminalRef.current.clientHeight) {
       terminalRef.current?.scrollTo(0, terminalRef.current?.scrollHeight);
     }
-  }, [conversation]);
+  }, []);
 
   return (
+    // biome-ignore lint/a11y/noStaticElementInteractions: interactive terminal container
+    // biome-ignore lint/a11y/useKeyWithClickEvents: click focuses input
     <div className={styles.terminalContainer} onClick={handleTerminalFocus}>
       <TerminalHeader>Connect-Web</TerminalHeader>
       <div className={styles.terminalBody}>
@@ -106,19 +110,20 @@ export const Terminal: React.FC<TerminalProps> = ({
             if (msg.sender === "user") {
               return (
                 <p key={key} className={styles.userText}>
-                  <span className={styles.spacer}></span>
+                  <span className={styles.spacer} />
                   {msg.text}
                 </p>
               );
             }
             return (
               <p key={key} className={styles.elizaText}>
-                <span className={styles.spacer}></span>Eliza: {msg.text}
+                <span className={styles.spacer} />
+                Eliza: {msg.text}
               </p>
             );
           })}
           <div className={styles.prompt}>
-            <span className={styles.spacer}></span>
+            <span className={styles.spacer} />
             <input
               className={styles.inputElement}
               onKeyDown={handleKeyPress}
@@ -126,7 +131,8 @@ export const Terminal: React.FC<TerminalProps> = ({
               value={inputText}
               onChange={handleInputChange}
               type="text"
-            ></input>
+            />
+            {/* biome-ignore-start lint/suspicious/noArrayIndexKey: rendering individual characters */}
             {inputText.split("").map((letter, i) => {
               return (
                 <span key={`inputText${i}`}>
@@ -135,7 +141,8 @@ export const Terminal: React.FC<TerminalProps> = ({
                 </span>
               );
             })}
-            <div className={styles.blinkingCursor}></div>
+            {/* biome-ignore-end lint/suspicious/noArrayIndexKey: rendering individual characters */}
+            <div className={styles.blinkingCursor} />
           </div>
         </div>
       </div>

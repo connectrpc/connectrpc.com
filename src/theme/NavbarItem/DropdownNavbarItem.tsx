@@ -32,25 +32,21 @@ import {
   useCollapsible,
   useLocalPathname,
 } from "@docusaurus/theme-common/internal";
+import type { LinkLikeNavbarItemProps } from "@theme/NavbarItem";
 import NavbarItem from "@theme/NavbarItem";
-import NavbarNavLink from "@theme/NavbarItem/NavbarNavLink";
-import clsx from "clsx";
-import React, { useEffect, useRef, useState } from "react";
-
 import type {
   DesktopOrMobileNavBarItemProps,
   Props,
 } from "@theme/NavbarItem/DropdownNavbarItem";
-import type { LinkLikeNavbarItemProps } from "@theme/NavbarItem";
-
-/* eslint @typescript-eslint/no-non-null-assertion: "off",
-  @typescript-eslint/no-unused-vars: "off" */
+import NavbarNavLink from "@theme/NavbarItem/NavbarNavLink";
+import clsx from "clsx";
+import { useEffect, useRef, useState } from "react";
 
 const dropdownLinkActiveClass = "dropdown__link--active";
 
 function isItemActive(
   item: LinkLikeNavbarItemProps,
-  localPathname: string,
+  localPathname: string
 ): boolean {
   if (isSamePath(item.to, localPathname)) {
     return true;
@@ -66,7 +62,7 @@ function isItemActive(
 
 function containsActiveItems(
   items: readonly LinkLikeNavbarItemProps[],
-  localPathname: string,
+  localPathname: string
 ): boolean {
   return items.some((item) => isItemActive(item, localPathname));
 }
@@ -98,7 +94,7 @@ function DropdownNavbarItemDesktop({
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("touchstart", handleClickOutside);
     };
-  }, [dropdownRef]);
+  }, []);
 
   return (
     <div
@@ -119,9 +115,10 @@ function DropdownNavbarItemDesktop({
             setShowDropdown(!showDropdown);
           }
         }}
-        label={<>{props.children ?? props.label}</>}
+        label={props.children ?? props.label}
       />
       <ul className="dropdown__menu">
+        {/* biome-ignore-start lint/suspicious/noArrayIndexKey: navbar items are static */}
         {items.map((childItemProps, i) => (
           <NavbarItem
             isDropdownItem
@@ -129,7 +126,7 @@ function DropdownNavbarItemDesktop({
               if (i === items.length - 1 && e.key === "Tab") {
                 e.preventDefault();
                 setShowDropdown(false);
-                const nextNavbarItem = dropdownRef.current!.nextElementSibling;
+                const nextNavbarItem = dropdownRef.current?.nextElementSibling;
                 if (nextNavbarItem) {
                   (nextNavbarItem as HTMLElement).focus();
                 }
@@ -140,6 +137,7 @@ function DropdownNavbarItemDesktop({
             key={i}
           />
         ))}
+        {/* biome-ignore-end lint/suspicious/noArrayIndexKey: navbar items are static */}
       </ul>
     </div>
   );
@@ -163,7 +161,7 @@ function DropdownNavbarItemMobile({
     if (containsActive) {
       setCollapsed(!containsActive);
     }
-  }, [localPathname, containsActive, setCollapsed]);
+  }, [containsActive, setCollapsed]);
 
   return (
     <li
@@ -183,6 +181,7 @@ function DropdownNavbarItemMobile({
         {props.children ?? props.label}
       </NavbarNavLink>
       <Collapsible lazy as="ul" className="menu__list" collapsed={collapsed}>
+        {/* biome-ignore-start lint/suspicious/noArrayIndexKey: navbar items are static */}
         {items.map((childItemProps, i) => (
           <NavbarItem
             mobile
@@ -193,6 +192,7 @@ function DropdownNavbarItemMobile({
             key={i}
           />
         ))}
+        {/* biome-ignore-end lint/suspicious/noArrayIndexKey: navbar items are static */}
       </Collapsible>
     </li>
   );

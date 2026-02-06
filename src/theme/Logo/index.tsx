@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import Link from "@docusaurus/Link";
+import { useLocation } from "@docusaurus/router";
+import { useColorMode, useThemeConfig } from "@docusaurus/theme-common";
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -19,9 +22,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 import React, { CSSProperties } from "react";
-import Link from "@docusaurus/Link";
-import { useThemeConfig, useColorMode } from "@docusaurus/theme-common";
-import { useLocation } from "@docusaurus/router";
 
 export default function Logo(props: {
   imageClassName?: string;
@@ -35,9 +35,9 @@ export default function Logo(props: {
       },
     },
   } = useThemeConfig();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { imageClassName, titleClassName, ...propsRest } = props;
   const { pathname } = useLocation();
+  // biome-ignore lint/correctness/noUnusedVariables: may be used in future
   const { colorMode } = useColorMode();
   const isDocs = pathname.startsWith("/docs/");
   const subTitle = isDocs ? "Docs" : "";
@@ -68,6 +68,7 @@ export default function Logo(props: {
 }
 
 const MainLogo: React.FC<{ style: CSSProperties }> = ({ style }) => (
+  // biome-ignore lint/a11y/noSvgWithoutTitle: logo with aria-label on parent link
   <svg
     width="151"
     height="50"
@@ -124,6 +125,7 @@ const MainLogo: React.FC<{ style: CSSProperties }> = ({ style }) => (
 );
 
 const DocsLogo: React.FC<{ style: CSSProperties }> = ({ style }) => (
+  // biome-ignore lint/a11y/noSvgWithoutTitle: Decorative svg
   <svg
     width="151"
     height="50"

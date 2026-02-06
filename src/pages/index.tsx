@@ -12,29 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import React from "react";
-import Callout from "../components/home/Callout";
-import Features from "../components/home/Features";
-import Guides from "../components/home/Guides";
-import Hero from "../components/home/Hero";
 import {
   ThemeClassNames,
   useKeyboardNavigation,
 } from "@docusaurus/theme-common/internal";
+import { callout } from "@site/src/components/home/text";
 import AnnouncementBar from "@theme/AnnouncementBar";
 import Footer from "@theme/Footer";
 import LayoutProviders from "@theme/Layout/Provider";
+import NavBar from "@theme/Navbar";
 import SkipToContent from "@theme/SkipToContent";
 import clsx from "clsx";
-import styles from "./styles.module.css";
-
-import NavBar from "@theme/Navbar";
+import Callout from "../components/home/Callout";
+import calloutStyles from "../components/home/Callout.module.css";
 import { Divider } from "../components/home/divider";
 import { Examples } from "../components/home/examples";
-import { useMediaQuery } from "@react-hookz/web";
-
-import { callout } from "@site/src/components/home/text";
-import calloutStyles from "../components/home/Callout.module.css";
+import Features from "../components/home/Features";
+import Guides from "../components/home/Guides";
+import Hero from "../components/home/Hero";
+import styles from "./styles.module.css";
 
 export default function Home(): JSX.Element {
   useKeyboardNavigation();

@@ -48,6 +48,7 @@ const Tooltip: React.FC<TooltipProps> = ({
   }, [leaveOn]);
 
   return (
+    /* biome-ignore lint/a11y/noStaticElementInteractions: tooltips are interactive; arguably this should not be a div */
     <div
       className={clsx({
         [activeClassName]: visible,

@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import React from "react";
-import { ElizaDemo } from "../components/eliza-demo";
-import LayoutProviders from "@theme/Layout/Provider";
-import SkipToContent from "@theme/SkipToContent";
+import Head from "@docusaurus/Head";
 import AnnouncementBar from "@theme/AnnouncementBar";
 import Footer from "@theme/Footer";
+import LayoutProviders from "@theme/Layout/Provider";
 import NavBar from "@theme/Navbar";
-import Head from "@docusaurus/Head";
+import SkipToContent from "@theme/SkipToContent";
+import { ElizaDemo } from "../components/eliza-demo";
 
 export default function Demo(): JSX.Element {
   return (

@@ -12,9 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import React from "react";
-import IconClose from "@theme/Icon/Close";
 import { useNavbarMobileSidebar } from "@docusaurus/theme-common/internal";
+import IconClose from "@theme/Icon/Close";
 import styles from "./styles.module.css";
 
 function CloseButton() {
