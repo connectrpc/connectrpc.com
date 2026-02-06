@@ -13,7 +13,11 @@
       "!**/dist",
       "!**/.ssg-cache",
       "!**/build",
-      "!**/.docusaurus"
+      "!**/.docusaurus",
+      // Skip files lifted directly from Facebook's Docusaurus.
+      "!src/theme/Logo/index.tsx",
+      "!src/theme/CodeBlock/index.tsx",
+      "!src/theme/CodeBlock/styles.module.css"
     ]
   },
   "formatter": {

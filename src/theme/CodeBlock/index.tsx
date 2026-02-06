@@ -12,18 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import Translate, { translate } from "@docusaurus/Translate";
-import {
-  parseCodeBlockTitle,
-  parseLanguage,
-  parseLines,
-  ThemeClassNames,
-  usePrismTheme,
-  useThemeConfig,
-} from "@docusaurus/theme-common/internal";
-import clsx from "clsx";
-import copy from "copy-text-to-clipboard";
-import { Highlight, type Language } from "prism-react-renderer";
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -31,6 +19,19 @@ import { Highlight, type Language } from "prism-react-renderer";
  * LICENSE file in the root directory of this source tree.
  */
 import React, { isValidElement, useEffect, useState } from "react";
+import clsx from "clsx";
+// @ts-ignore
+import { Highlight, type Language } from "prism-react-renderer";
+import copy from "copy-text-to-clipboard";
+import Translate, { translate } from "@docusaurus/Translate";
+import {
+  useThemeConfig,
+  parseCodeBlockTitle,
+  parseLanguage,
+  parseLines,
+  ThemeClassNames,
+  usePrismTheme,
+} from "@docusaurus/theme-common/internal";
 import styles from "./styles.module.css";
 import {
   stripSeparatedTerminalOutput,
@@ -86,13 +87,15 @@ export default function CodeBlock({
       >
         {({ className, style }) => (
           <pre
+            /* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex */
+            tabIndex={0}
             className={clsx(
               className,
               styles.codeBlockStandalone,
               "thin-scrollbar",
               styles.codeBlockContainer,
               blockClassName,
-              ThemeClassNames.common.codeBlock
+              ThemeClassNames.common.codeBlock,
             )}
             style={{
               ...style,
@@ -118,7 +121,7 @@ export default function CodeBlock({
     const lines = code.split("\n");
 
     terminalSeparatorIndex = lines.findIndex(
-      (l) => l.trim() === terminalOutputSeparator
+      (l) => l.trim() === terminalOutputSeparator,
     );
   }
   const handleCopyCode = () => {
@@ -160,7 +163,7 @@ export default function CodeBlock({
                 [`language-${language}`]:
                   language && !blockClassName.includes(`language-${language}`),
               },
-              ThemeClassNames.common.codeBlock
+              ThemeClassNames.common.codeBlock,
             )}
           >
             {codeBlockTitle && (
@@ -170,11 +173,12 @@ export default function CodeBlock({
             )}
             <div className={clsx(styles.codeBlockContent, language)}>
               <pre
+                /* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex */
+                tabIndex={0}
                 className={clsx(className, styles.codeBlock, "thin-scrollbar")}
                 style={style}
               >
                 <code className={styles.codeBlockLines}>
-                  {/* biome-ignore-start lint/suspicious/noArrayIndexKey: tokens are stable */}
                   {mainTokens.map((line, i) => {
                     // If the terminal separator is used, we only render the lines up to the separator here
                     if (
@@ -210,7 +214,6 @@ export default function CodeBlock({
                       </span>
                     );
                   })}
-                  {/* biome-ignore-end lint/suspicious/noArrayIndexKey: tokens are stable */}
                 </code>
                 {/* If the terminal separator is used, we render the content following the separator separately,
                   allowing us to style it differently */}
@@ -222,31 +225,32 @@ export default function CodeBlock({
                     <code
                       className={clsx(
                         styles.codeBlockLines,
-                        styles.bufTerminalOutput
+                        styles.bufTerminalOutput,
                       )}
                     >
-                      {/* biome-ignore-start lint/suspicious/noArrayIndexKey: tokens are stable */}
                       {terminalOutputTokens.map((line, i) => {
+                        // adjust line index with offset of separator, plus 1 for the separator line which we don't render
+                        i += terminalSeparatorIndex + 1;
+
                         if (line.length === 1 && line[0].content === "") {
-                          line[0].content = "\n";
+                          line[0].content = "\n"; // eslint-disable-line no-param-reassign
                         }
 
                         const lineProps = getLineProps({ line, key: i });
                         // Do not apply syntax highlighting to console output
-                        lineProps.style = undefined;
+                        delete lineProps.style;
 
                         return (
                           <span key={i} {...lineProps}>
                             {line.map((token, key) => {
                               const tokenProps = getTokenProps({ token });
                               // Do not apply syntax highlighting to console output
-                              tokenProps.style = undefined;
+                              delete tokenProps.style;
                               return <span key={key} {...tokenProps} />;
                             })}
                           </span>
                         );
                       })}
-                      {/* biome-ignore-end lint/suspicious/noArrayIndexKey: tokens are stable */}
                     </code>
                   </>
                 )}
