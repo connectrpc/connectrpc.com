@@ -52,8 +52,8 @@
   text-transform: uppercase;
   font-size: 14px;
   line-height: 18px;
-  color: var(--buf-ink-blue-03) !important;
-  text-decoration: none !important;
+  color: var(--buf-ink-blue-03);
+  text-decoration: none;
   gap: 0.5rem;
   transition: bottom ease 0.25s;
   bottom: 0;

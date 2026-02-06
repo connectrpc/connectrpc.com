@@ -13,12 +13,12 @@
 // limitations under the License.
 
 import {
+  description,
   subTagline,
   tagline,
-  description,
 } from "@site/src/components/home/text";
 import clsx from "clsx";
-import React, { forwardRef } from "react";
+import { forwardRef } from "react";
 import styles from "./Hero.module.css";
 
 const Hero = forwardRef<HTMLElement>((_props, ref) => {

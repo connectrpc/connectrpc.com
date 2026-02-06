@@ -30,9 +30,9 @@ import Link from "@docusaurus/Link";
 import { isRegexpStringMatch } from "@docusaurus/theme-common";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import IconExternalLink from "@theme/Icon/ExternalLink";
-import React from "react";
 
 import type { Props } from "@theme/NavbarItem/NavbarNavLink";
+
 const dropdownLinkActiveClass = "dropdown__link--active";
 
 export default function NavbarNavLink({

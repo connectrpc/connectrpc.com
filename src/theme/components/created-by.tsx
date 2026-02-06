@@ -13,9 +13,8 @@
 // limitations under the License.
 
 import clsx from "clsx";
-import React from "react";
-import styles from "./created-by.module.css";
 import BufLogo from "./buf.svg";
+import styles from "./created-by.module.css";
 
 export const CreatedBy = ({ className }: { className?: string }) => {
   return (

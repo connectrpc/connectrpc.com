@@ -102,24 +102,23 @@ pre.codeBlock {
 .horizontalScrollBox {
   overflow: auto;
   /* horizontal shadows */
+  /* Shadow covers */
   background:
-		/* Shadow covers */
     linear-gradient(90deg, #f4f5fe 0%, transparent 100%),
-    linear-gradient(270deg, #f4f5fe 0%, transparent 100%) 0 100%,
-    /* Shadows */
+    linear-gradient(270deg, #f4f5fe 0%, transparent 100%) 0 100%, /* Shadows */
     linear-gradient(
-        90deg,
-        rgba(99, 100, 102, 0.1) 0%,
-        transparent 50%,
-        transparent 100%
-      ),
+      90deg,
+      rgba(99, 100, 102, 0.1) 0%,
+      transparent 50%,
+      transparent 100%
+    ),
     linear-gradient(
-        270deg,
-        rgba(99, 100, 102, 0.1) 0%,
-        transparent 50%,
-        transparent 100%
-      )
-      0 100%;
+      270deg,
+      rgba(99, 100, 102, 0.1) 0%,
+      transparent 50%,
+      transparent 100%
+    )
+    0 100%;
 
   background-repeat: no-repeat;
   background-color: #f4f5fe;

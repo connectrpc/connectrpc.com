@@ -280,7 +280,7 @@ html[data-theme="dark"] .dropdown__menu > li + li:before {
 .navbar-sidebar ul.menu__list > li:not(:last-child) > *:not(.menu__list)::after,
 .navbar-sidebar ul.menu__list > li > ul.menu__list > li > a::after {
   all: unset;
-  transform: none !important;
+  transform: none;
   content: "";
   border-bottom: 1px solid var(--buf-grey-01);
   position: absolute;
@@ -292,8 +292,7 @@ html[data-theme="dark"] .dropdown__menu > li + li:before {
   border-color: var(--buf-ink-blue-02) !important;
 } */
 
-.navbar-sidebar
-  .menu__list-item:not(.menu__list-item--collapsed)
+.navbar-sidebar .menu__list-item:not(.menu__list-item--collapsed)
   > .menu__link.menu__link--sublist,
 .navbar-sidebar .menu__list-item > .menu__list {
   border-bottom: 1px solid var(--buf-grey-01);
@@ -385,7 +384,7 @@ html[data-theme="dark"] {
   .menu__list
   > li
   > a {
-  font-family: "Inter";
+  font-family: "Inter", sans-serif;
   font-style: normal;
   font-weight: 400;
   font-size: 16px;

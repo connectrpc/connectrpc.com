@@ -26,6 +26,6 @@
     display: none;
   }
   :global(.menu--show) .expandAllControls {
-    display: flex !important;
+    display: flex;
   }
 }

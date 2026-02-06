@@ -35,11 +35,6 @@ updates:
           - "react-dom"
           - "@types/react"
           - "@react-hookz/web"
-      eslint:
-        patterns:
-          - "@typescript-eslint/*"
-          - "*eslint-*"
-          - "eslint"
       demo:
         patterns:
           - "@buf/connectrpc*"

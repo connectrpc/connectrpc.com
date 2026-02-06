@@ -12,19 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import React, { ComponentProps } from "react";
-import clsx from "clsx";
-import NavbarMobileSidebar from "@theme/Navbar/MobileSidebar";
+import { useLocation } from "@docusaurus/router";
 import {
-  useThemeConfig,
   useHideableNavbar,
   useNavbarMobileSidebar,
+  useThemeConfig,
 } from "@docusaurus/theme-common/internal";
-import styles from "./styles.module.css";
-import { useIsScrolled } from "../../utils/use-is-scrolled";
-import { useLocation } from "@docusaurus/router";
-import type { Props } from "@theme/Navbar/Layout";
 import { Divider } from "@site/src/components/home/divider";
+import type { Props } from "@theme/Navbar/Layout";
+import NavbarMobileSidebar from "@theme/Navbar/MobileSidebar";
+import clsx from "clsx";
+import type { ComponentProps } from "react";
+import { useIsScrolled } from "../../utils/use-is-scrolled";
+import styles from "./styles.module.css";
 
 function NavbarBackdrop(props: ComponentProps<"div">) {
   return (
@@ -63,7 +63,7 @@ export default function NavbarLayout({ children }: Props): JSX.Element {
             "navbar--dark": style === "dark",
             "navbar--primary": style === "primary",
             "navbar-sidebar--show": mobileSidebar.shown,
-          },
+          }
         )}
       >
         {children}

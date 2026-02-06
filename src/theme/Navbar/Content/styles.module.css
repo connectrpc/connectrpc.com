@@ -3,7 +3,7 @@ Hide link list in small viewports
  */
 @media (max-width: 996px) {
   .linkList {
-    display: none !important;
+    display: none;
   }
 }
 
@@ -47,6 +47,6 @@ Hide link list in small viewports
 
 @media (max-width: 997px) {
   .searchWrapper > * {
-    position: static !important;
+    position: static;
   }
 }

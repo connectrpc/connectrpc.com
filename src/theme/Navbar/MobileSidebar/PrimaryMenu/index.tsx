@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import React from "react";
 import {
   useNavbarMobileSidebar,
   useThemeConfig,
 } from "@docusaurus/theme-common/internal";
-import NavbarItem from "@theme/NavbarItem";
 import { CreatedBy } from "@site/src/theme/components/created-by";
 import type { Props as NavbarItemConfig } from "@theme/NavbarItem";
+import NavbarItem from "@theme/NavbarItem";
 
 function useNavbarItems() {
   // TODO temporary casting until ThemeConfig type is improved
@@ -34,6 +33,7 @@ export default function NavbarMobilePrimaryMenu() {
   return (
     <>
       <ul className="menu__list">
+        {/* biome-ignore-start lint/suspicious/noArrayIndexKey: useNavbarItems is static */}
         {items.map((item, i) => (
           <NavbarItem
             mobile
@@ -42,6 +42,7 @@ export default function NavbarMobilePrimaryMenu() {
             key={i}
           />
         ))}
+        {/* biome-ignore-end lint/suspicious/noArrayIndexKey: useNavbarItems is static */}
       </ul>
       <div
         style={{

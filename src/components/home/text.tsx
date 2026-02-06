@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import Link from "@docusaurus/Link";
-import React from "react";
 
 /// Types
 

@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import type {
+  DesktopOrMobileNavBarItemProps,
+  Props,
+} from "@theme/NavbarItem/DefaultNavbarItem";
 /**
  * This file is a swizzled and wrapped component, generated and adapted from the
  * docusaurus source code, copyright of Facebook, Inc.
@@ -26,18 +30,10 @@
  * https://github.com/facebook/docusaurus/tree/v2.0.0-beta.17/packages/docusaurus-theme-classic/src/theme/NavbarItem/DefaultNavbarItem.tsx
  */
 import NavbarNavLink from "@theme/NavbarItem/NavbarNavLink";
-import { getInfimaActiveClassName } from "./utils";
 import clsx from "clsx";
-import React from "react";
 
 import styles from "./NavbarItem.module.css";
-
-/* eslint @typescript-eslint/no-unused-vars: "off" */
-
-import type {
-  DesktopOrMobileNavBarItemProps,
-  Props,
-} from "@theme/NavbarItem/DefaultNavbarItem";
+import { getInfimaActiveClassName } from "./utils";
 
 function DefaultNavbarItemDesktop({
   className,
@@ -49,7 +45,7 @@ function DefaultNavbarItemDesktop({
       className={clsx(
         isDropdownItem ? "dropdown__link" : "navbar__item navbar__link",
         styles.item,
-        className,
+        className
       )}
       {...props}
     />

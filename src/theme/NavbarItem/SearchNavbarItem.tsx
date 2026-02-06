@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import type { Props } from "@theme/NavbarItem/SearchNavbarItem";
 /**
  * This file is a swizzled and wrapped component, generated and adapted from the
  * docusaurus source code, copyright of Facebook, Inc.
@@ -26,9 +27,6 @@
  * https://github.com/facebook/docusaurus/tree/v2.0.0-beta.17/packages/docusaurus-theme-classic/src/theme/NavbarItem/SearchNavbarItem.tsx
  */
 import SearchBar from "@theme/SearchBar";
-import React from "react";
-
-import type { Props } from "@theme/NavbarItem/SearchNavbarItem";
 export default function SearchNavbarItem({
   mobile,
 }: Props): JSX.Element | null {
