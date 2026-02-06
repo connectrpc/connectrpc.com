@@ -11,7 +11,7 @@
     "check:types": "tsc --noEmit",
     "format": "biome format --write .",
     "lint": "biome lint .",
-    "lint:fix": "biome lint --write --diagnostic-level=error .",
+    "lint:fix": "biome lint --write .",
     "check": "biome check .",
     "check:fix": "biome check --write .",
     "write:translations": "docusaurus write-translations",
