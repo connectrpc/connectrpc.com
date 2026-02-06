@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { FeatureItem, featureList } from "@site/src/components/home/text";
+import { type FeatureItem, featureList } from "@site/src/components/home/text";
 
 import styles from "./Features.module.css";
 

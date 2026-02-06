@@ -26,10 +26,10 @@
  * https://github.com/facebook/docusaurus/tree/v2.0.0-beta.3/packages/docusaurus-theme-classic/src/theme
  */
 import Link from "@docusaurus/Link";
-import { FooterLinkItem, useThemeConfig } from "@docusaurus/theme-common";
+import { type FooterLinkItem, useThemeConfig } from "@docusaurus/theme-common";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import clsx from "clsx";
-import { PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
 import CncfSandbox from "./cncf-sandbox-horizontal-black.svg";
 import IconGithub from "./icon-github--gray.svg";
 import IconSlack from "./icon-slack--gray.svg";

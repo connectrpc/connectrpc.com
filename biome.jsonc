@@ -30,18 +30,7 @@
     "enabled": true,
     "includes": ["**"],
     "rules": {
-      "recommended": true,
-      "style": {
-        "noParameterAssign": "error",
-        "useAsConstAssertion": "error",
-        "useImportType": "off"
-      },
-      "correctness": {
-        "noUnusedImports": "error"
-      },
-      "complexity": {
-        "noForEach": "off"
-      }
+      "recommended": true
     }
   },
   "javascript": {

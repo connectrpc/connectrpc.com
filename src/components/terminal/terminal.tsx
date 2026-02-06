@@ -13,10 +13,11 @@
 // limitations under the License.
 
 import clsx from "clsx";
-import React, {
-  ChangeEvent,
-  KeyboardEvent,
-  PropsWithChildren,
+import type React from "react";
+import {
+  type ChangeEvent,
+  type KeyboardEvent,
+  type PropsWithChildren,
   useEffect,
   useRef,
   useState,

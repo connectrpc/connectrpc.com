@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import useBaseUrl from "@docusaurus/useBaseUrl";
-import { GuideProps } from "@site/src/components/home/text";
+import type { GuideProps } from "@site/src/components/home/text";
 import clsx from "clsx";
 import { Divider } from "./divider";
 import styles from "./Guides.module.css";

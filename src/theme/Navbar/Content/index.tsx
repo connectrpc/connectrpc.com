@@ -26,7 +26,7 @@ import type { Props as NavbarItemConfig } from "@theme/NavbarItem";
 import NavbarItem from "@theme/NavbarItem";
 import SearchBar from "@theme/SearchBar";
 import clsx from "clsx";
-import React from "react";
+import type React from "react";
 import { CreatedBy } from "../../components/created-by";
 import styles from "./styles.module.css";
 

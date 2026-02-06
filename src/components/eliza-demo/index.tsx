@@ -15,8 +15,9 @@
 import { ElizaService } from "@buf/connectrpc_eliza.bufbuild_es/connectrpc/eliza/v1/eliza_pb";
 import { createClient } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
-import React, { useCallback, useState } from "react";
-import { Message, Terminal } from "../terminal";
+import type React from "react";
+import { useCallback, useState } from "react";
+import { type Message, Terminal } from "../terminal";
 
 const host = "https://demo.connectrpc.com";
 

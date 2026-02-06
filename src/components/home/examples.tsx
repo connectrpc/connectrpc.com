@@ -27,7 +27,8 @@ import {
 import clsx from "clsx";
 import copy from "copy-text-to-clipboard";
 import { Highlight } from "prism-react-renderer";
-import React, { useEffect, useState } from "react";
+import type React from "react";
+import { useEffect, useState } from "react";
 import { ElizaDemo } from "../eliza-demo";
 import { TerminalHeader } from "../terminal";
 import Tooltip from "../tooltip";

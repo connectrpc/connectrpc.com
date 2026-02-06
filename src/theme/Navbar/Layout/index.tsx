@@ -22,7 +22,7 @@ import { Divider } from "@site/src/components/home/divider";
 import type { Props } from "@theme/Navbar/Layout";
 import NavbarMobileSidebar from "@theme/Navbar/MobileSidebar";
 import clsx from "clsx";
-import { ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import { useIsScrolled } from "../../utils/use-is-scrolled";
 import styles from "./styles.module.css";
 
