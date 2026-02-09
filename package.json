@@ -41,7 +41,7 @@
     "@docusaurus/module-type-aliases": "^3.5.2",
     "@docusaurus/tsconfig": "^3.9.2",
     "@types/react": "^18.3.12",
-    "typescript": "^5.8.3"
+    "typescript": "^5.9.3"
   },
   "licenseHeader": {
     "licenseType": "apache",
