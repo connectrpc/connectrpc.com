@@ -54,7 +54,6 @@
 
 /* Dark mode: simple gradient background instead of complex SVG */
 html[data-theme="dark"] .footerBackground {
-  background-image: none;
   background: linear-gradient(
     180deg,
     var(--ifm-background-color) 0%,
@@ -132,6 +131,7 @@ html[data-theme="dark"] .gradient {
     gap: 0;
     background-color: #ffffff;
   }
+
   .moreInfo {
     flex-direction: column;
   }

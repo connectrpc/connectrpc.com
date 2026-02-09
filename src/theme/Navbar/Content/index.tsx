@@ -12,23 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import React from "react";
-import NavbarItem from "@theme/NavbarItem";
-import NavbarColorModeToggle from "@theme/Navbar/ColorModeToggle";
-import SearchBar from "@theme/SearchBar";
 import {
   splitNavbarItems,
   useNavbarMobileSidebar,
   useThemeConfig,
 } from "@docusaurus/theme-common/internal";
-import NavbarMobileSidebarToggle from "@theme/Navbar/MobileSidebar/Toggle";
-import NavbarLogo from "@theme/Navbar/Logo";
-import NavbarSearch from "@theme/Navbar/Search";
-import clsx from "clsx";
-import styles from "./styles.module.css";
-import { CreatedBy } from "../../components/created-by";
-import type { Props as NavbarItemConfig } from "@theme/NavbarItem";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
+import NavbarColorModeToggle from "@theme/Navbar/ColorModeToggle";
+import NavbarLogo from "@theme/Navbar/Logo";
+import NavbarMobileSidebarToggle from "@theme/Navbar/MobileSidebar/Toggle";
+import NavbarSearch from "@theme/Navbar/Search";
+import type { Props as NavbarItemConfig } from "@theme/NavbarItem";
+import NavbarItem from "@theme/NavbarItem";
+import SearchBar from "@theme/SearchBar";
+import clsx from "clsx";
+import type React from "react";
+import { CreatedBy } from "../../components/created-by";
+import styles from "./styles.module.css";
 
 function useNavbarItems() {
   // TODO temporary casting until ThemeConfig type is improved
@@ -38,6 +38,7 @@ function useNavbarItems() {
 function NavbarItems({ items }: { items: NavbarItemConfig[] }): JSX.Element {
   const mobileSidebar = useNavbarMobileSidebar();
   const renderedItems = items.map((item, i) => (
+    // biome-ignore lint/suspicious/noArrayIndexKey: static navbar items
     <NavbarItem {...item} key={i} />
   ));
   if (mobileSidebar.shouldRender) {
@@ -80,20 +81,19 @@ export default function NavbarContent() {
             <NavbarColorModeToggle />
             <div className={styles.searchWrapper}>
               <NavbarSearch>
-                <SearchBar {...(siteConfig.themeConfig.algolia as any)} />
+                <SearchBar
+                  {...(siteConfig.themeConfig.algolia as Record<
+                    string,
+                    unknown
+                  >)}
+                />
               </NavbarSearch>
             </div>
             <CreatedBy className="desktop-only" />
           </div>
         </>
       }
-      right={
-        // TODO stop hardcoding items?
-        // Ask the user to add the respective navbar items => more flexible
-        <>
-          <NavbarItems items={rightItems} />
-        </>
-      }
+      right=<NavbarItems items={rightItems} />
     />
   );
 }

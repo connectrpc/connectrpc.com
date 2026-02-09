@@ -15,7 +15,8 @@
 // Copied from buf core, replace once we publish design system somewhere these docs can use it from.
 
 import clsx from "clsx";
-import React, { PropsWithChildren, useEffect, useState } from "react";
+import type React from "react";
+import { type PropsWithChildren, useEffect, useState } from "react";
 
 type TooltipProps = {
   content: string | JSX.Element;
@@ -48,6 +49,7 @@ const Tooltip: React.FC<TooltipProps> = ({
   }, [leaveOn]);
 
   return (
+    /* biome-ignore lint/a11y/noStaticElementInteractions: tooltips are interactive; arguably this should not be a div */
     <div
       className={clsx({
         [activeClassName]: visible,

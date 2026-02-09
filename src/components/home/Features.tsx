@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { FeatureItem, featureList } from "@site/src/components/home/text";
-import React from "react";
+import { type FeatureItem, featureList } from "@site/src/components/home/text";
 
 import styles from "./Features.module.css";
 
@@ -21,6 +20,7 @@ function Feature({ title, description }: FeatureItem) {
   return (
     <div className={styles.feature}>
       <h4 className={styles.featureTitle}>
+        {/* biome-ignore lint/a11y/noSvgWithoutTitle: decorative icon */}
         <svg
           width="20"
           height="20"
@@ -47,9 +47,10 @@ export default function Features(): JSX.Element {
   return (
     <div className="container" style={{ position: "relative" }}>
       <div className={styles.features}>
-        {featureList.map((props, idx) => (
-          <Feature key={idx} {...props} />
-        ))}
+        {featureList.map((props, idx) => {
+          // biome-ignore lint/suspicious/noArrayIndexKey: static list
+          return <Feature key={idx} {...props} />;
+        })}
       </div>
     </div>
   );

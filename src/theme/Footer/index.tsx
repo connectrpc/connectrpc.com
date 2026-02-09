@@ -26,14 +26,13 @@
  * https://github.com/facebook/docusaurus/tree/v2.0.0-beta.3/packages/docusaurus-theme-classic/src/theme
  */
 import Link from "@docusaurus/Link";
-import { FooterLinkItem, useThemeConfig } from "@docusaurus/theme-common";
+import { type FooterLinkItem, useThemeConfig } from "@docusaurus/theme-common";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import clsx from "clsx";
-import React, { PropsWithChildren } from "react";
-
+import type { PropsWithChildren } from "react";
+import CncfSandbox from "./cncf-sandbox-horizontal-black.svg";
 import IconGithub from "./icon-github--gray.svg";
 import IconSlack from "./icon-slack--gray.svg";
-import CncfSandbox from "./cncf-sandbox-horizontal-black.svg";
 import styles from "./styles.module.css";
 
 type LinkProps = {
@@ -44,15 +43,18 @@ type LinkProps = {
 function FooterLink(
   props: PropsWithChildren<
     FooterLinkItem & { className?: string; ariaLabel?: string }
-  >,
+  >
 ): JSX.Element {
+  const toUrl = useBaseUrl(props.to || "");
+  const hrefUrl = useBaseUrl(props.href || "", { forcePrependBaseUrl: true });
+
   const linkProps: LinkProps = {};
   if (props.to) {
-    linkProps.to = useBaseUrl(props.to);
+    linkProps.to = toUrl;
   }
   if (props.href) {
     if (props.prependBaseUrlToHref) {
-      linkProps.href = useBaseUrl(props.href, { forcePrependBaseUrl: true });
+      linkProps.href = hrefUrl;
     } else {
       linkProps.href = props.href;
     }
@@ -69,13 +71,13 @@ function FooterLink(
 }
 
 function SocialFooterLink(props: FooterLinkItem): JSX.Element {
-  let icon: JSX.Element | undefined = undefined;
-  if (props.href && props.href.includes("github.com")) {
+  let icon: JSX.Element | undefined;
+  if (props.href?.includes("github.com")) {
     icon = <IconGithub />;
-  } else if (props.href && props.href.includes("slack")) {
+  } else if (props.href?.includes("slack")) {
     icon = <IconSlack />;
   }
-  let ariaLabel: string | undefined = undefined;
+  let ariaLabel: string | undefined;
   if (icon !== undefined) {
     ariaLabel = props.label;
   }
@@ -135,6 +137,7 @@ function Footer(): JSX.Element | null {
     <footer className={clsx(styles.footer, "container")}>
       <div className={styles.container}>
         <div className={styles.socialGroup}>
+          {/* biome-ignore-start lint/suspicious/noArrayIndexKey: static footer links */}
           {socialLinks.map((item: FooterLinkItem, index: number) => {
             return (
               <div key={index}>
@@ -142,9 +145,11 @@ function Footer(): JSX.Element | null {
               </div>
             );
           })}
+          {/* biome-ignore-end lint/suspicious/noArrayIndexKey: static footer links */}
         </div>
 
         <div className={styles.legalGroup}>
+          {/* biome-ignore-start lint/suspicious/noArrayIndexKey: static footer links */}
           {legalLinks.map((item: FooterLinkItem, index: number) => {
             return (
               <div key={index}>
@@ -152,13 +157,14 @@ function Footer(): JSX.Element | null {
               </div>
             );
           })}
+          {/* biome-ignore-end lint/suspicious/noArrayIndexKey: static footer links */}
         </div>
 
         <div className={styles.copyright}>
           <div
             // Developer provided the HTML, so assume it's safe.
-            // eslint-disable-next-line react/no-danger
             // ^^^ comment by FB
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: developer provided HTML
             dangerouslySetInnerHTML={{
               __html: copyright ?? "",
             }}

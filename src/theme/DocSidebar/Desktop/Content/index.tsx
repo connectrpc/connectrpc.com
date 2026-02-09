@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import React, { useRef } from "react";
 import Content from "@theme-original/DocSidebar/Desktop/Content";
+import { useRef } from "react";
 import bufStyles from "./styles.module.css";
 
 export default function ContentWrapper(props) {
@@ -32,8 +32,12 @@ export default function ContentWrapper(props) {
   return (
     <>
       <div className={bufStyles.expandAllControls} ref={domRef}>
-        <button onClick={() => toggleAll(true)}>expand all</button>
-        <button onClick={() => toggleAll(false)}>collapse all</button>
+        <button type="button" onClick={() => toggleAll(true)}>
+          expand all
+        </button>
+        <button type="button" onClick={() => toggleAll(false)}>
+          collapse all
+        </button>
       </div>
       <Content {...props} />
     </>
