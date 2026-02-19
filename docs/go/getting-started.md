@@ -30,12 +30,11 @@ $ mkdir connect-go-example
 $ cd connect-go-example
 $ go mod init example
 $ go install github.com/bufbuild/buf/cmd/buf@latest
-$ go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-$ go install connectrpc.com/connect/cmd/protoc-gen-connect-go@latest
+$ go get -tool google.golang.org/protobuf/cmd/protoc-gen-go@latest
+$ go get -tool connectrpc.com/connect/cmd/protoc-gen-connect-go@latest
 ```
 
-You'll need `buf`, `protoc-gen-go` and `protoc-gen-connect-go` on your `PATH`. If
-`which buf protoc-gen-go protoc-gen-connect-go` doesn't succeed, add Go's
+You'll need `buf` on your `PATH`. If `which buf` doesn't succeed, add Go's
 install directories to your path:
 
 ```bash
@@ -108,10 +107,10 @@ Next, tell Buf how to generate code by putting this into
 ```yaml
 version: v2
 plugins:
-  - local: protoc-gen-go
+  - local: [go, tool, protoc-gen-go]
     out: gen
     opt: paths=source_relative
-  - local: protoc-gen-connect-go
+  - local: [go, tool, protoc-gen-connect-go]
     out: gen
     opt:
       - paths=source_relative
