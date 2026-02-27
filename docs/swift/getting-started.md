@@ -37,7 +37,7 @@ This tutorial should take ~10 minutes from start to finish.
 
 First, we need to add a Protobuf file that includes our service definition. For this tutorial, we are going to construct a unary endpoint for a service that is a stripped-down implementation of ELIZA, the famous natural language processing program.
 
-```bash
+```shell-session
 $ mkdir -p proto && touch proto/eliza.proto
 ```
 
@@ -112,7 +112,7 @@ plugins:
 
 With those configuration files in place, we can now generate code:
 
-```bash
+```shell-session
 $ buf lint
 $ buf generate
 ```
