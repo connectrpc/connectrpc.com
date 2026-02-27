@@ -70,11 +70,11 @@ the box.
   This is not available on the web platforms. Exported from `package:connectrpc/http2.dart`.
 
 All of them export a function called `createHttpClient` that accepts options for configuring each of
-them. <!-- TODO: Add link to conditonal import example here -->
+them. <!-- TODO: Add link to conditional import example here -->
 
 ## Using generated clients
 
-Generated clients take adavantage of Dart's `Future` and `Stream` types to provide
+Generated clients take advantage of Dart's `Future` and `Stream` types to provide
 idiomatic APIs.
 
 ```dart

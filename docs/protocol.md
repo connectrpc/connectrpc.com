@@ -182,7 +182,7 @@ accepts the **Content-Encoding** used for the request if present. Servers must
 assume that all clients accept "identity" as their least preferred encoding,
 even when **Accept-Encoding** is omitted. Servers should treat **Accept-Encoding**
 as an ordered list, with the client's most preferred encoding first and least
-preferred encoding last. This is a simplification fo standard HTTP semantics
+preferred encoding last. This is a simplification of standard HTTP semantics
 that excludes quality values. If the client uses an unsupported **Content-Encoding**,
 servers should return an error with code "unimplemented" and a message listing the
 supported encodings.
