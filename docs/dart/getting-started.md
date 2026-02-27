@@ -38,15 +38,15 @@ This tutorial should take ~10 minutes from start to finish.
 
 Create a Flutter app called `eliza` by running:
 
-```bash
-flutter create eliza
-cd eliza
+```shell-session
+$ flutter create eliza
+$ cd eliza
 ```
 
 Next add a dependency on the `connectrpc` package by running the following:
 
-```bash
-flutter pub add connectrpc
+```shell-session
+$ flutter pub add connectrpc
 ```
 
 ## Define a service

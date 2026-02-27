@@ -51,9 +51,9 @@ First, we'll set up the Python environment and dependencies.
 
 Now we're ready to write the Protocol Buffer schema that defines our service. In your shell,
 
-```bash
-mkdir -p proto/greet/v1
-touch proto/greet/v1/greet.proto
+```shell-session
+$ mkdir -p proto/greet/v1
+$ touch proto/greet/v1/greet.proto
 ```
 
 Open `proto/greet/v1/greet.proto` in your editor and add:
@@ -103,8 +103,8 @@ We will use [remote plugins](https://buf.build/docs/bsr/remote-plugins/usage), a
 [Buf Schema Registry](https://buf.build/docs/tutorials/getting-started-with-bsr) for generating code.
 Tell Buf how to generate code by creating a `buf.gen.yaml`:
 
-```bash
-touch buf.gen.yaml
+```shell-session
+$ touch buf.gen.yaml
 ```
 
 ```yaml
@@ -120,9 +120,9 @@ plugins:
 
 With those configuration files in place, you can lint your schema and generate code:
 
-```bash
-buf lint
-buf generate
+```shell-session
+$ buf lint
+$ buf generate
 ```
 
 In the `greet` package, you should now see some generated Python:
@@ -211,8 +211,8 @@ In a separate terminal window, you can now start your server:
 The simplest way to consume your new API is an HTTP/1.1 POST with a JSON payload. If you have a recent version of
 cURL installed, it's a one-liner:
 
-```bash
-curl \
+```shell-session
+$ curl \
   --header "Content-Type: application/json" \
   --data '{"name": "Jane"}' \
   http://localhost:8000/greet.v1.GreetService/Greet
@@ -267,8 +267,8 @@ We can also make requests using Connect's generated client. `touch client.py` an
 
 With your server still running in a separate terminal window, you can now run your client:
 
-```bash
-uv run python client.py
+```shell-session
+$ uv run python client.py
 ```
 
 Congratulations — you've built your first Connect service! 🎉
