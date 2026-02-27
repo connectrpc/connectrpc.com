@@ -136,7 +136,7 @@ function CodeBlock({
   );
   const handleCopyCode = () => {
     let textToCopy = code;
-    if (language === "bash" || language === "terminal" || language === "shell-session") {
+    if (language === "shell-session") {
       textToCopy = stripShellPromptForClipboard(textToCopy);
     }
     if (terminalSeparatorIndex !== -1) {
