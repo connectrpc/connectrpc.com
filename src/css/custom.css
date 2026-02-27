@@ -439,6 +439,13 @@ html[data-theme="dark"] {
   width: calc(100% - 2rem);
 }
 
+/* Infima, the design system used by Docusaurus, sets vertical-align: middle on
+   inline code, which causes it to sit below surrounding text. Override with
+   baseline for natural text alignment. */
+code {
+  vertical-align: baseline;
+}
+
 @media (min-width: 997px) {
   .mobile-only {
     display: none;
