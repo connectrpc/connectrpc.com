@@ -103,6 +103,7 @@ function CodeBlock({
   children: React.ReactNode;
   title: string;
 }) {
+  const language = "shell-session";
   const [showCopied, setShowCopied] = useState(false);
   const [mounted, setMounted] = useState(false); // The Prism theme on SSR is always the default theme but the site theme
   // can be in a different mode. React hydration doesn't update DOM styles
@@ -123,7 +124,6 @@ function CodeBlock({
   // without actually highlighting.
 
   const content = Array.isArray(children) ? children.join("") : children;
-  const language = "bash";
   const { lineClassNames, code } = parseLines(content as string, {
     metastring: undefined,
     language,
@@ -136,7 +136,7 @@ function CodeBlock({
   );
   const handleCopyCode = () => {
     let textToCopy = code;
-    if (language === "bash" || language === "terminal") {
+    if (language === "bash" || language === "terminal" || language === "shell-session") {
       textToCopy = stripShellPromptForClipboard(textToCopy);
     }
     if (terminalSeparatorIndex !== -1) {

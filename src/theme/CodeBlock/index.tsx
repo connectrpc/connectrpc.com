@@ -117,7 +117,7 @@ export default function CodeBlock({
     magicComments,
   });
   let terminalSeparatorIndex = -1;
-  if (language === "bash" || language === "terminal") {
+  if (language === "bash" || language === "terminal" || language === "shell-session") {
     const lines = code.split("\n");
 
     terminalSeparatorIndex = lines.findIndex(
@@ -126,7 +126,7 @@ export default function CodeBlock({
   }
   const handleCopyCode = () => {
     let textToCopy = code;
-    if (language === "bash" || language === "terminal") {
+    if (language === "bash" || language === "terminal" || language === "shell-session") {
       textToCopy = stripShellPromptForClipboard(textToCopy);
     }
     if (terminalSeparatorIndex !== -1) {
@@ -142,7 +142,7 @@ export default function CodeBlock({
       key={String(mounted)}
       theme={prismTheme}
       code={code}
-      language={language ?? ("text" as any)}
+      language={(language === "terminal" ? "shell-session" : language) ?? ("text" as any)}
     >
       {({ className, style, tokens, getLineProps, getTokenProps }) => {
         const mainTokens =

@@ -25,7 +25,7 @@ and how to call your new API.
 First, we'll need to create a new Go module and install some code generation
 tools:
 
-```bash
+```shell-session
 $ mkdir connect-go-example
 $ cd connect-go-example
 $ go mod init example
@@ -37,7 +37,7 @@ $ go get -tool connectrpc.com/connect/cmd/protoc-gen-connect-go@latest
 You'll need `buf` on your `PATH`. If `which buf` doesn't succeed, add Go's
 install directories to your path:
 
-```bash
+```shell-session
 $ [ -n "$(go env GOBIN)" ] && export PATH="$(go env GOBIN):${PATH}"
 $ [ -n "$(go env GOPATH)" ] && export PATH="$(go env GOPATH)/bin:${PATH}"
 ```
@@ -47,7 +47,7 @@ $ [ -n "$(go env GOPATH)" ] && export PATH="$(go env GOPATH)/bin:${PATH}"
 Now we're ready to write the Protocol Buffer schema that defines our service.
 In your shell,
 
-```bash
+```shell-session
 $ mkdir -p greet/v1
 $ touch greet/v1/greet.proto
 ```
@@ -130,7 +130,7 @@ managed:
 With those configuration files in place, you can lint your schema and generate
 code:
 
-```bash
+```shell-session
 $ buf dep update
 $ buf lint
 $ buf generate
@@ -215,7 +215,7 @@ func main() {
 In a separate terminal window, you can now update `go.mod` and start your
 server:
 
-```bash
+```shell-session
 $ go get connectrpc.com/connect
 $ go get connectrpc.com/validate
 $ go get buf.build/go/protovalidate
@@ -227,7 +227,7 @@ $ go run ./cmd/server/main.go
 The simplest way to consume your new API is an HTTP/1.1 POST with a JSON
 payload:
 
-```bash
+```shell-session
 $ curl \
     --header "Content-Type: application/json" \
     --data '{"name": "Jane"}' \
@@ -242,7 +242,7 @@ This responds:
 
 Your new handler automatically supports gRPC requests, too:
 
-```bash
+```shell-session
 $ buf curl \
   --schema ./greet/v1/greet.proto \
   --protocol grpc \
@@ -261,7 +261,7 @@ This responds:
 
 Or, with the Connect protocol:
 
-```bash
+```shell-session
 $ buf curl \
   --schema . \
   --data '{"name": "Jane"}' \
@@ -303,13 +303,13 @@ func main() {
 With your server still running in a separate terminal window, you can now run
 your client:
 
-```bash
+```shell-session
 $ go run ./cmd/client/main.go
 ```
 
-Now try sending a request with no data: 
+Now try sending a request with no data:
 
-```bash
+```shell-session
 $ buf curl \
   --schema . \
   http://localhost:8080/greet.v1.GreetService/Greet
@@ -366,7 +366,7 @@ client := greetv1connect.NewGreetServiceClient(
 With your server still running in a separate terminal window, run the client
 one more time:
 
-```bash
+```shell-session
 $ go run ./cmd/client/main.go
 ```
 

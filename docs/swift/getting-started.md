@@ -170,7 +170,7 @@ not necessary when using the Connect or gRPC-Web protocol.**
 CocoaPods is also supported as an alternative to Swift Package Manager.
 To use Connect-Swift with CocoaPods, simply add this line to your `Podfile`:
 
-```rb
+```ruby
 pod 'Connect-Swift'
 pod 'SwiftProtobuf'
 ```
