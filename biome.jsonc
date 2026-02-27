@@ -14,6 +14,8 @@
       "!**/.ssg-cache",
       "!**/build",
       "!**/.docusaurus",
+      // Skip Go vanity URL HTML files.
+      "!static/*.html",
       // Skip files lifted directly from Facebook's Docusaurus.
       "!src/theme/Logo/index.tsx",
       "!src/theme/CodeBlock/index.tsx",
