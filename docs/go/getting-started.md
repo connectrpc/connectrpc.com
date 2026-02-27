@@ -138,7 +138,7 @@ $ buf generate
 
 In your `gen` directory, you should now see some generated Go:
 
-```
+```text
 gen
 └── greet
     └── v1

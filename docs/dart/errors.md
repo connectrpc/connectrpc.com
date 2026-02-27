@@ -8,7 +8,7 @@ codes you may have seen in HTTP, Connect uses a set of [16 error codes](/docs/pr
 In the Connect protocol, an error is always represented as JSON, and is easily
 readable in the developer tools of your browser. For example:
 
-```
+```http
 HTTP/1.1 400 Bad Request
 Content-Type: application/json
 

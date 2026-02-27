@@ -12,7 +12,7 @@ link to this page in the error message.
 If you use a Connect client to call a `grpc-go` server but forget the `WithGRPC`
 option, you'll see a long error that looks like this:
 
-```
+```text
 unavailable: possible missing connect.WithGRPC() client option when talking to
 gRPC server, see https://connectrpc.com/docs/go/common-errors: Post
 "http://0.0.0.0:3000/buf.ping.v1alpha1.PingService/Ping": http2: Transport:
@@ -37,7 +37,7 @@ client := greetv1connect.NewGreetServiceClient(
 If you use a Connect client to call a `grpc-go` server that doesn't support
 TLS, you'll probably see this error:
 
-```
+```text
 unavailable: possible h2c configuration issue when talking to gRPC server, see
 https://connectrpc.com/docs/go/common-errors: Post
 "http://0.0.0.0:3000/buf.ping.v1alpha1.PingService/Ping": net/http: HTTP/1.x
@@ -47,7 +47,7 @@ transport connection broken: malformed HTTP response
 
 In some cases, you'll see a more generic error instead:
 
-```
+```text
 unavailable: possible h2c configuration issue when talking to gRPC server, see
 https://connectrpc.com/docs/go/common-errors: Post
 "http://0.0.0.0:3000/buf.ping.v1alpha1.PingService/Ping": write tcp

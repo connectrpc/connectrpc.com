@@ -133,7 +133,7 @@ interceptors: [
 They'll be created each time a request is initiated by the client, then
 invoked in the following order:
 
-```
+```text
 Client -> A -> B -> C -> D -> Server
 Client <- D <- C <- B <- A <- Server
 ```

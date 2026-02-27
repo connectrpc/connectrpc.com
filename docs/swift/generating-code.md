@@ -112,7 +112,7 @@ buf generate
 Given the above config and example `eliza.proto` file, you should now see some
 generated Swift files in the `Generated` directory:
 
-```
+```text
 Generated
     ├── eliza.connect.swift
     └── eliza.pb.swift

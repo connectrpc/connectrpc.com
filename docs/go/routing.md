@@ -12,7 +12,7 @@ how Connect builds routes.
 Routing follows the [Connect](../protocol.md) and gRPC HTTP/2 protocols,
 both of which use:
 
-```
+```http
 :method post
 :path /<Package>.<Service>/<Method>
 ```

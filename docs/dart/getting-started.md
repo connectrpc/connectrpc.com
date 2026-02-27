@@ -131,7 +131,7 @@ $ buf generate
 
 In your `lib/gen` directory, you should now see some generated Dart files:
 
-```
+```text
 lib/gen
     ├── eliza.connect.client.dart
     ├── eliza.connect.spec.dart

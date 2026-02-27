@@ -377,7 +377,7 @@ for a detailed explanation and an example.
 Every service method on the server receives the `HandlerContext` as the second argument, which provides access to
 response headers. You can set cookies with the `Set-Cookie` response header—for example:
 
-```
+```typescript
 ctx.responseHeader.append("Set-Cookie", "foo=bar; Max=Age=120")
 ```
 
@@ -386,7 +386,7 @@ ctx.responseHeader.append("Set-Cookie", "foo=bar; Max=Age=120")
 Connect-ES and Protobuf-ES use [package exports](https://nodejs.org/docs/latest-v12.x/api/packages.html#packages_exports).
 If you see the following error with Parcel, make sure to [enable package exports](https://parceljs.org/features/dependency-resolution/#package-exports):
 
-```
+```text
 @parcel/core: Failed to resolve '@bufbuild/protobuf/codegenv1'
 ```
 
@@ -395,7 +395,7 @@ If you see the following error with Parcel, make sure to [enable package exports
 Connect-ES and Protobuf-ES use [package exports](https://nodejs.org/docs/latest-v12.x/api/packages.html#packages_exports).
 If you see the following error with Metro or Expo, make sure to [enable package exports](https://metrobundler.dev/docs/package-exports/):
 
-```
+```text
 Metro error: Unable to resolve module @bufbuild/protobuf/codegenv1
 ```
 

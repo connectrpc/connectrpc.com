@@ -24,7 +24,7 @@ $ curl --header "Content-Type: application/json" \
 
 The response is:
 
-```
+```json
 {"sentence": "Feeling happy? Tell me more."}
 ```
 

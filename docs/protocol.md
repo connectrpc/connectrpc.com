@@ -39,7 +39,7 @@ derived from the Protobuf schema, request and response bodies are valid
 Protobuf or JSON (without gRPC-style binary framing), and responses have
 meaningful HTTP status codes. For example:
 
-```
+```http
 > POST /connectrpc.greet.v1.GreetService/Greet HTTP/1.1
 > Host: demo.connectrpc.com
 > Content-Type: application/json
@@ -54,7 +54,7 @@ meaningful HTTP status codes. For example:
 
 For RPCs that have no side effects, it is possible to use GET requests instead:
 
-```
+```http
 > GET /connectrpc.greet.v1.GreetService/Greet?encoding=json&message=%7B%22name%22%3A%22Buf%22%7D HTTP/1.1
 > Host: demo.connectrpc.com
 
@@ -88,7 +88,7 @@ few bytes of binary framing data. Responses always have an HTTP status of 200
 OK, with any errors sent in the last portion of the body. For example, a client
 streaming call might look like this:
 
-```
+```http
 > POST /connectrpc.greet.v1.GreetService/GreetGroup HTTP/1.1
 > Host: demo.connectrpc.com
 > Content-Type: application/connect+json
@@ -341,7 +341,7 @@ error code if **Bare-Message** is missing or malformed.
 
 Using HTTP/1.1 notation, a simple request and successful response:
 
-```
+```http
 > POST /connectrpc.greet.v1.GreetService/Greet HTTP/1.1
 > Host: demo.connectrpc.com
 > Content-Type: application/json
@@ -356,7 +356,7 @@ Using HTTP/1.1 notation, a simple request and successful response:
 
 The same RPC, but sent as a unary GET request instead:
 
-```
+```http
 > GET /connectrpc.greet.v1.GreetService/Greet?message=%7B%22name%22%3A%22Buf%22%7D&encoding=json&connect=v1 HTTP/1.1
 > Host: demo.connectrpc.com
 
@@ -372,7 +372,7 @@ automatically be encoded for you.)
 The same RPC, but with a 5s timeout, asymmetric compression, and some
 custom leading and trailing metadata.
 
-```
+```http
 > POST /connectrpc.greet.v1.GreetService/Greet HTTP/1.1
 > Host: demo.connectrpc.com
 > Content-Type: application/json
@@ -392,7 +392,7 @@ custom leading and trailing metadata.
 
 The same RPC again, but with a Protobuf-encoded request and an error response:
 
-```
+```http
 > POST /connectrpc.greet.v1.GreetService/Greet HTTP/1.1
 > Host: demo.connectrpc.com
 > Content-Type: application/proto
@@ -471,7 +471,7 @@ earlier in the stream.
 Using HTTP/1.1 notation and putting each **Enveloped-Message** on a separate
 line for readability, a successful client streaming RPC:
 
-```
+```http
 > POST /connectrpc.greet.v1.GreetService/GreetGroup HTTP/1.1
 > Host: demo.connectrpc.com
 > Content-Type: application/connect+json
@@ -488,7 +488,7 @@ line for readability, a successful client streaming RPC:
 
 A failed server streaming RPC:
 
-```
+```http
 > POST /connectrpc.greet.v1.GreetService/GreetIndividuals HTTP/1.1
 > Host: demo.connectrpc.com
 > Content-Type: application/connect+proto

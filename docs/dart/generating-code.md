@@ -108,7 +108,7 @@ buf generate
 Given the above config and example `eliza.proto` file, you should now see some
 generated Dart files in the `lib/gen` directory:
 
-```
+```text
 lib/gen
     ├── eliza.connect.spec.dart
     ├── eliza.connect.client.dart

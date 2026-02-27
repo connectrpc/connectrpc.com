@@ -119,7 +119,7 @@ $ buf generate
 
 In your `Generated` directory, you should now see some generated Swift files:
 
-```
+```text
 Generated
     ├── eliza.connect.swift
     └── eliza.pb.swift
@@ -145,7 +145,7 @@ Next, add a dependency on the `Connect-Swift` package in Xcode by clicking
 In the popup window, click into the `Search or Enter Package URL` text field
 in the top right and paste the Connect-Swift GitHub URL:
 
-```
+```text
 https://github.com/connectrpc/connect-swift
 ```
 

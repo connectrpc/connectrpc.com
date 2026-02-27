@@ -150,7 +150,7 @@ $ buf generate
 
 In the `app/src/main/java` directory, there should now be some generated Java and Kotlin files:
 
-```
+```text
 app/src/main/java
 ├── connectrpc
 │   └── eliza
