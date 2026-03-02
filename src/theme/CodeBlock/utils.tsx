@@ -32,6 +32,8 @@ export const shellSessionOutputSeparator = "---";
 
 export const stripSeparatedShellSessionOutput = (code: string): string => {
   const lines = code.split("\n");
-  const index = lines.findIndex((l) => l.trim() === shellSessionOutputSeparator);
+  const index = lines.findIndex(
+    (l) => l.trim() === shellSessionOutputSeparator
+  );
   return lines.slice(0, index).join("\n");
 };
