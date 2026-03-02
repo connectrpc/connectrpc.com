@@ -20,9 +20,9 @@ import {
 } from "@docusaurus/theme-common/internal";
 import codeBlockStyles from "@site/src/theme/CodeBlock/styles.module.css";
 import {
+  shellSessionOutputSeparator,
   stripSeparatedShellSessionOutput,
   stripShellPromptForClipboard,
-  shellSessionOutputSeparator,
 } from "@site/src/theme/CodeBlock/utils";
 import clsx from "clsx";
 import copy from "copy-text-to-clipboard";
