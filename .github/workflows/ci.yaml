@@ -7,26 +7,12 @@ jobs:
   ci:
     runs-on: ubuntu-latest
     steps:
-      - name: checkout
-        uses: actions/checkout@v6
-
-      - name: Cache
-        uses: actions/cache@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          path: |
-            ~/.tmp
-            .tmp
-          key: ${{ runner.os }}-connectrpc-ci-${{ hashFiles('package.json') }}
-          restore-keys: |
-            ${{ runner.os }}-connectrpc-ci-
-
-      - name: Install dependencies
-        run: npm clean-install
-
-      - name: Run CI
-        run: npm run ci
-
+          node-version: 24
+      - run: npm clean-install
+      - run: npm run ci
       - name: Check Diff
-        id: checkdiff
         run: |
           [[ -z $(git status --porcelain | tee /dev/stderr) ]] || exit 1
