@@ -26,12 +26,12 @@ export const stripShellPromptForClipboard = (code: string): string => {
     .join("\n");
 };
 
-// For the language identifier "bash", we allow console output following a
+// For shell-session code blocks, we allow console output following a
 // command to be separated by a line with three dashes "---".
-export const terminalOutputSeparator = "---";
+export const shellSessionOutputSeparator = "---";
 
-export const stripSeparatedTerminalOutput = (code: string): string => {
+export const stripSeparatedShellSessionOutput = (code: string): string => {
   const lines = code.split("\n");
-  const index = lines.findIndex((l) => l.trim() === terminalOutputSeparator);
+  const index = lines.findIndex((l) => l.trim() === shellSessionOutputSeparator);
   return lines.slice(0, index).join("\n");
 };

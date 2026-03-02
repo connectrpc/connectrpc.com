@@ -20,9 +20,9 @@ import {
 } from "@docusaurus/theme-common/internal";
 import codeBlockStyles from "@site/src/theme/CodeBlock/styles.module.css";
 import {
-  stripSeparatedTerminalOutput,
+  stripSeparatedShellSessionOutput,
   stripShellPromptForClipboard,
-  terminalOutputSeparator,
+  shellSessionOutputSeparator,
 } from "@site/src/theme/CodeBlock/utils";
 import clsx from "clsx";
 import copy from "copy-text-to-clipboard";
@@ -131,16 +131,16 @@ function CodeBlock({
   });
   const lines = code.split("\n");
 
-  const terminalSeparatorIndex = lines.findIndex(
-    (l) => l.trim() === terminalOutputSeparator
+  const shellSessionSeparatorIndex = lines.findIndex(
+    (l) => l.trim() === shellSessionOutputSeparator
   );
   const handleCopyCode = () => {
     let textToCopy = code;
     if (language === "shell-session") {
       textToCopy = stripShellPromptForClipboard(textToCopy);
     }
-    if (terminalSeparatorIndex !== -1) {
-      textToCopy = stripSeparatedTerminalOutput(textToCopy);
+    if (shellSessionSeparatorIndex !== -1) {
+      textToCopy = stripSeparatedShellSessionOutput(textToCopy);
     }
     copy(textToCopy);
     setShowCopied(true);
@@ -156,13 +156,13 @@ function CodeBlock({
     >
       {({ className, style, tokens, getLineProps, getTokenProps }) => {
         const mainTokens =
-          terminalSeparatorIndex === -1
+          shellSessionSeparatorIndex === -1
             ? tokens
-            : tokens.slice(0, terminalSeparatorIndex + 1);
-        const terminalOutputTokens =
-          terminalSeparatorIndex === -1
+            : tokens.slice(0, shellSessionSeparatorIndex + 1);
+        const shellSessionOutputTokens =
+          shellSessionSeparatorIndex === -1
             ? []
-            : tokens.slice(terminalSeparatorIndex + 1);
+            : tokens.slice(shellSessionSeparatorIndex + 1);
 
         return (
           <div
@@ -188,10 +188,10 @@ function CodeBlock({
                 <code className={classes.codeBlockLines}>
                   {/* biome-ignore-start lint/suspicious/noArrayIndexKey: tokens are stable */}
                   {mainTokens.map((line, i) => {
-                    // If the terminal separator is used, we only render the lines up to the separator here
+                    // If the shell-session separator is used, we only render the lines up to the separator here
                     if (
-                      terminalSeparatorIndex > 0 &&
-                      i >= terminalSeparatorIndex
+                      shellSessionSeparatorIndex > 0 &&
+                      i >= shellSessionSeparatorIndex
                     ) {
                       return null;
                     }
@@ -226,9 +226,9 @@ function CodeBlock({
                   })}
                   {/* biome-ignore-end lint/suspicious/noArrayIndexKey: tokens are stable */}
                 </code>
-                {/* If the terminal separator is used, we render the content following the separator separately,
+                {/* If the shell-session separator is used, we render the content following the separator separately,
                   allowing us to style it differently */}
-                {terminalSeparatorIndex === -1 ? null : (
+                {shellSessionSeparatorIndex === -1 ? null : (
                   <code
                     className={clsx(
                       classes.codeBlockLines,
@@ -236,7 +236,7 @@ function CodeBlock({
                     )}
                   >
                     {/* biome-ignore-start lint/suspicious/noArrayIndexKey: tokens are stable */}
-                    {terminalOutputTokens.map((line, i) => {
+                    {shellSessionOutputTokens.map((line, i) => {
                       if (line.length === 1 && line[0].content === "") {
                         line[0].content = "\n";
                       }

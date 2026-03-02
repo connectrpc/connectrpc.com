@@ -237,7 +237,7 @@ $ npx tsx server.ts
 The simplest way to consume your new API is an HTTP/1.1 POST with a JSON payload.
 If you have a recent version of cURL installed, it's a one-liner:
 
-```terminal
+```shell-session
 $ curl \
   --header 'Content-Type: application/json' \
   --data '{"sentence": "I feel happy."}' \
@@ -246,10 +246,10 @@ $ curl \
 {"sentence":"You said: I feel happy."}
 ```
 
-Now try sending a request with an empty `sentence`. 
+Now try sending a request with an empty `sentence`.
 It's rejected because you've included Protovalidate rules in your schema.
 
-```terminal
+```shell-session
 $ curl \
   --header 'Content-Type: application/json' \
   --data '{"sentence": ""}' \
@@ -281,7 +281,7 @@ void main();
 
 With your server still running in a separate terminal window, you can now run your client:
 
-```terminal
+```shell-session
 $ npx tsx client.ts
 ---
 SayResponse { sentence: 'You said: I feel happy.' }
