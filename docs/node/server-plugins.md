@@ -59,7 +59,7 @@ for Node.js. We highly recommend it if you want to serve anything else along
 with your Connect RPCs. Use the plugin from [@connectrpc/connect-fastify](https://www.npmjs.com/package/@connectrpc/connect-fastify)
 with Fastify:
 
-```bash
+```shell-session
 $ npm install fastify @connectrpc/connect @connectrpc/connect-node @connectrpc/connect-fastify
 ```
 
@@ -107,7 +107,7 @@ Over HTTP 1.1, the gRPC protocol and bidirectional streaming are not supported.
 using the latest React features. With [@connectrpc/connect-next](https://www.npmjs.com/package/@connectrpc/connect-next),
 you can serve your Connect RPCs via Next.js API Routes.
 
-```bash
+```shell-session
 $ npm install next@"^13.0.0" @connectrpc/connect @connectrpc/connect-node @connectrpc/connect-next
 ```
 
@@ -153,7 +153,7 @@ and gRPC-Web. The gRPC protocol and bidirectional streaming are not supported.
 popular because of its simplicity. Use the middleware provided by [@connectrpc/connect-express](https://www.npmjs.com/package/@connectrpc/connect-express)
 to add your Connect RPCs to Express:
 
-```bash
+```shell-session
 $ npm install express @connectrpc/connect @connectrpc/connect-node @connectrpc/connect-express
 ```
 

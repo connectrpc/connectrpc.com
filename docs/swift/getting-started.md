@@ -37,7 +37,7 @@ This tutorial should take ~10 minutes from start to finish.
 
 First, we need to add a Protobuf file that includes our service definition. For this tutorial, we are going to construct a unary endpoint for a service that is a stripped-down implementation of ELIZA, the famous natural language processing program.
 
-```bash
+```shell-session
 $ mkdir -p proto && touch proto/eliza.proto
 ```
 
@@ -112,14 +112,14 @@ plugins:
 
 With those configuration files in place, we can now generate code:
 
-```bash
+```shell-session
 $ buf lint
 $ buf generate
 ```
 
 In your `Generated` directory, you should now see some generated Swift files:
 
-```
+```text
 Generated
     ├── eliza.connect.swift
     └── eliza.pb.swift
@@ -145,7 +145,7 @@ Next, add a dependency on the `Connect-Swift` package in Xcode by clicking
 In the popup window, click into the `Search or Enter Package URL` text field
 in the top right and paste the Connect-Swift GitHub URL:
 
-```
+```text
 https://github.com/connectrpc/connect-swift
 ```
 
@@ -170,7 +170,7 @@ not necessary when using the Connect or gRPC-Web protocol.**
 CocoaPods is also supported as an alternative to Swift Package Manager.
 To use Connect-Swift with CocoaPods, simply add this line to your `Podfile`:
 
-```rb
+```ruby
 pod 'Connect-Swift'
 pod 'SwiftProtobuf'
 ```

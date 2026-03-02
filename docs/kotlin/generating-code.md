@@ -110,7 +110,7 @@ buf generate
 Given the above config and example `eliza.proto` file, there should now be some
 generated files in the `generated` directory:
 
-```
+```text
 generated
 └── connectrpc
     └── eliza

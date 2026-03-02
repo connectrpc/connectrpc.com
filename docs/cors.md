@@ -29,7 +29,7 @@ A similar feature is available for connect-es with the [`cors` export](/docs/nod
 
 ### gRPC-web
 
-```
+```http
 Access-Control-Allow-Methods: POST
 Access-Control-Allow-Headers: Content-Type,Grpc-Timeout,X-Grpc-Web,X-User-Agent
 Access-Control-Expose-Headers: Grpc-Status, Grpc-Message, Grpc-Status-Details-Bin
@@ -37,7 +37,7 @@ Access-Control-Expose-Headers: Grpc-Status, Grpc-Message, Grpc-Status-Details-Bi
 
 ### Connect
 
-```
+```http
 Access-Control-Allow-Methods: GET,POST
 Access-Control-Allow-Headers: Content-Type, Connect-Protocol-Version, Connect-Timeout-Ms, X-User-Agent
 ```
@@ -46,7 +46,7 @@ Access-Control-Allow-Headers: Content-Type, Connect-Protocol-Version, Connect-Ti
 
 Here's an example for a CORS preflight request with the Connect protocol:
 
-```
+```http
 OPTIONS /connectrpc.greet.v1.GreetService/Greet HTTP/1.1
 Origin: https://connectrpc.com
 Access-Control-Request-Method: POST
@@ -63,7 +63,7 @@ Here is an example for a CORS preflight response for the preflight above that
 allows all requests with the Connect and gRPC-Web protocols, and asks the browser
 to cache the information:
 
-```
+```http
 HTTP/1.1 204 No Content
 Access-Control-Allow-Origin: https://connectrpc.com
 Access-Control-Allow-Methods: POST,GET
@@ -109,7 +109,7 @@ avoid poisoning intermediate caches.
 Here is what an actual response will look like, after a successful preflight
 request:
 
-```
+```http
 HTTP/1.1 200 OK
 Content-Type: application/json
 Access-Control-Expose-Headers: Grpc-Status,Grpc-Message,Grpc-Status-Details-Bin

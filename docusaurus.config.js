@@ -174,7 +174,18 @@ const config = {
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
-        additionalLanguages: ["kotlin", "protobuf", "swift", "dart"],
+        additionalLanguages: [
+          "kotlin",
+          "protobuf",
+          "swift",
+          "dart",
+          "bash",
+          "shell-session",
+          "diff",
+          "groovy",
+          "ruby",
+          "http",
+        ],
       },
     }),
 };

@@ -10,7 +10,7 @@ These are similar to the "404 Not Found" and
 In the [Connect protocol](../protocol.md), an error is
 always represented as JSON on the wire. For example:
 
-```
+```http
 HTTP/1.1 400 Bad Request
 Content-Type: application/json
 

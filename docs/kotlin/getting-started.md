@@ -54,7 +54,7 @@ defining a new API for talking with Eliza!
 
 First, we need to add a Protobuf file that includes our service definition. For this tutorial, we are going to construct a unary endpoint for a service that is a stripped-down implementation of ELIZA, the famous natural language processing program.
 
-```bash
+```shell-session
 $ mkdir -p proto && touch proto/eliza.proto
 ```
 
@@ -112,7 +112,7 @@ breaking:
 We will use [_remote plugins_][remote-plugins], a feature of the [Buf Schema Registry][bsr] for generating code. Tell `buf`
 how to generate code by creating a [`buf.gen.yaml`][buf.gen.yaml]:
 
-```bash
+```shell-session
 $ touch buf.gen.yaml
 ```
 
@@ -143,14 +143,14 @@ The above `buf.gen.yaml` config does two things:
 With those configuration files in place, generating Kotlin code
 can be easily done:
 
-```bash
+```shell-session
 $ buf lint
 $ buf generate
 ```
 
 In the `app/src/main/java` directory, there should now be some generated Java and Kotlin files:
 
-```
+```text
 app/src/main/java
 ├── connectrpc
 │   └── eliza
@@ -300,7 +300,7 @@ project:
 
 Create a new file in the `layout` directory called `item.xml` for a chat view item.
 
-```bash
+```shell-session
 $ touch app/src/main/res/layout/item.xml
 ```
 
@@ -424,7 +424,7 @@ In order to display a dynamic list of chat messages, we'll need to construct a
 Create a `RecyclerView.ViewHolder` and `RecyclerView.Adapter` in a file called `ChatRecycler.kt`.
 We'll be defining the `MessageData` data class to help manage the external usage in the next section.
 
-```bash
+```shell-session
 $ touch app/src/main/java/com/example/eliza/ChatRecycler.kt
 ```
 

@@ -28,7 +28,7 @@ We'll set up a project from scratch and then augment it to serve a new endpoint.
 Let's initialize a project with TypeScript, and install some code generation
 tools:
 
-```bash
+```shell-session
 $ mkdir connect-example
 $ cd connect-example
 $ npm init -y
@@ -80,7 +80,7 @@ behaves like any other plugin.)
 
 First, scaffold a basic [`buf.yaml`][buf.yaml] at the root of your repository:
 
-```bash
+```shell-session
 $ npx buf config init
 ```
 
@@ -121,7 +121,7 @@ plugins:
 With those configuration files in place, you can lint your schema and generate
 code:
 
-```bash
+```shell-session
 $ npx buf dep update
 $ npx buf lint
 $ npx buf generate
@@ -195,7 +195,7 @@ Connect services can be plugged into vanilla Node.js servers, [Next.js](https://
 or [Fastify](https://www.fastify.io/). We are going to use Fastify here.
 Let's install it, along with our plugin for Fastify:
 
-```bash
+```shell-session
 $ npm install fastify @connectrpc/connect-node @connectrpc/connect-fastify
 ```
 
@@ -228,7 +228,7 @@ void main();
 
 Congratulations. Your endpoint is ready to go! You can start your server with:
 
-```bash
+```shell-session
 $ npx tsx server.ts
 ```
 
@@ -237,7 +237,7 @@ $ npx tsx server.ts
 The simplest way to consume your new API is an HTTP/1.1 POST with a JSON payload.
 If you have a recent version of cURL installed, it's a one-liner:
 
-```terminal
+```shell-session
 $ curl \
   --header 'Content-Type: application/json' \
   --data '{"sentence": "I feel happy."}' \
@@ -246,10 +246,10 @@ $ curl \
 {"sentence":"You said: I feel happy."}
 ```
 
-Now try sending a request with an empty `sentence`. 
+Now try sending a request with an empty `sentence`.
 It's rejected because you've included Protovalidate rules in your schema.
 
-```terminal
+```shell-session
 $ curl \
   --header 'Content-Type: application/json' \
   --data '{"sentence": ""}' \
@@ -281,7 +281,7 @@ void main();
 
 With your server still running in a separate terminal window, you can now run your client:
 
-```terminal
+```shell-session
 $ npx tsx client.ts
 ---
 SayResponse { sentence: 'You said: I feel happy.' }

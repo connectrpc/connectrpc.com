@@ -35,7 +35,7 @@ First, we'll configure our front end using [Vite](https://vitejs.dev/). We're
 using `vite` to make a fast development server with built-in support for
 everything we'll need later.
 
-```bash
+```shell-session
 $ npm create vite@latest -- connect-example --template react-ts
 $ cd connect-example
 $ npm install
@@ -49,7 +49,7 @@ use [generated SDKs](https://buf.build/docs/bsr/generated-sdks/overview), a feat
 first command tells npm to look up `@buf` packages on the registry. The `install` command generates
 the types we need on the fly:
 
-```bash
+```shell-session
 $ npm config set @buf:registry https://buf.build/gen/npm/v1/
 $ npm install @buf/connectrpc_eliza.bufbuild_es @connectrpc/connect @connectrpc/connect-web
 ```
@@ -237,7 +237,7 @@ Vite and React.
 
 We ran the following commands to build the app:
 
-```bash
+```shell-session
 $ npm create vite@latest -- connect-example --template react-ts
 $ cd connect-example
 $ npm config set @buf:registry https://buf.build/gen/npm/v1/

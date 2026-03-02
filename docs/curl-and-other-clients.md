@@ -16,7 +16,7 @@ Connect handlers automatically support JSON. Because the Connect protocol
 also uses standard HTTP headers for unary RPCs, calling your API is a cURL
 one-liner:
 
-```bash
+```shell-session
 $ curl --header "Content-Type: application/json" \
     --data '{"sentence": "I feel happy."}' \
     https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say
@@ -24,7 +24,7 @@ $ curl --header "Content-Type: application/json" \
 
 The response is:
 
-```
+```json
 {"sentence": "Feeling happy? Tell me more."}
 ```
 
@@ -35,7 +35,7 @@ prevent upgrading to HTTP/2.
 You can make the same call with HTTP GET, where the request message is encoded 
 in a query parameter: 
 
-```bash
+```shell-session
 $ curl --get --data-urlencode 'encoding=json' \
     --data-urlencode 'message={"sentence": "I feel happy."}' \
     https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say
