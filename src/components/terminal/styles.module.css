@@ -97,7 +97,6 @@
   height: 20px;
   width: 10px;
   background-color: #111010;
-  animation: blink 1s step-start 0s infinite;
   -webkit-animation: 1s blink step-end infinite;
   -moz-animation: 1s blink step-end infinite;
   -ms-animation: 1s blink step-end infinite;
