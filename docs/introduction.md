@@ -77,6 +77,11 @@ For mobile applications, [`connect-swift`][connect-swift] (stable) and
 with our [Swift guide][swift-getting-started] and [Kotlin
 guide][kotlin-getting-started].
 
+## Python
+
+[`connect-python`][connect-python] is available in beta.
+Get started with our [Python guide][python-getting-started].
+
 ## What's next?
 
 In addition to improving our current Connect implementations, we'd eventually
@@ -85,6 +90,8 @@ always pinned to the top of our [GitHub discussions][announcement-discussions],
 and we gauge interest in new languages with [GitHub polls][poll-discussions].
 
 
+[connect-python]: https://github.com/connectrpc/connect-python
+[python-getting-started]: /docs/python/getting-started
 [connect-conformance]: https://github.com/connectrpc/conformance
 [connect-go]: https://github.com/connectrpc/connect-go
 [connect-kotlin]: https://github.com/connectrpc/connect-kotlin
