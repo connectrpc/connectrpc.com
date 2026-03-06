@@ -80,7 +80,7 @@ guide][kotlin-getting-started].
 ## Python
 
 [`connect-python`][connect-python] is available in beta.
-Get started with our [Python guide][python-getting-started].
+You can get started with our [Python guide][python-getting-started].
 
 ## What's next?
 
