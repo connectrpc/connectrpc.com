@@ -44,7 +44,7 @@ To manually instrument your app, just register the `OpenTelemetryInterceptor` wh
 
     app = GreetServiceASGIApplication(Greeter(), interceptors=[OpenTelemetryInterceptor()])
     client = GreetServiceClient(
-        "http://test", 
+        "http://localhost:8080", 
         interceptors=[OpenTelemetryInterceptor(client=True)],
     )
     ```
@@ -60,7 +60,7 @@ To manually instrument your app, just register the `OpenTelemetryInterceptor` wh
 
     app = GreetServiceWSGIApplication(GreeterSync(), interceptors=[OpenTelemetryInterceptor()])
     client = GreetServiceClientSync(
-        "http://test",
+        "http://localhost:8080",
         interceptors=[OpenTelemetryInterceptor(client=True)],
     )
     ```
@@ -72,7 +72,7 @@ By default, this will use the global `TextMapPropagator`, `MeterProvider`, and `
 
 ## Using custom MeterProvider, TraceProvider and TextMapPropagators
 
-When running multiple applications in a single binary, or if different sections of code should use different exporters,
+When running multiple applications in a single server, or if different sections of code should use different exporters,
 pass the correct components to the `OpenTelemetryInterceptor` constructor.
 
 ```python
