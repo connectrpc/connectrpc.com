@@ -9,7 +9,7 @@ import VersionWarning from './_version-warning.mdx';
 
 <VersionWarning />
 
-This guide covers testing connect-python services and clients.
+This guide covers testing Connect-Python services and clients.
 
 ## Setup
 
@@ -17,7 +17,7 @@ For [pytest](https://docs.pytest.org/en/stable/) examples in this guide, you'll 
 
 ## Recommended approach: In-memory testing
 
-The recommended approach is **in-memory testing** using pyqwest's ASGI/WSGI transports (provided by pyqwest, not connect-python). This tests your full application stack (routing, serialization, error handling, interceptors) while remaining fast and isolated - no network overhead or port conflicts.
+The recommended approach is **in-memory testing** using pyqwest's ASGI/WSGI transports (provided by pyqwest, not Connect-Python). This tests your full application stack (routing, serialization, error handling, interceptors) while remaining fast and isolated - no network overhead or port conflicts.
 
 Here's a minimal example without any test framework:
 
@@ -266,7 +266,7 @@ This pattern:
 - Reduces code duplication across multiple tests
 - Makes tests more readable and focused on behavior
 - Follows pytest best practices
-- Matches the pattern used in connect-python's own test suite
+- Matches the pattern used in Connect-Python's own test suite
 
 With your test client setup, you can use any Connect code for interacting with the service under test including [streaming](./streaming.mdx), reading [headers and trailers](./headers-and-trailers.mdx), or checking [errors](./errors.mdx). For example, to test error handling:
 

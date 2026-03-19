@@ -29,7 +29,7 @@ Temper your enthusiasm. Streaming also comes with many drawbacks:
 In general, streaming ties your application more closely to your networking infrastructure and makes your application
 inaccessible to less-sophisticated clients. You can minimize these downsides by keeping streams short-lived.
 
-All that said, `connect-python` fully supports client, server, and bidirectional streaming.
+All that said, `connectrpc` fully supports client, server, and bidirectional streaming.
 
 ## Streaming variants
 
@@ -63,8 +63,8 @@ In Protobuf schemas, bidi streaming methods look like this:
 service GreetService {
   rpc Greet(stream GreetRequest) returns (stream GreetResponse) {}
 }
-
 ```
+
 ## HTTP representation
 
 Streaming responses always have an HTTP status of 200 OK. This may seem unusual, but it's unavoidable: the server may

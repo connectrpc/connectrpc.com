@@ -192,16 +192,15 @@ Content-Type: application/json
   "details": [
     {
       "type": "google.protobuf.Struct",
-      "value": "base64-encoded-protobuf"
+      "value": "base64-encoded-protobuf",
+      "debug": {"field": "email", "issue": "Email is required"}
     }
   ]
 }
 ```
 
-The `details` array contains error detail messages, where each entry has:
-
-- `type`: The fully-qualified Protobuf message type (e.g., `google.protobuf.Struct`)
-- `value`: The Protobuf message serialized in binary format and then base64-encoded
+See the [Connect protocol](/docs/protocol#error-end-stream) for a full description
+of the error detail fields, including `type`, `value`, and `debug`.
 
 ## See also
 

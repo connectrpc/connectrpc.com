@@ -59,7 +59,7 @@ Configure it for HTTP/2 like this:
 ## Migration
 
 There's no ironclad guide to migrating an existing `grpc-python` service to
-`connect-python` &mdash; every codebase uses a different subset of `grpc-python`
+`connectrpc` &mdash; every codebase uses a different subset of `grpc-python`
 features and will need a slightly different approach. Unlike many RPC framework
 migrations, remember that you do _not_ need to modify your service's clients:
 they can continue to use their current gRPC clients. Your current Protobuf
@@ -67,8 +67,8 @@ schema will also work without modification.
 
 The particulars of your codebase will be unique, but most migrations include a few common steps:
 
-1. Begin generating code with `protoc-gen-connect-python`. During the migration, your code can import
-  `connect-python` and `grpc-python` code without any problems.
+1. Begin generating code with `protoc-gen-connectrpc`. During the migration, your code can import
+  `connectrpc` and `grpc-python` code without any problems.
 1. Migrate service implementations to Connect's generated stubs. It's recommended to extend the protocol classes
    to have type checking find differences in method names. Change uses of `abort` to directly `raise ConnectError` -
    for Connect services, it's uncommon to pass the `RequestContext` into business logic code.
@@ -77,7 +77,7 @@ The particulars of your codebase will be unique, but most migrations include a f
    WSGI or ASGI application corresponding to your service. For ASGI applications needing async initialization,
    pass an `async def` function that yields your initialized service to the application constructor.
 1. Set up your local development and production scripts, such as Dockerfile, to run the application with pyvoy
-   and release. You now have a server handling requests with `connect-python` that supports both Connect and
+   and release. You now have a server handling requests with `connectrpc` that supports both Connect and
    gRPC clients.
 1. Next, migrate clients to use Connect:
       1. Replace any special configuration of `ManagedChannel` with configured `pyqwest.HTTPTransport` or `pyqwest.SyncHTTPTransport` and switch to Connect's generated client types.
