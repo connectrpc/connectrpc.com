@@ -1,0 +1,87 @@
+---
+title: Observability
+sidebar_position: 10
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import VersionWarning from './_version-warning.mdx';
+
+<VersionWarning />
+
+Connect uses ASGI and WSGI for the server side, which means any logging, tracing, or metrics that work with them will also work with Connect. In
+particular, the [opentelemetry-instrumentation-asgi](https://pypi.org/project/opentelemetry-instrumentation-asgi/) and
+[opentelemetry-instrumentation-wsgi](https://pypi.org/project/opentelemetry-instrumentation-wsgi/) OpenTelemetry packages both integrate seamlessly with Connect servers.
+The Connect client includes HTTP observability out of the box.
+
+For more detailed, RPC-focused telemetry, use the [connectrpc-otel] package. [connectrpc-otel] works with your [OpenTelemetry] metrics and tracing setup to capture information such as:
+- `rpc.system.name`: Was this call handled by a Connect server or client?
+- `rpc.method`: What service and method was called?
+- `error.type`/`rpc.response.status_code`: What specific Connect error was returned?
+
+OpenTelemetry can be quite complex, so this guide assumes that readers are familiar with:
+
+- What [observability](https://opentelemetry.io/docs/concepts/observability-primer/) is.
+- A basic understanding of [OpenTelemetry metrics and tracing](https://opentelemetry.io/docs/reference/specification/).
+- How [TextMapPropagators](https://opentelemetry.io/docs/reference/specification/context/api-propagators/), [MeterProviders](https://opentelemetry.io/docs/reference/specification/metrics/sdk/), and [TraceProviders](https://opentelemetry.io/docs/concepts/signals/traces/) are initialized and used.
+
+## Enabling OpenTelemetry for Connect
+
+Once you have OpenTelemetry set up in your application, add the [connectrpc-otel] dependency in your project. If you are using
+auto-instrumentation, such as with [`opentelemetry-instrument`](https://opentelemetry.io/docs/zero-code/python/), you are done -
+servers and clients will be automatically instrumented and generate telemetry.
+
+To manually instrument your app, just register the `OpenTelemetryInterceptor` when initializing a server or client.
+
+<Tabs groupId="python-type">
+  <TabItem value="async" label="ASGI">
+
+    ```python
+    from connectrpc_otel import OpenTelemetryInterceptor
+    from greet.v1.greet_connect import GreetServiceASGIApplication, GreetServiceClient
+    from greet.v1.greet_pb2 import GreetRequest
+    from server import Greeter
+
+    app = GreetServiceASGIApplication(Greeter(), interceptors=[OpenTelemetryInterceptor()])
+    client = GreetServiceClient(
+        "http://localhost:8080", 
+        interceptors=[OpenTelemetryInterceptor(client=True)],
+    )
+    ```
+
+  </TabItem>
+  <TabItem value="sync" label="WSGI">
+
+    ```python
+    from connectrpc_otel import OpenTelemetryInterceptor
+    from greet.v1.greet_connect import GreetServiceWSGIApplication, GreetServiceClientSync
+    from greet.v1.greet_pb2 import GreetRequest
+    from server import GreeterSync 
+
+    app = GreetServiceWSGIApplication(GreeterSync(), interceptors=[OpenTelemetryInterceptor()])
+    client = GreetServiceClientSync(
+        "http://localhost:8080",
+        interceptors=[OpenTelemetryInterceptor(client=True)],
+    )
+    ```
+
+  </TabItem>
+</Tabs>
+
+By default, this will use the global `TextMapPropagator`, `MeterProvider`, and `TraceProvider` from OpenTelemetry.
+
+## Using custom MeterProvider, TraceProvider and TextMapPropagators
+
+When running multiple applications in a single server, or if different sections of code should use different exporters,
+pass the correct components to the `OpenTelemetryInterceptor` constructor.
+
+```python
+interceptor = OpenTelemetryInterceptor(
+    tracer_provider=my_tracer_provider,
+    meter_provider=my_meter_provider,
+    propagator=my_propagator,
+)
+```
+
+[connectrpc-otel]: https://pypi.org/project/connectrpc-otel/
+[OpenTelemetry]: https://opentelemetry.io/
