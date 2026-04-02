@@ -116,4 +116,4 @@ details.
 [code]: https://github.com/connectrpc/connect-dart/blob/main/packages/connect/lib/src/code.dart#L22
 [exception]: https://github.com/connectrpc/connect-dart/blob/main/packages/connect/lib/src/exception.dart#L30
 [headers]: https://github.com/connectrpc/connect-dart/blob/main/packages/connect/lib/src/headers.dart#L18
-[localizaed-message]: https://buf.build/googleapis/googleapis/file/main:google/rpc/error_details.proto#L241
+[localized-message]: https://buf.build/googleapis/googleapis/docs/main:google.rpc#google.rpc.LocalizedMessage

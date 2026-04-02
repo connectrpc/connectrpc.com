@@ -119,7 +119,7 @@ and error details.
 ## Error details
 
 Error details are a powerful feature. Any Protobuf message can be transmitted as
-an error detail. Let's use [`google.rpc.LocalizedMessage`](https://buf.build/googleapis/googleapis/file/main:google/rpc/error_details.proto#L241)
+an error detail. Let's use [`google.rpc.LocalizedMessage`](https://buf.build/googleapis/googleapis/docs/main:google.rpc#google.rpc.LocalizedMessage)
 to localize our error message:
 
 ```shell-session
@@ -146,7 +146,7 @@ function say() {
         locale: "ja-JP",
         message: "もう言葉がありません。",
       }
-    },    
+    },
   ];
   const metadata = new Headers({
     "words-left": "none"
@@ -272,4 +272,4 @@ export default (router: ConnectRouter) => {
 ```
 
 Note that `ConnectRouter.service` allows you to omit methods. The router will automatically add a method that responds
-with an error code `unimplemented`. 
+with an error code `unimplemented`.
