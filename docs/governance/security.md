@@ -19,11 +19,13 @@ the same private list for all languages, so emails should include the impacted
 language and any relevant platform information.
 
 Please _do_ report a vulnerability if:
+
 * You've discovered a potential security vulnerability in Connect.
 * You're unsure how a vulnerability affects Connect.
 * You've discovered a potential vulnerability in one of Connect's dependencies.
 
 Please _don't_ report a vulnerability if:
+
 * You need help applying security-related updates.
 * You need helping tuning Connect security.
 * You need help with something unrelated to security.

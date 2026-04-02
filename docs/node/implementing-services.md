@@ -17,8 +17,8 @@ export default (router: ConnectRouter) => {}
 
 ## Register a service
 
-
 Let's say you've defined a simple service in Protobuf:
+
 ```protobuf
 message SayRequest {
   string sentence = 1 [
@@ -54,7 +54,6 @@ export default (router: ConnectRouter) =>
 Your method `say()` receives the request message and a context object, and
 returns a response message. It's a plain function!
 
-
 ## Plain functions
 
 Your function can return a response message, or a promise for a response
@@ -77,7 +76,6 @@ const say = (req: SayRequest) => ({ sentence: `You said ${req.sentence}` });
 ```
 
 You can register any of these functions for the ElizaService.
-
 
 ## Context
 
@@ -114,7 +112,6 @@ function say() {
 `Code` is one of Connect's [error codes](/docs/protocol#error-codes). Besides
 the code and a message, errors can also contain metadata (a Headers object)
 and error details.
-
 
 ## Error details
 
@@ -159,7 +156,6 @@ function say() {
   );
 }
 ```
-
 
 ## Streaming
 
@@ -217,7 +213,6 @@ the client sends a message, the server responds, the client sends another
 message, and so on. Keep in mind that this always requires end-to-end HTTP/2
 support (regardless of RPC protocol)!
 
-
 ## Helper Types
 
 Service implementations are type-safe. The `service()` method of the
@@ -272,4 +267,4 @@ export default (router: ConnectRouter) => {
 ```
 
 Note that `ConnectRouter.service` allows you to omit methods. The router will automatically add a method that responds
-with an error code `unimplemented`. 
+with an error code `unimplemented`.

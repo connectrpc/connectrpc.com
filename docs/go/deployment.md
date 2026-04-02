@@ -18,6 +18,7 @@ to start.) There are a few RPC-specific nuances, though:
   client, you may want to increase `Transport.MaxIdleConnsPerHost`.
 - Most RPC servers don't use HTTP redirects, so you may want to configure your
   clients to never follow them:
+
   ```go
   client := &http.Client{
     CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
@@ -25,6 +26,7 @@ to start.) There are a few RPC-specific nuances, though:
     }
   }
   ```
+
 - Connect always sets the `Accept-Encoding` HTTP header, so the client's
   `Transport.DisableCompression` has no effect on Connect RPCs.
 - Timeouts for streaming RPCs apply to the whole message exchange. Servers must

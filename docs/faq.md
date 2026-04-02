@@ -137,7 +137,6 @@ The Protobuf binary format is efficient, but can't be rendered as text by the br
 you can switch to JSON with the [transport option](./web/choosing-a-protocol) `useBinaryFormat: false` to make
 troubleshooting easier. Unary RPCs use pure JSON payloads with the Connect protocol.
 
-
 ## Serialization & compression
 
 ### Why are numbers serialized as strings in JSON?

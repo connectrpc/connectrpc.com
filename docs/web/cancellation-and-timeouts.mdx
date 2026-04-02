@@ -9,7 +9,6 @@ as the user starts typing, but when the user enters another term, you want to
 cancel the previous call. Let's take a look at cancellation, and the complementary
 topic of timeouts.
 
-
 ## Cancellation
 
 To cancel a call, you can pass an [AbortSignal](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) to every client method.
@@ -36,7 +35,6 @@ try {
 
 Note that our client raises a `ConnectError` with code `Canceled`, instead of a
 `DOMException` that fetch() would raise.
-
 
 ## Timeouts
 

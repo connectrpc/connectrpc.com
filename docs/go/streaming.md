@@ -109,7 +109,7 @@ blob of JSON at the end of the body. Regardless of the wire encoding, all three
 protocols give trailers the same semantics and restrictions as headers.
 
 Headers and trailers are exposed on streaming RPCs in the same way as unary, via
-a `CallInfo` type in context. 
+a `CallInfo` type in context.
 
 ## Interceptors
 

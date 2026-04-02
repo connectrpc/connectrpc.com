@@ -46,7 +46,6 @@ is not overridden, the rest of the example will need to replace `com.example.eli
 `com.example.myapplication` within the code snippets.
 :::
 
-
 Create an Android application with Gradle and Android Studio. Now we can start
 defining a new API for talking with Eliza!
 
@@ -383,7 +382,7 @@ To view the raw code, click the button `Code` in the top right corner.
 :::
 
 Lastly, make sure the `AndroidManifest.xml` declares the right permissions to make a network request.
-Configure the application with network permissions by adding the following to  `AndroidManifest.xml`
+Configure the application with network permissions by adding the following to `AndroidManifest.xml`
 
 ```xml title="app/src/main/AndroidManifest.xml"
 <?xml version="1.0" encoding="utf-8"?>

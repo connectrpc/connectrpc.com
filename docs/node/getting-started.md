@@ -11,7 +11,6 @@ This ten-minute walkthrough helps you create a small Connect service in Node.js.
 It demonstrates what you'll be writing by hand, what Connect generates for you,
 and how to call your new API.
 
-
 ## Prerequisites
 
 We'll set up a project from scratch and then augment it to serve a new endpoint.
@@ -21,7 +20,6 @@ We'll set up a project from scratch and then augment it to serve a new endpoint.
 * We'll use the package manager `npm`, but we are also compatible with `yarn` and `pnpm`.
 * We'll also use [cURL](https://curl.se/). It's available from Homebrew and most Linux package
   managers.
-
 
 ## Project setup
 
@@ -104,7 +102,6 @@ breaking:
     - FILE
 ```
 
-
 Next, tell Buf how to generate code by putting this into
 [`buf.gen.yaml`][buf.gen.yaml]:
 
@@ -159,7 +156,6 @@ You should now see generated TypeScript files:
 
 Next, we are going to use these files to implement our service.
 
-
 ## Implement the service
 
 We defined the `ElizaService` - now it's time to implement it, and register it
@@ -187,7 +183,6 @@ export default (router: ConnectRouter) =>
 That's it! There are many other alternatives to implementing a service, and you
 have access to a context object for headers and trailers, but let's keep it
 simple for now.
-
 
 ## Start a server
 
@@ -286,7 +281,6 @@ $ npx tsx client.ts
 ---
 SayResponse { sentence: 'You said: I feel happy.' }
 ```
-
 
 Congratulations — you've built your first Connect service! 🎉
 
@@ -401,7 +395,6 @@ npx buf curl --protocol grpc --schema . -d '{"sentence": "I feel happy."}' \
 In your `client.ts`, update the URL and use HTTP version `2` and you're set. It
 will pick up the locally-trusted certificate authority, just like your web
 browser and other apps.
-
 
 ## So what?
 

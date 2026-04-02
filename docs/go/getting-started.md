@@ -77,14 +77,14 @@ service GreetService {
 }
 ```
 
-This file declares the `greet.v1` Protobuf package, a service called `GreetService`, a single method called `Greet` with request and response messages, and includes validation for `GreetRequest`. 
+This file declares the `greet.v1` Protobuf package, a service called `GreetService`, a single method called `Greet` with request and response messages, and includes validation for `GreetRequest`.
 These package, service, and method names will reappear soon in our HTTP API's URLs.
 
 ## Generate code
 
 We're going to generate our code using [Buf][buf], a modern replacement for
 Google's protobuf compiler. We installed Buf earlier, but we also need a few
-configuration files to get going. 
+configuration files to get going.
 (If you'd prefer, you can use `protoc` instead &mdash; `protoc-gen-connect-go` behaves like any other plugin.)
 
 First, scaffold a basic [`buf.yaml`][buf.yaml] by running `buf config init` and then replacing its contents with this:
@@ -124,8 +124,6 @@ managed:
     - file_option: go_package
       module: buf.build/bufbuild/protovalidate
 ```
-
-
 
 With those configuration files in place, you can lint your schema and generate
 code:
@@ -324,7 +322,6 @@ It's rejected because you've included Protovalidate rules in your schema:
 }
 ```
 
-
 Congratulations &mdash; you've built your first Connect service! 🎉
 
 ## Use the gRPC protocol instead of the Connect protocol
@@ -339,9 +336,9 @@ Congratulations &mdash; you've built your first Connect service! 🎉
   binary-encoded Protobuf is supported.
 - The gRPC protocol that is used throughout the gRPC ecosystem, making
   `connect-go` [compatible](grpc-compatibility.md) with other gRPC implementations out of the box.
-	`grpc-go` clients will work with `connect-go` servers and vice versa without
-	issue - in fact, before `connect-go`'s public release, this is exactly what
-	the [Buf CLI][buf-cli] was doing.
+    `grpc-go` clients will work with `connect-go` servers and vice versa without
+    issue - in fact, before `connect-go`'s public release, this is exactly what
+    the [Buf CLI][buf-cli] was doing.
 - The gRPC-Web protocol used by [grpc/grpc-web][grpc-web], allowing
   `connect-go` servers to interop with `grpc-web` frontends without the need
   for an intermediary proxy (such as Envoy).

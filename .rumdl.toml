@@ -1,0 +1,39 @@
+[global]
+disable = [
+  # MD001: Heading levels should only increment by one — doesn't understand that headings inside
+  # Docusaurus admonitions are structural, not errors.
+  "MD001",
+  # MD003: Heading style — files use a mix of ATX and setext styles; don't normalize.
+  "MD003",
+  # MD004: Unordered list marker style — files use a mix of * and -; don't normalize.
+  "MD004",
+  # MD013: Line length — docs routinely exceed 80 characters due to URLs, inline code, and
+  # one-sentence-per-line style. Enforcing a hard limit would harm readability.
+  "MD013",
+  # MD014: Flags `$`-prefixed commands in code blocks without output and removes the `$` on
+  # auto-fix. We use `$` consistently as a prompt indicator regardless of output.
+  "MD014",
+  # MD025: Treats frontmatter `title:` as an implicit h1, incorrectly demoting body h1 headings.
+  # In Docusaurus, the frontmatter title and the document h1 serve different purposes.
+  "MD025",
+  # MD033: Inline HTML — some pages use HTML for custom styling and Docusaurus MDX components
+  # that Markdown can't express.
+  "MD033",
+  # MD034: No bare URLs — the autofix wraps bare URLs/emails in angle brackets, which breaks
+  # rendering of email links like <security@connectrpc.com> in Docusaurus.
+  "MD034",
+  # MD040: Adds `text` as a language specifier to bare fenced code blocks. This is a content
+  # decision (authors choose whether to specify a language), not a formatting one.
+  "MD040",
+  # MD041: First line in file should be a top-level heading — files start with YAML frontmatter,
+  # which is not a heading but is valid and expected in Docusaurus.
+  "MD041",
+  # MD053: Unused link/image reference definitions — cleanup tracked separately from formatting.
+  "MD053",
+  # MD057: Relative link path does not exist — link validity checking is handled separately
+  # on the built site. Duplicating this in source is noisy.
+  "MD057",
+  # MD059: Link text should be descriptive — some pages intentionally use contextual link text
+  # (e.g., "[here](url)") that reads naturally in prose. This is a content style decision.
+  "MD059",
+]

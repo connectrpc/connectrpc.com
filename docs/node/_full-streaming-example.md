@@ -1,6 +1,5 @@
 
-
-Putting all of the above together, we can now add these handlers to our server.  An example for doing so with
+Putting all of the above together, we can now add these handlers to our server. An example for doing so with
 the `http2` package in Node would look as follows:
 
 ```typescript
@@ -51,5 +50,3 @@ const handlers: Handler[] = createHandlers(ElizaService, {
 
 http2.createServer({}, mergeHandlers(handlers)).listen(8080, () => console.log("Server listening on localhost:8080"));
 ```
-
-
