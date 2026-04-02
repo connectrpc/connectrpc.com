@@ -31,7 +31,7 @@ Once you have OpenTelemetry set up in your application, add the [connectrpc-otel
 auto-instrumentation, such as with [`opentelemetry-instrument`](https://opentelemetry.io/docs/zero-code/python/), you are done -
 servers and clients will be automatically instrumented and generate telemetry.
 
-To manually instrument your app, just register the `OpenTelemetryInterceptor` when initializing a server or client.
+To manually instrument your app instead, just register the `OpenTelemetryInterceptor` when initializing a server or client.
 
 <Tabs groupId="python-type">
   <TabItem value="async" label="ASGI">
@@ -69,19 +69,7 @@ To manually instrument your app, just register the `OpenTelemetryInterceptor` wh
 </Tabs>
 
 By default, this will use the global `TextMapPropagator`, `MeterProvider`, and `TraceProvider` from OpenTelemetry.
-
-## Using custom MeterProvider, TraceProvider and TextMapPropagators
-
-When running multiple applications in a single server, or if different sections of code should use different exporters,
-pass the correct components to the `OpenTelemetryInterceptor` constructor.
-
-```python
-interceptor = OpenTelemetryInterceptor(
-    tracer_provider=my_tracer_provider,
-    meter_provider=my_meter_provider,
-    propagator=my_propagator,
-)
-```
+To customize them, pass them to the `OpenTelemetryInterceptor` constructor.
 
 [connectrpc-otel]: https://pypi.org/project/connectrpc-otel/
 [OpenTelemetry]: https://opentelemetry.io/
