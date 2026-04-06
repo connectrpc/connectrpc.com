@@ -336,9 +336,9 @@ Congratulations &mdash; you've built your first Connect service! 🎉
   binary-encoded Protobuf is supported.
 - The gRPC protocol that is used throughout the gRPC ecosystem, making
   `connect-go` [compatible](grpc-compatibility.md) with other gRPC implementations out of the box.
-    `grpc-go` clients will work with `connect-go` servers and vice versa without
-    issue - in fact, before `connect-go`'s public release, this is exactly what
-    the [Buf CLI][buf-cli] was doing.
+  `grpc-go` clients will work with `connect-go` servers and vice versa without
+  issue - in fact, before `connect-go`'s public release, this is exactly what
+  the [Buf CLI][buf-cli] was doing.
 - The gRPC-Web protocol used by [grpc/grpc-web][grpc-web], allowing
   `connect-go` servers to interop with `grpc-web` frontends without the need
   for an intermediary proxy (such as Envoy).
