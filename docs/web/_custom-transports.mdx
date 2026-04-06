@@ -196,8 +196,8 @@ As it is, it has limited use in tests, because it does not give you control
 over the stubs it responds with. You could extend its capabilities, but we
 hope we were able to give you some insight into the inner workings of a
 Transport. To recap, we learned:
+
 - Transports are simple objects with just two methods.
 - They create a request object, and an executing `UnaryFn` or `ServerStreamFn`.
 - They call `runUnary()` or `runServerStreaming()` to let interceptors wrap the executing function.
 - They are independent of [Clients](/docs/web/using-clients).
-

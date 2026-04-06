@@ -89,7 +89,6 @@ like to bring Connect to more languages and frameworks. Our current roadmap is
 always pinned to the top of our [GitHub discussions][announcement-discussions],
 and we gauge interest in new languages with [GitHub polls][poll-discussions].
 
-
 [connect-python]: https://github.com/connectrpc/connect-python
 [python-getting-started]: /docs/python/getting-started
 [connect-conformance]: https://github.com/connectrpc/conformance

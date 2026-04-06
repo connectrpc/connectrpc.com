@@ -36,4 +36,3 @@ components in [`src/theme`](./src/theme) and fully custom components in
 
 [docusaurus]: https://docusaurus.io
 [swizzling]: https://docusaurus.io/docs/swizzling
-

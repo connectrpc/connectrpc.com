@@ -210,7 +210,6 @@ export default (router: ConnectRouter) =>
 
 You can also pass the context value from the server plugin:
 
-
 ```ts
 import { fastify } from "fastify";
 import { createContextValues } from "@connectrpc/connect";
