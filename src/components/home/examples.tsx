@@ -1,4 +1,4 @@
-// Copyright 2021-2025 The Connect Authors
+// Copyright 2021-2026 The Connect Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import {
   stripShellPromptForClipboard,
 } from "@site/src/theme/CodeBlock/utils";
 import clsx from "clsx";
-import copy from "copy-text-to-clipboard";
 import { Highlight, type Language } from "prism-react-renderer";
 import type React from "react";
 import { useEffect, useState } from "react";
@@ -142,7 +141,7 @@ function CodeBlock({
     if (shellSessionSeparatorIndex !== -1) {
       textToCopy = stripSeparatedShellSessionOutput(textToCopy);
     }
-    copy(textToCopy);
+    void navigator.clipboard.writeText(textToCopy);
     setShowCopied(true);
     setTimeout(() => setShowCopied(false), 2000);
   };

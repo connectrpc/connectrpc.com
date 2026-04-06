@@ -29,10 +29,8 @@
     "@bufbuild/protobuf": "^2.11.0",
     "@connectrpc/connect": "^2.1.1",
     "@connectrpc/connect-web": "^2.1.1",
-    "@docusaurus/core": "^3.5.2",
-    "@docusaurus/plugin-google-gtag": "^3.5.2",
-    "@docusaurus/preset-classic": "^3.5.2",
-    "@docusaurus/theme-search-algolia": "^3.5.2",
+    "@docusaurus/core": "^3.9.2",
+    "@docusaurus/preset-classic": "^3.9.2",
     "@react-hookz/web": "^25.2.0",
     "clsx": "^2.1.1",
     "prism-react-renderer": "^2.4.1",
@@ -42,7 +40,7 @@
   "devDependencies": {
     "@biomejs/biome": "2.4.10",
     "@bufbuild/license-header": "^0.0.4",
-    "@docusaurus/module-type-aliases": "^3.5.2",
+    "@docusaurus/module-type-aliases": "^3.9.2",
     "@docusaurus/tsconfig": "^3.9.2",
     "@types/react": "^18.3.12",
     "rumdl": "^0.1.67",
@@ -50,7 +48,7 @@
   },
   "licenseHeader": {
     "licenseType": "apache",
-    "yearRange": "2021-2025",
+    "yearRange": "2021-2026",
     "copyrightHolder": "The Connect Authors"
   },
   "browserslist": {

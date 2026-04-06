@@ -1,4 +1,4 @@
-// Copyright 2021-2025 The Connect Authors
+// Copyright 2021-2026 The Connect Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import React, { isValidElement, useEffect, useState } from "react";
 import clsx from "clsx";
 // @ts-ignore
 import { Highlight, type Language } from "prism-react-renderer";
-import copy from "copy-text-to-clipboard";
 import Translate, { translate } from "@docusaurus/Translate";
 import {
   useThemeConfig,
@@ -132,7 +131,7 @@ export default function CodeBlock({
     if (shellSessionSeparatorIndex !== -1) {
       textToCopy = stripSeparatedShellSessionOutput(textToCopy);
     }
-    copy(textToCopy);
+    void navigator.clipboard.writeText(textToCopy);
     setShowCopied(true);
     setTimeout(() => setShowCopied(false), 2000);
   };
