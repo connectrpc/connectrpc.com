@@ -3,12 +3,10 @@ title: Headers & trailers
 sidebar_position: 5
 ---
 
-
 To integrate with other systems, you may need to send or read HTTP headers
 with your RPCs. A common example would be to set a token for authentication
 in a request header. Connect also supports trailers, which serve a similar
 purpose but can be written _after_ the response body.
-
 
 ## Headers
 
@@ -46,7 +44,6 @@ await client.say(
   {onHeader: (headers) => console.log(headers)}
 );
 ```
-
 
 ## Binary headers
 
@@ -94,7 +91,6 @@ if (value != null) {
 }
 ```
 
-
 ## Trailers
 
 Trailers are sometimes useful in streaming RPCs, which need to send some
@@ -112,4 +108,3 @@ This works for the Connect protocol as well as the gRPC-web protocol, for
 both unary and server-streaming RPCs, even though they encode trailers
 differently. The trailers are represented with the same collection type as
 headers, by the `Headers` interface of the [fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Headers).
-

@@ -32,8 +32,8 @@ The demo service is live &mdash; you're welcome to give that command a try! You
 can also use `--verbose` to see all the response headers or `--http1.1` to
 prevent upgrading to HTTP/2.
 
-You can make the same call with HTTP GET, where the request message is encoded 
-in a query parameter: 
+You can make the same call with HTTP GET, where the request message is encoded
+in a query parameter:
 
 ```shell-session
 $ curl --get --data-urlencode 'encoding=json' \
@@ -44,7 +44,7 @@ $ curl --get --data-urlencode 'encoding=json' \
 You can also [visit this URL](https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say?encoding=json&message=%7b%22sentence%22%3a+%22I+feel+happy.%22%7d)
 in your browser. Unary RPCs can opt in to support HTTP GET with an option.
 For details, take a look at the [blog post](https://buf.build/blog/introducing-connect-cacheable-rpcs)
-introducing the feature, and at the [protocol specification](./protocol.md#unary-get-request) 
+introducing the feature, and at the [protocol specification](./protocol.md#unary-get-request)
 for Connect.
 
 ## fetch API
@@ -79,4 +79,3 @@ fetch(url)
 If you prefer a graphical user interface to explore an API, take a look at [Buf Studio](https://buf.build/studio/connectrpc/eliza/connectrpc.eliza.v1.ElizaService/Say?target=https%3A%2F%2Fdemo.connectrpc.com&demo=true&share=s1Ks5lJQUCpOzStJzUtOVbJSUPJUSEtNzVHISCwoqNRT4qoFAA).
 Buf Studio is an interactive web UI for all your Protobuf services stored on the
 [Buf Schema Registry](https://buf.build/product/bsr/).
-

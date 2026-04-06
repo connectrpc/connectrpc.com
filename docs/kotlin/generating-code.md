@@ -94,8 +94,6 @@ generates models from Protobuf types such as `message` and `enum`.
 
 Together, the two plugins generate all the needed code.
 
-
-
 > Details on configuring plugins in `buf.gen.yaml` may be found in
 > [the documentation][remote-plugins], and the full list of
 > available remote plugins are found [here][available-plugins].
@@ -152,7 +150,6 @@ The following generation options can be combined in the `opt` field of the `buf.
 | `generateCallbackMethods`      | Boolean  |   `false`   |       No       | Generate callback signatures for unary methods. |
 | `generateCoroutineMethods`     | Boolean  |   `true`    |       No       | Generate suspend signatures for unary methods.  |
 | `generateBlockingUnaryMethods` | Boolean  |   `false`   |       No       | Generate blocking signatures for unary methods. |
-
 
 [available-plugins]: https://buf.build/plugins
 [buf]: https://buf.build/docs/

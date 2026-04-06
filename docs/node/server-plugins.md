@@ -9,7 +9,6 @@ sufficient, but Connect also supports several server frameworks on Node.js.
 The following code snippets expect that you've already added a `connect.ts` file with your Connect RPCs to your
 project. See [Implementing services](./implementing-services.md) for more.
 
-
 ## Vanilla Node.js
 
 Run your Connect RPCs on the Node.js built-in HTTP modules with
@@ -84,8 +83,9 @@ void main();
 ```
 
 The plugin accepts all [common options](#common-options) as well as:
+
 - `shutdownTimeoutMs?: number`<br/>
-  If set, the server will wait for the specified duration before aborting any 
+  If set, the server will wait for the specified duration before aborting any
   in-flight requests once [`fastify.close`](https://fastify.dev/docs/latest/Reference/Server/#close) is called.
 - `shutdownError?: unknown`<br/>
   The reason to use when shutdown occurs. Note that if this is a `ConnectError` it will
@@ -144,7 +144,7 @@ The middleware accepts all [common options](#common-options) as well as:
 
 #### Protocol support in Next.js
 
-Next.js does not support the `http2` module. You can serve the Connect protocol 
+Next.js does not support the `http2` module. You can serve the Connect protocol
 and gRPC-Web. The gRPC protocol and bidirectional streaming are not supported.
 
 ## Express
@@ -188,8 +188,8 @@ The middleware accepts all [common options](#common-options) as well as:
 
 #### Protocol support in Express
 
-Express does not support the `http2` module. You can serve the Connect protocol 
-and gRPC-Web. The gRPC protocol and bidirectional streaming RPCs are not 
+Express does not support the `http2` module. You can serve the Connect protocol
+and gRPC-Web. The gRPC protocol and bidirectional streaming RPCs are not
 supported.
 
 ## Common options
@@ -217,7 +217,6 @@ All adapters take a set of common options:
   allowed message types.
 - `binaryOptions`
   Protobuf [binary serialization options](https://github.com/bufbuild/protobuf-es/blob/v2.2.1/MANUAL.md#binary-serialization-options).
-
 
 ## HTTP/2, TLS, and gRPC
 

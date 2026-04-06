@@ -206,7 +206,7 @@ Connect protocol.
 **Bare-Message** is the RPC request payload, serialized using the codec
 indicated by **Unary-Content-Type** and possibly compressed using
 **Content-Encoding**. It's sent on the wire as the HTTP request content (often
-called the body). Servers must not attempt to decompress zero-length HTTP request 
+called the body). Servers must not attempt to decompress zero-length HTTP request
 content.
 
 ### Unary-Get-Request
@@ -331,10 +331,10 @@ Errors are sent with a non-200 **HTTP-Status**. In those cases,
 **Unary-Content-Type** _must_ be "application/json". **Bare-Message** is either
 omitted or a JSON-serialized [Error](#error-end-stream), possibly compressed
 using **Content-Encoding** and sent on the wire as the HTTP response content.
-Clients must not attempt to decompress zero-length HTTP response content. If 
+Clients must not attempt to decompress zero-length HTTP response content. If
 **Bare-Message** is an Error, **HTTP-Status** should match Error.code as specified
-in [the table below](#error-codes). When reading data from the wire, client 
-implementations must use the [HTTP-to-Connect mapping](#http-to-error-code) to infer a Connect 
+in [the table below](#error-codes). When reading data from the wire, client
+implementations must use the [HTTP-to-Connect mapping](#http-to-error-code) to infer a Connect
 error code if **Bare-Message** is missing or malformed.
 
 ### Examples {#unary-examples}
@@ -612,7 +612,6 @@ resulting value under the "debug" key. Clients must not depend on data in the
   ]
 }
 ```
-
 
 An `EndStreamMessage` is the final message in streaming response. It conveys
 whether or not the RPC succeeded and any trailing metadata. Trailing metadata

@@ -43,7 +43,6 @@ route that hardcodes certain scenarios such as always returning an error or alwa
 cases, you can utilize a mocked Connect backend to test your application again using Connect's `createRouterTransport`
 function.
 
-
 As mentioned, the function `createRouterTransport` from `@connectrpc/connect` creates an in-memory
 server with the supplied routes. So, you can provide your own RPC implementations just for testing purposes.
 
@@ -153,4 +152,3 @@ instantiate your service class directory and invoke methods on the service direc
 Our examples-es repo provides examples for all three approaches in [Fastify](https://github.com/connectrpc/examples-es/blob/b5d3f6822330f6b7816fac697b64ed4214aabafe/fastify/test/connect.test.ts), [Express](https://github.com/connectrpc/examples-es/blob/b5d3f6822330f6b7816fac697b64ed4214aabafe/express/connect.test.ts), and [vanilla Node.js](https://github.com/connectrpc/examples-es/blob/b5d3f6822330f6b7816fac697b64ed4214aabafe/vanilla-node/connect.test.ts).
 
 In addition, check out the [Next.js](https://github.com/connectrpc/examples-es/blob/6e80c5677bf650b4c40bb26e8220bcac53adb585/nextjs/__tests__/connect.test.ts) project for an example of testing with an in-memory server and unit testing service methods directly in Next.js
-

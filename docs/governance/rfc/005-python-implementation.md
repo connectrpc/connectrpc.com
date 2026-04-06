@@ -10,7 +10,6 @@ Adding an official implementation will help the Connect community focus its effo
 
 ## Anticipated Complications
 
-
 The Python ecosystem has a big split between asynchronous and synchronous I/O, which will complicate the implementation story.
 Supporting both is important; Python applications tend to commit to one of the two sides of the split and have difficulty using the other.
 
@@ -62,6 +61,7 @@ This is related to the previous justifications on gRPC: http/2 is poorly support
 ## Goals
 
 Fully pass conformance tests, with the following configuration:
+
 ```
 features:
   versions:
@@ -119,6 +119,7 @@ The low-level RPCs will be named `call_<rpc>`. For example, `call_converse` or `
 The high-level RPCs will be simply named `<rpc>`. For example, `converse` or `say`.
 
 To make this more concrete, here is a portion of the proposed method set of the synchronous Eliza client:
+
 ```python
 class ElizaServiceClient:
 	def say(self, req: SayRequest) -> SayResponse:
@@ -136,7 +137,7 @@ class ElizaServiceClient:
 
 The `UnaryOutput` and `StreamOutput` generic wrapper types provide access to response headers, trailers, and Connect protocol errors, as well as the wrapped message.
 
-Analagous methods would be available on the asynchronous client.
+Analogous methods would be available on the asynchronous client.
 
 ## Maintainers
 
