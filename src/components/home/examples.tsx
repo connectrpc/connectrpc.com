@@ -42,7 +42,7 @@ $ curl \\
 {"sentence": "Feeling happy? Tell me more."}
 `;
 
-const grpbContent = `
+const grpcContent = `
 $ grpcurl \\
     -d '{"sentence": "I feel happy."}' \\
     demo.connectrpc.com:443 \\
@@ -73,7 +73,7 @@ export const Examples = () => {
           <p className={classes.exampleText}>Supports any gRPC client</p>
         </div>
         <div className={classes.codeBlockWrapper}>
-          <CodeBlock title="gRPC protocol">{grpbContent}</CodeBlock>
+          <CodeBlock title="gRPC protocol">{grpcContent}</CodeBlock>
         </div>
       </div>
       <div className={clsx("container", classes.exampleContainer)}>
@@ -141,7 +141,7 @@ function CodeBlock({
     if (shellSessionSeparatorIndex !== -1) {
       textToCopy = stripSeparatedShellSessionOutput(textToCopy);
     }
-    void navigator.clipboard.writeText(textToCopy);
+    navigator.clipboard.writeText(textToCopy);
     setShowCopied(true);
     setTimeout(() => setShowCopied(false), 2000);
   };

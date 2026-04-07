@@ -131,7 +131,7 @@ export default function CodeBlock({
     if (shellSessionSeparatorIndex !== -1) {
       textToCopy = stripSeparatedShellSessionOutput(textToCopy);
     }
-    void navigator.clipboard.writeText(textToCopy);
+    navigator.clipboard.writeText(textToCopy);
     setShowCopied(true);
     setTimeout(() => setShowCopied(false), 2000);
   };
