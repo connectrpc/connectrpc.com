@@ -101,12 +101,21 @@ export default function Guides() {
             title="Android guide"
             description="Kotlin clients available"
           />
+        </div>
+        <div className={styles.guideList}>
           <Guide
             enabled
             href="/docs/dart/getting-started"
             logos={["/img/logos/dart.svg"]}
             title="Flutter guide"
             description="Dart clients available"
+          />
+          <Guide
+            enabled
+            href="/docs/python/getting-started"
+            logos={["/img/logos/python.svg"]}
+            title="Python guide"
+            description="Servers and clients"
           />
         </div>
       </div>

@@ -37,7 +37,7 @@ Here's a minimal example without any test framework:
     # Connect client to service using in-memory transport. Unless you need to test
     # ASGI lifespan, there is no need to use `async with`.
     client = GreetServiceClient(
-        "http://test", 
+        "http://test",
         http_client=Client(ASGITransport(app))
     )
     response = await client.greet(GreetRequest(name="Alice"))
@@ -96,7 +96,7 @@ Testing the service we created in the [Getting Started](./getting-started.mdx) g
         app = GreetServiceASGIApplication(Greeter())
 
         client = GreetServiceClient(
-            "http://test", 
+            "http://test",
             http_client=Client(ASGITransport(app))
         )
         response = await client.greet(GreetRequest(name="Alice"))
@@ -120,7 +120,7 @@ Testing the service we created in the [Getting Started](./getting-started.mdx) g
 
         # Test using pyqwest with WSGI transport
         client = GreetServiceClientSync(
-            "http://test", 
+            "http://test",
             http_client=SyncClient(WSGITransport(app))
         )
         response = client.greet(GreetRequest(name="Alice"))

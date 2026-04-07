@@ -45,7 +45,7 @@ To manually instrument your app instead, just register the `OpenTelemetryInterce
 
     app = GreetServiceASGIApplication(Greeter(), interceptors=[OpenTelemetryInterceptor()])
     client = GreetServiceClient(
-        "http://localhost:8080", 
+        "http://localhost:8080",
         interceptors=[OpenTelemetryInterceptor(client=True)],
     )
     ```
@@ -57,7 +57,7 @@ To manually instrument your app instead, just register the `OpenTelemetryInterce
     from connectrpc_otel import OpenTelemetryInterceptor
     from greet.v1.greet_connect import GreetServiceWSGIApplication, GreetServiceClientSync
     from greet.v1.greet_pb2 import GreetRequest
-    from server import GreeterSync 
+    from server import GreeterSync
 
     app = GreetServiceWSGIApplication(GreeterSync(), interceptors=[OpenTelemetryInterceptor()])
     client = GreetServiceClientSync(
