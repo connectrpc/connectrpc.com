@@ -25,22 +25,22 @@ Handlers should return coded errors; if they don't, Connect will use the
 
 ```go
 func (s *GreetServer) Greet(
-  ctx context.Context,
-  req *greetv1.GreetRequest,
+	ctx context.Context,
+	req *greetv1.GreetRequest,
 ) (*greetv1.GreetResponse, error) {
-  if err := ctx.Err(); err != nil {
-    return nil, err // automatically coded correctly
-  }
-  if err := validateGreetRequest(req); err != nil {
-    return nil, connect.NewError(connect.CodeInvalidArgument, err)
-  }
-  greeting, err := doGreetWork(ctx, req)
-  if err != nil {
-    return nil, connect.NewError(connect.CodeUnknown, err)
-  }
-  return &greetv1.GreetResponse{
-    Greeting: greeting,
-  }, nil
+	if err := ctx.Err(); err != nil {
+		return nil, err // automatically coded correctly
+	}
+	if err := validateGreetRequest(req); err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+	greeting, err := doGreetWork(ctx, req)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeUnknown, err)
+	}
+	return &greetv1.GreetResponse{
+		Greeting: greeting,
+	}, nil
 }
 ```
 
@@ -50,21 +50,21 @@ standard library's `errors.As` to inspect errors:
 
 ```go
 client := greetv1connect.NewGreetServiceClient(
-  http.DefaultClient,
-  "http://localhost:8080",
+	http.DefaultClient,
+	"http://localhost:8080",
 )
 _, err := client.Greet(
-  context.Background(),
-  &greetv1.GreetRequest{
-    Name: "Jane",
-  },
+	context.Background(),
+	&greetv1.GreetRequest{
+		Name: "Jane",
+	},
 )
 if err != nil {
-  fmt.Println(connect.CodeOf(err))
-  if connectErr := new(connect.Error); errors.As(err, &connectErr) {
-    fmt.Println(connectErr.Message())
-    fmt.Println(connectErr.Details())
-  }
+	fmt.Println(connect.CodeOf(err))
+	if connectErr := new(connect.Error); errors.As(err, &connectErr) {
+		fmt.Println(connectErr.Message())
+		fmt.Println(connectErr.Details())
+	}
 }
 ```
 
@@ -86,25 +86,25 @@ Regardless of the RPC protocol in use, servers can add details to any `*Error`:
 package example
 
 import (
-  "errors"
+	"errors"
 
-  "connectrpc.com/connect"
-  "google.golang.org/genproto/googleapis/rpc/errdetails"
-  "google.golang.org/protobuf/types/known/durationpb"
+	"connectrpc.com/connect"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
+	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 func newTransientError() error {
-  err := connect.NewError(
-    connect.CodeUnavailable,
-    errors.New("overloaded: back off and retry"),
-  )
-  retryInfo := &errdetails.RetryInfo{
-    RetryDelay: durationpb.New(10*time.Second),
-  }
-  if detail, detailErr := connect.NewErrorDetail(retryInfo); detailErr == nil {
-    err.AddDetail(detail)
-  }
-  return err
+	err := connect.NewError(
+		connect.CodeUnavailable,
+		errors.New("overloaded: back off and retry"),
+	)
+	retryInfo := &errdetails.RetryInfo{
+		RetryDelay: durationpb.New(10 * time.Second),
+	}
+	if detail, detailErr := connect.NewErrorDetail(retryInfo); detailErr == nil {
+		err.AddDetail(detail)
+	}
+	return err
 }
 ```
 
@@ -115,30 +115,30 @@ inspect to find any details of interest:
 package example
 
 import (
-  "errors"
+	"errors"
 
-  "connectrpc.com/connect"
-  "google.golang.org/genproto/googleapis/rpc/errdetails"
-  "google.golang.org/protobuf/types/known/durationpb"
+	"connectrpc.com/connect"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
+	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 func extractRetryInfo(err error) (*errdetails.RetryInfo, bool) {
-  var connectErr *connect.Error
-  if !errors.As(err, &connectErr) {
-    return nil, false
-  }
-  for _, detail := range connectErr.Details() {
-    msg, valueErr := detail.Value()
-    if valueErr != nil {
-      // Usually, errors here mean that we don't have the schema for this
-      // Protobuf message.
-      continue
-    }
-    if retryInfo, ok := msg.(*errdetails.RetryInfo); ok {
-      return retryInfo, true
-    }
-  }
-  return nil, false
+	var connectErr *connect.Error
+	if !errors.As(err, &connectErr) {
+		return nil, false
+	}
+	for _, detail := range connectErr.Details() {
+		msg, valueErr := detail.Value()
+		if valueErr != nil {
+			// Usually, errors here mean that we don't have the schema for this
+			// Protobuf message.
+			continue
+		}
+		if retryInfo, ok := msg.(*errdetails.RetryInfo); ok {
+			return retryInfo, true
+		}
+	}
+	return nil, false
 }
 ```
 

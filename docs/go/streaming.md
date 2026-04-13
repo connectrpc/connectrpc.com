@@ -153,67 +153,67 @@ handler implementation in `cmd/server/main.go`:
 package main
 
 import (
-  "context"
-  "errors"
-  "fmt"
-  "log"
-  "net/http"
-  "strings"
+	"context"
+	"errors"
+	"fmt"
+	"log"
+	"net/http"
+	"strings"
 
-  "connectrpc.com/connect"
-  "connectrpc.com/validate"
+	"connectrpc.com/connect"
+	"connectrpc.com/validate"
 
-  greetv1 "example/gen/greet/v1"
-  "example/gen/greet/v1/greetv1connect"
+	greetv1 "example/gen/greet/v1"
+	"example/gen/greet/v1/greetv1connect"
 )
 
 type GreetServer struct{}
 
 func (s *GreetServer) Greet(
-  ctx context.Context,
-  stream *connect.ClientStream[greetv1.GreetRequest],
+	ctx context.Context,
+	stream *connect.ClientStream[greetv1.GreetRequest],
 ) (*greetv1.GreetResponse, error) {
-  callInfo, ok := connect.CallInfoForHandlerContext(ctx)
-  if !ok {
-    return nil, errors.New("can't access headers: no CallInfo for handler context")
-  }
-  log.Println("Request headers: ", callInfo.RequestHeader())
-  var greeting strings.Builder
-  for stream.Receive() {
-    g := fmt.Sprintf("Hello, %s!\n", stream.Msg().Name)
-    if _, err := greeting.WriteString(g); err != nil {
-      return nil, connect.NewError(connect.CodeInternal, err)
-    }
-  }
-  if err := stream.Err(); err != nil {
-    return nil, connect.NewError(connect.CodeUnknown, err)
-  }
-  callInfo.ResponseHeader().Set("Greet-Version", "v1")
-  res := &greetv1.GreetResponse{
-    Greeting: greeting.String(),
-  }
-  return res, nil
+	callInfo, ok := connect.CallInfoForHandlerContext(ctx)
+	if !ok {
+		return nil, errors.New("can't access headers: no CallInfo for handler context")
+	}
+	log.Println("Request headers: ", callInfo.RequestHeader())
+	var greeting strings.Builder
+	for stream.Receive() {
+		g := fmt.Sprintf("Hello, %s!\n", stream.Msg().Name)
+		if _, err := greeting.WriteString(g); err != nil {
+			return nil, connect.NewError(connect.CodeInternal, err)
+		}
+	}
+	if err := stream.Err(); err != nil {
+		return nil, connect.NewError(connect.CodeUnknown, err)
+	}
+	callInfo.ResponseHeader().Set("Greet-Version", "v1")
+	res := &greetv1.GreetResponse{
+		Greeting: greeting.String(),
+	}
+	return res, nil
 }
 
 func main() {
-  greeter := &GreetServer{}
-  mux := http.NewServeMux()
-  path, handler := greetv1connect.NewGreetServiceHandler(
-    greeter,
-    // Validation via Protovalidate is almost always recommended
-    connect.WithInterceptors(validate.NewInterceptor()),
-  )
-  mux.Handle(path, handler)
-  p := new(http.Protocols)
-  p.SetHTTP1(true)
-  // Use h2c so we can serve HTTP/2 without TLS.
-  p.SetUnencryptedHTTP2(true)
-  s := http.Server{
-    Addr:      "localhost:8080",
-    Handler:   mux,
-    Protocols: p,
-  }
-  s.ListenAndServe()
+	greeter := &GreetServer{}
+	mux := http.NewServeMux()
+	path, handler := greetv1connect.NewGreetServiceHandler(
+		greeter,
+		// Validation via Protovalidate is almost always recommended
+		connect.WithInterceptors(validate.NewInterceptor()),
+	)
+	mux.Handle(path, handler)
+	p := new(http.Protocols)
+	p.SetHTTP1(true)
+	// Use h2c so we can serve HTTP/2 without TLS.
+	p.SetUnencryptedHTTP2(true)
+	s := http.Server{
+		Addr:      "localhost:8080",
+		Handler:   mux,
+		Protocols: p,
+	}
+	s.ListenAndServe()
 }
 ```
 
@@ -229,47 +229,47 @@ var errNoToken = errors.New("no token provided")
 type authInterceptor struct{}
 
 func NewAuthInterceptor() *authInterceptor {
-  return &authInterceptor{}
+	return &authInterceptor{}
 }
 
 func (i *authInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc {
-  // Same as previous UnaryInterceptorFunc.
-  return func(
-    ctx context.Context,
-    req connect.AnyRequest,
-  ) (connect.AnyResponse, error) {
-    if req.Spec().IsClient {
-      // Send a token with client requests.
-      req.Header().Set(tokenHeader, "sample")
-    } else if req.Header().Get(tokenHeader) == "" {
-      // Check token in handlers.
-      return nil, connect.NewError(connect.CodeUnauthenticated, errNoToken)
-    }
-    return next(ctx, req)
-  }
+	// Same as previous UnaryInterceptorFunc.
+	return func(
+		ctx context.Context,
+		req connect.AnyRequest,
+	) (connect.AnyResponse, error) {
+		if req.Spec().IsClient {
+			// Send a token with client requests.
+			req.Header().Set(tokenHeader, "sample")
+		} else if req.Header().Get(tokenHeader) == "" {
+			// Check token in handlers.
+			return nil, connect.NewError(connect.CodeUnauthenticated, errNoToken)
+		}
+		return next(ctx, req)
+	}
 }
 
 func (*authInterceptor) WrapStreamingClient(next connect.StreamingClientFunc) connect.StreamingClientFunc {
-  return func(
-    ctx context.Context,
-    spec connect.Spec,
-  ) connect.StreamingClientConn {
-    conn := next(ctx, spec)
-    conn.RequestHeader().Set(tokenHeader, "sample")
-    return conn
-  }
+	return func(
+		ctx context.Context,
+		spec connect.Spec,
+	) connect.StreamingClientConn {
+		conn := next(ctx, spec)
+		conn.RequestHeader().Set(tokenHeader, "sample")
+		return conn
+	}
 }
 
 func (i *authInterceptor) WrapStreamingHandler(next connect.StreamingHandlerFunc) connect.StreamingHandlerFunc {
-  return func(
-    ctx context.Context,
-    conn connect.StreamingHandlerConn,
-  ) error {
-    if conn.RequestHeader().Get(tokenHeader) == "" {
-      return connect.NewError(connect.CodeUnauthenticated, errNoToken)
-    }
-    return next(ctx, conn)
-  }
+	return func(
+		ctx context.Context,
+		conn connect.StreamingHandlerConn,
+	) error {
+		if conn.RequestHeader().Get(tokenHeader) == "" {
+			return connect.NewError(connect.CodeUnauthenticated, errNoToken)
+		}
+		return next(ctx, conn)
+	}
 }
 ```
 

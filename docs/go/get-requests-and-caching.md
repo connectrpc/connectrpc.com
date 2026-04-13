@@ -41,9 +41,9 @@ Connect client.
 
 ```go
 client := greetv1connect.NewGreetServiceClient(
-  http.DefaultClient,
-  "http://localhost:8080",
-  connect.WithHTTPGet(),
+	http.DefaultClient,
+	"http://localhost:8080",
+	connect.WithHTTPGet(),
 )
 ```
 
@@ -68,7 +68,7 @@ directive:
 ```go
 callInfo, ok := connect.CallInfoForHandlerContext(ctx)
 if ok {
-  callInfo.ResponseHeader().Set("Cache-Control", "max-age=604800")
+	callInfo.ResponseHeader().Set("Cache-Control", "max-age=604800")
 }
 ```
 
@@ -89,7 +89,7 @@ on the `CallInfo` type in context:
 ```go
 callInfo, ok := connect.CallInfoForHandlerContext(ctx)
 if ok && callInfo.HTTPMethod() == http.MethodGet {
-  callInfo.ResponseHeader().Set("Cache-Control", "max-age=604800")
+	callInfo.ResponseHeader().Set("Cache-Control", "max-age=604800")
 }
 ```
 

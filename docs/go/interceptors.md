@@ -46,33 +46,33 @@ instead.
 package example
 
 import (
-  "context"
-  "errors"
+	"context"
+	"errors"
 
-  "connectrpc.com/connect"
+	"connectrpc.com/connect"
 )
 
 const tokenHeader = "Acme-Token"
 
 func NewAuthInterceptor() connect.UnaryInterceptorFunc {
-  return func(next connect.UnaryFunc) connect.UnaryFunc {
-    return func(
-      ctx context.Context,
-      req connect.AnyRequest,
-    ) (connect.AnyResponse, error) {
-      if req.Spec().IsClient {
-        // Send a token with client requests.
-        req.Header().Set(tokenHeader, "sample")
-      } else if req.Header().Get(tokenHeader) == "" {
-        // Check token in handlers.
-        return nil, connect.NewError(
-          connect.CodeUnauthenticated,
-          errors.New("no token provided"),
-        )
-      }
-      return next(ctx, req)
-    }
-  }
+	return func(next connect.UnaryFunc) connect.UnaryFunc {
+		return func(
+			ctx context.Context,
+			req connect.AnyRequest,
+		) (connect.AnyResponse, error) {
+			if req.Spec().IsClient {
+				// Send a token with client requests.
+				req.Header().Set(tokenHeader, "sample")
+			} else if req.Header().Get(tokenHeader) == "" {
+				// Check token in handlers.
+				return nil, connect.NewError(
+					connect.CodeUnauthenticated,
+					errors.New("no token provided"),
+				)
+			}
+			return next(ctx, req)
+		}
+	}
 }
 ```
 
@@ -82,21 +82,21 @@ To apply our new interceptor to handlers or clients, we can use
 ```go
 // For handlers:
 interceptors := connect.WithInterceptors(
-    NewAuthInterceptor(),
-    validate.NewInterceptor(),
+	NewAuthInterceptor(),
+	validate.NewInterceptor(),
 )
 mux := http.NewServeMux()
 mux.Handle(greetv1connect.NewGreetServiceHandler(
-  &GreetServer{},
-  interceptors,
+	&GreetServer{},
+	interceptors,
 ))
 ```
 
 ```go
 // For clients:
 client := greetv1connect.NewGreetServiceClient(
-  http.DefaultClient,
-  "http://localhost:8080",
-  connect.WithInterceptors(NewAuthInterceptor()),
+	http.DefaultClient,
+	"http://localhost:8080",
+	connect.WithInterceptors(NewAuthInterceptor()),
 )
 ```

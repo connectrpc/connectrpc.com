@@ -21,9 +21,9 @@ to start.) There are a few RPC-specific nuances, though:
 
   ```go
   client := &http.Client{
-    CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
-      return http.ErrUseLastResponse
-    }
+  	CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
+  		return http.ErrUseLastResponse
+  	},
   }
   ```
 
@@ -70,21 +70,21 @@ your server:
 package main
 
 import (
-  "net/http"
+	"net/http"
 )
 
 func main() {
-  mux := http.NewServeMux()
-  // Mount some handlers here.
-  p := new(http.Protocols)
-  p.SetHTTP1(true)
-  p.SetUnencryptedHTTP2(true)
-  server := &http.Server{
-    Addr:      ":http",
-    Handler:   mux,
-    Protocols: p,
-    // Don't forget timeouts!
-  }
+	mux := http.NewServeMux()
+	// Mount some handlers here.
+	p := new(http.Protocols)
+	p.SetHTTP1(true)
+	p.SetUnencryptedHTTP2(true)
+	server := &http.Server{
+		Addr:      ":http",
+		Handler:   mux,
+		Protocols: p,
+		// Don't forget timeouts!
+	}
 }
 ```
 
@@ -94,21 +94,21 @@ Then configure your clients to use h2c:
 package main
 
 import (
-  "net/http"
+	"net/http"
 )
 
 func newInsecureClient() *http.Client {
-  p := new(http.Protocols)
-  p.SetUnencryptedHTTP2(true)
-  // This client will not work for HTTP/1-only servers.
-  // And if HTTP/1 is enabled, H2C will not be used, as the deprecated
-  // `Upgrade: h2c` is not supported.
-  return &http.Client{
-    Transport: &http.Transport{
-      Protocols: p,
-    },
-    // Don't forget timeouts!
-  }
+	p := new(http.Protocols)
+	p.SetUnencryptedHTTP2(true)
+	// This client will not work for HTTP/1-only servers.
+	// And if HTTP/1 is enabled, H2C will not be used, as the deprecated
+	// `Upgrade: h2c` is not supported.
+	return &http.Client{
+		Transport: &http.Transport{
+			Protocols: p,
+		},
+		// Don't forget timeouts!
+	}
 }
 ```
 

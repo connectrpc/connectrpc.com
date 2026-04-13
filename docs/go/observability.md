@@ -26,27 +26,29 @@ Once you have OpenTelemetry set up in your application, enabling OpenTelemetry i
 // highlight-next-line
 import "connectrpc.com/otelconnect"
 
-// highlight-start
-otelInterceptor, err := otelconnect.NewInterceptor()
-if err != nil {
-	log.Fatal(err)
+func main() {
+	// highlight-start
+	otelInterceptor, err := otelconnect.NewInterceptor()
+	if err != nil {
+		log.Fatal(err)
+	}
+	// highlight-end
+
+	path, handler := greetv1connect.NewGreetServiceHandler(
+		greeter,
+		// highlight-start
+		connect.WithInterceptors(otelInterceptor),
+		// highlight-end
+	)
+
+	client := greetv1connect.NewGreetServiceClient(
+		http.DefaultClient,
+		"http://localhost:8080",
+		// highlight-start
+		connect.WithInterceptors(otelInterceptor),
+		// highlight-end
+	)
 }
-// highlight-end
-
-path, handler := greetv1connect.NewGreetServiceHandler(
-	greeter,
-	// highlight-start
-	connect.WithInterceptors(otelInterceptor),
-	// highlight-end
-)
-
-client := greetv1connect.NewGreetServiceClient(
-	http.DefaultClient,
-	"http://localhost:8080",
-	// highlight-start
-	connect.WithInterceptors(otelInterceptor),
-	// highlight-end
-)
 ```
 
 By default, this will use:

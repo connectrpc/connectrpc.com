@@ -26,9 +26,9 @@ your client.
 
 ```go
 client := greetv1connect.NewGreetServiceClient(
-  http.DefaultClient, // though you may also need h2c, see below
-  "http://localhost:8080",
-  connect.WithGRPC(),
+	http.DefaultClient, // though you may also need h2c, see below
+	"http://localhost:8080",
+	connect.WithGRPC(),
 )
 ```
 
@@ -59,18 +59,18 @@ TLS. If so, make sure your HTTP client [has h2c enabled](deployment.md#h2c):
 
 ```go
 client := greetv1connect.NewGreetServiceClient(
-  &http.Client{
-    Transport: &http2.Transport{
-      AllowHTTP: true,
-      DialTLS: func(network, addr string, _ *tls.Config) (net.Conn, error) {
-        // If you're also using this client for non-h2c traffic, you may want to
-        // delegate to tls.Dial if the network isn't TCP or the addr isn't in an
-        // allowlist.
-        return net.Dial(network, addr)
-      },
-    },
-  },
-  "http://localhost:8080",
-  connect.WithGRPC(),
+	&http.Client{
+		Transport: &http2.Transport{
+			AllowHTTP: true,
+			DialTLS: func(network, addr string, _ *tls.Config) (net.Conn, error) {
+				// If you're also using this client for non-h2c traffic, you may want to
+				// delegate to tls.Dial if the network isn't TCP or the addr isn't in an
+				// allowlist.
+				return net.Dial(network, addr)
+			},
+		},
+	},
+	"http://localhost:8080",
+	connect.WithGRPC(),
 )
 ```
