@@ -31,8 +31,9 @@ This tutorial should take ~10 minutes from start to finish.
 - [Flutter][flutter] installed and setup for at least one platform other than web.
   For web related setup please see [HTTP stack](using-clients#http-stack), after the getting started guide.
 
-> **Note:** Some platforms might need [additional configuration][network-permissions] to
-> make HTTP requests.
+:::note
+Some platforms might need [additional configuration][network-permissions] to make HTTP requests.
+:::
 
 ## Create a new Flutter app
 

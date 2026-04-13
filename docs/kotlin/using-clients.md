@@ -38,10 +38,11 @@ val client = ProtocolClient(
 )
 ```
 
-**Note that these Protocol options are mutually exclusive. An instance of a client can only be
-associated with a single protocol. To use both protocols with different APIs in the same application,
-the recommended solution would be to create a specific `ProtocolClient` for each protocol.
-**
+:::note
+These Protocol options are mutually exclusive.
+An instance of a client can only be associated with a single protocol.
+To use both protocols with different APIs in the same application, create a specific `ProtocolClient` for each protocol.
+:::
 
 ### Compression
 

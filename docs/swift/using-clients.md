@@ -63,9 +63,10 @@ let protocolClient = ProtocolClient(
 )
 ```
 
-**Note that these options are mutually exclusive. If you'd like to use
-different protocols with different APIs, create one `ProtocolClient` for each
-protocol.**
+:::note
+These options are mutually exclusive.
+If you'd like to use different protocols with different APIs, create one `ProtocolClient` for each protocol.
+:::
 
 ### Client config
 

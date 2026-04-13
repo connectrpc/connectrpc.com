@@ -40,8 +40,10 @@ compile-time type-safety and serialization, and focus on the application logic.
 
 ## Remote plugins
 
-> Note: The example in the [tutorial](getting-started.md) covers much of this
-> section's content.
+:::note
+The example in the [tutorial](getting-started.md) covers much of this
+section's content.
+:::
 
 [Protobuf plugins][available-plugins] are executables that accept `.proto`
 file inputs and generate various outputs (`.dart` files in this case).
@@ -95,9 +97,11 @@ generates classes from Protobuf types such as `message` and `enum`.
 
 Together, the two plugins generate all the code that you'll need.
 
-> Details on configuring plugins in `buf.gen.yaml` may be found in
-> [the documentation][remote-plugins], and you can browse the full list of
-> available remote plugins [here][available-plugins].
+:::tip
+Details on configuring plugins in `buf.gen.yaml` may be found in
+[the documentation][remote-plugins], and you can browse the full list of
+available remote plugins [here][available-plugins].
+:::
 
 With these configuration files in place, you can now generate code:
 
