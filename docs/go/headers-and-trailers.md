@@ -20,17 +20,17 @@ can be used, which returns a `CallInfo` type providing methods for header operat
 
 ```go
 func (s *GreetServer) Greet(
-  ctx context.Context,
-  _ *greetv1.GreetRequest,
+	ctx context.Context,
+	_ *greetv1.GreetRequest,
 ) (*greetv1.GreetResponse, error) {
-  callInfo, ok := connect.CallInfoForHandlerContext(ctx)
-  if !ok {
-    return nil, errors.New("can't access headers: no CallInfo for handler context")
-  }
-  fmt.Println(callInfo.RequestHeader().Get("Acme-Tenant-Id"))
-  res := &greetv1.GreetResponse{}
-  callInfo.ResponseHeader().Set("Greet-Version", "v1")
-  return res, nil
+	callInfo, ok := connect.CallInfoForHandlerContext(ctx)
+	if !ok {
+		return nil, errors.New("can't access headers: no CallInfo for handler context")
+	}
+	fmt.Println(callInfo.RequestHeader().Get("Acme-Tenant-Id"))
+	res := &greetv1.GreetResponse{}
+	callInfo.ResponseHeader().Set("Greet-Version", "v1")
+	return res, nil
 }
 ```
 
@@ -39,20 +39,20 @@ the `CallInfo` type in context:
 
 ```go
 func main() {
-  client := greetv1connect.NewGreetServiceClient(
-    http.DefaultClient,
-    "http://localhost:8080",
-  )
-  ctx, callInfo := connect.NewClientContext(context.Background())
-  callInfo.RequestHeader().Set("Acme-Tenant-Id", "1234")
-  _, err := client.Greet(ctx, &greetv1.GreetRequest{
-    Name: "Jane",
-  })
-  if err != nil {
-    fmt.Println(err)
-    return
-  }
-  fmt.Println(callInfo.ResponseHeader().Get("Greet-Version"))
+	client := greetv1connect.NewGreetServiceClient(
+		http.DefaultClient,
+		"http://localhost:8080",
+	)
+	ctx, callInfo := connect.NewClientContext(context.Background())
+	callInfo.RequestHeader().Set("Acme-Tenant-Id", "1234")
+	_, err := client.Greet(ctx, &greetv1.GreetRequest{
+		Name: "Jane",
+	})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(callInfo.ResponseHeader().Get("Greet-Version"))
 }
 ```
 
@@ -62,33 +62,33 @@ to access headers:
 ```go
 // Handler
 func (s *GreetServer) Greet(
-  _ context.Context,
-  _ *greetv1.GreetRequest,
+	_ context.Context,
+	_ *greetv1.GreetRequest,
 ) (*greetv1.GreetResponse, error) {
-  err := connect.NewError(
-    connect.CodeUnknown,
-    errors.New("oh no!"),
-  )
-  err.Meta().Set("Greet-Version", "v1")
-  return nil, err
+	err := connect.NewError(
+		connect.CodeUnknown,
+		errors.New("oh no!"),
+	)
+	err.Meta().Set("Greet-Version", "v1")
+	return nil, err
 }
 ```
 
 ```go
 // Client
 func main() {
-  _, err := greetv1connect.NewGreetServiceClient(
-    http.DefaultClient,
-    "http://localhost:8080",
-  ).Greet(
-    context.Background(),
-    &greetv1.GreetRequest{
-      Name: "Jane",
-    },
-  )
-  if connectErr := new(connect.Error); errors.As(err, &connectErr) {
-    fmt.Println(connectErr.Meta().Get("Greet-Version"))
-  }
+	_, err := greetv1connect.NewGreetServiceClient(
+		http.DefaultClient,
+		"http://localhost:8080",
+	).Greet(
+		context.Background(),
+		&greetv1.GreetRequest{
+			Name: "Jane",
+		},
+	)
+	if connectErr := new(connect.Error); errors.As(err, &connectErr) {
+		fmt.Println(connectErr.Meta().Get("Greet-Version"))
+	}
 }
 ```
 
@@ -112,43 +112,43 @@ base64 encoding. Suffix your key with "-Bin" and use Connect's
 ```go
 // Handler
 func (s *GreetServer) Greet(
-  ctx context.Context,
-  req *greetv1.GreetRequest,
+	ctx context.Context,
+	req *greetv1.GreetRequest,
 ) (*greetv1.GreetResponse, error) {
-  callInfo, ok := connect.CallInfoForHandlerContext(ctx)
-  if !ok {
-    return nil, errors.New("can't access headers: no CallInfo for handler context")
-  }
-  fmt.Println(callInfo.RequestHeader().Get("Acme-Tenant-Id"))
-  callInfo.ResponseHeader().Set(
-    "Greet-Emoji-Bin",
-    connect.EncodeBinaryHeader([]byte("👋")),
-  )
-  return &greetv1.GreetResponse{}, nil
+	callInfo, ok := connect.CallInfoForHandlerContext(ctx)
+	if !ok {
+		return nil, errors.New("can't access headers: no CallInfo for handler context")
+	}
+	fmt.Println(callInfo.RequestHeader().Get("Acme-Tenant-Id"))
+	callInfo.ResponseHeader().Set(
+		"Greet-Emoji-Bin",
+		connect.EncodeBinaryHeader([]byte("👋")),
+	)
+	return &greetv1.GreetResponse{}, nil
 }
 ```
 
 ```go
 // Client
 func main() {
-  ctx, callInfo := connect.NewClientContext(context.Background())
-  _, err := greetv1connect.NewGreetServiceClient(
-    http.DefaultClient,
-    "http://localhost:8080",
-  ).Greet(
-    ctx,
-    &greetv1.GreetRequest{
-      Name: "Jane",
-    },
-  )
-  if err != nil {
-    fmt.Println(err)
-    return
-  }
-  encoded := callInfo.ResponseHeader().Get("Greet-Emoji-Bin")
-  if emoji, err := connect.DecodeBinaryHeader(encoded); err == nil {
-    fmt.Println(string(emoji))
-  }
+	ctx, callInfo := connect.NewClientContext(context.Background())
+	_, err := greetv1connect.NewGreetServiceClient(
+		http.DefaultClient,
+		"http://localhost:8080",
+	).Greet(
+		ctx,
+		&greetv1.GreetRequest{
+			Name: "Jane",
+		},
+	)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	encoded := callInfo.ResponseHeader().Get("Greet-Emoji-Bin")
+	if emoji, err := connect.DecodeBinaryHeader(encoded); err == nil {
+		fmt.Println(string(emoji))
+	}
 }
 ```
 
@@ -169,40 +169,40 @@ them much like headers:
 ```go
 // Handler
 func (s *GreetServer) Greet(
-  ctx context.Context,
-  req *greetv1.GreetRequest,
+	ctx context.Context,
+	req *greetv1.GreetRequest,
 ) (*greetv1.GreetResponse, error) {
-  callInfo, ok := connect.CallInfoForHandlerContext(ctx)
-  if !ok {
-    return nil, errors.New("can't set trailers: no CallInfo for handler context")
-  }
-  // Sent as the HTTP header Trailer-Greet-Version.
-  callInfo.ResponseTrailer().Set("Greet-Version", "v1")
-  return &greetv1.GreetResponse{}, nil
+	callInfo, ok := connect.CallInfoForHandlerContext(ctx)
+	if !ok {
+		return nil, errors.New("can't set trailers: no CallInfo for handler context")
+	}
+	// Sent as the HTTP header Trailer-Greet-Version.
+	callInfo.ResponseTrailer().Set("Greet-Version", "v1")
+	return &greetv1.GreetResponse{}, nil
 }
 ```
 
 ```go
 // Client
 func main() {
-  ctx, callInfo := connect.NewClientContext(context.Background())
-  _, err := greetv1connect.NewGreetServiceClient(
-    http.DefaultClient,
-    "http://localhost:8080",
-  ).Greet(
-    ctx,
-    &greetv1.GreetRequest{
-      Name: "Jane",
-    },
-  )
-  if err != nil {
-    fmt.Println(err)
-    return
-  }
-  // Doesn't contain "Greet-Version" because any HTTP headers prefixed with
-  // Trailer- are treated as trailers.
-  fmt.Println(callInfo.ResponseHeader())
-  // Prefixes are automatically stripped.
-  fmt.Println(callInfo.ResponseTrailer().Get("Greet-Version"))
+	ctx, callInfo := connect.NewClientContext(context.Background())
+	_, err := greetv1connect.NewGreetServiceClient(
+		http.DefaultClient,
+		"http://localhost:8080",
+	).Greet(
+		ctx,
+		&greetv1.GreetRequest{
+			Name: "Jane",
+		},
+	)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	// Doesn't contain "Greet-Version" because any HTTP headers prefixed with
+	// Trailer- are treated as trailers.
+	fmt.Println(callInfo.ResponseHeader())
+	// Prefixes are automatically stripped.
+	fmt.Println(callInfo.ResponseTrailer().Get("Greet-Version"))
 }
 ```

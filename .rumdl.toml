@@ -37,3 +37,9 @@ disable = [
   # (e.g., "[here](url)") that reads naturally in prose. This is a content style decision.
   "MD059",
 ]
+
+[code-block-tools]
+enabled = true
+
+[code-block-tools.languages]
+go = { format = ["gofmt"] }
