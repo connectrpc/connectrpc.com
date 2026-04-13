@@ -46,9 +46,10 @@ final transport = protocol.Transport(
 );
 ```
 
-**Note that these options are mutually exclusive. If you'd like to use
-different protocols with different APIs, create one `Transport` for each
-protocol.**
+:::note
+These options are mutually exclusive.
+If you'd like to use different protocols with different APIs, create one `Transport` for each protocol.
+:::
 
 ### Compression
 

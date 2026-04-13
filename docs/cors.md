@@ -88,8 +88,10 @@ Connect. gRPC-Web will only use POST. Connect uses POST and optionally GET.
 `Access-Control-Allow-Headers: Content-Type,Connect-Protocol-Version,Connect-Timeout-Ms,Grpc-Timeout,X-Grpc-Web,X-User-Agent`
 allows all necessary request headers for Connect and gRPC-Web.
 
-> **Note:** If your application uses custom request headers, you must explicitly
-> allow them. This includes commonly used headers such as `Authorization`.
+:::note
+If your application uses custom request headers, you must explicitly allow them.
+This includes commonly used headers such as `Authorization`.
+:::
 
 ### Caching preflight responses
 
@@ -121,11 +123,12 @@ Access-Control-Expose-Headers: Grpc-Status,Grpc-Message,Grpc-Status-Details-Bin
 All three exposed headers are necessary to support gRPC-Web. Content-Type does
 not need to be exposed explicitly, because it is a [CORS-safelisted response header](https://developer.mozilla.org/en-US/docs/Glossary/CORS-safelisted_response_header).
 
-> **Note:** If your application uses custom response headers, you must explicitly
-> expose them.  
-> If your application uses custom response **trailers**, you must expose them with
-> a `Trailer-` prefix, because Connect sends trailers for unary RPCs as headers.
-> If your service sets the trailer `Bar`, the response must expose `Trailer-Bar`.
+:::note
+If your application uses custom response headers, you must explicitly expose them.
+If your application uses custom response **trailers**, you must expose them with
+a `Trailer-` prefix, because Connect sends trailers for unary RPCs as headers.
+If your service sets the trailer `Bar`, the response must expose `Trailer-Bar`.
+:::
 
 ## Connect GET
 
