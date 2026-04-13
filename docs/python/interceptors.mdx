@@ -227,7 +227,7 @@ An authentication interceptor checking bearer tokens and storing them to a conte
                 raise ConnectError(Code.PERMISSION_DENIED)
             return _auth_token.set(token)
 
-        async def on_end(self, token: Token["auth_token"], ctx: RequestContext):
+        async def on_end(self, token: Token["auth_token"], ctx: RequestContext, error: Exception | None):
             _auth_token.reset(token)
     ```
 
@@ -252,7 +252,7 @@ An authentication interceptor checking bearer tokens and storing them to a conte
                 raise ConnectError(Code.PERMISSION_DENIED)
             return _auth_token.set(token)
 
-        def on_end_sync(self, token: Token["auth_token"], ctx: RequestContext):
+        def on_end_sync(self, token: Token["auth_token"], ctx: RequestContext, error: Exception | None):
             _auth_token.reset(token)
     ```
 
