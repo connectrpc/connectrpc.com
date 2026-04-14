@@ -12,6 +12,7 @@ to the documentation that corresponds to your server:
 
 * [Connect Go](../go/get-requests-and-caching.md)
 * [Connect Node](../node/get-requests-and-caching.md)
+* [Connect Python](../python/get-requests-and-caching.mdx)
 
 Afterwards, ensure that a new enough version of `@connectrpc/connect-web` is set
 up; HTTP GET support is available in Connect Web v0.9.0 or newer. Then, you can

@@ -7,16 +7,15 @@ Connect supports performing idempotent, side-effect free requests using an HTTP
 GET-based protocol. This makes it easier to cache certain kinds of requests in
 the browser, on your CDN, or in proxies and other middleboxes.
 
-:::info
-This functionality is **only** supported when using the Connect
-protocol&mdash;using a Connect client with a Connect service. When using gRPC
-clients with Connect servers, or Connect clients with gRPC servers, all
-requests will use HTTP POST.
-
-If you need HTTP GET support when talking to a vanilla gRPC server, you could
-use a proxy. Envoy supports translating between Connect clients and gRPC servers
-using the [Connect-gRPC Bridge][connect-grpc-bridge-docs].
-:::
+> [!NOTE]
+> This functionality is **only** supported when using the Connect
+> protocol&mdash;using a Connect client with a Connect service. When using gRPC
+> clients with Connect servers, or Connect clients with gRPC servers, all
+> requests will use HTTP POST.
+>
+> If you need HTTP GET support when talking to a vanilla gRPC server, you could
+> use a proxy. Envoy supports translating between Connect clients and gRPC servers
+> using the [Connect-gRPC Bridge][connect-grpc-bridge-docs].
 
 If you are using clients to make query-style requests, you may want the ability
 to use Connect HTTP GET request support. To opt-in for a given procedure, you
@@ -55,6 +54,7 @@ For other clients, see their respective documentation pages:
 * [Connect Node](../node/get-requests-and-caching.md)
 * [Connect Web](../web/get-requests-and-caching.md)
 * [Connect Kotlin](../kotlin/get-requests-and-caching.md)
+* [Connect Python](../python/get-requests-and-caching.mdx)
 
 ## Caching
 

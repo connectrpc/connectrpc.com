@@ -12,6 +12,7 @@ to the documentation that corresponds to your server:
 
 * [Connect Go](../go/get-requests-and-caching.md)
 * [Connect Node](../node/get-requests-and-caching.md)
+* [Connect Python](../python/get-requests-and-caching.mdx)
 
 If you are using clients to make query-style requests, you may want the ability
 to use Connect HTTP GET request support. To opt-in for a given procedure, you
