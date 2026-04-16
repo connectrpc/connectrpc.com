@@ -64,7 +64,7 @@ const say = async (req: SayRequest, ctx: HandlerContext) => {
 };
 ```
 
-In addition, to server-side support for timeouts, there is also a related option on `ConnectRouter`
+In addition to server-side support for timeouts, there is also a related option on `ConnectRouter`
 that helps constraining timeout values: `maxTimeoutMs`. For an explanation of this option,
 see the docs on [Server Plugins](server-plugins#common-options)
 
