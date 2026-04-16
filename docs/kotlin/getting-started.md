@@ -290,7 +290,7 @@ declarations.
 
 </details>
 
-## Set up and Android application
+## Set up an Android application
 
 ### Set up resources and Android XML
 

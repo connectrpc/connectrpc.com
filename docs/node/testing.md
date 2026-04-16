@@ -17,7 +17,7 @@ to define a server to interact with during your tests.
 
 With this approach, you can run a full HTTP server over TCP, and use your clients under test to call procedures,
 asserting that the result matches expectations. The big benefit is that you get a behavior that is closest to a real
-deployment. It lets you get closest to a production deployment and will factor in test other processes that your server
+deployment. It lets you get closest to a production deployment and will factor in other processes that your server
 might interact with, including middleware. The big drawback is that it requires a lot of legwork to get a working server
 setup for your tests.
 
@@ -145,7 +145,7 @@ Unit testing a service side-steps TCP and HTTP altogether and calls the service 
 clients, transports, and other processes used when interacting with an actual server. This approach is ideal
 for unit testing, but it requires implementing services as classes using
 [helper types](https://connectrpc.com/docs/node/implementing-services#helper-types). This way, you can simply
-instantiate your service class directory and invoke methods on the service directly.
+instantiate your service class directly and invoke methods on the service directly.
 
 ### Examples
 

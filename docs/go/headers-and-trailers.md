@@ -93,7 +93,7 @@ func main() {
 ```
 
 Keep in mind that Connect headers are just HTTP headers, so it's perfectly fine
-to work them in `net/http` middleware!
+to work with them in `net/http` middleware!
 
 Both the gRPC and Connect protocols [require](../protocol.md#unary-request)
 that header keys contain only ASCII letters, numbers, underscores, hyphens, and

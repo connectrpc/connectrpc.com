@@ -12,7 +12,7 @@ on a different domain. Simply visiting this page could run arbitrary actions on
 your behalf.
 
 To avoid this problem, browsers ask the target for permission to issue a request,
-if the request originates from somewhere else than the target. They send a
+if the request originates from somewhere other than the target. They send a
 preflight request, and the server replies with CORS information. The browser
 decides whether to issue or deny the actual request, and will only expose
 response headers to JavaScript that are explicitly allowed.
@@ -150,7 +150,7 @@ While many CORS headers allow a wildcard `*`, they only do for requests without
 credentials, such as cookies, TLS client certificates, or authorization headers.
 
 It's best to avoid wildcards in production. CORS
-libraries typically provide mechanism for common use cases like allowing
+libraries typically provide a mechanism for common use cases like allowing
 multiple origins.
 
 ## Private network access

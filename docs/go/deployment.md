@@ -119,7 +119,7 @@ func newInsecureClient() *http.Client {
 ## CORS
 
 Cross-origin resource sharing (CORS) is needed to support web clients
-on other origins other than the server's own. In Go, servers may configure CORS
+on origins other than the server's own. In Go, servers may configure CORS
 by using any popular third-party library or by writing a small `net/http`
 middleware to handle `OPTIONS` requests. In either case, the
 [`connectrpc.com/cors`](https://github.com/connectrpc/cors-go) package provides

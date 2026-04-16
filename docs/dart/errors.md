@@ -84,7 +84,7 @@ ex.metadata["custom-trailer-value"];
 On the wire, error details are wrapped with `google.protobuf.Any`, so that a
 server or middleware can attach arbitrary data to an error.
 
-This example looks up a localized error message in the users preferred
+This example looks up a localized error message in the user's preferred
 language:
 
 ```dart

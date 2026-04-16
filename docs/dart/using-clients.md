@@ -23,7 +23,7 @@ Connect-Dart currently supports 3 protocols:
 If your backend services are already using gRPC today,
 [Envoy provides support][envoy-grpc-bridge]
 for converting requests made using the Connect and gRPC-Web protocols to gRPC,
-enabling you to use Connect-Swift without the SwiftNIO dependency.
+enabling you to use Connect-Dart without the `http2` dependency.
 
 Switching between the Connect and gRPC/gRPC-Web protocols is a simple 2-line change
 when configuring the `Transport`:

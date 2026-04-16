@@ -129,7 +129,7 @@ domain, make sure the server has the correct [CORS configuration](./cors.md#conf
 ### Why does my Web client not receive the error code from my server?
 
 Most of the time, it's because the CORS setup of the server is incomplete. It's not enough to allow request origin,
-methods, and headers—you also have to to expose response headers. See the [CORS documentation](./cors.md) for details.
+methods, and headers—you also have to expose response headers. See the [CORS documentation](./cors.md) for details.
 
 ### Why does the network explorer in the browser show strange characters in payload?
 

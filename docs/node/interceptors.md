@@ -150,7 +150,7 @@ export default (router: ConnectRouter) =>
   });
 ```
 
-But this means authentication happens twice, once in the Interceptor and second in our handler. This is where context values come in. We can add the user as a context value which can then be retrieved in the handler. To do so we need to define a context key:
+But this means authentication happens twice, once in the interceptor and again in our handler. This is where context values come in. We can add the user as a context value which can then be retrieved in the handler. To do so we need to define a context key:
 
 ```ts title=user-context.ts
 import { createContextKey } from "@connectrpc/connect";
