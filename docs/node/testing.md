@@ -16,9 +16,8 @@ to define a server to interact with during your tests.
 ### Testing against a running server
 
 With this approach, you can run a full HTTP server over TCP, and use your clients under test to call procedures,
-asserting that the result matches expectations. The big benefit is that you get a behavior that is closest to a real
-deployment. It lets you get closest to a production deployment and will factor in other processes that your server
-might interact with, including middleware. The big drawback is that it requires a lot of legwork to get a working server
+asserting that the result matches expectations. The big benefit is that you get behavior that is closest to a real
+deployment, including exercising middleware. The big drawback is that it requires a lot of legwork to get a working server
 setup for your tests.
 
 ### Testing against an in-memory server
