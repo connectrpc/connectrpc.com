@@ -446,6 +446,10 @@ code {
   vertical-align: baseline;
 }
 
+pre {
+  tab-size: 2;
+}
+
 @media (min-width: 997px) {
   .mobile-only {
     display: none;
