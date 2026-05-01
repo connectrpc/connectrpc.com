@@ -44,7 +44,7 @@
     "@docusaurus/tsconfig": "^3.9.2",
     "@types/react": "^18.3.12",
     "rumdl": "^0.1.85",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.3"
   },
   "licenseHeader": {
     "licenseType": "apache",
