@@ -43,7 +43,7 @@
     "@docusaurus/module-type-aliases": "^3.9.2",
     "@docusaurus/tsconfig": "^3.9.2",
     "@types/react": "^18.3.12",
-    "rumdl": "^0.1.67",
+    "rumdl": "^0.1.85",
     "typescript": "^5.9.3"
   },
   "licenseHeader": {
