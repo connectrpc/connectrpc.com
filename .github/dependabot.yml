@@ -15,10 +15,6 @@ updates:
       timezone: UTC
       time: "07:00"
     open-pull-requests-limit: 50
-    ignore:
-      # These are required by docusaurus
-      - dependency-name: "react"
-      - dependency-name: "react-dom"
     groups:
       docusaurus:
         patterns:
