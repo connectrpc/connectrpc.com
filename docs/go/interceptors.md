@@ -81,10 +81,14 @@ To apply our new interceptor to handlers or clients, we can use
 
 ```go
 // For handlers:
+interceptors := connect.WithInterceptors(
+	NewAuthInterceptor(),
+	validate.NewInterceptor(),
+)
 mux := http.NewServeMux()
 mux.Handle(greetv1connect.NewGreetServiceHandler(
 	&GreetServer{},
-	connect.WithInterceptors(NewAuthInterceptor()),
+	interceptors,
 ))
 ```
 
