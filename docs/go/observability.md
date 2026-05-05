@@ -3,7 +3,7 @@ title: Observability
 sidebar_position: 65
 ---
 
-Connect stays close to `net/http`, which means any logging, tracing, or metrics that work with an `http.Handler` or `http.Client` will also work with Connect. In particular, the [otelhttp](https://pkg.go.dev/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp) OpenTelemetry package and the [ochttp](https://pkg.go.dev/go.opencensus.io/plugin/ochttp) OpenCensus package both integrate seamlessly with Connect servers and clients.
+Connect stays close to `net/http`, which means any logging, tracing, or metrics that work with an `http.Handler` or `http.Client` will also work with Connect. In particular, the [otelhttp](https://pkg.go.dev/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp) OpenTelemetry package integrates seamlessly with Connect servers and clients.
 
 For more detailed, RPC-focused metrics, use the [otelconnect] package. [otelconnect] works with your [OpenTelemetry] metrics and tracing setup to capture information such as:
 
@@ -67,11 +67,15 @@ When running multiple applications in a single binary, or if different sections 
 
 ```go
 // newInterceptor instruments Connect clients and handlers using custom OpenTelemetry metrics, tracing, and propagation.
-func newInterceptor(tp trace.TracerProvider, mp metric.MeterProvider, p propagation.TextMapPropagator) (connect.Interceptor, error) {
+func newInterceptor(
+	tracerProvider trace.TracerProvider,
+	metricProvider metric.MeterProvider,
+	textMapPropagator propagation.TextMapPropagator
+) (connect.Interceptor, error) {
 	return otelconnect.NewInterceptor(
-		otelconnect.WithTracerProvider(tp),
-		otelconnect.WithMeterProvider(mp),
-		otelconnect.WithPropagator(p),
+		otelconnect.WithTracerProvider(tracerProvider),
+		otelconnect.WithMeterProvider(metricProvider),
+		otelconnect.WithPropagator(textMapPropagator),
 	)
 }
 ```
