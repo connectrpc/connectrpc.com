@@ -12,10 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {
-  ThemeClassNames,
-  useKeyboardNavigation,
-} from "@docusaurus/theme-common/internal";
+import { ThemeClassNames } from "@docusaurus/theme-common";
 import { callout } from "@site/src/components/home/text";
 import AnnouncementBar from "@theme/AnnouncementBar";
 import Footer from "@theme/Footer";
@@ -23,6 +20,7 @@ import LayoutProviders from "@theme/Layout/Provider";
 import NavBar from "@theme/Navbar";
 import SkipToContent from "@theme/SkipToContent";
 import clsx from "clsx";
+import type { JSX } from "react";
 import Callout from "../components/home/Callout";
 import calloutStyles from "../components/home/Callout.module.css";
 import { Divider } from "../components/home/divider";
@@ -33,8 +31,6 @@ import Hero from "../components/home/Hero";
 import styles from "./styles.module.css";
 
 export default function Home(): JSX.Element {
-  useKeyboardNavigation();
-
   // Largely copied from original Layout component
   return (
     <LayoutProviders>

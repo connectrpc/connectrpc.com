@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { callout } from "@site/src/components/home/text";
+import type { JSX } from "react";
 
 import styles from "./Callout.module.css";
 

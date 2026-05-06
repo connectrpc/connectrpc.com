@@ -40,7 +40,7 @@ import type {
 } from "@theme/NavbarItem/DropdownNavbarItem";
 import NavbarNavLink from "@theme/NavbarItem/NavbarNavLink";
 import clsx from "clsx";
-import { useEffect, useRef, useState } from "react";
+import { type JSX, useEffect, useRef, useState } from "react";
 
 const dropdownLinkActiveClass = "dropdown__link--active";
 

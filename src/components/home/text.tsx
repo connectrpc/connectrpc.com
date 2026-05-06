@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import Link from "@docusaurus/Link";
+import type { JSX } from "react";
 
 /// Types
 

@@ -29,7 +29,7 @@ import Link from "@docusaurus/Link";
 import { type FooterLinkItem, useThemeConfig } from "@docusaurus/theme-common";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import clsx from "clsx";
-import type { PropsWithChildren } from "react";
+import type { JSX, PropsWithChildren } from "react";
 import CncfSandbox from "./cncf-sandbox-horizontal-black.svg";
 import IconGithub from "./icon-github--gray.svg";
 import IconSlack from "./icon-slack--gray.svg";
