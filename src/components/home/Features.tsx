@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { type FeatureItem, featureList } from "@site/src/components/home/text";
+import type { JSX } from "react";
 
 import styles from "./Features.module.css";
 

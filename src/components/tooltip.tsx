@@ -16,7 +16,7 @@
 
 import clsx from "clsx";
 import type React from "react";
-import { type PropsWithChildren, useEffect, useState } from "react";
+import { type JSX, type PropsWithChildren, useEffect, useState } from "react";
 
 type TooltipProps = {
   content: string | JSX.Element;

@@ -18,6 +18,7 @@ import Footer from "@theme/Footer";
 import LayoutProviders from "@theme/Layout/Provider";
 import NavBar from "@theme/Navbar";
 import SkipToContent from "@theme/SkipToContent";
+import type { JSX } from "react";
 import { ElizaDemo } from "../components/eliza-demo";
 
 export default function Demo(): JSX.Element {

@@ -31,6 +31,7 @@ import type {
  */
 import NavbarNavLink from "@theme/NavbarItem/NavbarNavLink";
 import clsx from "clsx";
+import type { JSX } from "react";
 
 import styles from "./NavbarItem.module.css";
 import { getInfimaActiveClassName } from "./utils";
