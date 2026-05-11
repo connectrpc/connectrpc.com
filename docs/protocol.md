@@ -215,7 +215,7 @@ content.
 * **Unary-Get-Request-Headers** &rarr; Unary-Get-Call-Specification \*Leading-Metadata
 * **Unary-Get-Call-Specification** &rarr; Method-Get Path "?" Query-Get \[Timeout\] \[Accept-Encoding\]
 * **Method-Get** &rarr; ":method GET"
-* **Query-Get** &rarr; \[Connect-Version-Query\] Encoding-Query \[Compression-Query\] \[Base64-Query\] Message-Query
+* **Query-Get** &rarr; \[Connect-Version-Query\] \[Base64-Query\] \[Compression-Query\] Encoding-Query Message-Query
 * **Message-Query** &rarr; "message=" (*\{percent-encoded octet\})
 * **Base64-Query** &rarr; "&base64=1"
 * **Encoding-Query** &rarr; "&encoding=" Message-Codec
