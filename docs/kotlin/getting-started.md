@@ -30,8 +30,8 @@ use a physical device.
 Once Android Studio is set up, go through the setup wizard and select an
 empty Activity to start building an application:
 
-import SelectActivityScreenshot from './android-studio-select-empty-activity.png';
-import NewProjectScreenshot from './android-studio-new-project.png';
+import SelectActivityScreenshot from './android-studio-select-empty-activity-new.png';
+import NewProjectScreenshot from './android-studio-new-project-new.png';
 
 1. Create a new project with Android Studio.
 2. Select an empty activity for the project and click "Next".<br/>
@@ -54,7 +54,7 @@ defining a new API for talking with Eliza!
 First, we need to add a Protobuf file that includes our service definition. For this tutorial, we are going to construct a unary endpoint for a service that is a stripped-down implementation of ELIZA, the famous natural language processing program.
 
 ```shell-session
-$ mkdir -p proto && touch proto/eliza.proto
+$ mkdir -p proto/connectrpc/eliza/v1 && touch proto/connectrpc/eliza/v1/eliza.proto
 ```
 
 Open up the above file and add the following service definition:
@@ -176,47 +176,46 @@ models for the `SayRequest` and `SayResponse` we defined in our Protobuf file.
 Now, let's bootstrap the Android application. Declare the following additional dependencies in our
 app's `build.gradle`.
 
-:::note there exists two `build.gradle` files in the project.
-Use the `build.gradle` located in `./app/build.gradle` and **not** the one in the root directory.
+:::note there exists two `build.gradle.kts` files in the project.
+Use the `build.gradle.kts` located in `./app` and **not** the one in the root directory.
 :::
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
+build.gradle.kts:
 
-<Tabs>
-  <TabItem value="apple" label="java" default>
-
-```groovy
+```kotlin
 dependencies {
-  // ...
-  implementation 'androidx.recyclerview:recyclerview:1.2.1'
-  implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
-  implementation "com.squareup.okhttp3:okhttp:4.10.0"
-  implementation "com.connectrpc:connect-kotlin-okhttp:0.1.11"
-  // Java specific dependencies.
-  implementation "com.connectrpc:connect-kotlin-google-java-ext:0.1.11"
-  implementation "com.google.protobuf:protobuf-java:3.22.0"
+    // Compose
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.lifecycle.runtime.compose)
+
+    // Connect-Kotlin (latest as of writing: 0.8.0)
+    implementation(libs.okhttp)
+    implementation(libs.connect.kotlin.okhttp)
+    implementation(libs.connectrpc.connect.kotlin.google.java.ext)
+    implementation(libs.protobuf.java)
 }
 ```
 
-  </TabItem>
-  <TabItem value="orange" label="javalite">
+libs.versions.toml:
+```toml
+[versions]
+#...
+connectKotlinGoogleJavaExt = "0.8.0"
+connectKotlinOkhttp = "0.8.0"
+okhttp = "5.3.2"
+protobufJava = "4.34.1"
+lifecycleViewmodelCompose = "2.10.0"
+lifecycleRuntimeCompose = "2.10.0"
 
-```groovy
-dependencies {
-  // ...
-  implementation 'androidx.recyclerview:recyclerview:1.2.1'
-  implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
-  implementation "com.squareup.okhttp3:okhttp:4.10.0"
-  implementation "com.connectrpc:connect-kotlin-okhttp:0.1.11"
-  // JavaLite specific dependencies.
-  implementation "com.connectrpc:connect-kotlin-google-javalite-ext:0.1.11"
-  implementation "com.google.protobuf:protobuf-javalite:3.22.0"
-}
+[libraries]
+#...
+androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
+connect-kotlin-okhttp = { module = "com.connectrpc:connect-kotlin-okhttp", version.ref = "connectKotlinOkhttp" }
+connectrpc-connect-kotlin-google-java-ext = { module = "com.connectrpc:connect-kotlin-google-java-ext", version.ref = "connectKotlinGoogleJavaExt" }
+lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleRuntimeCompose" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+protobuf-java = { module = "com.google.protobuf:protobuf-java", version.ref = "protobufJava" }
 ```
-
-  </TabItem>
-</Tabs>
 
 Once all the dependencies are declared, make sure Gradle is synced up.
 
@@ -228,63 +227,128 @@ versions between the runtime and the Google Java plugin version. Here we are usi
 <details>
 <summary>Having trouble with Gradle files? Here is what one might look like: </summary>
 
-```groovy title="app/build.gradle"
+```kotlin title="app/build.gradle.kts"
 plugins {
-  id 'com.android.application'
-  id 'org.jetbrains.kotlin.android'
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
-  namespace 'com.example.eliza'
-  compileSdk 33
-
-  defaultConfig {
-    applicationId "com.example.eliza"
-    minSdk 24
-    targetSdk 33
-    versionCode 1
-    versionName "1.0"
-
-    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-  }
-
-  buildTypes {
-    release {
-      minifyEnabled false
-      proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+    namespace = "com.example.eliza"
+    compileSdk {
+        version = release(36) {
+            minorApiLevel = 1
+        }
     }
-  }
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
-  }
-  kotlinOptions {
-    jvmTarget = '1.8'
-  }
+
+    defaultConfig {
+        applicationId = "com.example.eliza"
+        minSdk = 24
+        targetSdk = 36
+        versionCode = 1
+        versionName = "1.0"
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+    buildFeatures {
+        compose = true
+    }
 }
 
 dependencies {
-  implementation 'androidx.core:core-ktx:1.7.0'
-  implementation 'androidx.appcompat:appcompat:1.6.1'
-  implementation 'com.google.android.material:material:1.8.0'
-  implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
 
-  implementation "androidx.recyclerview:recyclerview:1.2.1"
-  implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
+    // Compose
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.lifecycle.runtime.compose)
 
-  implementation "com.squareup.okhttp3:okhttp:4.10.0"
-  implementation "com.connectrpc:connect-kotlin-okhttp:$version"
+    // Connect-Kotlin (latest as of writing: 0.8.0)
+    implementation(libs.okhttp)
+    implementation(libs.connect.kotlin.okhttp)
+    implementation(libs.connectrpc.connect.kotlin.google.java.ext)
+    implementation(libs.protobuf.java)
 
-  implementation "com.connectrpc:connect-kotlin-google-java-ext:$version"
-  implementation "com.google.protobuf:protobuf-java:3.22.0"
+    testImplementation(libs.junit)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.junit)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
+    debugImplementation(libs.androidx.compose.ui.tooling)
 }
+```
+
+```toml title="gradle/libs.versions.toml"
+[versions]
+agp = "9.2.0"
+connectKotlinGoogleJavaExt = "0.8.0"
+connectKotlinOkhttp = "0.8.0"
+coreKtx = "1.18.0"
+junit = "4.13.2"
+junitVersion = "1.3.0"
+espressoCore = "3.7.0"
+lifecycleRuntimeCompose = "2.10.0"
+lifecycleRuntimeKtx = "2.10.0"
+activityCompose = "1.13.0"
+kotlin = "2.3.21"
+composeBom = "2026.04.01"
+lifecycleViewmodelCompose = "2.10.0"
+okhttp = "5.3.2"
+protobufJava = "4.34.1"
+
+
+[libraries]
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
+connect-kotlin-okhttp = { module = "com.connectrpc:connect-kotlin-okhttp", version.ref = "connectKotlinOkhttp" }
+connectrpc-connect-kotlin-google-java-ext = { module = "com.connectrpc:connect-kotlin-google-java-ext", version.ref = "connectKotlinGoogleJavaExt" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleRuntimeCompose" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+protobuf-java = { module = "com.google.protobuf:protobuf-java", version.ref = "protobufJava" }
+
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ```
 
 :::note
 
-The default for Android Studio isn't set up with Gradle `kts`. The examples here are using
-classic Gradle with Groovy. With Gradle `kts`, the changes are pretty similar for the dependency
-declarations.
+The default for Android Studio is now Gradle `kts`. For classic Gradle with Groovy, the changes are similar for the dependency declarations, but there is no `libs.versions.toml` file.
 
 :::
 
@@ -292,252 +356,118 @@ declarations.
 
 ## Set up an Android application
 
-### Set up resources and Android XML
+### Create the View and Model
 
-First, set up the `res` directory files by creating and copying the following files to the
-project:
+Now we are ready to write the Kotlin code to speak with Eliza!
 
-Create a new file in the `layout` directory called `item.xml` for a chat view item.
+Create a new Kotlin file in the `app/src/main/java/com/example/eliza` directory called `ElizaViewModel.kt`. First, we will create the model classes for the UI state and the Eliza service client.
 
-```shell-session
-$ touch app/src/main/res/layout/item.xml
-```
-
-The following layout XML is going to be used as the chat list item.
-It's the XML representation of what a single chat entry looks like.
-
-```xml title="app/src/main/res/layout/item.xml"
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:padding="5dp"
->
-  <TextView
-    android:id="@+id/sender_name_text_view"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:gravity="left"
-    android:text="Eliza"
-    android:textColor="#161EDE"
-    android:visibility="gone"
-  />
-  <TextView
-    android:id="@+id/message_text_view"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:textColor="@android:color/black"
-  />
-</LinearLayout>
-```
-
-Next, we'll need to set up our main view's XML. This will be the view displayed on app launch.
-
-```xml title="app/src/main/res/layout/activity_main.xml"
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto"
-  xmlns:tools="http://schemas.android.com/tools"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  android:padding="5dp"
-  tools:context=".MainActivity"
->
-  <TextView
-    android:id="@+id/title_text_view"
-    android:layout_width="match_parent"
-    app:layout_constraintTop_toTopOf="parent"
-    android:gravity="center"
-    android:layout_height="40dp"
-  />
-  <androidx.recyclerview.widget.RecyclerView
-    android:id="@+id/recycler_view"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:layoutManager="LinearLayoutManager"
-    app:layout_constraintTop_toBottomOf="@+id/title_text_view"
-    app:layout_constraintBottom_toTopOf="@+id/edit_text_view"
-  />
-  <EditText
-    android:id="@+id/edit_text_view"
-    android:layout_height="wrap_content"
-    android:layout_width="match_parent"
-    app:layout_constraintBottom_toBottomOf="parent"
-    android:inputType="text"/>
-  <Button
-    android:id="@+id/send_button"
-    android:layout_width="50dp"
-    android:layout_height="50dp"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintRight_toRightOf="parent"
-  />
-</androidx.constraintlayout.widget.ConstraintLayout>
-```
-
-:::note
-Android Studio likes to show the rendered UI by default when an XML file is opened.
-To view the raw code, click the button `Code` in the top right corner.
-:::
-
-Lastly, make sure the `AndroidManifest.xml` declares the right permissions to make a network request.
-Configure the application with network permissions by adding the following to `AndroidManifest.xml`
-
-```xml title="app/src/main/AndroidManifest.xml"
-<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.example.eliza">
-
-  <uses-permission android:name="android.permission.INTERNET"/>
-  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-
-  <application
-    android:allowBackup="true"
-    android:label="Eliza Connect App"
-    android:theme="@style/Theme.AppCompat.Light"
-  >
-    <activity
-      android:name=".MainActivity"
-      android:exported="true">
-      <intent-filter>
-        <action android:name="android.intent.action.MAIN"/>
-        <category android:name="android.intent.category.LAUNCHER"/>
-      </intent-filter>
-      <meta-data
-        android:name="android.app.lib_name"
-        android:value=""/>
-    </activity>
-  </application>
-</manifest>
-```
-
-That is it for our resource files for our application!
-
-### Android Kotlin view scaffolding
-
-Before we start on making a network request, we'll need to set up some plumbing.
-In order to display a dynamic list of chat messages, we'll need to construct a
-`RecyclerView` along with some of it's scaffolding and boilerplate.
-
-Create a `RecyclerView.ViewHolder` and `RecyclerView.Adapter` in a file called `ChatRecycler.kt`.
-We'll be defining the `MessageData` data class to help manage the external usage in the next section.
-
-```shell-session
-$ touch app/src/main/java/com/example/eliza/ChatRecycler.kt
-```
-
-and add the following:
-
-```kotlin title="app/src/main/java/com/example/eliza/ChatRecycler.kt"
-package com.example.eliza
-
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.LinearLayout
-import android.widget.TextView
-import androidx.recyclerview.widget.RecyclerView
-
-
-class Adapter : RecyclerView.Adapter<ViewHolder>() {
-
-  private val messages = mutableListOf<MessageData>()
-
-  fun add(message: MessageData) {
-    messages.add(message)
-    notifyItemInserted(messages.size - 1)
-  }
-
-  override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
-    val view = LayoutInflater.from(viewGroup.context)
-      .inflate(R.layout.item, viewGroup, false)
-    return ViewHolder(view)
-  }
-
-  override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-    val messageViewModel = messages[position]
-    viewHolder.textView.setText(messageViewModel.message)
-    val layoutParams = viewHolder.textView.layoutParams as LinearLayout.LayoutParams
-    layoutParams.gravity = if (messageViewModel.isEliza) Gravity.LEFT else Gravity.RIGHT
-    viewHolder.textView.layoutParams = layoutParams
-
-    if (messageViewModel.isEliza) {
-      viewHolder.senderNameTextView.visibility = View.VISIBLE
-    }
-  }
-
-  override fun getItemCount(): Int {
-    return messages.size
-  }
-}
-
-class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-  val senderNameTextView: TextView
-  val textView: TextView
-
-  init {
-    textView = view.findViewById(R.id.message_text_view)
-    senderNameTextView = view.findViewById(R.id.sender_name_text_view)
-  }
-}
-
+```kotlin
 data class MessageData(
-  val message: String,
-  val isEliza: Boolean
+    val message: String,
+    val isEliza: Boolean
+)
+
+data class ElizaUiState(
+    val messages: List<MessageData> = emptyList(),
+    val input: String = "I feel good.",
+    val isSending: Boolean = false
 )
 ```
 
-### Talk with Eliza on Android
+The `MessageData` class is used to represent the messages that are displayed in the UI. The `ElizaUiState` class is used to represent the state of the UI.
 
-Now we are ready to dive into actual Kotlin code to speak with Eliza!
+Next we define the `ElizaViewModel` class and the state it manages.
 
-The `ProtocolClient` constructor requires a `ProtocolClientConfig` to be instantiated.
-The required parameters are the host, serialization strategy, and protocol:
+```kotlin
+class ElizaViewModel : ViewModel() {
+    private val _state = MutableStateFlow(ElizaUiState())
+    val state = _state.asStateFlow()
+
+    fun onInputChange(new: String) {
+        _state.update { it.copy(input = new) }
+    }
+}
+```
+The `onInputChange` method is used to update the input value of the UI. We will use this method to update the input value when the user types in the input field.
+
+Next we write the code to communicate with Eliza using a `com.connectrpc.impl.ProtocolClient`. The `ProtocolClient` constructor requires a `com.connectrpc.ProtocolClientConfig` to be instantiated. The required parameters are the host, serialization strategy, and protocol:
 
 - `host`: The host of the request (e.g `https://demo.connectrpc.com`).
 - `serializationStrategy`: Configures the `ProtocolClient` to use a specified base data type and encoding
   (e.g., Google's Java and Google's JavaLite).
-- `protocol`: The underlying network protocol to use (e.g., Connect, gRPC, or gRPC-Web).
+- `networkProtocol`: The underlying network protocol to use (e.g., Connect, gRPC, or gRPC-Web).
 
-To use alternative serialization strategies or protocols, the `ProtocolClientConfig` can be instantiated with different
-parameters:
+In the `ElizaViewModel` class, create a `ProtocolClient` and a `ElizaServiceClient` to talk with the Eliza service.
 
 ```kotlin
-val client = ProtocolClient(
-  httpClient = ConnectOkHttpClient(OkHttpClient()),
-  ProtocolClientConfig(
-    host = host,
-    serializationStrategy = GoogleJavaProtobufStrategy(),
-    protocol = Protocol.CONNECT,
-  ),
+private val client = ProtocolClient(
+    httpClient = ConnectOkHttpClient(),
+    ProtocolClientConfig(
+        host = "https://demo.connectrpc.com",
+        serializationStrategy = GoogleJavaProtobufStrategy(),
+        networkProtocol = NetworkProtocol.CONNECT,
+    ),
 )
+
+private val eliza = ElizaServiceClient(client)
 ```
 
-### Use the generated Eliza client code
+Next, write the `talkToEliza` method to send a sentence to the Eliza service and return the response.
 
-With the `ProtocolClient`, we will be able to create an instance of `ElizaServiceClient` to talk with
-the Eliza service.
+```kotlin
+    private suspend fun talkToEliza(sentence: String): String? {
+        val response = eliza.say(
+            Eliza.SayRequest.newBuilder().setSentence(sentence).build()
+        )
+        val reply = response.success { it.message.sentence }
+        response.failure { Log.e("ElizaViewModel", "Failed to talk to eliza", it.cause) }
+        return reply
+    }
+```
 
-By using the `lifecycleScope`, the underlying network request will be tied to the coroutine context provided.
-To make the network request, we can call a simple method from the generated code:
-`ElizaServiceClient.say(request: SayRequest)`. With that result, we will be able to appropriately handle the
-success and failure cases of the network request.
+To make the network request, we call a simple method from the generated code: `ElizaServiceClient.say(request: SayRequest)`. 
+With that result, we are able to appropriately handle the success and failure cases of the network request.
 
-Open up the `MainActivity.kt` file and replace its contents with the following:
+Finally, add a `send` method to the `ElizaViewModel` to send a sentence to the Eliza service when the user
+clicks the send button. (The send button is created in the next step.)
 
-```kotlin title="app/src/main/java/com/example/eliza/MainActivity.kt"
+```kotlin
+    fun send() {
+        val sentence = _state.value.input.trim()
+        if (sentence.isEmpty() || _state.value.isSending) return
+
+        _state.update {
+            it.copy(
+                messages = it.messages + MessageData(sentence, isEliza = false),
+                input = "",
+                isSending = true,
+            )
+        }
+
+        viewModelScope.launch {
+            val reply = withContext(Dispatchers.IO) { talkToEliza(sentence) }
+            _state.update {
+                it.copy(
+                    messages = it.messages + MessageData(
+                        message = reply ?: "...No response from Eliza...",
+                        isEliza = true,
+                    ),
+                    isSending = false,
+                )
+            }
+        }
+    }
+```
+
+The complete code for `ElizaViewModel.kt` is as follows:
+
+```kotlin title=app/src/main/java/com/example/eliza/ElizaViewModel.kt
 package com.example.eliza
 
-import android.os.Bundle
 import android.util.Log
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.RecyclerView
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.connectrpc.ProtocolClientConfig
 import com.connectrpc.extensions.GoogleJavaProtobufStrategy
 import com.connectrpc.impl.ProtocolClient
@@ -546,97 +476,226 @@ import com.connectrpc.protocols.NetworkProtocol
 import connectrpc.eliza.v1.Eliza
 import connectrpc.eliza.v1.ElizaServiceClient
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MainActivity : AppCompatActivity() {
+data class MessageData(
+    val message: String,
+    val isEliza: Boolean
+)
 
-  private val adapter: Adapter = Adapter()
-  private lateinit var titleTextView: TextView
-  private lateinit var editTextView: EditText
-  private lateinit var buttonView: Button
-  private lateinit var elizaServiceClient: ElizaServiceClient
+data class ElizaUiState(
+    val messages: List<MessageData> = emptyList(),
+    val input: String = "I feel good.",
+    val isSending: Boolean = false
+)
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_main)
-    editTextView = findViewById(R.id.edit_text_view)
-    titleTextView = findViewById(R.id.title_text_view)
-    buttonView = findViewById(R.id.send_button)
-    // Default question to ask as a pre-fill.
-    editTextView.setText("I feel good.")
-    val recyclerView = findViewById<RecyclerView>(R.id.recycler_view)
-    recyclerView.adapter = adapter
+class ElizaViewModel : ViewModel() {
 
-    // Create a ProtocolClient.
-    val client = ProtocolClient(
-      httpClient = ConnectOkHttpClient(),
-      ProtocolClientConfig(
-        host = "https://demo.connectrpc.com",
-        serializationStrategy = GoogleJavaProtobufStrategy(), // Or GoogleJavaJSONStrategy for JSON.
-        networkProtocol = NetworkProtocol.CONNECT,
-      ),
+    private val client = ProtocolClient(
+        httpClient = ConnectOkHttpClient(),
+        ProtocolClientConfig(
+            host = "https://demo.connectrpc.com",
+            serializationStrategy = GoogleJavaProtobufStrategy(),
+            networkProtocol = NetworkProtocol.CONNECT,
+        ),
     )
-    // Create the Eliza service client.
-    elizaServiceClient = ElizaServiceClient(client)
+    private val eliza = ElizaServiceClient(client)
 
-    // Set up click listener to make a request to Eliza.
-    buttonView.setOnClickListener {
-      val sentence = editTextView.text.toString()
-      adapter.add(MessageData(sentence, false))
-      editTextView.setText("")
+    private val _state = MutableStateFlow(ElizaUiState())
+    val state = _state.asStateFlow()
 
-      lifecycleScope.launch {
-        // Ensure IO context for unary requests.
-        val elizaSentence = withContext(Dispatchers.IO) {
-          talkToEliza(sentence)
+    fun onInputChange(new: String) {
+        _state.update { it.copy(input = new) }
+    }
+
+    fun send() {
+        val sentence = _state.value.input.trim()
+        if (sentence.isEmpty() || _state.value.isSending) return
+
+        _state.update {
+            it.copy(
+                messages = it.messages + MessageData(sentence, isEliza = false),
+                input = "",
+                isSending = true,
+            )
         }
-        // Display the result
-        displayElizaResponse(elizaSentence)
-      }
-    }
-  }
 
-  private suspend fun talkToEliza(sentence: String): String? {
-    // Make unary request to Eliza.
-    val response = elizaServiceClient.say(Eliza.SayRequest.newBuilder().setSentence(sentence).build())
-    val elizaSentence = response.success { success ->
-      // Get Eliza's reply from the response.
-      success.message.sentence
+        viewModelScope.launch {
+            val reply = withContext(Dispatchers.IO) { talkToEliza(sentence) }
+            _state.update {
+                it.copy(
+                    messages = it.messages + MessageData(
+                        message = reply ?: "...No response from Eliza...",
+                        isEliza = true,
+                    ),
+                    isSending = false,
+                )
+            }
+        }
     }
-    response.failure { failure ->
-      Log.e("MainActivity", "Failed to talk to eliza", failure.cause)
-    }
-    return elizaSentence
-  }
 
-  private fun displayElizaResponse(sentence: String?) {
-    if (!sentence.isNullOrBlank()) {
-      adapter.add(MessageData(sentence, true))
-    } else {
-      adapter.add(MessageData("...No response from Eliza...", true))
+    private suspend fun talkToEliza(sentence: String): String? {
+        val response = eliza.say(
+            Eliza.SayRequest.newBuilder().setSentence(sentence).build()
+        )
+        val reply = response.success { it.message.sentence }
+        response.failure { Log.e("ElizaViewModel", "Failed to talk to eliza", it.cause) }
+        return reply
     }
-  }
 }
 ```
 
-## Serialization Strategies
+#### Serialization Strategies
 
-When configuring the `ProtocolClient` in the `MainActivity.kt`, it is also possible to configure what type
+When configuring the `ProtocolClient` in the `ElizaViewModel.kt`, it is also possible to configure what type
 of Google generated base data type to use via the `ProtocolClientConfig.serializationStrategy`.
 In the example, we use `GoogleJavaProtobufStrategy` which is the Google generated Java data types with the
 Protobuf serialization.
 
-To use JSON with the Google generated Java data types, the `GoogleJavaJSONStrategy` can be used.
+To use alternative serialization strategies or protocols, the `ProtocolClientConfig` can be instantiated with different
+parameters. To use JSON with the Google generated Java data types, the `GoogleJavaJSONStrategy` can be used.
 
 Additionally, the `GoogleJavaLiteProtobufStrategy` is for when there are binary size requirements where
 the underlying data types are the Google generated data types with the `javalite` option.
+
+### Build the UI
+Open up the `MainActivity.kt` file and replace its contents with the following:
+
+```kotlin title="app/src/main/java/com/example/eliza/MainActivity.kt"
+package com.example.eliza
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+
+class MainActivity : ComponentActivity() {
+
+    private val viewModel: ElizaViewModel by viewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            MaterialTheme {
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    ElizaScreen(viewModel)
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ElizaScreen(viewModel: ElizaViewModel) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val listState = rememberLazyListState()
+
+    // Auto-scroll to bottom when new messages arrive.
+    LaunchedEffect(state.messages.size) {
+        if (state.messages.isNotEmpty()) {
+            listState.animateScrollToItem(state.messages.size - 1)
+        }
+    }
+
+    Scaffold(
+        topBar = { TopAppBar(title = { Text("Chat with Eliza") }) }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+                .padding(8.dp)
+        ) {
+            LazyColumn(
+                state = listState,
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                items(state.messages) { msg -> MessageRow(msg) }
+            }
+
+            Spacer(Modifier.height(8.dp))
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                OutlinedTextField(
+                    value = state.input,
+                    onValueChange = viewModel::onInputChange,
+                    modifier = Modifier.weight(1f),
+                    singleLine = true,
+                    enabled = !state.isSending,
+                )
+                Spacer(Modifier.width(8.dp))
+                Button(
+                    onClick = viewModel::send,
+                    enabled = !state.isSending && state.input.isNotBlank(),
+                ) {
+                    Text(if (state.isSending) "…" else "Send")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun MessageRow(msg: MessageData) {
+    val alignment = if (msg.isEliza) Alignment.Start else Alignment.End
+    val bubbleColor = if (msg.isEliza)
+        MaterialTheme.colorScheme.surfaceVariant
+    else
+        MaterialTheme.colorScheme.primaryContainer
+
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = alignment,
+    ) {
+        if (msg.isEliza) {
+            Text(
+                text = "Eliza",
+                color = Color(0xFF161EDE),
+                fontWeight = FontWeight.SemiBold,
+            )
+        }
+        Surface(
+            color = bubbleColor,
+            shape = RoundedCornerShape(12.dp),
+        ) {
+            Text(
+                text = msg.message,
+                modifier = Modifier
+                    .background(bubbleColor)
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
+            )
+        }
+    }
+}
+```
+
+The `ElizaScreen` composable is the main UI of the app. It displays the messages that have been sent to Eliza and allows the user to send a new message. The `MessageRow` composable is used to display each message in the chat. When the user clicks the send button, the `viewModel.send()` method is called, which sends the message to Eliza and updates the UI accordingly. The `MessageRow` composable is also used to display the messages that have been sent to Eliza.
 
 ## Run the app
 
 Now the app can be built and run via the play button on Android Studio. This will allow us to chat with Eliza!
 
-import ElizaChatScreenshot from './success-request-finish.png';
+import ElizaChatScreenshot from './success-request-finish-new.png';
 
 <img src={ElizaChatScreenshot} width="300px" alt="Chat with Eliza!"/>
 
@@ -657,6 +716,71 @@ using the gRPC-Web protocol for a few reasons:
   or configure them as local dependencies.
 - **Flexibility.** Connect-Kotlin uses `Okhttp`. The library provides
   the option to [swap this out](./using-clients.md#http-stack).
+
+## Choosing a Protobuf runtime: Java vs. JavaLite
+Connect-Kotlin doesn't define its own message types. It generates Kotlin client interfaces (such as `ElizaServiceClient`) but delegates the actual request/response message classes (like `SayRequest`, and `SayResponse`) to Google's Protobuf runtime. Google ships two flavors for the JVM, and you need to pick one before adding dependencies.
+
+- `protobuf-java` is the full runtime. It supports reflection, descriptors, dynamic messages, text format, and the full Protobuf feature set. It's what you'd use on a server or in a JVM tool. The tradeoff is size: the runtime jar is several MB and adds thousands of methods to your app.
+- `protobuf-javalite` is a stripped-down runtime built specifically for Android and other size-constrained environments. Generated message classes are smaller, the runtime itself is a fraction of the size, and the method count is dramatically lower. The cost is that reflection-based features are gone — no DynamicMessage, no descriptor-based parsing, no text format, no JsonFormat from `protobuf-java-util`. For a typical mobile app that just sends and receives generated message types, you never miss them.
+
+### Which should you pick?
+For most Android apps, JavaLite is the right default. You're shipping an APK to user devices, binary size and method count are real constraints, and you almost certainly aren't doing reflection over Protobuf messages at runtime.
+
+Reach for the full protobuf-java runtime when you actually need one of its features:
+- You're sharing the proto-generated code between your Android app and a JVM backend that needs the full runtime.
+- You're using JsonFormat to convert between Protobuf and JSON outside of what Connect-Kotlin's GoogleJavaJSONStrategy handles.
+- You depend on a third-party library that requires protobuf-java (some observability and serialization libraries do).
+- You need DynamicMessage or descriptor-based parsing — for instance, if you're building tooling that handles messages whose schema isn't known at compile time.
+
+### How to switch between them
+You need to make three coordinated changes to swap from Java to Javalite. They have to match or you'll get cryptic linker errors at runtime.
+
+1. `buf.gen.yaml` — tell the codegen plugin which runtime to target:
+
+```yaml
+version: v2
+plugins:
+    - remote: buf.build/protocolbuffers/java
+      out: app/src/main/java
+      opt: lite              # add this line for JavaLite
+    - remote: buf.build/connectrpc/kotlin
+      out: app/src/main/java
+```
+Note that the `lite` option is only valid for the `java` plugin.
+
+2. `app/build.gradle.kts` — swap the two artifacts that are runtime-flavor-specific:
+
+```kotlin
+    // JavaLite
+   implementation("com.connectrpc:connect-kotlin-google-javalite-ext:0.8.0")
+   implementation("com.google.protobuf:protobuf-javalite:4.28.2")
+```
+
+or
+
+```kotlin
+    // Full Java
+    implementation("com.connectrpc:connect-kotlin-google-java-ext:0.8.0")
+    implementation("com.google.protobuf:protobuf-java:4.28.2")
+```
+
+3. `ElizaViewModel.kt` — swap the serialization strategy passed to `ProtocolClientConfig`:
+
+```kotlin
+   // JavaLite
+   serializationStrategy = GoogleJavaLiteProtobufStrategy()
+```
+
+or
+
+```kotlin
+    // Full Java
+    serializationStrategy = GoogleJavaProtobufStrategy()
+```
+
+Everything else is identical. The generated `SayRequest.newBuilder().setSentence(...).build()` API looks the same in both flavors. The only thing changing is what's running underneath.
+
+One gotcha: mixing them silently is a common mistake. If `buf.gen.yaml` generates Lite code but your dependencies pull in `protobuf-java`, or vice versa, the project compiles fine and then crashes at runtime with `NoClassDefFoundError` or `AbstractMethodError` the first time a message is serialized. If you switch flavors, do all three steps in one commit and run a clean build (`./gradlew clean assembleDebug`) before testing.
 
 ## More examples
 
