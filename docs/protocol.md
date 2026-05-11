@@ -215,7 +215,7 @@ content.
 * **Unary-Get-Request-Headers** &rarr; Unary-Get-Call-Specification \*Leading-Metadata
 * **Unary-Get-Call-Specification** &rarr; Method-Get Path "?" Query-Get \[Timeout\] \[Accept-Encoding\]
 * **Method-Get** &rarr; ":method GET"
-* **Query-Get** &rarr; Message-Query Encoding-Query \[Base64-Query\] \[Compression-Query\] \[Connect-Version-Query\]
+* **Query-Get** &rarr; \[Connect-Version-Query\] Encoding-Query \[Compression-Query\] \[Base64-Query\] Message-Query
 * **Message-Query** &rarr; "message=" (*\{percent-encoded octet\})
 * **Base64-Query** &rarr; "&base64=1"
 * **Encoding-Query** &rarr; "&encoding=" Message-Codec
@@ -235,8 +235,10 @@ many headers.
 **Query-Get** is sent as the query part of the URI for the request and has the
 same semantics as HTTP URI query parameters. Servers should accept query
 parameters in any order and allow unknown query parameters alongside the Connect
-query parameters. Servers may respond with an error if the query parameter is
-too long to fit in a header or results in a path or URL that is too long.
+query parameters. To maximize cache hit rates on shared caches, clients should
+order parameters as shown in the **Query-Get** rule above. Servers may respond
+with an error if the query parameter is too long to fit in a header or results
+in a path or URL that is too long.
 
 Message payloads in Get requests should be encoded in a deterministic fashion.
 Not all codecs can provide a single "canonical" encoding for any given
