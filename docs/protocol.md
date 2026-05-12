@@ -233,10 +233,10 @@ cache in browsers, proxies, and CDNs.
 many headers.
 
 **Query-Get** is sent as the query part of the URI for the request and has the
-same semantics as HTTP URI query parameters. Servers should accept query
-parameters in any order and allow unknown query parameters alongside the Connect
-query parameters. To maximize hit rates on shared caches, clients should order
-parameters as shown in the **Query-Get** rule above. Servers may respond with an
+same semantics as HTTP URI query parameters. Clients should order parameters as
+shown in the **Query-Get** rule above to maximize hit rates on shared caches.
+Servers should accept query parameters in any order and allow unknown query
+parameters alongside the Connect query parameters. Servers may respond with an
 error if the query parameter is too long to fit in a header or results in a path
 or URL that is too long.
 
