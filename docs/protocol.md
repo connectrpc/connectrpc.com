@@ -232,7 +232,7 @@ cache in browsers, proxies, and CDNs.
 &mdash; HTTP headers. Servers may respond with an error if the client sends too
 many headers.
 
-**Query-Get** is sent as the query part of the URI for the request and has the
+**Query-Get** is sent as the query part of the URI for the request. It has the
 same semantics as HTTP URI query parameters. Clients should order parameters as
 shown in the **Query-Get** rule above to maximize hit rates on shared caches.
 Servers must accept query parameters in any order and allow unknown query parameters
