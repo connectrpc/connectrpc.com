@@ -212,39 +212,14 @@ const { hasSidebar } = Astro.locals.starlightRoute;
 
 
     @media (min-width: 50rem) {
-      :global(:root[data-has-sidebar]) {
-        --__sidebar-pad: calc(2 * var(--sl-nav-pad-x));
-      }
-      :global(:root:not([data-has-toc])) {
-        --__toc-width: 0rem;
-      }
+      /* Use the same `auto 1fr auto` template on both splash and docs
+       * pages so the header layout is consistent everywhere. Earlier
+       * versions reserved the sidebar width in the title column on docs
+       * pages so the "Connect" wordmark visually aligned with the sidebar
+       * — but that left the right group with too little space for the
+       * "Created by Buf" pill at md-to-lg widths, truncating it. The
+       * unified layout matches the home / demo headers exactly. */
       .header {
-        --__sidebar-width: max(
-          0rem,
-          var(--sl-content-inline-start, 0rem) - var(--sl-nav-pad-x)
-        );
-        --__main-column-fr: calc(
-          (
-              100% + var(--__sidebar-pad, 0rem) -
-                var(--__toc-width, var(--sl-sidebar-width)) -
-                (2 * var(--__toc-width, var(--sl-nav-pad-x))) -
-                var(--sl-content-inline-start, 0rem) -
-                var(--sl-content-width)
-            ) / 2
-        );
-        grid-template-columns:
-          /* 1: site title — at least the sidebar+gutter width. */
-          minmax(
-            calc(
-              var(--__sidebar-width) +
-                max(0rem, var(--__main-column-fr) - var(--sl-nav-gap))
-            ),
-            auto
-          )
-          /* 2: flexible center column containing the centered nav links. */
-          1fr
-          /* 3: right items: search + theme + language + buf pill. */
-          auto;
         align-content: center;
       }
     }
@@ -275,15 +250,6 @@ const { hasSidebar } = Astro.locals.starlightRoute;
    * doing so would override .sl-hidden (which lives in
    * @layer starlight.utils) and leave the pill stuck visible at sub-md
    * widths. */
-  /* On docs pages the title column is forced to align with the sidebar
-   * (~17.75rem), so the right-group has less breathing room than on the
-   * splash. Below ~53rem the pill would overflow the header right edge;
-   * hide it in that narrow window. Above ~53rem it fits cleanly. */
-  @media (max-width: 52.99rem) {
-    :global(:root[data-has-sidebar]) .buf-button {
-      display: none;
-    }
-  }
 
   .buf-button {
     flex-shrink: 0;
