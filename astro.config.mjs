@@ -88,6 +88,7 @@ export default defineConfig({
         Header: "./src/components/starlight/Header.astro",
         PageFrame: "./src/components/starlight/PageFrame.astro",
         PageTitle: "./src/components/starlight/PageTitle.astro",
+        Pagination: "./src/components/starlight/Pagination.astro",
         SiteTitle: "./src/components/starlight/SiteTitle.astro",
         SocialIcons: "./src/components/starlight/SocialIcons.astro",
         ThemeSelect: "./src/components/starlight/ThemeSelect.astro",
