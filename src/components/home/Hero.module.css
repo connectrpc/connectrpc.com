@@ -23,6 +23,7 @@
 .title {
   font-size: 60px;
   font-weight: 200;
+  line-height: var(--sl-line-height-headings);
   max-width: 80%;
   color: var(--buf-ink-blue-02);
   margin-bottom: 11px;
@@ -33,6 +34,7 @@
   font-size: 36px;
   max-width: 50%;
   font-weight: 300;
+  line-height: var(--sl-line-height-headings);
 }
 
 .caretContainer {

@@ -1,0 +1,162 @@
+---
+title: Testing
+---
+
+Testing a client application can be a crucial part of ensuring its functionality
+and performance. When it comes to web applications, spinning up a full server
+to test against may not always be the best option. In the following sections, we
+will go through a couple of alternatives.
+
+## Component Testing
+
+For components that interface with Connect, it will generally be desirable to mock your RPCs since a backend may not be
+available or desirable to access in a unit test. The easiest way to do this is via Connect's `createRouterTransport`
+function.
+
+### Mocking Transports
+
+The function `createRouterTransport` from `@connectrpc/connect` creates an in-memory
+server with your own RPC implementations. It allows you to mock a backend to cover different behavior in your component.
+
+To illustrate, let's set up a very simple ELIZA service:
+
+```ts
+import { createRouterTransport } from "@connectrpc/connect";
+import { ElizaService } from "@buf/connectrpc_eliza.bufbuild_es/connectrpc/eliza/v1/eliza_pb";
+
+const mockTransport = createRouterTransport(({ service }) => {
+  service(ElizaService, {
+    say: () => { sentence: "I feel happy." },
+  });
+});
+```
+
+Under the hood, this mock transport runs nearly the same code that a server running on
+Node.js would run. This means that all features from [implementing real services](../node/implementing-services.md)
+are available: You can access request headers, raise errors with details, and also
+mock streaming responses. Here is an example that raises an error on the fourth
+request:
+
+```ts mark={6-11}
+const mockTransport = createRouterTransport(({ service }) => {
+  const sentences: string[] = [];
+  service(ElizaService, {
+    say(request) {
+      sentences.push(request.sentence);
+      if (sentences.length > 3) {
+        throw new ConnectError(
+          "I have no words anymore.",
+          Code.ResourceExhausted,
+        );
+      }
+      return {
+        sentence: `You said ${sentences.length} sentences.`,
+      };
+    },
+  });
+});
+```
+
+You can also use expectations to assert that your client sends requests as expected:
+
+```ts mark={4}
+const mockTransport = createRouterTransport(({ service }) => {
+  service(ElizaService, {
+    say(request) {
+      expect(request.sentence).toBe("how do you feel?");
+      return { sentence: "I feel happy." };
+    },
+  });
+});
+```
+
+The `createRouterTransport` function also accepts an optional second argument, allowing you
+to pass options like [interceptors](./interceptors.mdx).
+
+### Examples
+
+A recommended way to structure components that need to issue Connect calls is to pass a
+`Transport` object to the component. This adds flexibility to components for unit testing, but will vary
+depending on the framework being used. Below are links to some helpful examples for passing transports to components
+and mocking them in unit tests.
+
+#### React
+
+With React, you have actions such as component props or [React Context](https://react.dev/learn/passing-data-deeply-with-context)
+to provide a transport to your component.
+
+For a working example using the Context API, see the
+[Create React App project](https://github.com/connectrpc/examples-es/tree/main/react/cra) in the
+[examples-es](https://github.com/connectrpc/examples-es) repo.
+
+#### Svelte
+
+The suggested method for providing transports to Svelte components makes use of Svelte's
+[Context API](https://learn.svelte.dev/tutorial/context-api).
+
+To view a working example of using the Context API to mock transports in Svelte components, check out the
+[Svelte project](https://github.com/connectrpc/examples-es/tree/main/svelte) in the
+[examples-es](https://github.com/connectrpc/examples-es) repo.
+
+#### Vue
+
+Structuring a Vue application to allow for easy component testing involves Vue's [Provide/Inject API](https://vuejs.org/guide/components/provide-inject.html).
+
+For a working example of mocking transports in Vue components, see the
+[Vue project](https://github.com/connectrpc/examples-es/tree/main/vue) in the
+[examples-es](https://github.com/connectrpc/examples-es) repo.
+
+### Jest and the jsdom environment
+
+If you are using [jest-environment-jsdom](https://www.npmjs.com/package/jest-environment-jsdom),
+you will very likely see an error when you run tests with the router transport,
+the protobuf binary format, or any other code relying on the otherwise widely
+available [encoding API](https://developer.mozilla.org/en-US/docs/Web/API/Encoding_API):
+
+```text
+ReferenceError: TextEncoder is not defined
+```
+
+If you see this error, consider using [@bufbuild/jest-environment-jsdom](https://www.npmjs.com/package/@bufbuild/jest-environment-jsdom)
+instead.
+
+### What about mocking `fetch` itself?
+
+Mocking `fetch` itself is a common approach to testing network requests, but it has some drawbacks. Instead, using a schema-based serialization chain with an in-memory transport can be a better approach. Here are some reasons why:
+
+- With schema-based serialization, the request goes through the same process as it would in your actual code, allowing you to test the full flow of your application.
+- You can create stateful mocks with an in-memory transport, which can test more complex workflows and scenarios.
+- An in-memory transport is fast, so you can quickly set up your tests without worrying about resetting mocks.
+- With an in-memory transport, you can eliminate the need for [spy functions](https://jestjs.io/docs/jest-object#jestspyonobject-methodname) because you can implement any checks directly in your server implementation. This can simplify your testing code and make it easier to understand.
+- You can leverage `expect` directly within the code of your mock implementation to verify particular scenarios pertaining to the requests or responses.
+
+## End-to-end testing
+
+[Playwright](https://playwright.dev/) is a powerful tool for testing complex web
+applications. It can intercept requests and return mocked responses to the web
+application under test. If you want to use Playwright with a Connect client, consider using
+[@connectrpc/connect-playwright](https://www.npmjs.com/package/@connectrpc/connect-playwright)
+to bring the type-safety of your schema to Playwright's [API Mocks](https://playwright.dev/docs/mock).
+
+A basic example:
+
+```ts
+test.describe("mocking Eliza", () => {
+  let mock: MockRouter;
+  test.beforeEach(({ context }) => {
+    mock = createMockRouter(context, {
+      baseUrl: "https://demo.connectrpc.com",
+    });
+  });
+  test("mock RPCs at service level", async ({ page }) => {
+    await mock.service(ElizaService, {
+      say: () => { sentence: "I feel happy." },
+    });
+    // Any calls to Eliza.Say in test code below will be intercepted and invoke
+    // the implementation above.
+  });
+});
+```
+
+To get started, take a look at the [connect-playwright repository](https://github.com/connectrpc/connect-playwright-es),
+and the [example project](https://github.com/connectrpc/connect-playwright-es/tree/main/packages/connect-playwright-example).

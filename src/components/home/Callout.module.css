@@ -52,6 +52,15 @@ html[data-theme="dark"] .text {
   color: #000;
 }
 
+/* In dark mode --ifm-color-primary is a light cyan; white text on it fails
+ * contrast. Switch to dark text so the label stays readable. */
+:global(:root[data-theme="dark"]) .button {
+  color: #090a3a;
+}
+:global(:root[data-theme="dark"]) .button:hover {
+  color: #000;
+}
+
 @media screen and (max-width: 966px) {
   .callout {
     align-items: stretch;

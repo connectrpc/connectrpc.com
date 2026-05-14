@@ -1,0 +1,187 @@
+---
+// Copyright 2021-2026 The Connect Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+import config from "virtual:starlight/user-config";
+import LanguageSelect from "virtual:starlight/components/LanguageSelect";
+import Search from "virtual:starlight/components/Search";
+import SiteTitle from "virtual:starlight/components/SiteTitle";
+import SocialIcons from "virtual:starlight/components/SocialIcons";
+import ThemeSelect from "virtual:starlight/components/ThemeSelect";
+import BufLogo from "./header-assets/buf.svg";
+
+const shouldRenderSearch =
+  config.pagefind ||
+  config.components.Search !== "@astrojs/starlight/components/Search.astro";
+---
+
+<div class="header">
+  <div class="title-wrapper sl-flex">
+    <SiteTitle />
+  </div>
+  <nav class="nav-links sl-hidden md:sl-flex" aria-label="Main">
+    <a href="/docs/introduction/" class="nav-link">Docs</a>
+    <a href="/demo/" class="nav-link">Demo</a>
+  </nav>
+  <div class="sl-hidden md:sl-flex print:hidden right-group">
+    <div class="sl-flex search-wrapper print:hidden">
+      {shouldRenderSearch && <Search />}
+    </div>
+    <div class="sl-flex social-icons">
+      <SocialIcons />
+    </div>
+    <ThemeSelect />
+    <LanguageSelect />
+    <a href="https://buf.build" class="buf-button sl-hidden lg:sl-flex">
+      <span>Created by</span>
+      <span class="buf-logo"><BufLogo /></span>
+    </a>
+  </div>
+</div>
+
+<style>
+  @layer starlight.core {
+    .header {
+      display: flex;
+      gap: var(--sl-nav-gap);
+      justify-content: space-between;
+      align-items: center;
+      height: 100%;
+    }
+
+    .title-wrapper {
+      overflow: clip;
+      padding: 0.25rem;
+      margin: -0.25rem;
+      min-width: 0;
+    }
+
+    .nav-links {
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    .nav-link {
+      color: var(--sl-color-white);
+      text-decoration: none;
+      text-transform: uppercase;
+      font-family: var(--buf-mono-font);
+      font-size: 1rem;
+      letter-spacing: 0.08em;
+      padding: 0.5rem 0.25rem;
+      white-space: nowrap;
+    }
+    .nav-link:hover {
+      color: var(--sl-color-text-accent);
+    }
+
+    .right-group,
+    .social-icons {
+      gap: 1rem;
+      align-items: center;
+    }
+    .social-icons::after {
+      content: "";
+      height: 2rem;
+      border-inline-end: 1px solid var(--sl-color-gray-5);
+    }
+
+
+    @media (min-width: 50rem) {
+      :global(:root[data-has-sidebar]) {
+        --__sidebar-pad: calc(2 * var(--sl-nav-pad-x));
+      }
+      :global(:root:not([data-has-toc])) {
+        --__toc-width: 0rem;
+      }
+      .header {
+        --__sidebar-width: max(
+          0rem,
+          var(--sl-content-inline-start, 0rem) - var(--sl-nav-pad-x)
+        );
+        --__main-column-fr: calc(
+          (
+              100% + var(--__sidebar-pad, 0rem) -
+                var(--__toc-width, var(--sl-sidebar-width)) -
+                (2 * var(--__toc-width, var(--sl-nav-pad-x))) -
+                var(--sl-content-inline-start, 0rem) -
+                var(--sl-content-width)
+            ) / 2
+        );
+        display: grid;
+        grid-template-columns:
+          /* 1: site title — at least the sidebar+gutter width. */
+          minmax(
+            calc(
+              var(--__sidebar-width) +
+                max(0rem, var(--__main-column-fr) - var(--sl-nav-gap))
+            ),
+            auto
+          )
+          /* 2: flexible center column containing the centered nav links. */
+          1fr
+          /* 3: right items: search + social + theme + language. */
+          auto;
+        align-content: center;
+      }
+      .nav-links {
+        justify-self: center;
+      }
+    }
+  }
+
+  /* "Created by Buf" pill — far-right header affordance, separate from the
+   * social-icon group. Outside @layer starlight.core so Starlight's own
+   * styles don't override it. */
+  .buf-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.8rem;
+    background-color: white;
+    border: 1px solid #d0e3e8;
+    border-radius: 2px;
+    font-size: 12px;
+    text-decoration: none;
+    color: #090a3a;
+  }
+  .buf-button span {
+    font-family: var(--buf-mono-font);
+    text-transform: uppercase;
+    letter-spacing: 0.075rem;
+  }
+  .buf-button:hover {
+    cursor: pointer;
+    text-decoration: none;
+    background-color: #f8f8ff;
+    border-color: #cbcbf3;
+  }
+  .buf-logo {
+    display: inline-flex;
+    align-items: center;
+  }
+  .buf-logo :global(svg) {
+    height: 23px;
+    width: auto;
+    display: block;
+  }
+
+  :global(:root[data-theme="dark"]) .buf-button {
+    background-color: transparent;
+    color: var(--sl-color-text);
+  }
+  :global(:root[data-theme="dark"]) .buf-button:hover {
+    background-color: var(--buf-grey-01);
+  }
+</style>

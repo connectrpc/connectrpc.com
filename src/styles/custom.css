@@ -1,0 +1,152 @@
+/* Copyright 2021-2026 The Connect Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import url("https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Work+Sans:wght@400&family=Inter:ital,wght@0,200;0,300;0,400;1,300;1,400&display=block");
+
+:root {
+  /* Aliases preserving legacy Docusaurus/Infima variables consumed by ported
+     home-page module CSS. Centralized here so .module.css files stay portable. */
+  --ifm-color-primary: #161ede;
+  --ifm-color-primary-light: #77e1ff;
+  --ifm-font-family-base: var(--sl-font);
+  --ifm-font-family-monospace: var(--sl-font-mono);
+  --ifm-font-color-base: var(--sl-color-text);
+  --ifm-heading-color: var(--sl-color-text-accent);
+  --ifm-background-color: var(--sl-color-bg);
+  --ifm-spacing-horizontal: 1rem;
+  --ifm-pre-padding: 1rem;
+
+  --buf-white-00: #ffffff;
+  --buf-white-01: #fafafa;
+
+  --buf-grey-01: #ebebeb;
+  --buf-grey-02: #b7b7b7;
+  --buf-grey-03: #909090;
+  --buf-grey-04: #5e5e5e;
+
+  --buf-ink-blue-00: #f8f8ff;
+  --buf-ink-blue-01: #e6e6fc;
+  --buf-ink-blue-02: #161ede;
+  --buf-ink-blue-03: #090a3a;
+  --buf-ink-blue-04: #6f6fbd;
+
+  --buf-marine-blue-01: #eff9fc;
+  --buf-marine-blue-05: #648b99;
+
+  --buf-mono-font:
+    "DM Mono", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --buf-sans-font:
+    "Work Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+
+  /* Map Buf brand colors into Starlight light-mode variables. */
+  --sl-color-accent-low: #e6e6fc;
+  --sl-color-accent: #161ede;
+  --sl-color-accent-high: #090a3a;
+  --sl-color-text-accent: #161ede;
+
+  /* Expressive Code terminal-frame variables, duplicated from EC's
+   * github-light theme. EC only injects these on pages with Code blocks;
+   * we redefine them here so the ELIZA terminal on the demo page (no Code
+   * blocks) still renders correctly. */
+  --ec-frm-trmBg: #f6f8fa;
+  --ec-frm-trmTtbBg: #ffffff;
+  --ec-frm-trmTtbFg: #2f363d;
+  --ec-frm-trmTtbDotsFg: #2f363d;
+  --ec-frm-trmTtbDotsOpa: 0.15;
+  --ec-frm-trmTtbBrdBtmCol: #e1e4e8;
+  --ec-frm-edTabBarBrdCol: #e1e4e8;
+  --ec-frm-frameBoxShdCssVal: 0.1rem 0.1rem 0.2rem #0000005b;
+  --ec-codeFg: #24292e;
+  --ec-codeFontFml:
+    ui-monospace, "SFMono-Regular", Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+  --ec-codeFontSize: 0.875rem;
+  --ec-codeLineHt: 1.75;
+  --ec-uiFontFml: var(--sl-font);
+  --ec-uiFontSize: 0.9rem;
+  --ec-uiLineHt: 1.65;
+  --ec-brdRad: 0px;
+  --sl-font:
+    "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Helvetica, Arial, sans-serif;
+  --sl-font-mono:
+    ui-monospace, "SFMono-Regular", Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+}
+
+/* Use 2-space tab width in code blocks (matches the pre-migration default). */
+pre {
+  tab-size: 2;
+}
+
+/* Inline link color inside the .not-content body of splash pages.
+ * Starlight only styles links inside .sl-markdown-content; the splash pages
+ * opt out via .not-content, so we have to set the brand link color
+ * explicitly. Wrapped in :where() so the rule has 0 specificity, letting
+ * more specific button styles (e.g. .callout .button) win without effort. */
+:where(.not-content a) {
+  color: var(--sl-color-text-accent);
+}
+
+/* Global container shim. Docusaurus shipped a global `.container` class
+ * (max-width with width:100%) consumed by several legacy home-page module
+ * CSS files. Reproducing it here keeps the ported components laid out
+ * correctly under Starlight without rewriting every selector. */
+.container {
+  width: 100%;
+  max-width: 1140px;
+  margin-inline: auto;
+  padding-inline: var(--ifm-spacing-horizontal);
+}
+
+:root[data-theme="dark"] {
+  --sl-color-accent-low: #16213e;
+  --sl-color-accent: #77e1ff;
+  --sl-color-accent-high: #ccf6ff;
+  --sl-color-text-accent: #77e1ff;
+  --ifm-color-primary: #77e1ff;
+  --ifm-color-primary-light: #92e9ff;
+  --ifm-background-color: var(--sl-color-bg);
+  /* Matches the original Docusaurus dark-mode heading color: pure white. */
+  --ifm-heading-color: var(--sl-color-white);
+
+  /* Buf brand palette flipped for dark mode. Mirrors the original
+     Docusaurus html[data-theme="dark"] block. */
+  --buf-white-00: #1a1a1a;
+  --buf-white-01: #242424;
+  --buf-grey-01: #333333;
+  --buf-grey-02: #666666;
+  --buf-grey-03: #999999;
+  --buf-grey-04: #cccccc;
+  --buf-ink-blue-00: #1a1a2e;
+  --buf-ink-blue-01: #16213e;
+  --buf-ink-blue-02: #77e1ff;
+  --buf-ink-blue-03: #ffffff;
+  --buf-ink-blue-04: #8a8acc;
+  --buf-marine-blue-01: #0f2832;
+
+  /* Expressive Code terminal-frame variables for the github-dark theme,
+   * mirrored from EC for the same reasons as the light-mode block above. */
+  --ec-frm-trmBg: #1f2428;
+  --ec-frm-trmTtbBg: #24292e;
+  --ec-frm-trmTtbFg: #e1e4e8;
+  --ec-frm-trmTtbDotsFg: #e1e4e8;
+  --ec-frm-trmTtbDotsOpa: 0.15;
+  --ec-frm-trmTtbBrdBtmCol: #1b1f23;
+  --ec-frm-edTabBarBrdCol: #1b1f23;
+  --ec-codeFg: #e1e4e8;
+}
