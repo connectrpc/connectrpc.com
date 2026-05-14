@@ -39,84 +39,90 @@ const { hasSidebar } = Astro.locals.starlightRoute;
     <a href="/docs/introduction/" class="nav-link">Docs</a>
     <a href="/demo/" class="nav-link">Demo</a>
   </nav>
-  <div class="sl-hidden md:sl-flex print:hidden right-group">
-    <div class="sl-flex search-wrapper print:hidden">
-      {shouldRenderSearch && <Search />}
-    </div>
-    <div class="sl-flex social-icons">
-      <SocialIcons />
-    </div>
-    <ThemeSelect />
-    <LanguageSelect />
-    <a href="https://buf.build" class="buf-button sl-hidden lg:sl-flex">
-      <span>Created by</span>
-      <span class="buf-logo"><BufLogo /></span>
-    </a>
-  </div>
-  {
-    !hasSidebar && (
-      <details class="mobile-menu print:hidden">
-        <summary class="mobile-menu-toggle" aria-label="Toggle menu">
-          <svg
-            class="mobile-menu-icon mobile-menu-icon-open"
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <line x1="3" y1="6" x2="21" y2="6" />
-            <line x1="3" y1="12" x2="21" y2="12" />
-            <line x1="3" y1="18" x2="21" y2="18" />
-          </svg>
-          <svg
-            class="mobile-menu-icon mobile-menu-icon-close"
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
-        </summary>
-        <div class="mobile-menu-panel">
-          <nav class="mobile-menu-nav" aria-label="Mobile main">
-            <a href="/docs/introduction/" class="mobile-menu-link">Docs</a>
-            {config.social?.map((s) => (
-              <a href={s.href} class="mobile-menu-link">
-                {s.label}
-              </a>
-            ))}
-            <a href="/demo/" class="mobile-menu-link">Demo</a>
-          </nav>
-          {shouldRenderSearch && (
-            <div class="mobile-menu-search">
-              <Search />
-            </div>
-          )}
-          <div class="mobile-menu-controls">
-            <ThemeSelect />
-          </div>
-          <a href="https://buf.build" class="mobile-menu-buf-button">
-            <span>Created by</span>
-            <span class="buf-logo"><BufLogo /></span>
-          </a>
+  <div class="header-actions sl-flex print:hidden">
+    {/* Search is rendered exactly once. Starlight styles the button
+        responsively (icon-only sub-md, pill at md+); our CSS shrinks
+        it to icon-only between md and lg too. Rendering it twice
+        breaks PagefindUI because it mounts to a global #starlight__search
+        ID — both instances would mount into the same div. */}
+    {
+      shouldRenderSearch && (
+        <div class="sl-flex search-wrapper">
+          <Search />
         </div>
-      </details>
-    )
-  }
+      )
+    }
+    <div class="sl-hidden md:sl-flex desktop-extras">
+      <div class="sl-flex social-icons">
+        <SocialIcons />
+      </div>
+      <ThemeSelect />
+      <LanguageSelect />
+      <a href="https://buf.build" class="buf-button sl-hidden md:sl-flex">
+        <span>Created by</span>
+        <span class="buf-logo"><BufLogo /></span>
+      </a>
+    </div>
+    <div class="sl-flex md:sl-hidden mobile-extras">
+      <ThemeSelect />
+      {
+        !hasSidebar && (
+          <details class="mobile-menu">
+            <summary class="mobile-menu-toggle" aria-label="Toggle menu">
+              <svg
+                class="mobile-menu-icon mobile-menu-icon-open"
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+              <svg
+                class="mobile-menu-icon mobile-menu-icon-close"
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </summary>
+            <div class="mobile-menu-panel">
+              <nav class="mobile-menu-nav" aria-label="Mobile main">
+                <a href="/docs/introduction/" class="mobile-menu-link">Docs</a>
+                {config.social?.map((s) => (
+                  <a href={s.href} class="mobile-menu-link">
+                    {s.label}
+                  </a>
+                ))}
+                <a href="/demo/" class="mobile-menu-link">Demo</a>
+              </nav>
+              <a href="https://buf.build" class="mobile-menu-buf-button">
+                <span>Created by</span>
+                <span class="buf-logo"><BufLogo /></span>
+              </a>
+            </div>
+          </details>
+        )
+      }
+    </div>
+  </div>
 </div>
 
 <script is:inline>
@@ -139,10 +145,20 @@ const { hasSidebar } = Astro.locals.starlightRoute;
     }
 
     .title-wrapper {
-      overflow: clip;
       padding: 0.25rem;
       margin: -0.25rem;
-      min-width: 0;
+      /* Pin to content width so the "Connect" title is never truncated
+       * when the desktop grid is tight (e.g. ~800-823px between md and
+       * the point the right-group has shed its widest items). */
+      min-width: max-content;
+    }
+    /* Starlight's SiteTitle defaults to `min-width: 0` + `overflow: hidden`
+     * on the inner span. Undo so the title can't be clipped. */
+    .title-wrapper :global(.site-title) {
+      min-width: max-content;
+    }
+    .title-wrapper :global(.site-title span) {
+      overflow: visible;
     }
 
     .nav-links {
@@ -164,10 +180,15 @@ const { hasSidebar } = Astro.locals.starlightRoute;
       color: var(--sl-color-text-accent);
     }
 
-    .right-group,
+    .header-actions,
+    .desktop-extras,
+    .mobile-extras,
     .social-icons {
       gap: 1rem;
       align-items: center;
+    }
+    .mobile-extras {
+      gap: 0.5rem;
     }
     .social-icons::after {
       content: "";
@@ -219,11 +240,43 @@ const { hasSidebar } = Astro.locals.starlightRoute;
     }
   }
 
+  /* At md (50rem) to lg (72rem), space in the right-group is tight: the
+   * Created-by-Buf pill is visible and we still need search + social +
+   * theme. Shrink Starlight's search button to a square icon-only control
+   * matching the theme toggle. At lg+ the default pill returns. */
+  @media (min-width: 50rem) and (max-width: 71.99rem) {
+    .search-wrapper :global(button[data-open-modal]) {
+      width: 2.25rem;
+      max-width: 2.25rem;
+      height: 2.25rem;
+      padding: 0;
+      border-radius: 4px;
+      justify-content: center;
+    }
+    .search-wrapper :global(button[data-open-modal] > span),
+    .search-wrapper :global(button[data-open-modal] > kbd) {
+      display: none;
+    }
+  }
+
   /* "Created by Buf" pill — far-right header affordance, separate from the
-   * social-icon group. Outside @layer starlight.core so Starlight's own
-   * styles don't override it. */
+   * social-icon group. Visibility is governed by Starlight's
+   * .sl-hidden / .md:sl-flex utility classes on the element itself, so we
+   * deliberately don't set `display` here — doing so would override
+   * .sl-hidden (which lives in @layer starlight.utils) and leave the pill
+   * stuck visible at sub-md widths. */
+  /* On docs pages the title column is forced to align with the sidebar
+   * (~17.75rem), so the right-group has less breathing room than on the
+   * splash. Below ~53rem the pill would overflow the header right edge;
+   * hide it in that narrow window. Above ~53rem it fits cleanly. */
+  @media (max-width: 52.99rem) {
+    :global(:root[data-has-sidebar]) .buf-button {
+      display: none;
+    }
+  }
+
   .buf-button {
-    display: inline-flex;
+    flex-shrink: 0;
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem 0.8rem;
@@ -233,6 +286,7 @@ const { hasSidebar } = Astro.locals.starlightRoute;
     font-size: 12px;
     text-decoration: none;
     color: #090a3a;
+    white-space: nowrap;
   }
   .buf-button span {
     font-family: var(--buf-mono-font);
@@ -263,16 +317,18 @@ const { hasSidebar } = Astro.locals.starlightRoute;
     background-color: var(--buf-grey-01);
   }
 
+  /* On docs pages, Starlight renders its own sidebar-toggle hamburger as
+   * `position: fixed` at the right edge of the viewport. Reserve space on
+   * the header-actions group so it doesn't cover the search/theme icons. */
+  @media (max-width: 49.99rem) {
+    :global(:root[data-has-sidebar]) .header-actions {
+      margin-inline-end: calc(var(--sl-menu-button-size) + 0.5rem);
+    }
+  }
   /* Full-screen mobile drawer for splash pages (home / demo / 404), which
-   * have no Starlight sidebar toggle. Hidden at the same md breakpoint
-   * where the inline nav-links + right-group become visible. */
+   * have no Starlight sidebar toggle. */
   .mobile-menu {
     display: block;
-  }
-  @media (min-width: 50rem) {
-    .mobile-menu {
-      display: none;
-    }
   }
   .mobile-menu-toggle {
     position: relative;
@@ -330,17 +386,6 @@ const { hasSidebar } = Astro.locals.starlightRoute;
   }
   .mobile-menu-link:hover {
     color: var(--sl-color-text-accent);
-  }
-  /* Search widget inside the drawer: keyboard shortcuts (⌘K) are
-   * meaningless on touch devices, hide the hint pill. */
-  .mobile-menu-search :global(kbd) {
-    display: none;
-  }
-  .mobile-menu-controls {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding-block-start: 0.5rem;
   }
   /* Created-by-Buf pill at the bottom of the drawer. Mirrors the desktop
    * .buf-button visual, with margin-block-start: auto pushing it to the

@@ -43,11 +43,6 @@ export const TerminalHeader: React.FC<TerminalHeaderProps> = ({
 }: PropsWithChildren<TerminalHeaderProps>) => {
   return (
     <div className={clsx(styles.terminalHeaderWrapper)}>
-      <div className={styles.terminalHeaderFakeButtons}>
-        <div className={styles.terminalHeaderFakeButton} />
-        <div className={styles.terminalHeaderFakeButton} />
-        <div className={styles.terminalHeaderFakeButton} />
-      </div>
       <div className={styles.terminalHeaderText}>{children}</div>
     </div>
   );

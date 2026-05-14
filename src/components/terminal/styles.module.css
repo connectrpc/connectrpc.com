@@ -12,6 +12,25 @@
   position: relative;
 }
 
+/* Three traffic-light dots, mirroring EC's .frame.is-terminal .header::before.
+ * Copied verbatim from EC's mask-image so the dot count, sizing, and spacing
+ * cannot drift away from EC. */
+.terminalHeaderWrapper::before {
+  content: "";
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  width: 2.1rem;
+  aspect-ratio: 60 / 16;
+  transform: translateY(-50%);
+  background-color: var(--ec-frm-trmTtbDotsFg);
+  opacity: var(--ec-frm-trmTtbDotsOpa);
+  mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2060%2016'%20preserveAspectRatio%3D'xMidYMid%20meet'%3E%3Ccircle%20cx%3D'8'%20cy%3D'8'%20r%3D'8'%2F%3E%3Ccircle%20cx%3D'30'%20cy%3D'8'%20r%3D'8'%2F%3E%3Ccircle%20cx%3D'52'%20cy%3D'8'%20r%3D'8'%2F%3E%3C%2Fsvg%3E");
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  pointer-events: none;
+}
+
 /* Thin seam between title bar and code body. EC draws this same line via
  * its own .header::after with inset: 0 + border-bottom. */
 .terminalHeaderWrapper::after {
@@ -20,20 +39,6 @@
   inset: 0;
   border-bottom: 1px solid var(--ec-frm-trmTtbBrdBtmCol);
   pointer-events: none;
-}
-
-.terminalHeaderFakeButtons {
-  display: flex;
-  gap: 0.2125rem;
-  position: absolute;
-}
-
-.terminalHeaderFakeButton {
-  width: 0.56rem;
-  height: 0.56rem;
-  border-radius: 50%;
-  background-color: var(--ec-frm-trmTtbDotsFg);
-  opacity: var(--ec-frm-trmTtbDotsOpa);
 }
 
 .terminalHeaderText {
@@ -53,6 +58,8 @@
   font-size: var(--ec-codeFontSize);
   line-height: var(--ec-codeLineHt);
   color: var(--ec-codeFg);
+  display: flex;
+  flex-direction: column;
   height: 300px;
   margin-bottom: 15px;
   background-color: var(--ec-frm-trmBg);
@@ -69,7 +76,8 @@
 .terminalBody {
   color: var(--ec-codeFg);
   padding: 1rem;
-  height: calc(100% - var(--ec-frame-title-height));
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .terminalOverflow {

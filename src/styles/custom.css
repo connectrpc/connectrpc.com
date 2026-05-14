@@ -76,12 +76,15 @@
   --ec-uiFontSize: 0.9rem;
   --ec-uiLineHt: 1.65;
   --ec-brdRad: 0px;
-  /* Rendered height of Expressive Code's terminal-frame title bar at the
-   * UI font size + line height set above. Measured against EC's actual
-   * .frame.is-terminal .header element — keep in sync if --ec-uiFontSize
-   * or --ec-uiLineHt change. Consumed by the ELIZA terminal body height
-   * and the home-page example headers that align to it. */
-  --ec-frame-title-height: 33.75px;
+  /* Rendered height of Expressive Code's terminal-frame title bar.
+   * Auto-tracks EC's vars: 4px padding-top + content (font-size ×
+   * line-height) + 5px padding-bottom + 1px border-top. Consumed by the
+   * home-page example header whose underline aligns with EC's title bar
+   * bottom edge. The ELIZA terminal uses flex layout so doesn't depend
+   * on this value. */
+  --ec-frame-title-height: calc(
+    10px + var(--ec-uiFontSize) * var(--ec-uiLineHt)
+  );
   --sl-font:
     "Inter Variable", "Inter", system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", Helvetica, Arial, sans-serif;
@@ -142,13 +145,23 @@ pre {
   --buf-marine-blue-01: #0f2832;
 
   /* Expressive Code terminal-frame variables for the github-dark theme,
-   * mirrored from EC for the same reasons as the light-mode block above. */
+   * mirrored from EC for the same reasons as the light-mode block above.
+   * Exception: EC's github-dark seam (#1b1f23) is darker than the title
+   * bar bg (#24292e) and renders invisible inside the title bar. Use a
+   * brighter value (matches the pre-migration Docusaurus seam #444). */
   --ec-frm-trmBg: #1f2428;
   --ec-frm-trmTtbBg: #24292e;
   --ec-frm-trmTtbFg: #e1e4e8;
   --ec-frm-trmTtbDotsFg: #e1e4e8;
   --ec-frm-trmTtbDotsOpa: 0.15;
-  --ec-frm-trmTtbBrdBtmCol: #1b1f23;
+  --ec-frm-trmTtbBrdBtmCol: #444c56;
   --ec-frm-edTabBarBrdCol: #1b1f23;
   --ec-codeFg: #e1e4e8;
+}
+
+/* EC binds its variables under .expressive-code from its bundled theme,
+ * which shadows the root values above. Re-override the seam color at
+ * that scope so EC's own terminal headers pick up the brighter line. */
+:root[data-theme="dark"] .expressive-code {
+  --ec-frm-trmTtbBrdBtmCol: #444c56;
 }
