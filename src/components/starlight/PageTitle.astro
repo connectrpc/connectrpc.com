@@ -15,12 +15,13 @@
 
 import Default from "@astrojs/starlight/components/PageTitle.astro";
 
-// Pages that provide their own hero/heading and should suppress the
-// auto-generated <h1>. Entry id is the route path with no leading slash.
-const SUPPRESS_TITLE_IDS = new Set(["", "demo", "404"]);
-
-const id = Astro.locals.starlightRoute.entry.id;
-const suppress = SUPPRESS_TITLE_IDS.has(id);
+// Splash-template pages render their own hero/title in the page body, so
+// the auto-generated Starlight <h1> would just duplicate it. This covers
+// the home page, demo, 404, and any future splash page without needing a
+// hardcoded route list (the 404 page's entry id is the requested URL,
+// so a route-id allowlist can't match it).
+const template = Astro.locals.starlightRoute.entry.data.template;
+const suppress = template === "splash";
 ---
 
 {!suppress && <Default {...Astro.props}><slot /></Default>}

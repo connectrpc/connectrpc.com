@@ -24,6 +24,11 @@ import BufLogo from "./header-assets/buf.svg";
 const shouldRenderSearch =
   config.pagefind ||
   config.components.Search !== "@astrojs/starlight/components/Search.astro";
+
+// Splash pages have no Starlight sidebar drawer, so without our own
+// disclosure the mobile header collapses to just the logo. Pages with a
+// sidebar already get Starlight's <MobileMenuToggle /> in PageFrame.
+const { hasSidebar } = Astro.locals.starlightRoute;
 ---
 
 <div class="header">
@@ -48,7 +53,80 @@ const shouldRenderSearch =
       <span class="buf-logo"><BufLogo /></span>
     </a>
   </div>
+  {
+    !hasSidebar && (
+      <details class="mobile-menu print:hidden">
+        <summary class="mobile-menu-toggle" aria-label="Toggle menu">
+          <svg
+            class="mobile-menu-icon mobile-menu-icon-open"
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+          <svg
+            class="mobile-menu-icon mobile-menu-icon-close"
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </summary>
+        <div class="mobile-menu-panel">
+          <nav class="mobile-menu-nav" aria-label="Mobile main">
+            <a href="/docs/introduction/" class="mobile-menu-link">Docs</a>
+            {config.social?.map((s) => (
+              <a href={s.href} class="mobile-menu-link">
+                {s.label}
+              </a>
+            ))}
+            <a href="/demo/" class="mobile-menu-link">Demo</a>
+          </nav>
+          {shouldRenderSearch && (
+            <div class="mobile-menu-search">
+              <Search />
+            </div>
+          )}
+          <div class="mobile-menu-controls">
+            <ThemeSelect />
+          </div>
+          <a href="https://buf.build" class="mobile-menu-buf-button">
+            <span>Created by</span>
+            <span class="buf-logo"><BufLogo /></span>
+          </a>
+        </div>
+      </details>
+    )
+  }
 </div>
+
+<script is:inline>
+  // Lock body scroll while a full-screen mobile menu drawer is open.
+  document.querySelectorAll("details.mobile-menu").forEach((d) => {
+    d.addEventListener("toggle", () => {
+      document.documentElement.classList.toggle("mobile-menu-open", d.open);
+    });
+  });
+</script>
 
 <style>
   @layer starlight.core {
@@ -183,5 +261,120 @@ const shouldRenderSearch =
   }
   :global(:root[data-theme="dark"]) .buf-button:hover {
     background-color: var(--buf-grey-01);
+  }
+
+  /* Full-screen mobile drawer for splash pages (home / demo / 404), which
+   * have no Starlight sidebar toggle. Hidden at the same md breakpoint
+   * where the inline nav-links + right-group become visible. */
+  .mobile-menu {
+    display: block;
+  }
+  @media (min-width: 50rem) {
+    .mobile-menu {
+      display: none;
+    }
+  }
+  .mobile-menu-toggle {
+    position: relative;
+    z-index: calc(var(--sl-z-index-menu, 10) + 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    color: var(--sl-color-white);
+    background: transparent;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 4px;
+    cursor: pointer;
+    list-style: none;
+  }
+  .mobile-menu-toggle::-webkit-details-marker {
+    display: none;
+  }
+  .mobile-menu-icon-close {
+    display: none;
+  }
+  .mobile-menu[open] .mobile-menu-icon-open {
+    display: none;
+  }
+  .mobile-menu[open] .mobile-menu-icon-close {
+    display: block;
+  }
+  .mobile-menu-panel {
+    position: fixed;
+    inset: 0;
+    z-index: var(--sl-z-index-menu, 10);
+    padding: calc(var(--sl-nav-height) + 1rem) 1.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background-color: var(--sl-color-bg-nav);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .mobile-menu-nav {
+    display: flex;
+    flex-direction: column;
+  }
+  .mobile-menu-link {
+    display: block;
+    padding: 0.75rem 0;
+    color: var(--sl-color-white);
+    font-family: var(--buf-mono-font);
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    border-block-end: 1px solid var(--sl-color-hairline-shade);
+  }
+  .mobile-menu-link:hover {
+    color: var(--sl-color-text-accent);
+  }
+  /* Search widget inside the drawer: keyboard shortcuts (⌘K) are
+   * meaningless on touch devices, hide the hint pill. */
+  .mobile-menu-search :global(kbd) {
+    display: none;
+  }
+  .mobile-menu-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-block-start: 0.5rem;
+  }
+  /* Created-by-Buf pill at the bottom of the drawer. Mirrors the desktop
+   * .buf-button visual, with margin-block-start: auto pushing it to the
+   * bottom of the column. */
+  .mobile-menu-buf-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-block-start: auto;
+    padding: 0.75rem 1rem;
+    background-color: white;
+    border: 1px solid #d0e3e8;
+    border-radius: 2px;
+    color: #090a3a;
+    text-decoration: none;
+    font-size: 0.875rem;
+  }
+  .mobile-menu-buf-button span {
+    font-family: var(--buf-mono-font);
+    text-transform: uppercase;
+    letter-spacing: 0.075rem;
+  }
+  .mobile-menu-buf-button .buf-logo :global(svg) {
+    height: 23px;
+    width: auto;
+  }
+  :global(:root[data-theme="dark"]) .mobile-menu-buf-button {
+    background-color: transparent;
+    color: var(--sl-color-text);
+  }
+
+  /* Body scroll lock when the drawer is open (toggled by inline script). */
+  :global(html.mobile-menu-open) {
+    overflow: hidden;
   }
 </style>

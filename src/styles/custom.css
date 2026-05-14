@@ -13,20 +13,16 @@
  * limitations under the License.
  */
 
-@import url("https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Work+Sans:wght@400&family=Inter:ital,wght@0,200;0,300;0,400;1,300;1,400&display=block");
-
 :root {
   /* Aliases preserving legacy Docusaurus/Infima variables consumed by ported
      home-page module CSS. Centralized here so .module.css files stay portable. */
   --ifm-color-primary: #161ede;
   --ifm-color-primary-light: #77e1ff;
   --ifm-font-family-base: var(--sl-font);
-  --ifm-font-family-monospace: var(--sl-font-mono);
   --ifm-font-color-base: var(--sl-color-text);
   --ifm-heading-color: var(--sl-color-text-accent);
   --ifm-background-color: var(--sl-color-bg);
   --ifm-spacing-horizontal: 1rem;
-  --ifm-pre-padding: 1rem;
 
   --buf-white-00: #ffffff;
   --buf-white-01: #fafafa;
@@ -80,9 +76,15 @@
   --ec-uiFontSize: 0.9rem;
   --ec-uiLineHt: 1.65;
   --ec-brdRad: 0px;
+  /* Rendered height of Expressive Code's terminal-frame title bar at the
+   * UI font size + line height set above. Measured against EC's actual
+   * .frame.is-terminal .header element — keep in sync if --ec-uiFontSize
+   * or --ec-uiLineHt change. Consumed by the ELIZA terminal body height
+   * and the home-page example headers that align to it. */
+  --ec-frame-title-height: 33.75px;
   --sl-font:
-    "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Helvetica, Arial, sans-serif;
+    "Inter Variable", "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Helvetica, Arial, sans-serif;
   --sl-font-mono:
     ui-monospace, "SFMono-Regular", Monaco, Consolas, "Liberation Mono",
     "Courier New", monospace;

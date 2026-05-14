@@ -8,19 +8,29 @@
   align-items: center;
   padding: 4px 1rem 5px;
   background-color: var(--ec-frm-trmTtbBg);
-  border-top: 1px solid var(--ec-frm-edTabBarBrdCol);
   width: 100%;
+  position: relative;
+}
+
+/* Thin seam between title bar and code body. EC draws this same line via
+ * its own .header::after with inset: 0 + border-bottom. */
+.terminalHeaderWrapper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-bottom: 1px solid var(--ec-frm-trmTtbBrdBtmCol);
+  pointer-events: none;
 }
 
 .terminalHeaderFakeButtons {
   display: flex;
-  gap: 0.4rem;
+  gap: 0.2125rem;
   position: absolute;
 }
 
 .terminalHeaderFakeButton {
-  width: 0.65rem;
-  height: 0.65rem;
+  width: 0.56rem;
+  height: 0.56rem;
   border-radius: 50%;
   background-color: var(--ec-frm-trmTtbDotsFg);
   opacity: var(--ec-frm-trmTtbDotsOpa);
@@ -46,6 +56,7 @@
   height: 300px;
   margin-bottom: 15px;
   background-color: var(--ec-frm-trmBg);
+  border: 1px solid var(--ec-frm-edTabBarBrdCol);
   border-radius: var(--ec-brdRad);
   box-shadow: var(--ec-frm-frameBoxShdCssVal);
 }
@@ -58,8 +69,7 @@
 .terminalBody {
   color: var(--ec-codeFg);
   padding: 1rem;
-  /* Subtract title bar height (33.75px in EC's terminal frame). */
-  height: calc(100% - 34px);
+  height: calc(100% - var(--ec-frame-title-height));
 }
 
 .terminalOverflow {
@@ -118,5 +128,16 @@
 @keyframes linearwipe {
   from {
     width: 0;
+  }
+}
+
+/* On narrow viewports the typewriter wipe truncates the response (e.g.
+ * "Hello, how are you feeling?" gets cut off mid-word on iPhone SE).
+ * Wrap text and drop the animation; the reflow at intermediate widths
+ * looks jumpy if both run together. */
+@media (max-width: 650px) {
+  .elizaText {
+    white-space: normal;
+    animation: none;
   }
 }

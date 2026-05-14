@@ -19,8 +19,11 @@
 // On splash pages there is no pagination or edit link to show, so suppress it.
 import Default from "@astrojs/starlight/components/Footer.astro";
 
-const SUPPRESS_IDS = new Set(["", "demo", "404"]);
-const suppress = SUPPRESS_IDS.has(Astro.locals.starlightRoute.entry.id);
+// Splash pages have no pagination or edit-link to render, and the 404
+// page's entry id is the requested URL, so we key off the template
+// (matches the same suppression in PageTitle.astro).
+const template = Astro.locals.starlightRoute.entry.data.template;
+const suppress = template === "splash";
 ---
 
 {!suppress && <Default {...Astro.props}><slot /></Default>}

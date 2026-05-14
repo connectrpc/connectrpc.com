@@ -105,7 +105,14 @@ export default defineConfig({
       expressiveCode: {
         themes: ["github-light", "github-dark"],
       },
-      customCss: ["./src/styles/custom.css"],
+      customCss: [
+        "@fontsource-variable/inter/wght.css",
+        "@fontsource-variable/inter/wght-italic.css",
+        "@fontsource/dm-mono/400.css",
+        "@fontsource/dm-mono/500.css",
+        "@fontsource/work-sans/400.css",
+        "./src/styles/custom.css",
+      ],
       sidebar: [
         { label: "Introduction", slug: "docs/introduction" },
         {

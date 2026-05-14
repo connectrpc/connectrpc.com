@@ -1,9 +1,3 @@
-.firstWrapper {
-  display: flex;
-  gap: 2rem;
-  justify-content: end;
-}
-
 .container {
   position: relative;
   display: flex;
@@ -22,10 +16,7 @@
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-}
-
-.alignRight > * {
-  text-align: end;
+  max-width: 30%;
 }
 
 .codeBlockWrapper {
@@ -34,9 +25,8 @@
 
 .exampleHeader {
   border-bottom: 1px solid #cbcbde;
-  /* Matches the EC terminal frame title bar height so the underline aligns
-     with the bottom of the adjacent terminal header. */
-  height: 33.75px;
+  /* Aligns the bottom border with the adjacent EC terminal title bar. */
+  height: var(--ec-frame-title-height);
   font-size: 14px;
   padding-top: 4px;
   color: #9699b6;
@@ -73,140 +63,7 @@ html[data-theme="dark"] .exampleText {
   align-items: center;
 }
 
-.codeFooter {
-  padding-top: var(--ifm-pre-padding);
-  padding-right: var(--ifm-pre-padding);
-  position: absolute;
-  bottom: var(--ifm-pre-padding);
-  display: flex;
-  justify-content: end;
-  width: 100%;
-}
-
-div.codeBlockContainer {
-  box-shadow: 18px -18px 24px rgba(0, 0, 0, 0.02);
-}
-
-pre.codeBlock {
-  padding-bottom: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: var(--ifm-pre-padding);
-  overflow: auto;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-}
-
-.codeBlockLines {
-  padding: 0 var(--ifm-pre-padding);
-}
-
-.horizontalScrollBox {
-  overflow: auto;
-  /* horizontal shadows */
-  /* Shadow covers */
-  background:
-    linear-gradient(90deg, #f4f5fe 0%, transparent 100%),
-    linear-gradient(270deg, #f4f5fe 0%, transparent 100%) 0 100%, /* Shadows */
-    linear-gradient(
-      90deg,
-      rgba(99, 100, 102, 0.1) 0%,
-      transparent 50%,
-      transparent 100%
-    ),
-    linear-gradient(
-      270deg,
-      rgba(99, 100, 102, 0.1) 0%,
-      transparent 50%,
-      transparent 100%
-    )
-    0 100%;
-
-  background-repeat: no-repeat;
-  background-color: #f4f5fe;
-  background-size:
-    40px 100%,
-    40px 100%,
-    14px 100%,
-    14px 100%;
-  background-position:
-    left center,
-    right center,
-    left center,
-    right center;
-
-  background-attachment: local, local, scroll, scroll;
-}
-
-/* Dark mode: Let Prism theme handle the background */
-html[data-theme="dark"] .horizontalScrollBox {
-  background: none;
-  background-color: transparent;
-}
-
-.tooltip {
-  position: absolute;
-  bottom: -5px;
-  right: -9px;
-  transform: translateY(calc(-100% - 5px));
-  background-color: #090a3a;
-  border-color: transparent;
-  padding: 9px 12px;
-  display: inline-block;
-  white-space: nowrap;
-  color: #ffffff;
-}
-
-.tooltip:before {
-  content: " ";
-  position: absolute;
-  top: 100%;
-  right: 0;
-  transform: translateX(calc(-100% - 10px));
-  width: 0;
-  border-top: 5px solid #090a3a;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-}
-
-.copyButton {
-  border: 1px solid #e0e2f2;
-  color: #161ede;
-  border-radius: 2px;
-  appearance: none;
-  padding: 0 8px;
-  margin: 0;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: transparent;
-  cursor: pointer;
-}
-
-.copyButton:hover {
-  border-color: #161ede;
-}
-
-/* Dark mode copy button styles */
-html[data-theme="dark"] .copyButton {
-  border-color: #444444;
-  color: var(--buf-ink-blue-02);
-}
-
-html[data-theme="dark"] .copyButton:hover {
-  border-color: var(--buf-ink-blue-02);
-}
-
-.exampleTextContainer {
-  max-width: 30%;
-}
-
 @media screen and (max-width: 966px) {
-  .firstWrapper {
-    flex-direction: column;
-  }
-
   .container {
     gap: 15px;
     margin-left: var(--ifm-spacing-horizontal);
@@ -214,33 +71,11 @@ html[data-theme="dark"] .copyButton:hover {
     margin-top: 54px;
   }
 
-  .headline {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-
-  .codeFooter {
-    display: none;
-  }
-
-  pre.codeBlock {
-    padding-bottom: 1rem;
-  }
-
-  .background {
-    margin: 0;
-    width: 100%;
-  }
-
   .exampleContainer {
     flex-direction: column;
     gap: 20px;
     padding-left: 0;
     padding-right: 0;
-  }
-
-  .exampleContainer.secondExampleContainer {
-    flex-direction: column-reverse;
   }
 
   .exampleTextContainer {
