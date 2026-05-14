@@ -17,7 +17,6 @@ import config from "virtual:starlight/user-config";
 import LanguageSelect from "virtual:starlight/components/LanguageSelect";
 import Search from "virtual:starlight/components/Search";
 import SiteTitle from "virtual:starlight/components/SiteTitle";
-import SocialIcons from "virtual:starlight/components/SocialIcons";
 import ThemeSelect from "virtual:starlight/components/ThemeSelect";
 import BufLogo from "./header-assets/buf.svg";
 
@@ -37,6 +36,13 @@ const { hasSidebar } = Astro.locals.starlightRoute;
   </div>
   <nav class="nav-links sl-hidden md:sl-flex" aria-label="Main">
     <a href="/docs/introduction/" class="nav-link">Docs</a>
+    {
+      config.social?.map((s) => (
+        <a href={s.href} class="nav-link">
+          {s.label}
+        </a>
+      ))
+    }
     <a href="/demo/" class="nav-link">Demo</a>
   </nav>
   <div class="header-actions sl-flex print:hidden">
@@ -53,9 +59,6 @@ const { hasSidebar } = Astro.locals.starlightRoute;
       )
     }
     <div class="sl-hidden md:sl-flex desktop-extras">
-      <div class="sl-flex social-icons">
-        <SocialIcons />
-      </div>
       <ThemeSelect />
       <LanguageSelect />
       <a href="https://buf.build" class="buf-button sl-hidden md:sl-flex">
@@ -141,15 +144,24 @@ const { hasSidebar } = Astro.locals.starlightRoute;
        * transition during navigation. Below md the 1fr center column is
        * empty (nav-links is display:none), leaving title at the left and
        * actions at the right, which matches the prior flex space-between
-       * layout. */
+       * layout. Children are pinned to explicit columns so that when
+       * nav-links is display:none, grid auto-flow doesn't shift
+       * header-actions into the empty center column. */
       display: grid;
       grid-template-columns: auto 1fr auto;
       align-items: center;
       gap: var(--sl-nav-gap);
       height: 100%;
     }
+    .title-wrapper {
+      grid-column: 1;
+    }
     .nav-links {
+      grid-column: 2;
       justify-self: center;
+    }
+    .header-actions {
+      grid-column: 3;
     }
 
     .title-wrapper {
@@ -190,18 +202,12 @@ const { hasSidebar } = Astro.locals.starlightRoute;
 
     .header-actions,
     .desktop-extras,
-    .mobile-extras,
-    .social-icons {
+    .mobile-extras {
       gap: 1rem;
       align-items: center;
     }
     .mobile-extras {
       gap: 0.5rem;
-    }
-    .social-icons::after {
-      content: "";
-      height: 2rem;
-      border-inline-end: 1px solid var(--sl-color-gray-5);
     }
 
 
@@ -237,7 +243,7 @@ const { hasSidebar } = Astro.locals.starlightRoute;
           )
           /* 2: flexible center column containing the centered nav links. */
           1fr
-          /* 3: right items: search + social + theme + language. */
+          /* 3: right items: search + theme + language + buf pill. */
           auto;
         align-content: center;
       }
@@ -245,8 +251,8 @@ const { hasSidebar } = Astro.locals.starlightRoute;
   }
 
   /* At md (50rem) to lg (72rem), space in the right-group is tight: the
-   * Created-by-Buf pill is visible and we still need search + social +
-   * theme. Shrink Starlight's search button to a square icon-only control
+   * Created-by-Buf pill is visible and we still need search + theme.
+   * Shrink Starlight's search button to a square icon-only control
    * matching the theme toggle. At lg+ the default pill returns. */
   @media (min-width: 50rem) and (max-width: 71.99rem) {
     .search-wrapper :global(button[data-open-modal]) {
@@ -263,12 +269,12 @@ const { hasSidebar } = Astro.locals.starlightRoute;
     }
   }
 
-  /* "Created by Buf" pill — far-right header affordance, separate from the
-   * social-icon group. Visibility is governed by Starlight's
-   * .sl-hidden / .md:sl-flex utility classes on the element itself, so we
-   * deliberately don't set `display` here — doing so would override
-   * .sl-hidden (which lives in @layer starlight.utils) and leave the pill
-   * stuck visible at sub-md widths. */
+  /* "Created by Buf" pill — far-right header affordance. Visibility is
+   * governed by Starlight's .sl-hidden / .md:sl-flex utility classes on
+   * the element itself, so we deliberately don't set `display` here —
+   * doing so would override .sl-hidden (which lives in
+   * @layer starlight.utils) and leave the pill stuck visible at sub-md
+   * widths. */
   /* On docs pages the title column is forced to align with the sidebar
    * (~17.75rem), so the right-group has less breathing room than on the
    * splash. Below ~53rem the pill would overflow the header right edge;
