@@ -16,10 +16,10 @@ updates:
       time: "07:00"
     open-pull-requests-limit: 50
     groups:
-      docusaurus:
+      astro:
         patterns:
-          - "@docusaurus/*"
-          - "@tsconfig/docusaurus"
+          - "astro"
+          - "@astrojs/*"
       format:
         patterns:
           - "@bufbuild/license-header"

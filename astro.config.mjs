@@ -19,9 +19,9 @@ import { remarkHeadingId } from "remark-custom-heading-id";
 import { remarkLinkChecker } from "./src/plugins/remark-link-checker";
 
 const publicUrl =
-  process.env.NEXT_PUBLIC_VERCEL_URL === undefined
+  process.env.VERCEL_URL === undefined
     ? "https://connectrpc.com"
-    : `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`;
+    : `https://${process.env.VERCEL_URL}`;
 
 export default defineConfig({
   site: publicUrl,
