@@ -15,6 +15,12 @@
 
 import Default from "@astrojs/starlight/components/Head.astro";
 
+// Preload the above-the-fold woff2 subsets so the header lockup paints with
+// the real fonts (no fallback reflow). The `?url` suffix tells Vite to emit
+// the file and return its hashed URL.
+import interLatinHref from "@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url";
+import dmMonoLatinHref from "@fontsource/dm-mono/files/dm-mono-latin-400-normal.woff2?url";
+
 const publicUrl =
   Astro.site?.toString().replace(/\/$/, "") ?? "https://connectrpc.com";
 const ogImage = `${publicUrl}/img/og@2x.png`;
@@ -30,6 +36,20 @@ const jsonLd = {
 ---
 
 <Default {...Astro.props}><slot /></Default>
+<link
+  rel="preload"
+  as="font"
+  type="font/woff2"
+  href={interLatinHref}
+  crossorigin
+/>
+<link
+  rel="preload"
+  as="font"
+  type="font/woff2"
+  href={dmMonoLatinHref}
+  crossorigin
+/>
 <meta property="og:site_name" content="Protobuf RPC that works" />
 <meta property="og:type" content="website" />
 <meta property="og:image" content={ogImage} />

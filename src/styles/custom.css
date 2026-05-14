@@ -41,9 +41,12 @@
   --buf-marine-blue-01: #eff9fc;
   --buf-marine-blue-05: #648b99;
 
+  /* Mono font with a monospace fallback chain. Sans-serif fallbacks (the
+   * previous default) measured ~10% wider for the same uppercase text,
+   * producing a visible reflow when DM Mono finished loading. */
   --buf-mono-font:
-    "DM Mono", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
+    "DM Mono", ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono",
+    monospace;
   --buf-sans-font:
     "Work Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;

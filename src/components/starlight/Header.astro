@@ -137,11 +137,19 @@ const { hasSidebar } = Astro.locals.starlightRoute;
 <style>
   @layer starlight.core {
     .header {
-      display: flex;
-      gap: var(--sl-nav-gap);
-      justify-content: space-between;
+      /* Always grid so nav-links stays centered without a flex → grid
+       * transition during navigation. Below md the 1fr center column is
+       * empty (nav-links is display:none), leaving title at the left and
+       * actions at the right, which matches the prior flex space-between
+       * layout. */
+      display: grid;
+      grid-template-columns: auto 1fr auto;
       align-items: center;
+      gap: var(--sl-nav-gap);
       height: 100%;
+    }
+    .nav-links {
+      justify-self: center;
     }
 
     .title-wrapper {
@@ -218,7 +226,6 @@ const { hasSidebar } = Astro.locals.starlightRoute;
                 var(--sl-content-width)
             ) / 2
         );
-        display: grid;
         grid-template-columns:
           /* 1: site title — at least the sidebar+gutter width. */
           minmax(
@@ -233,9 +240,6 @@ const { hasSidebar } = Astro.locals.starlightRoute;
           /* 3: right items: search + social + theme + language. */
           auto;
         align-content: center;
-      }
-      .nav-links {
-        justify-self: center;
       }
     }
   }
