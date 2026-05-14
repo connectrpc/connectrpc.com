@@ -99,12 +99,12 @@ const { hasSidebar } = Astro.locals.starlightRoute;
       margin-inline: auto;
     }
 
-    /* Header: sticky inside the centered grid, but its background and
-     * border span the full viewport. The negative-margin breakout pulls
-     * the box edges out to 100vw, while the padding pushes inner content
-     * back to where the grid columns begin. When the viewport is narrower
-     * than the page max-width, `50vw - 50%` evaluates to 0, so the rule
-     * is a no-op and behaves identically to the un-centered layout. */
+    /* Header: sticky inside the centered grid, but its box spans the full
+     * viewport so logo/nav/search align edge-to-edge consistently across
+     * splash and docs pages. The negative-margin breakout pulls the box
+     * edges out to 100vw; inner padding stays at the standard nav pad.
+     * When the page is narrower than 100vw, `50vw - 50%` evaluates to 0,
+     * so the rule is a no-op and matches the un-centered layout. */
     .header {
       grid-column: 1 / -1;
       z-index: var(--sl-z-index-navbar);
@@ -113,9 +113,9 @@ const { hasSidebar } = Astro.locals.starlightRoute;
       height: var(--sl-nav-height);
       border-bottom: 1px solid var(--sl-color-hairline-shade);
       background-color: var(--sl-color-bg-nav);
+      padding: var(--sl-nav-pad-y) var(--sl-nav-pad-x);
       width: 100vw;
       margin-inline: calc(-50vw + 50%);
-      padding: var(--sl-nav-pad-y) calc(50vw - 50% + var(--sl-nav-pad-x));
     }
 
     .sidebar {
@@ -145,14 +145,18 @@ const { hasSidebar } = Astro.locals.starlightRoute;
 
     /* Sticky sidebar pane: stays at the top during scroll, then scrolls up
      * with the rest once the nav grid cell's bottom edge is reached
-     * (immediately above the footer row). */
+     * (immediately above the footer row). Use the body bg variable so the
+     * sidebar visually matches the surrounding page in both themes; the
+     * explicit bg also anchors the pane against flicker during the brief
+     * dark→light theme switch that StarlightThemeProvider performs after
+     * paint. The inline-end hairline marks the column boundary. */
     .sidebar-pane {
       visibility: var(--sl-sidebar-visibility, hidden);
       position: sticky;
       top: var(--sl-nav-height);
       width: 100%;
       height: calc(100vh - var(--sl-nav-height));
-      background-color: var(--sl-color-bg-sidebar);
+      background-color: var(--sl-color-bg);
       border-inline-end: 1px solid var(--sl-color-hairline-shade);
       overflow-y: auto;
     }

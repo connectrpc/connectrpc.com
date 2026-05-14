@@ -158,10 +158,14 @@ pre {
 /* Global container shim. Docusaurus shipped a global `.container` class
  * (max-width with width:100%) consumed by several legacy home-page module
  * CSS files. Reproducing it here keeps the ported components laid out
- * correctly under Starlight without rewriting every selector. */
+ * correctly under Starlight without rewriting every selector.
+ *
+ * The max-width matches the docs page (.page) max-width in PageFrame.astro
+ * so navigating between splash and docs pages does not shift the outer
+ * content boundary. */
 .container {
   width: 100%;
-  max-width: 1140px;
+  max-width: 90rem;
   margin-inline: auto;
   padding-inline: var(--ifm-spacing-horizontal);
 }
