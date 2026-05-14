@@ -16,6 +16,7 @@ import react from "@astrojs/react";
 import starlight from "@astrojs/starlight";
 import { defineConfig } from "astro/config";
 import { remarkHeadingId } from "remark-custom-heading-id";
+import { remarkLinkChecker } from "./src/plugins/remark-link-checker";
 
 const publicUrl =
   process.env.NEXT_PUBLIC_VERCEL_URL === undefined
@@ -29,6 +30,9 @@ export default defineConfig({
     remarkPlugins: [
       // Enables `## Heading {#custom-id}` syntax for explicit anchor IDs.
       remarkHeadingId,
+      // Warns at build time about reference-style links that are used but
+      // never defined (or defined but never used).
+      remarkLinkChecker,
     ],
   },
   vite: {

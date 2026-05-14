@@ -3,12 +3,29 @@
   "outputDirectory": "./dist",
   "installCommand": "npm install",
   "trailingSlash": true,
-  "redirects": [
+  "headers": [
     {
-      "source": "/authn/",
-      "destination": "/authn.html",
-      "permanent": true
-    },
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "geolocation=(), camera=(), microphone=(), display-capture=(), fullscreen=()"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'none'; base-uri 'self'; frame-ancestors 'none'; connect-src 'self' https://demo.connectrpc.com cdn.usefathom.com *.google-analytics.com *.googletagmanager.com https://vercel.live *.vercel.app wss:; font-src 'self' data: fonts.gstatic.com; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' cdn.usefathom.com *.googletagmanager.com www.gstatic.com https://vercel.live *.vercel.app; style-src 'self' 'unsafe-inline' fonts.googleapis.com; manifest-src 'self'; worker-src 'self' blob:"
+        }
+      ]
+    }
+  ],
+  "redirects": [
+    { "source": "/authn/", "destination": "/authn.html", "permanent": true },
     {
       "source": "/conformance/",
       "destination": "/conformance.html",
@@ -19,11 +36,7 @@
       "destination": "/connect.html",
       "permanent": true
     },
-    {
-      "source": "/cors/",
-      "destination": "/cors.html",
-      "permanent": true
-    },
+    { "source": "/cors/", "destination": "/cors.html", "permanent": true },
     {
       "source": "/grpchealth/",
       "destination": "/grpchealth.html",
