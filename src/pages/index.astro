@@ -33,23 +33,19 @@ import styles from "./index.module.css";
     <div class={styles.wrapper}>
       <Hero />
     </div>
-    <div class={styles.gradient}>
-      <Examples />
-      <Features />
-      <div class={styles.buttons}>
-        <a href={callout.button.href} class={calloutStyles.button}>
-          {callout.button.text}
-        </a>
-      </div>
-      <div class="container">
-        <Divider />
-      </div>
-      <Guides />
+    <Examples />
+    <Features />
+    <div class={styles.buttons}>
+      <a href={callout.button.href} class={calloutStyles.button}>
+        {callout.button.text}
+      </a>
     </div>
-    <div class={styles.footerBackground}>
-      <div class={`container ${styles.moreInfo}`}>
-        <Callout />
-      </div>
+    <div class="container">
+      <Divider />
+    </div>
+    <Guides />
+    <div class={`container ${styles.moreInfo}`}>
+      <Callout />
     </div>
   </div>
 </StarlightPage>
