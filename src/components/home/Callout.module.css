@@ -19,7 +19,7 @@
   color: #090a3a;
 }
 
-html[data-theme="dark"] .callout {
+:root[data-theme="dark"] .callout {
   background: linear-gradient(
     137.72deg,
     #1a2a3a 34.3%,
@@ -27,7 +27,7 @@ html[data-theme="dark"] .callout {
   );
 }
 
-html[data-theme="dark"] .text {
+:root[data-theme="dark"] .text {
   color: var(--ifm-heading-color);
 }
 

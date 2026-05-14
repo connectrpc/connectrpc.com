@@ -20,7 +20,7 @@
   background-size: cover;
 }
 
-html[data-theme="dark"] .footerBackground {
+:root[data-theme="dark"] .footerBackground {
   background: linear-gradient(
     180deg,
     var(--ifm-background-color) 0%,
@@ -39,7 +39,7 @@ html[data-theme="dark"] .footerBackground {
   background: linear-gradient(0deg, #f9f9fd 58.43%, #fefeff 100%);
 }
 
-html[data-theme="dark"] .gradient {
+:root[data-theme="dark"] .gradient {
   background: linear-gradient(0deg, #1a1a1a 58.43%, #242424 100%);
 }
 
