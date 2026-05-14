@@ -86,7 +86,9 @@
    * bottom edge. The ELIZA terminal uses flex layout so doesn't depend
    * on this value. */
   --ec-frame-title-height: calc(
-    10px + var(--ec-uiFontSize) * var(--ec-uiLineHt)
+    10px +
+    var(--ec-uiFontSize) *
+    var(--ec-uiLineHt)
   );
   --sl-font:
     "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
@@ -115,8 +117,9 @@
 }
 
 :where(h1, h2, h3, h4, h5, h6) {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Helvetica, Arial, sans-serif;
+  font-family:
+    system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
+    sans-serif;
 }
 
 /* Match the prior terminal title treatment: uppercase mono with wider tracking. */
