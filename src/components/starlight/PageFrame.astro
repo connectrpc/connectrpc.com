@@ -114,6 +114,11 @@ const { hasSidebar } = Astro.locals.starlightRoute;
        * (default `auto` aka min-content) so long URLs or code blocks
        * don't force the column wider than 1fr and push the page sideways. */
       min-width: 0;
+      /* Reserve space for the fixed-position MobileTableOfContents bar
+       * that Starlight renders below the header at md-to-lg widths. The
+       * variable is 0 above the lg breakpoint where the right-rail TOC
+       * takes over, so no spacing is added on wide viewports. */
+      padding-top: var(--sl-mobile-toc-height);
     }
 
     /* SiteFooter spans both columns in row 3 below the sidebar / content. */
