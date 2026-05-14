@@ -46,12 +46,12 @@ see [this Go issue][go-deadlines].
 
 Also, if your [http.Server](https://pkg.go.dev/net/http#Server) has the
 `ReadTimeout` or `WriteTimeout` field configured, it applies to the entire
-operation duration, even for streaming calls. See the [FAQ](../faq.md#stream-error)
+operation duration, even for streaming calls. See the [FAQ](/docs/faq/#stream-error)
 for more information.
 
 ## Observability
 
-Check out our [Observability page](./observability.md).
+Check out our [Observability page](/docs/go/observability/).
 
 ## HTTP/2 without TLS {#h2c}
 

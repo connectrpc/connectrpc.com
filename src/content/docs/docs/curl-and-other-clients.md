@@ -6,7 +6,7 @@ description: "Calling Connect services directly with cURL or any HTTP client —
 Not every client has access to generated code and a full RPC framework: perhaps
 you're debugging in a bare-bones environment, or perhaps your clients are using
 a language or framework without good RPC bindings. Connect shines in these
-circumstances: we designed the [Connect protocol](protocol.md) to make unary
+circumstances: we designed the [Connect protocol](/docs/protocol/) to make unary
 RPCs work well with even the simplest HTTP/1.1 clients. (Of course, you can
 also call Connect APIs using any gRPC or gRPC-Web client.)
 
@@ -44,7 +44,7 @@ $ curl --get --data-urlencode 'encoding=json' \
 You can also [visit this URL](https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say?encoding=json&message=%7b%22sentence%22%3a+%22I+feel+happy.%22%7d)
 in your browser. Unary RPCs can opt in to support HTTP GET with an option.
 For details, take a look at the [blog post](https://buf.build/blog/introducing-connect-cacheable-rpcs)
-introducing the feature, and at the [protocol specification](./protocol.md#unary-get-request)
+introducing the feature, and at the [protocol specification](/docs/protocol/#unary-get-request)
 for Connect.
 
 ## fetch API

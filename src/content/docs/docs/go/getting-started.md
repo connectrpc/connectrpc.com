@@ -328,14 +328,14 @@ Congratulations &mdash; you've built your first Connect service! 🎉
 
 `connect-go` supports three protocols:
 
-- The new [Connect protocol](../protocol.md), a simple, HTTP-based protocol that
+- The new [Connect protocol](/docs/protocol/), a simple, HTTP-based protocol that
   works over HTTP/1.1 or HTTP/2. It takes the best portions of gRPC and gRPC-Web,
   including streaming, and packages them into a protocol that works
   equally well in browsers, monoliths, and microservices. The Connect protocol
   is what we think the gRPC protocol should be. By default, JSON- and
   binary-encoded Protobuf is supported.
 - The gRPC protocol that is used throughout the gRPC ecosystem, making
-  `connect-go` [compatible](grpc-compatibility.md) with other gRPC implementations out of the box.
+  `connect-go` [compatible](/docs/go/grpc-compatibility/) with other gRPC implementations out of the box.
   `grpc-go` clients will work with `connect-go` servers and vice versa without
   issue - in fact, before `connect-go`'s public release, this is exactly what
   the [Buf CLI][buf-cli] was doing.

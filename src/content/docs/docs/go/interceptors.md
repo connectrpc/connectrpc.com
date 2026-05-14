@@ -6,11 +6,11 @@ Interceptors are similar to the middleware or decorators you may be familiar
 with from other frameworks: they're the primary way of extending Connect and are
 often used to add logging, metrics, tracing, retries, and other
 functionality.
-If you followed the [getting started](getting-started.md) guide, you've already seen an interceptor in action:
+If you followed the [getting started](/docs/go/getting-started/) guide, you've already seen an interceptor in action:
 the [validate-go](https://github.com/connectrpc/validate-go/) interceptor powers the Protovalidate integration that made sure every `GreetRequest` contained a valid name.
 
 On this page you'll learn how to build unary interceptors &mdash; more complex use
-cases are covered in the [streaming documentation](streaming.md).
+cases are covered in the [streaming documentation](/docs/go/streaming/).
 
 Take care when writing interceptors! They're powerful, but overly complex
 interceptors can make debugging difficult.

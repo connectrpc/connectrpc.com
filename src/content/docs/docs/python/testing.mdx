@@ -76,7 +76,7 @@ This pattern works with any test framework (pytest, unittest) or none at all. Th
 
 ### Using pytest
 
-Testing the service we created in the [Getting Started](./getting-started.mdx) guide looks like this:
+Testing the service we created in the [Getting Started](/docs/python/getting-started/) guide looks like this:
 
 <Tabs syncKey="python-type">
   <TabItem label="ASGI">
@@ -267,7 +267,7 @@ This pattern:
 - Follows pytest best practices
 - Matches the pattern used in Connect-Python's own test suite
 
-With your test client setup, you can use any Connect code for interacting with the service under test including [streaming](./streaming.mdx), reading [headers and trailers](./headers-and-trailers.mdx), or checking [errors](./errors.mdx). For example, to test error handling:
+With your test client setup, you can use any Connect code for interacting with the service under test including [streaming](/docs/python/streaming/), reading [headers and trailers](/docs/python/headers-and-trailers/), or checking [errors](/docs/python/errors/). For example, to test error handling:
 
 ```python
 with pytest.raises(ConnectError) as exc_info:
@@ -276,7 +276,7 @@ with pytest.raises(ConnectError) as exc_info:
 assert exc_info.value.code == Code.INVALID_ARGUMENT
 ```
 
-See the [Errors](./errors.mdx) guide for more details on error handling.
+See the [Errors](/docs/python/errors/) guide for more details on error handling.
 
 ## Testing clients
 
@@ -381,7 +381,7 @@ For testing client code that calls Connect services, use the same in-memory test
 
 ## Testing interceptors
 
-Test interceptors as part of your full application stack. For example, testing the `ServerAuthInterceptor` from the [Interceptors](./interceptors.mdx#metadata-interceptors) guide:
+Test interceptors as part of your full application stack. For example, testing the `ServerAuthInterceptor` from the [Interceptors](/docs/python/interceptors/#metadata-interceptors) guide:
 
 <Tabs syncKey="python-type">
   <TabItem label="ASGI">
@@ -487,4 +487,4 @@ Test interceptors as part of your full application stack. For example, testing t
   </TabItem>
 </Tabs>
 
-See the [Interceptors](./interceptors.mdx) guide for more details on implementing interceptors.
+See the [Interceptors](/docs/python/interceptors/) guide for more details on implementing interceptors.

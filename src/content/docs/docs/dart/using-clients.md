@@ -8,7 +8,7 @@ title: Using clients
 
 Connect-Dart currently supports 3 protocols:
 
-- The new [Connect protocol](../protocol.md), a simple, HTTP-based protocol that
+- The new [Connect protocol](/docs/protocol/), a simple, HTTP-based protocol that
   works over HTTP/1.1 or HTTP/2. It takes the best parts of gRPC/gRPC-Web,
   including streaming, and packages them into a protocol that works well on
   all platforms, including mobile and web. JSON- and

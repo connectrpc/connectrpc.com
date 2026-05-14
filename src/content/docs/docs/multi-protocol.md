@@ -14,7 +14,7 @@ Assuming that you're using Protobuf schemas, the gRPC protocol uses the
 Content-Types. The gRPC-Web protocol uses `application/grpc-web`,
 `application/grpc-web+proto`, and `application/grpc-web+json`.
 
-Again assuming Protobuf schemas, the [Connect protocol](protocol.md) uses the
+Again assuming Protobuf schemas, the [Connect protocol](/docs/protocol/) uses the
 `application/proto` and `application/json` Content-Types for unary RPCs. For
 streaming, it uses `application/connect+proto` and `application/connect+json`.
 

@@ -54,7 +54,7 @@ https://connectrpc.com/docs/go/common-errors: Post
 ```
 
 In either case, check whether the server expects clients to use HTTP/2 without
-TLS. If so, make sure your HTTP client [has h2c enabled](deployment.md#h2c):
+TLS. If so, make sure your HTTP client [has h2c enabled](/docs/go/deployment/#h2c):
 
 ```go
 client := greetv1connect.NewGreetServiceClient(

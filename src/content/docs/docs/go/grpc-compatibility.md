@@ -12,7 +12,7 @@ Handlers support the gRPC protocol by default: they work with `grpc-go`,
 `grpcurl`, and any other gRPC client using TLS without any special
 configuration. To support gRPC clients using HTTP/2 without TLS, use
 `Protocols.SetUnencryptedHTTP2` as described in [the deployment
-documentation](deployment.md#h2c).
+documentation](/docs/go/deployment/#h2c).
 
 Handlers also automatically support the binary gRPC-Web protocol directly,
 without a translating proxy like Envoy. Since modern browsers all support
@@ -38,7 +38,7 @@ protocols, use the `WithGRPC` or `WithGRPCWeb` options during client
 construction. If the gRPC server is using TLS, Connect clients work with no
 further configuration. If the gRPC server is using HTTP/2 without TLS,
 configure your HTTP client using `Protocols.SetUnencryptedHTTP2` as described
-in the [deployment documentation](deployment.md#h2c).
+in the [deployment documentation](/docs/go/deployment/#h2c).
 
 ## Migration
 
@@ -66,7 +66,7 @@ few common steps:
    broadly similar to their `grpc-go` equivalents.
 1. Once you've migrated your service implementations to Connect, switch your
    `main` function to use a `net/http` server instead of `grpc-go`. Remember to
-   [use h2c](deployment.md#h2c) if your service's clients aren't using TLS. At
+   [use h2c](/docs/go/deployment/#h2c) if your service's clients aren't using TLS. At
    this point, you're halfway done: your service should compile, and you could
    deploy it without migrating your calls to downstream services.
 1. Next, tackle your downstream calls. Switch to Connect's generated client
@@ -75,7 +75,7 @@ few common steps:
    Rather than using call options, read response metadata directly from the
    `connect.Response`. Don't forget to use `WithGRPC` when constructing your
    client, and if necessary [configure your HTTP clients to use
-   h2c](deployment.md#h2c).
+   h2c](/docs/go/deployment/#h2c).
 1. Where necessary, switch from `status.Code` and `status.FromError` to
    `connect.CodeOf` and the standard library's `errors.As`.
 1. Migrate any streaming calls to the Connect stream types.

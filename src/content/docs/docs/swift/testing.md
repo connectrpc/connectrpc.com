@@ -8,7 +8,7 @@ Testing generated Connect-Swift APIs is easily achieved
 by using the [`connect-swift-mocks` plugin][connect-swift-mocks-plugin]
 to generate mock client implementations from your Protobuf
 definitions. This plugin supports all of the same
-[options](./generating-code.md#generation-options) that the
+[options](/docs/swift/generating-code/#generation-options) that the
 production [`connect-swift` plugin][connect-swift-plugin] supports.
 
 This `buf.gen.yaml` file demonstrates generating production
@@ -39,7 +39,7 @@ plugins:
 ```
 
 **The `GenerateAsyncMethods` and
-`GenerateCallbackMethods` [options](./generating-code.md#generation-options)
+`GenerateCallbackMethods` [options](/docs/swift/generating-code/#generation-options)
 that you specify must match the option(s) you're using for production
 clients.**
 
@@ -184,7 +184,7 @@ open class Connectrpc_Eliza_V1_ElizaServiceClientMock: Connectrpc_Eliza_V1_Eliza
 
 ## Using generated mocks
 
-As mentioned in the [tutorial](getting-started.md), we recommend
+As mentioned in the [tutorial](/docs/swift/getting-started/), we recommend
 having your application consume the `*ClientInterface` protocols rather than
 the concrete types directly. Doing so allows for replacing the concrete
 implementations with the generated mock implementations:

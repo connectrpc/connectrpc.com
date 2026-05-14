@@ -40,7 +40,7 @@ compile-time type-safety and serialization, and focus on the application logic.
 ## Remote plugins
 
 :::note
-The example in the [tutorial](getting-started.md) covers much of this
+The example in the [tutorial](/docs/dart/getting-started/) covers much of this
 section's content.
 :::
 
@@ -153,7 +153,7 @@ plugins:
 ## Using generated code
 
 For guidance on how to call the generated code, see the
-[documentation for using clients](./using-clients.md).
+[documentation for using clients](/docs/dart/using-clients/).
 
 ## Generation options
 

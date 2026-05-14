@@ -2,11 +2,11 @@
 title: Errors
 ---
 
-Connect-Swift uses a set of [16 error codes](../protocol.md#error-codes).
+Connect-Swift uses a set of [16 error codes](/docs/protocol/#error-codes).
 These are similar to the "404 Not Found" and
 "500 Internal Server Error" HTTP status codes that you're likely familiar with.
 
-In the [Connect protocol](../protocol.md), an error is
+In the [Connect protocol](/docs/protocol/), an error is
 always represented as JSON. For example:
 
 ```http
@@ -39,7 +39,7 @@ if let error = response.error {
 ## Error details
 
 Additional strongly typed errors
-[may be specified by the server in responses](../protocol.md#error-end-stream).
+[may be specified by the server in responses](/docs/protocol/#error-end-stream).
 These are wrapped with the `google.protobuf.Any` type on the wire,
 and can be unpacked using the `ConnectError.unpackedDetails()` function by
 specifying the expected error message type (`Eliza_V1_ChatError` in

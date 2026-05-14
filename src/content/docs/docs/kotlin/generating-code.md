@@ -40,7 +40,7 @@ compile-time type-safety and serialization, and focus on the application logic.
 ## Remote plugins
 
 :::note
-The example in the [tutorial](getting-started.md) covers much of this
+The example in the [tutorial](/docs/kotlin/getting-started/) covers much of this
 section's content.
 :::
 
@@ -139,10 +139,10 @@ Generate directly into a specified directory for a Gradle project.
 
 The generated code depends on both the `Connect` and Google Java protobuf libraries.
 Add these dependencies through following
-[these steps in the Getting started tutorial](./getting-started.md).
+[these steps in the Getting started tutorial](/docs/kotlin/getting-started/).
 
 For guidance on how to call the generated code, see the
-[documentation for using clients](./using-clients.md).
+[documentation for using clients](/docs/kotlin/using-clients/).
 
 ## Generation options
 

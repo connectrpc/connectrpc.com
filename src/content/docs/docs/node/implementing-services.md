@@ -94,7 +94,7 @@ function say(req: SayRequest, context: HandlerContext) {
 ```
 
 It can also be used to access arbitrary values that are passed from either server plugins or interceptors. Please refer
-to the docs on [interceptors](./interceptors.md#context-values) to learn more.
+to the docs on [interceptors](/docs/node/interceptors/#context-values) to learn more.
 
 ## Errors
 
@@ -159,7 +159,7 @@ function say() {
 ## Streaming
 
 Before showing the various handlers for streaming endpoints, we'd like to
-reference the [Streaming](../go/streaming.md) page from Connect-Go as a caveat.
+reference the [Streaming](/docs/go/streaming/) page from Connect-Go as a caveat.
 While Connect for Node.js does support all three variations of
 streaming endpoints, there are tradeoffs that should be considered before
 diving in.

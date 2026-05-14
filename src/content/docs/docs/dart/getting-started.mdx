@@ -18,7 +18,7 @@ a very simple natural language processor built in the 1960s to represent a
 psychotherapist. **The ELIZA service is
 [implemented using Connect-Go][go-demo], is
 [already up and running](https://connectrpc.com/demo) in production, and
-supports both the [gRPC-Web][grpc-web] and [Connect](../protocol.md)
+supports both the [gRPC-Web][grpc-web] and [Connect](/docs/protocol/)
 protocols - both of which can be used with Connect-Dart for this tutorial.**
 The APIs we'll be using are defined in a Protobuf schema that we'll use
 to generate a Connect-Dart client.
@@ -334,7 +334,7 @@ how it is interacting with the Connect library.
 
 ### Creating a `Transport`
 
-At the very top, it creates an instance of `Transport`. This is responsible for configuring various options like serialization (i.e., JSON or Protobuf), http client (in this case an [http2][http2] client) and the protocol itself (in this case the [Connect protocol](../protocol.md)).
+At the very top, it creates an instance of `Transport`. This is responsible for configuring various options like serialization (i.e., JSON or Protobuf), http client (in this case an [http2][http2] client) and the protocol itself (in this case the [Connect protocol](/docs/protocol/)).
 
 If we wanted to use JSON instead of Protobuf we'd only need to make a simple line change:
 
@@ -347,7 +347,7 @@ final transport = Transport(
 ```
 
 The Http client can be changed to use `dart:io` (it only supports H/1), a `fetch` based implementation for flutter web, or by creating a new implementation for the `HttpClient` type. For more customization options,
-see the [documentation on using clients](./using-clients.md)
+see the [documentation on using clients](/docs/dart/using-clients/)
 
 ### Using gRPC
 
@@ -373,7 +373,7 @@ final transport = protocol.Transport(
 ### Using the generated code
 
 Take a look at the `ChatPage` widget above. It is initialized with a `Transport` interface. Accepting an interface allows for injecting mocks into widgets for testing. We won't get into mocks and testing here, but
-you can check out the [testing docs](testing.md) for details and examples.
+you can check out the [testing docs](/docs/dart/testing/) for details and examples.
 
 Whenever the `send(...)` method is invoked, we create an `ElizaServiceClient` from a transport and pass the request to the `say(...)` method on the generated client and await a response from the server.
 All of this is done using type-safe generated APIs from the Protobuf
@@ -383,25 +383,25 @@ Creating clients is free, as they are extension types on the `Transport`. This t
 
 ## Using gRPC or gRPC-Web
 
-Connect-Dart supports the [Connect](../protocol.md),
+Connect-Dart supports the [Connect](/docs/protocol/),
 [gRPC][grpc], and [gRPC-Web][grpc-web] protocols.
 Instructions for switching between them
-can be found [here](./using-clients.md).
+can be found [here](/docs/dart/using-clients/).
 
 We recommend using Connect-Dart over [gRPC-Dart][grpc-dart] even if you're
 using the gRPC protocol for a few reasons:
 
 - **Idiomatic, typed APIs.** No more hand-writing REST/JSON endpoints and
   models. Connect-Dart
-  [generates](./using-clients.md#using-generated-clients) idiomatic
+  [generates](/docs/dart/using-clients/#using-generated-clients) idiomatic
   APIs that utilize the latest Dart features such as extensions and
   eliminates the need to worry about serialization.
-- **First-class testing support.** Connect-Dart comes with a mockable `Transport` that enables easy [testability](./testing.md) with minimal handwritten boilerplate.
+- **First-class testing support.** Connect-Dart comes with a mockable `Transport` that enables easy [testability](/docs/dart/testing/) with minimal handwritten boilerplate.
 - **Easy-to-use tooling.** Connect-Dart integrates with the Buf CLI,
   enabling remote code generation without having to install and configure
   local dependencies.
 - **Flexibility.** Connect-Dart supports swapping http clients with built in
-  support for `dart:io`, `fetch` and `http2`. It also supports unified [interceptors](./interceptors.md).
+  support for `dart:io`, `fetch` and `http2`. It also supports unified [interceptors](/docs/dart/interceptors/).
 - **Binary size.** The Connect-Dart library is very small (\<100KB)
   and tree shakable to only include the protocol code in use.
 

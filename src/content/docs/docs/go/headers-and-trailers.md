@@ -8,7 +8,7 @@ authorization, and rate limiting often require working with headers. Connect
 also supports trailers, which serve a similar purpose but can be written
 _after_ the response body. This document outlines how to work with headers and
 trailers for unary (request-response) RPCs. The [streaming
-documentation](streaming.md) covers headers and trailers for streaming RPCs.
+documentation](/docs/go/streaming/) covers headers and trailers for streaming RPCs.
 
 ## Headers
 
@@ -94,7 +94,7 @@ func main() {
 Keep in mind that Connect headers are just HTTP headers, so it's perfectly fine
 to work with them in `net/http` middleware!
 
-Both the gRPC and Connect protocols [require](../protocol.md#unary-request)
+Both the gRPC and Connect protocols [require](/docs/protocol/#unary-request)
 that header keys contain only ASCII letters, numbers, underscores, hyphens, and
 periods, and the protocols reserve all keys beginning with "Connect-" or
 "Grpc-". Similarly, header values may contain only printable ASCII and spaces.

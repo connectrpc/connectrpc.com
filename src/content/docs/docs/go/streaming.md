@@ -29,7 +29,7 @@ streams short-lived.
 
 Also, if your [http.Server](https://pkg.go.dev/net/http#Server) has the
 `ReadTimeout` or `WriteTimeout` field configured, it applies to the entire
-operation duration, even for streaming calls. See the [FAQ](../faq.md#stream-error)
+operation duration, even for streaming calls. See the [FAQ](/docs/faq/#stream-error)
 for more information.
 
 All that said, `connect-go` fully supports all three types of streaming. All
@@ -69,7 +69,7 @@ conversation: the client sends a message, the server responds, the client sends
 another message, and so on. Keep in mind that this always requires end-to-end
 HTTP/2 support (regardless of RPC protocol)! `net/http` clients and servers
 support HTTP/2 by default if you're using TLS, but they need some [special
-configuration](deployment.md#h2c) to support HTTP/2 without TLS. In Protobuf
+configuration](/docs/go/deployment/#h2c) to support HTTP/2 without TLS. In Protobuf
 schemas, bidi streaming methods look like this:
 
 ```protobuf
@@ -99,7 +99,7 @@ JSON: instead, they use protocol-specific Content-Types like
 
 ## Headers and trailers
 
-[As in unary RPC](headers-and-trailers.md), headers are plain HTTP headers,
+[As in unary RPC](/docs/go/headers-and-trailers/), headers are plain HTTP headers,
 with the same ASCII-only restrictions and binary header support.
 
 Each protocol sends response trailers differently: they may be sent as HTTP
@@ -120,7 +120,7 @@ the full `Interceptor` interface. This may require implementing a
 ## An example
 
 Let's start by amending the `GreetService` we defined in [Getting
-Started](getting-started.md) to make the `Greet` method use client streaming:
+Started](/docs/go/getting-started/) to make the `Greet` method use client streaming:
 
 ```protobuf
 syntax = "proto3";
@@ -217,7 +217,7 @@ func main() {
 ```
 
 Now that we've implemented our new client streaming RPC, we'll also need to
-update our [simple authentication interceptor](interceptors.md). To support
+update our [simple authentication interceptor](/docs/go/interceptors/). To support
 streaming, we must implement the full `Interceptor` interface:
 
 ```go

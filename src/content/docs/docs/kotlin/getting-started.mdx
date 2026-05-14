@@ -15,7 +15,7 @@ a very simple natural language processor built in the 1960s to represent a
 psychotherapist. **The ELIZA service is
 [implemented using Connect-Go][go-demo], is
 [already up and running](https://connectrpc.com/demo) in production, and
-supports the [gRPC][grpc], [gRPC-Web][grpc-web], and [Connect](../protocol.md)
+supports the [gRPC][grpc], [gRPC-Web][grpc-web], and [Connect](/docs/protocol/)
 protocols - all of which can be used with Connect-Kotlin for this tutorial.**
 The APIs we'll be using are defined in a Protobuf schema that we'll use
 to generate a Connect-Kotlin client.
@@ -641,21 +641,21 @@ import ElizaChatScreenshot from './success-request-finish.png';
 
 ## Using the gRPC or gRPC-Web protocol
 
-Connect-Kotlin supports the [Connect protocol](../protocol.md), the
+Connect-Kotlin supports the [Connect protocol](/docs/protocol/), the
 [gRPC protocol][grpc], and the [gRPC-Web protocol][grpc-web].
-Instructions for switching between the three can be found [here](./using-clients.md).
+Instructions for switching between the three can be found [here](/docs/kotlin/using-clients/).
 
 We recommend using Connect-Kotlin over [gRPC-java][grpc-java] even when
 using the gRPC-Web protocol for a few reasons:
 
 - **Idiomatic, typed APIs.** No more hand-writing REST/JSON endpoints and
-  data types. Connect-Kotlin [generates](./using-clients.md#using-generated-clients)
+  data types. Connect-Kotlin [generates](/docs/kotlin/using-clients/#using-generated-clients)
   idiomatic APIs that utilize Kotlin's language features and ergonomic improvements.
 - **Easy-to-use tooling.** Connect-Kotlin integrates with the Buf CLI,
   enabling running all necessary Protobuf plugins without having to install
   or configure them as local dependencies.
 - **Flexibility.** Connect-Kotlin uses `Okhttp`. The library provides
-  the option to [swap this out](./using-clients.md#http-stack).
+  the option to [swap this out](/docs/kotlin/using-clients/#http-stack).
 
 ## More examples
 
@@ -664,7 +664,7 @@ the Connect-Kotlin repository on GitHub. These examples demonstrate:
 
 - Using [streaming APIs][streaming-example-kotlin].
 - Integrating with [Google's Java][pgjava-example] and [JavaLite Protobuf][pgjavalite-example].
-- Using the [Connect protocol](../protocol.md).
+- Using the [Connect protocol](/docs/protocol/).
 - Using the [gRPC protocol][grpc].
 - Using the [gRPC-Web protocol][grpc-web].
 

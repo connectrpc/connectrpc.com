@@ -40,7 +40,7 @@ compile-time type-safety and serialization, and focus on the application logic.
 ## Remote plugins
 
 :::note
-The example in the [tutorial](getting-started.md) covers much of this
+The example in the [tutorial](/docs/swift/getting-started/) covers much of this
 section's content.
 :::
 
@@ -161,10 +161,10 @@ outputs so that you can import them from the code that will use these APIs.
 
 The generated code depends on both the `Connect` and `SwiftProtobuf` libraries.
 You can add these dependencies by following
-[these steps in the tutorial](./getting-started.md#add-the-connect-swift-package).
+[these steps in the tutorial](/docs/swift/getting-started/#add-the-connect-swift-package).
 
 For guidance on how to call the generated code, see the
-[documentation for using clients](./using-clients.md).
+[documentation for using clients](/docs/swift/using-clients/).
 
 ## Generation options
 

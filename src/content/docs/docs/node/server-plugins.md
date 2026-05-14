@@ -6,7 +6,7 @@ If you just need an API server, using a built-in Node.js server might be
 sufficient, but Connect also supports several server frameworks on Node.js.
 
 The following code snippets expect that you've already added a `connect.ts` file with your Connect RPCs to your
-project. See [Implementing services](./implementing-services.md) for more.
+project. See [Implementing services](/docs/node/implementing-services/) for more.
 
 ## Vanilla Node.js
 
@@ -41,7 +41,7 @@ The function accepts all [common options](#common-options) as well as:
 - `contextValues?: (req: NodeServerRequest) => ContextValues`<br/>
   A function that returns a set of context values for each request. The
   context values are passed to the service implementation. See
-  [Context values](./interceptors.md#context-values) for more information.
+  [Context values](/docs/node/interceptors/#context-values) for more information.
 
 #### Protocol support in Node.js by HTTP version
 
@@ -92,7 +92,7 @@ The plugin accepts all [common options](#common-options) as well as:
 - `contextValues?: (req: FastifyRequest) => ContextValues`<br/>
   A function that returns a set of context values for each request. The
   context values are passed to the service implementation. See
-  [Context values](./interceptors.md#context-values) for more information.
+  [Context values](/docs/node/interceptors/#context-values) for more information.
 
 #### Protocol support in Fastify by HTTP version
 
@@ -139,7 +139,7 @@ The middleware accepts all [common options](#common-options) as well as:
 - `contextValues?: (req: NextApiRequest) => ContextValues`<br/>
   A function that returns a set of context values for each request. The
   context values are passed to the service implementation. See
-  [Context values](./interceptors.md#context-values) for more information.
+  [Context values](/docs/node/interceptors/#context-values) for more information.
 
 #### Protocol support in Next.js
 
@@ -183,7 +183,7 @@ The middleware accepts all [common options](#common-options) as well as:
 - `contextValues?: (req: express.Request) => ContextValues`<br/>
   A function that returns a set of context values for each request. The
   context values are passed to the service implementation. See
-  [Context values](./interceptors.md#context-values) for more information.
+  [Context values](/docs/node/interceptors/#context-values) for more information.
 
 #### Protocol support in Express
 
@@ -197,7 +197,7 @@ All adapters take a set of common options:
 
 - `routes: (router: ConnectRouter) => void`
   The adapter will call this function, and lets you register your services.
-  See [Implementing services](./implementing-services.md) for an example.
+  See [Implementing services](/docs/node/implementing-services/) for an example.
 - `maxTimeoutMs?: number`
   The maximum value for [timeouts](./timeouts) that clients may specify.
   If a client requests a timeout that is greater than `maxTimeoutMs`,
@@ -209,7 +209,7 @@ All adapters take a set of common options:
 - `grpc?: boolean`
   Whether to enable the gRPC protocol for your routes. Enabled by default.
 - `interceptors?: Interceptor[]`
-  An array of interceptors to apply to all requests. See [Interceptors](./interceptors.md) for more information.
+  An array of interceptors to apply to all requests. See [Interceptors](/docs/node/interceptors/) for more information.
 - `jsonOptions`
   Protobuf [JSON serialization options](https://github.com/bufbuild/protobuf-es/blob/v2.2.1/MANUAL.md#json-serialization-options).
   If your service uses `google.protobuf.Any`, provide a `typeRegistry` with the
@@ -239,7 +239,7 @@ Unfortunately, web browsers do not have such a flag, and flat out refuse HTTP/2
 over cleartext. If you want to use gRPC clients _and_ browser clients during
 local development, we recommend to set up locally-trusted development
 certificates and run HTTP/2 with TLS. This only takes a minute to set
-up if you follow the steps in [Getting Started](getting-started.md#use-the-grpc-protocol-instead-of-the-connect-protocol).
+up if you follow the steps in [Getting Started](/docs/node/getting-started/#use-the-grpc-protocol-instead-of-the-connect-protocol).
 
 ## CORS
 

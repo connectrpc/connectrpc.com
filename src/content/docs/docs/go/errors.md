@@ -4,14 +4,14 @@ title: Errors
 
 Similar to the familiar "404 Not Found" and "500 Internal Server Error" status
 codes you may have seen in HTTP, Connect uses a set of [16 error
-codes](../protocol.md#error-codes). The Go APIs for creating and inspecting
+codes](/docs/protocol/#error-codes). The Go APIs for creating and inspecting
 errors work identically for all three supported protocols: gRPC, gRPC-Web, and
 the Connect protocol.
 
 ## Working with errors
 
 At their simplest, `connect-go` errors attach an [error
-code](../protocol.md#error-codes) to a standard Go error. The error code and
+code](/docs/protocol/#error-codes) to a standard Go error. The error code and
 the underlying error's `Error()` string are sent over the network to the
 client, which may handle different codes with different retry or fallback
 logic. If you're familiar with gRPC status codes, Connect's error codes use the
@@ -153,7 +153,7 @@ for gRPC, gRPC-Web, and the Connect protocol.
 While the Go APIs for working with errors are protocol-agnostic, each protocol
 produces a differently-shaped HTTP response. You can consult the [gRPC HTTP/2
 protocol][grpc-protocol], the [gRPC-Web protocol][grpcweb-protocol], and the
-[Connect protocol](../protocol.md) for details, but it's helpful to understand
+[Connect protocol](/docs/protocol/) for details, but it's helpful to understand
 the broad strokes of each protocol's approach.
 
 gRPC responses nearly always have an HTTP status of 200 OK, even when the

@@ -32,7 +32,7 @@ const mockTransport = createRouterTransport(({ service }) => {
 ```
 
 Under the hood, this mock transport runs nearly the same code that a server running on
-Node.js would run. This means that all features from [implementing real services](../node/implementing-services.md)
+Node.js would run. This means that all features from [implementing real services](/docs/node/implementing-services/)
 are available: You can access request headers, raise errors with details, and also
 mock streaming responses. Here is an example that raises an error on the fourth
 request:
@@ -71,7 +71,7 @@ const mockTransport = createRouterTransport(({ service }) => {
 ```
 
 The `createRouterTransport` function also accepts an optional second argument, allowing you
-to pass options like [interceptors](./interceptors.mdx).
+to pass options like [interceptors](/docs/web/interceptors/).
 
 ### Examples
 

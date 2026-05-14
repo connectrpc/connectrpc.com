@@ -68,7 +68,7 @@ The answer is highly dependent on all of the networking parties involved. Genera
 make sure that your server or your infrastructure does not apply timeouts within
 the expected duration of calls. If possible, pre-empt timeouts by setting short
 deadlines and by repeating the call when the deadline is exceeded. Read the
-[streaming docs](go/streaming.md) for the Go implementation to get an idea of
+[streaming docs](/docs/go/streaming/) for the Go implementation to get an idea of
 the implications.
 
 ### How do I proxy the Connect protocol through NGINX?
@@ -124,12 +124,12 @@ Yes, it offers Envoy support in several ways:
 Web requests that attempt to load resources from a domain outside the domain of the page
 require you to configure Cross-Origin Resource Sharing (CORS). Not doing so may cause protocol
 errors like "missing trailer", etc. If the response is valid and the request is to a different
-domain, make sure the server has the correct [CORS configuration](./cors.md#configurations-by-protocol).
+domain, make sure the server has the correct [CORS configuration](/docs/cors/#configurations-by-protocol).
 
 ### Why does my Web client not receive the error code from my server?
 
 Most of the time, it's because the CORS setup of the server is incomplete. It's not enough to allow request origin,
-methods, and headers—you also have to expose response headers. See the [CORS documentation](./cors.md) for details.
+methods, and headers—you also have to expose response headers. See the [CORS documentation](/docs/cors/) for details.
 
 ### Why does the network explorer in the browser show strange characters in payload?
 
@@ -338,7 +338,7 @@ protocol.
 ### Is streaming supported?
 
 The Connect protocol supports _all_ types of streaming RPCs, but web browsers have
-some limitations with regard to client streaming. See the [Connect for Web](web/getting-started.mdx)
+some limitations with regard to client streaming. See the [Connect for Web](/docs/web/getting-started/)
 section for details.
 
 ### Does generated code affect bundle size?

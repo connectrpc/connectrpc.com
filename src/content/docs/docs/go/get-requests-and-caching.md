@@ -51,10 +51,10 @@ will continue to use POST.
 
 For other clients, see their respective documentation pages:
 
-* [Connect Node](../node/get-requests-and-caching.md)
-* [Connect Web](../web/get-requests-and-caching.md)
-* [Connect Kotlin](../kotlin/get-requests-and-caching.md)
-* [Connect Python](../python/get-requests-and-caching.mdx)
+* [Connect Node](/docs/node/get-requests-and-caching/)
+* [Connect Web](/docs/web/get-requests-and-caching/)
+* [Connect Kotlin](/docs/kotlin/get-requests-and-caching/)
+* [Connect Python](/docs/python/get-requests-and-caching/)
 
 ## Caching
 

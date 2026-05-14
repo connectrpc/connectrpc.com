@@ -304,7 +304,7 @@ On Node.js, we support three protocols:
 - The gRPC-Web protocol used by [grpc/grpc-web](https://github.com/grpc/grpc-web),
   allowing servers to interop with `grpc-web` frontends without the need
   for an intermediary proxy (such as Envoy).
-- The new [Connect protocol](../protocol.md), a simple, HTTP-based protocol that
+- The new [Connect protocol](/docs/protocol/), a simple, HTTP-based protocol that
   works over HTTP/1.1 or HTTP/2. It takes the best portions of gRPC and gRPC-Web,
   including streaming, and packages them into a protocol that works
   equally well in browsers, monoliths, and microservices. The Connect protocol
