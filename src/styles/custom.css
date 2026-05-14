@@ -110,6 +110,15 @@ pre {
   color: var(--sl-color-text-accent);
 }
 
+/* Match the prior Docusaurus theme: no underline on body links by default,
+ * underline on hover. Applies to both markdown content and splash pages. */
+:where(.sl-markdown-content a, .not-content a) {
+  text-decoration: none;
+}
+:where(.sl-markdown-content a, .not-content a):hover {
+  text-decoration: underline;
+}
+
 /* Global container shim. Docusaurus shipped a global `.container` class
  * (max-width with width:100%) consumed by several legacy home-page module
  * CSS files. Reproducing it here keeps the ported components laid out
