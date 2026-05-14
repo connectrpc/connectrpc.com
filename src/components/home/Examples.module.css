@@ -21,6 +21,10 @@
 
 .codeBlockWrapper {
   width: 70%;
+  /* Restore the subtle upper-right offset shadow the original Docusaurus
+   * home page applied to code blocks. EC's default is a darker
+   * bottom-right drop shadow that looks too heavy on the marketing page. */
+  --ec-frm-frameBoxShdCssVal: 18px -18px 24px rgba(0, 0, 0, 0.02);
 }
 
 .exampleHeader {

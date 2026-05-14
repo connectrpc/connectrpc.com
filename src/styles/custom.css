@@ -166,6 +166,19 @@ pre {
   padding-inline: var(--ifm-spacing-horizontal);
 }
 
+/* Splash pages (template: "splash") have no sidebar and use their own
+ * full-bleed section backgrounds. Starlight's ContentPanel wraps content
+ * in `.sl-container { max-width: var(--sl-content-width); }` (67.5rem on
+ * splash), which clips those backgrounds. Relax the constraint so
+ * section-level backgrounds extend to the viewport edges; inner content
+ * remains centered via the `.container` class above. */
+html:not([data-has-sidebar]) .sl-container {
+  max-width: none;
+}
+html:not([data-has-sidebar]) .content-panel {
+  padding-inline: 0;
+}
+
 :root[data-theme="dark"] {
   --sl-color-accent-low: #16213e;
   --sl-color-accent: #77e1ff;
