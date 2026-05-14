@@ -57,7 +57,6 @@ const legalLinks = [
     display: flex;
     justify-content: center;
     width: 100%;
-    padding-inline: var(--sl-content-pad-x, 1rem);
   }
   .site-footer-inner {
     display: flex;
@@ -69,11 +68,13 @@ const legalLinks = [
     width: 100%;
     position: relative;
   }
-  /* Splash pages (no sidebar) constrain content to var(--sl-content-width)
-   * inside .sl-container; mirror that here so the footer aligns with the
-   * visible content above. On docs pages the footer remains full-width. */
+  /* Splash pages have no .page max-width constraint, so the footer would
+   * otherwise stretch to the full viewport. Match the global `.container`
+   * width (90rem) so the footer aligns with the home page content and the
+   * outer frame of docs pages, keeping the chrome consistent as the user
+   * navigates across page templates. */
   :global(:root:not([data-has-sidebar])) .site-footer-inner {
-    max-width: var(--sl-content-width);
+    max-width: 90rem;
   }
   .legal-group {
     display: flex;
