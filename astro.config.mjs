@@ -107,8 +107,6 @@ export default defineConfig({
         themes: ["github-light", "github-dark"],
       },
       customCss: [
-        "@fontsource-variable/inter/wght.css",
-        "@fontsource-variable/inter/wght-italic.css",
         "@fontsource/dm-mono/400.css",
         "@fontsource/dm-mono/500.css",
         "@fontsource/work-sans/400.css",

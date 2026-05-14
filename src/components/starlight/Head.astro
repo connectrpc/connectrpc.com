@@ -15,11 +15,13 @@
 
 import Default from "@astrojs/starlight/components/Head.astro";
 
-// Preload the above-the-fold woff2 subsets so the header lockup paints with
-// the real fonts (no fallback reflow). The `?url` suffix tells Vite to emit
-// the file and return its hashed URL.
-import interLatinHref from "@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url";
+// Preload the woff2 subsets used above the fold. The `?url` suffix tells
+// Vite to emit the file and return its hashed URL.
 import dmMonoLatinHref from "@fontsource/dm-mono/files/dm-mono-latin-400-normal.woff2?url";
+import interRegularHref from "@fontsource/inter/files/inter-latin-400-normal.woff2?url";
+import interRegularItalicHref from "@fontsource/inter/files/inter-latin-400-italic.woff2?url";
+import interBoldHref from "@fontsource/inter/files/inter-latin-700-normal.woff2?url";
+import interBoldItalicHref from "@fontsource/inter/files/inter-latin-700-italic.woff2?url";
 
 const publicUrl =
   Astro.site?.toString().replace(/\/$/, "") ?? "https://connectrpc.com";
@@ -40,15 +42,51 @@ const jsonLd = {
   rel="preload"
   as="font"
   type="font/woff2"
-  href={interLatinHref}
+  href={dmMonoLatinHref}
   crossorigin
 />
 <link
   rel="preload"
   as="font"
   type="font/woff2"
-  href={dmMonoLatinHref}
+  href={interRegularHref}
   crossorigin
+/>
+{/* Static Inter with font-display: optional so cached pageloads use the
+    real font instantly and uncached loads show the system fallback (no
+    mid-render swap). */}
+<style
+  is:global
+  set:html={`
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: optional;
+  src: url('${interRegularHref}') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: italic;
+  font-weight: 400;
+  font-display: optional;
+  src: url('${interRegularItalicHref}') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: optional;
+  src: url('${interBoldHref}') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: italic;
+  font-weight: 700;
+  font-display: optional;
+  src: url('${interBoldItalicHref}') format('woff2');
+}
+`}
 />
 <meta property="og:site_name" content="Protobuf RPC that works" />
 <meta property="og:type" content="website" />

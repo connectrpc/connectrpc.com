@@ -48,6 +48,8 @@
   font-size: var(--ec-uiFontSize);
   line-height: var(--ec-uiLineHt);
   text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
   flex: 1 1 auto;
   display: flex;
   justify-content: center;
