@@ -1,0 +1,401 @@
+---
+// Copyright 2021-2026 The Connect Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+import config from "virtual:starlight/user-config";
+import LanguageSelect from "virtual:starlight/components/LanguageSelect";
+import Search from "virtual:starlight/components/Search";
+import SiteTitle from "virtual:starlight/components/SiteTitle";
+import ThemeSelect from "virtual:starlight/components/ThemeSelect";
+import BufLogo from "./header-assets/buf.svg";
+
+const shouldRenderSearch =
+  config.pagefind ||
+  config.components.Search !== "@astrojs/starlight/components/Search.astro";
+
+// Splash pages have no Starlight sidebar drawer, so without our own
+// disclosure the mobile header collapses to just the logo. Pages with a
+// sidebar already get Starlight's <MobileMenuToggle /> in PageFrame.
+const { hasSidebar } = Astro.locals.starlightRoute;
+---
+
+<div class="header">
+  <div class="title-wrapper sl-flex">
+    <SiteTitle />
+  </div>
+  <nav class="nav-links sl-hidden md:sl-flex" aria-label="Main">
+    <a href="/docs/introduction/" class="nav-link">Docs</a>
+    {
+      config.social?.map((s) => (
+        <a href={s.href} class="nav-link">
+          {s.label}
+        </a>
+      ))
+    }
+    <a href="/demo/" class="nav-link">Demo</a>
+  </nav>
+  <div class="header-actions sl-flex print:hidden">
+    {/* Search is rendered exactly once. Starlight styles the button
+        responsively (icon-only sub-md, pill at md+); our CSS shrinks
+        it to icon-only between md and lg too. Rendering it twice
+        breaks PagefindUI because it mounts to a global #starlight__search
+        ID — both instances would mount into the same div. */}
+    {
+      shouldRenderSearch && (
+        <div class="sl-flex search-wrapper">
+          <Search />
+        </div>
+      )
+    }
+    <div class="sl-hidden md:sl-flex desktop-extras">
+      <ThemeSelect />
+      <LanguageSelect />
+      <a href="https://buf.build" class="buf-button sl-hidden md:sl-flex">
+        <span>Created by</span>
+        <span class="buf-logo"><BufLogo /></span>
+      </a>
+    </div>
+    <div class="sl-flex md:sl-hidden mobile-extras">
+      <ThemeSelect />
+      {
+        !hasSidebar && (
+          <details class="mobile-menu">
+            <summary class="mobile-menu-toggle" aria-label="Toggle menu">
+              <svg
+                class="mobile-menu-icon mobile-menu-icon-open"
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+              <svg
+                class="mobile-menu-icon mobile-menu-icon-close"
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </summary>
+            <div class="mobile-menu-panel">
+              <nav class="mobile-menu-nav" aria-label="Mobile main">
+                <a href="/docs/introduction/" class="mobile-menu-link">Docs</a>
+                {config.social?.map((s) => (
+                  <a href={s.href} class="mobile-menu-link">
+                    {s.label}
+                  </a>
+                ))}
+                <a href="/demo/" class="mobile-menu-link">Demo</a>
+              </nav>
+              <a href="https://buf.build" class="mobile-menu-buf-button">
+                <span>Created by</span>
+                <span class="buf-logo"><BufLogo /></span>
+              </a>
+            </div>
+          </details>
+        )
+      }
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  // Lock body scroll while a full-screen mobile menu drawer is open.
+  document.querySelectorAll("details.mobile-menu").forEach((d) => {
+    d.addEventListener("toggle", () => {
+      document.documentElement.classList.toggle("mobile-menu-open", d.open);
+    });
+  });
+</script>
+
+<style>
+  @layer starlight.core {
+    .header {
+      /* Always grid so nav-links stays centered without a flex → grid
+       * transition during navigation. Below md the 1fr center column is
+       * empty (nav-links is display:none), leaving title at the left and
+       * actions at the right, which matches the prior flex space-between
+       * layout. Children are pinned to explicit columns so that when
+       * nav-links is display:none, grid auto-flow doesn't shift
+       * header-actions into the empty center column. */
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: var(--sl-nav-gap);
+      height: 100%;
+    }
+    .title-wrapper {
+      grid-column: 1;
+    }
+    .nav-links {
+      grid-column: 2;
+      justify-self: center;
+    }
+    .header-actions {
+      grid-column: 3;
+    }
+
+    .title-wrapper {
+      padding: 0.25rem;
+      margin: -0.25rem;
+      /* Pin to content width so the "Connect" title is never truncated
+       * when the desktop grid is tight (e.g. ~800-823px between md and
+       * the point the right-group has shed its widest items). */
+      min-width: max-content;
+    }
+    /* Starlight's SiteTitle defaults to `min-width: 0` + `overflow: hidden`
+     * on the inner span. Undo so the title can't be clipped. */
+    .title-wrapper :global(.site-title) {
+      min-width: max-content;
+    }
+    .title-wrapper :global(.site-title span) {
+      overflow: visible;
+    }
+
+    .nav-links {
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    .nav-link {
+      color: var(--sl-color-white);
+      text-decoration: none;
+      text-transform: uppercase;
+      font-family: var(--buf-mono-font);
+      font-size: 1rem;
+      letter-spacing: 0.08em;
+      padding: 0.5rem 0.25rem;
+      white-space: nowrap;
+    }
+    .nav-link:hover {
+      color: var(--sl-color-text-accent);
+    }
+
+    .header-actions,
+    .desktop-extras,
+    .mobile-extras {
+      gap: 1rem;
+      align-items: center;
+    }
+    .mobile-extras {
+      gap: 0.5rem;
+    }
+
+
+    @media (min-width: 50rem) {
+      /* Use the same `auto 1fr auto` template on both splash and docs
+       * pages so the header layout is consistent everywhere. Earlier
+       * versions reserved the sidebar width in the title column on docs
+       * pages so the "Connect" wordmark visually aligned with the sidebar
+       * — but that left the right group with too little space for the
+       * "Created by Buf" pill at md-to-lg widths, truncating it. The
+       * unified layout matches the home / demo headers exactly. */
+      .header {
+        align-content: center;
+      }
+    }
+  }
+
+  /* At md (50rem) to lg (72rem), space in the right-group is tight: the
+   * Created-by-Buf pill is visible and we still need search + theme.
+   * Shrink Starlight's search button to a square icon-only control
+   * matching the theme toggle. At lg+ the default pill returns. */
+  @media (min-width: 50rem) and (max-width: 71.99rem) {
+    .search-wrapper :global(button[data-open-modal]) {
+      width: 2.25rem;
+      max-width: 2.25rem;
+      height: 2.25rem;
+      padding: 0;
+      border-radius: 4px;
+      justify-content: center;
+    }
+    .search-wrapper :global(button[data-open-modal] > span),
+    .search-wrapper :global(button[data-open-modal] > kbd) {
+      display: none;
+    }
+  }
+
+  /* "Created by Buf" pill — far-right header affordance. Visibility is
+   * governed by Starlight's .sl-hidden / .md:sl-flex utility classes on
+   * the element itself, so we deliberately don't set `display` here —
+   * doing so would override .sl-hidden (which lives in
+   * @layer starlight.utils) and leave the pill stuck visible at sub-md
+   * widths. */
+
+  .buf-button {
+    flex-shrink: 0;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.8rem;
+    background-color: white;
+    border: 1px solid #d0e3e8;
+    border-radius: 2px;
+    font-size: 12px;
+    text-decoration: none;
+    color: #090a3a;
+    white-space: nowrap;
+  }
+  .buf-button span {
+    font-family: var(--buf-mono-font);
+    text-transform: uppercase;
+    letter-spacing: 0.075rem;
+  }
+  .buf-button:hover {
+    cursor: pointer;
+    text-decoration: none;
+    background-color: #f8f8ff;
+    border-color: #cbcbf3;
+  }
+  .buf-logo {
+    display: inline-flex;
+    align-items: center;
+  }
+  .buf-logo :global(svg) {
+    height: 23px;
+    width: auto;
+    display: block;
+  }
+
+  :global(:root[data-theme="dark"]) .buf-button {
+    background-color: transparent;
+    color: var(--sl-color-text);
+  }
+  :global(:root[data-theme="dark"]) .buf-button:hover {
+    background-color: var(--buf-grey-01);
+  }
+
+  /* On docs pages, Starlight renders its own sidebar-toggle hamburger as
+   * `position: fixed` at the right edge of the viewport. Reserve space on
+   * the header-actions group so it doesn't cover the search/theme icons. */
+  @media (max-width: 49.99rem) {
+    :global(:root[data-has-sidebar]) .header-actions {
+      margin-inline-end: calc(var(--sl-menu-button-size) + 0.5rem);
+    }
+  }
+  /* Full-screen mobile drawer for splash pages (home / demo / 404), which
+   * have no Starlight sidebar toggle. */
+  .mobile-menu {
+    display: block;
+  }
+  .mobile-menu-toggle {
+    position: relative;
+    z-index: calc(var(--sl-z-index-menu, 10) + 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    color: var(--sl-color-white);
+    background: transparent;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 4px;
+    cursor: pointer;
+    list-style: none;
+  }
+  .mobile-menu-toggle::-webkit-details-marker {
+    display: none;
+  }
+  .mobile-menu-icon-close {
+    display: none;
+  }
+  .mobile-menu[open] .mobile-menu-icon-open {
+    display: none;
+  }
+  .mobile-menu[open] .mobile-menu-icon-close {
+    display: block;
+  }
+  .mobile-menu-panel {
+    position: fixed;
+    inset: 0;
+    z-index: var(--sl-z-index-menu, 10);
+    padding: calc(var(--sl-nav-height) + 1rem) 1.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background-color: var(--sl-color-bg-nav);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .mobile-menu-nav {
+    display: flex;
+    flex-direction: column;
+  }
+  .mobile-menu-link {
+    display: block;
+    padding: 0.75rem 0;
+    color: var(--sl-color-white);
+    font-family: var(--buf-mono-font);
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    border-block-end: 1px solid var(--sl-color-hairline-shade);
+  }
+  .mobile-menu-link:hover {
+    color: var(--sl-color-text-accent);
+  }
+  /* Created-by-Buf pill at the bottom of the drawer. Mirrors the desktop
+   * .buf-button visual, with margin-block-start: auto pushing it to the
+   * bottom of the column. */
+  .mobile-menu-buf-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-block-start: auto;
+    padding: 0.75rem 1rem;
+    background-color: white;
+    border: 1px solid #d0e3e8;
+    border-radius: 2px;
+    color: #090a3a;
+    text-decoration: none;
+    font-size: 0.875rem;
+  }
+  .mobile-menu-buf-button span {
+    font-family: var(--buf-mono-font);
+    text-transform: uppercase;
+    letter-spacing: 0.075rem;
+  }
+  .mobile-menu-buf-button .buf-logo :global(svg) {
+    height: 23px;
+    width: auto;
+  }
+  :global(:root[data-theme="dark"]) .mobile-menu-buf-button {
+    background-color: transparent;
+    color: var(--sl-color-text);
+  }
+
+  /* Body scroll lock when the drawer is open (toggled by inline script). */
+  :global(html.mobile-menu-open) {
+    overflow: hidden;
+  }
+</style>

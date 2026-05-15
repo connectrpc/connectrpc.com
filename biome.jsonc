@@ -11,15 +11,13 @@
       "**",
       "!**/node_modules",
       "!**/dist",
+      "!**/.astro",
       "!**/.ssg-cache",
       "!**/build",
-      "!**/.docusaurus",
+      // Biome lacks .astro support; the toolchain handles formatting via Astro itself.
+      "!**/*.astro",
       // Skip Go vanity URL HTML files.
-      "!static/*.html",
-      // Skip files lifted directly from Facebook's Docusaurus.
-      "!src/theme/Logo/index.tsx",
-      "!src/theme/CodeBlock/index.tsx",
-      "!src/theme/CodeBlock/styles.module.css"
+      "!public/*.html"
     ]
   },
   "formatter": {

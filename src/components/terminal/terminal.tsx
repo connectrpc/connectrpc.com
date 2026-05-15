@@ -43,11 +43,6 @@ export const TerminalHeader: React.FC<TerminalHeaderProps> = ({
 }: PropsWithChildren<TerminalHeaderProps>) => {
   return (
     <div className={clsx(styles.terminalHeaderWrapper)}>
-      <div className={styles.terminalHeaderFakeButtons}>
-        <div className={styles.terminalHeaderFakeButton} />
-        <div className={styles.terminalHeaderFakeButton} />
-        <div className={styles.terminalHeaderFakeButton} />
-      </div>
       <div className={styles.terminalHeaderText}>{children}</div>
     </div>
   );
@@ -67,7 +62,7 @@ export const Terminal: React.FC<TerminalProps> = ({
 
   // Focuses the hidden input
   const handleTerminalFocus = () => {
-    inputRef.current.focus();
+    inputRef.current?.focus();
   };
 
   // Handler for typing into the terminal into the hidden input element
@@ -92,12 +87,14 @@ export const Terminal: React.FC<TerminalProps> = ({
   }, [focusOnMount, handleTerminalFocus]);
   // biome-ignore-end lint/correctness/useExhaustiveDependencies: focusOnMount and handleTerminalFocus are stable
 
+  // biome-ignore-start lint/correctness/useExhaustiveDependencies: re-scroll whenever the conversation grows
   useEffect(() => {
-    // If the terminal scroll container has a scroll visibile, scroll to the bottom
-    if (terminalRef.current.scrollHeight > terminalRef.current.clientHeight) {
-      terminalRef.current?.scrollTo(0, terminalRef.current?.scrollHeight);
+    const el = terminalRef.current;
+    if (el && el.scrollHeight > el.clientHeight) {
+      el.scrollTo(0, el.scrollHeight);
     }
-  }, []);
+  }, [conversation]);
+  // biome-ignore-end lint/correctness/useExhaustiveDependencies: re-scroll whenever the conversation grows
 
   return (
     // biome-ignore lint/a11y/noStaticElementInteractions: interactive terminal container

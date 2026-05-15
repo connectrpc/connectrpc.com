@@ -19,7 +19,7 @@
   color: #090a3a;
 }
 
-html[data-theme="dark"] .callout {
+:root[data-theme="dark"] .callout {
   background: linear-gradient(
     137.72deg,
     #1a2a3a 34.3%,
@@ -27,7 +27,7 @@ html[data-theme="dark"] .callout {
   );
 }
 
-html[data-theme="dark"] .text {
+:root[data-theme="dark"] .text {
   color: var(--ifm-heading-color);
 }
 
@@ -49,6 +49,15 @@ html[data-theme="dark"] .text {
 .button:hover {
   text-decoration: none;
   background-color: var(--ifm-color-primary-light);
+  color: #000;
+}
+
+/* In dark mode --ifm-color-primary is a light cyan; white text on it fails
+ * contrast. Switch to dark text so the label stays readable. */
+:global(:root[data-theme="dark"]) .button {
+  color: #090a3a;
+}
+:global(:root[data-theme="dark"]) .button:hover {
   color: #000;
 }
 

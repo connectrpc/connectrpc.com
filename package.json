@@ -2,13 +2,14 @@
   "name": "connect-docs",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "start": "docusaurus start",
-    "build": "docusaurus build",
-    "clear": "docusaurus clear",
-    "serve": "docusaurus serve",
-    "swizzle": "docusaurus swizzle",
-    "check:types": "tsc --noEmit",
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "check:types": "astro check && tsc --noEmit",
     "format": "npm run format:src && npm run format:md",
     "format:src": "biome format --write .",
     "format:md": "rumdl fmt .",
@@ -18,31 +19,33 @@
     "lint:md": "rumdl check .",
     "check": "biome check .",
     "check:fix": "biome check --write .",
-    "write:translations": "docusaurus write-translations",
-    "write:heading-ids": "docusaurus write-heading-ids",
     "license-header": "license-header",
     "ci": "npm run build && npm run check:fix && npm run lint:md && npm run check:types && npm run license-header",
     "publish": "npm install && npm run lint && npm run check:types && npm run build"
   },
   "dependencies": {
+    "@astrojs/react": "^4.2.0",
+    "@astrojs/starlight": "^0.38.4",
     "@buf/connectrpc_eliza.bufbuild_es": "^2.2.2-20230913231627-233fca715f49.2",
     "@bufbuild/protobuf": "^2.12.0",
     "@connectrpc/connect": "^2.1.1",
     "@connectrpc/connect-web": "^2.1.1",
-    "@docusaurus/core": "^3.9.2",
-    "@docusaurus/preset-classic": "^3.9.2",
+    "@fontsource/dm-mono": "^5.2.7",
+    "@fontsource/inter": "^5.2.8",
+    "@fontsource/work-sans": "^5.2.8",
     "@react-hookz/web": "^25.2.0",
+    "astro": "^6.2.1",
     "clsx": "^2.1.1",
-    "prism-react-renderer": "^2.4.1",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "remark-custom-heading-id": "^2.0.0"
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.4",
     "@biomejs/biome": "2.4.13",
     "@bufbuild/license-header": "^0.0.4",
-    "@docusaurus/module-type-aliases": "^3.9.2",
-    "@docusaurus/tsconfig": "^3.9.2",
-    "@types/react": "^18.3.12",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "rumdl": "^0.1.86",
     "typescript": "^5.9.3"
   },
@@ -51,19 +54,7 @@
     "yearRange": "2021-2026",
     "copyrightHolder": "The Connect Authors"
   },
-  "browserslist": {
-    "production": [
-      ">0.5%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
   "engines": {
-    "node": ">=18.0"
+    "node": ">=24"
   }
 }

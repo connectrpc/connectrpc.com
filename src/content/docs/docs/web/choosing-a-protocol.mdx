@@ -1,0 +1,123 @@
+---
+title: Choosing a protocol
+---
+
+In addition to the [Connect protocol](/docs/protocol), [@connectrpc/connect-web](https://www.npmjs.com/package/@connectrpc/connect-web)
+ships with support for the gRPC-web protocol. If your backend does not support
+the Connect protocol, you can still use Connect clients to interface with it.
+
+## Connect
+
+The function `createConnectTransport()` creates a transport for the [Connect
+protocol](/docs/protocol). It uses the [fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
+for the actual network operations, which is widely supported in web browsers.
+The most important options for the Connect transport are as follows:
+
+```ts
+import { createConnectTransport } from "@connectrpc/connect-web";
+
+const transport = createConnectTransport({
+  // Requests will be made to <baseUrl>/<package>.<service>/method
+  baseUrl: "https://demo.connectrpc.com",
+
+  // By default, this transport uses the JSON format.
+  // Set this option to true to use the binary format.
+  useBinaryFormat: false,
+
+  // Interceptors apply to all calls running through this transport.
+  interceptors: [],
+
+  // By default, all requests use POST. Set this option to true to use GET
+  // for side-effect free RPCs.
+  useHttpGet: false,
+
+  // Optional override of the fetch implementation used by the transport.
+  fetch: globalThis.fetch,
+
+  // Options for Protobuf JSON serialization.
+  jsonOptions: {},
+});
+```
+
+We generally recommend the JSON format for web browsers, because it makes it
+trivial to follow what exactly is sent over the wire with the browser's network
+inspector.
+
+Connect supports optionally using HTTP GET requests for side-effect free RPC
+calls, to enable easy use of request caching and more. For more information on
+HTTP GET requests, see [Get Requests](/docs/web/get-requests-and-caching/).
+
+## gRPC-web
+
+The function `createGrpcWebTransport()` creates a Transport for the gRPC-web
+protocol. Any gRPC service can be made available to gRPC-web with the
+[Envoy Proxy](https://www.envoyproxy.io/). ASP.NET Core supports gRPC-web with
+a [middleware](https://docs.microsoft.com/en-us/aspnet/core/grpc/browser?view=aspnetcore-6.0).
+Connect for Node and `connect-go` support gRPC-web out of the box.
+
+```ts
+import { createGrpcWebTransport } from "@connectrpc/connect-web";
+
+const transport = createGrpcWebTransport({
+  // Requests will be made to <baseUrl>/<package>.<service>/method
+  baseUrl: "https://demo.connectrpc.com",
+
+  // By default, this transport uses the binary format, because
+  // not all gRPC-web implementations support JSON.
+  useBinaryFormat: true,
+
+  // Interceptors apply to all calls running through this transport.
+  interceptors: [],
+
+  // Optional override of the fetch implementation used by the transport.
+  fetch: globalThis.fetch,
+
+  // Options for Protobuf JSON serialization.
+  jsonOptions: {},
+});
+```
+
+## `fetch()`
+
+When creating your transport, you have the option of providing your own custom
+Fetch function. You can use it to provide Fetch options, such as [redirect](https://developer.mozilla.org/en-US/docs/Web/API/RequestInit#redirect), or [credentials](https://developer.mozilla.org/en-US/docs/Web/API/RequestInit#credentials):
+
+```ts
+import { createConnectTransport } from "@connectrpc/connect-web";
+
+createConnectTransport({
+  baseUrl: "https://demo.connectrpc.com",
+  // Include cookies in cross-origin requests:
+  fetch: (input, init) => fetch(input, {...init, credentials: "include"}),
+});
+```
+
+If your framework provides a custom fetch function for server-side rendering, you can pass it to the transport - visit
+our documentation on [SSR](/docs/web/ssr/) to learn more.
+
+## JSON options
+
+With `jsonOptions`, you can pass any of the [JSON serialization options from Protobuf-ES](https://github.com/bufbuild/protobuf-es/blob/v2.2.1/MANUAL.md#json-serialization-options):
+
+```ts
+import { createRegistry } from "@bufbuild/protobuf";
+import { MyMessageSchema } from "./my_message_pb";
+
+createConnectTransport({
+  baseUrl: "https://demo.connectrpc.com",
+  jsonOptions: {
+    ignoreUnknownFields: true,
+    alwaysEmitImplicit: false,
+    enumAsInteger: false,
+    useProtoFieldName: false,
+    registry: createRegistry(MyMessageSchema),
+  },
+});
+```
+
+The registry is important if you use `google.protobuf.Any`. It's a special message that can hold any message. But to
+serialize it to JSON and to parse it from JSON, it's necessary to look up the contained message by name, and the registry
+provides this lookup.
+
+Note that all transports use `ignoreUnknownFields: true` by default. Otherwise, adding a field to a response would cause
+clients to fail until they are updated.
