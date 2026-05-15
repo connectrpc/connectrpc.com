@@ -7,8 +7,8 @@ description: "Answers to common questions about Connect: project naming, OpenAPI
 
 ### How should I refer to Connect in a blog post or social media?
 
-**Connect** is the name of the project. If that's ambiguous in your context or
-search ranking/uniqueness is important, please use **Connect RPC**.
+Connect is the original name of the project, however we have moved to referencing the
+project as **ConnectRPC**. Connect was simply too ambiguous for SEO.
 
 ### How do I get the OpenAPI spec for the Connect APIs?
 
