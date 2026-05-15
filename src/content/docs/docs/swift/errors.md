@@ -67,4 +67,4 @@ let cancelable = elizaClient.say(request: request) { response in
 cancelable.cancel()
 ```
 
-[connect-error-source]: https://github.com/connectrpc/connect-swift/blob/main/Libraries/Connect/Interfaces/ConnectError.swift
+[connect-error-source]: https://github.com/connectrpc/connect-swift/blob/main/Libraries/Connect/Public/Interfaces/ConnectError.swift

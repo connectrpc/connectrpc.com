@@ -154,7 +154,7 @@ from strings.
 
 ### Why are unknown JSON fields ignored?
 
-Following the [proto3 language guide](https://protobuf.dev/programming-guides/proto3/#json-options),
+Following the [proto3 language guide](https://protobuf.dev/programming-guides/json/#json-options),
 a JSON parser should reject unknown fields by default. However, we found the
 behavior to be impractical for RPC because it means that the schema cannot
 evolve without breaking existing clients: simply adding a field to a response will break old clients. Therefore,
@@ -362,7 +362,7 @@ compatible with existing gRPC-web backends. See [Choosing a protocol](/docs/web/
 Connect uses the Protobuf runtime provided by [Protobuf-ES](https://github.com/bufbuild/protobuf-es).
 Additionally, the code generator plugin used by Connect-ES is based on the plugin
 framework also provided by Protobuf-ES. For any questions you may have about this library,
-visit the [Protobuf-ES FAQ page](https://github.com/bufbuild/protobuf-es/blob/main/docs/faq.md).
+visit the [Protobuf-ES manual](https://github.com/bufbuild/protobuf-es/blob/main/MANUAL.md).
 
 #### How do I add types to the descriptor registry for JavaScript?
 
