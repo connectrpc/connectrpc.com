@@ -49,7 +49,7 @@ export const featureList: FeatureItem[] = [
   {
     title: "No boilerplate",
     descriptionHtml:
-      'Define your APIs using <a href="https://developers.google.com/protocol-buffers">Protocol Buffers</a>, the industry’s most battle-tested schema definition language, and skip the hand-written boilerplate. Connect handles server-side routing, serialization, and compression, and it generates idiomatic clients in Go, TypeScript, Swift, and Kotlin.',
+      'Define your APIs using <a href="https://developers.google.com/protocol-buffers">Protocol Buffers</a>, the industry’s most battle-tested schema definition language, and skip the hand-written boilerplate. Connect handles server-side routing, serialization, and compression, and it generates idiomatic clients in Go, TypeScript, Swift, Kotlin, Dart, and Python.',
   },
 ];
 

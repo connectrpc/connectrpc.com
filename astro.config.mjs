@@ -185,7 +185,6 @@ export default defineConfig({
           label: "Connect for Web",
           collapsed: true,
           items: [
-            { label: "Migrating to v2", slug: "docs/web/migrating-to-v2" },
             { label: "Getting started", slug: "docs/web/getting-started" },
             { label: "Generating code", slug: "docs/web/generating-code" },
             { label: "Using clients", slug: "docs/web/using-clients" },
@@ -214,6 +213,7 @@ export default defineConfig({
             },
             { label: "Server-Side Rendering (SSR)", slug: "docs/web/ssr" },
             { label: "Connect for TanStack Query", slug: "docs/web/query" },
+            { label: "Migrating to v2", slug: "docs/web/migrating-to-v2" },
           ],
         },
         {
