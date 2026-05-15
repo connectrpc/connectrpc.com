@@ -80,7 +80,7 @@ If your server is deployed as an internal microservice, configure [otelconnect] 
 
 ## Reducing metrics and tracing cardinality
 
-By default, the [OpenTelemetry RPC conventions](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/rpc.md) produce high-cardinality server-side metric and tracing output. In particular, servers tag all metrics and trace data with the server's IP address and the remote port number. To drop these attributes, use [otelconnect.WithoutServerPeerAttributes]. For more customizable attribute filtering, use [otelconnect.WithFilter].
+By default, the [OpenTelemetry RPC conventions](https://opentelemetry.io/docs/specs/semconv/rpc/rpc-spans/) produce high-cardinality server-side metric and tracing output. In particular, servers tag all metrics and trace data with the server's IP address and the remote port number. To drop these attributes, use [otelconnect.WithoutServerPeerAttributes]. For more customizable attribute filtering, use [otelconnect.WithFilter].
 
 [otelconnect]: https://pkg.go.dev/connectrpc.com/otelconnect
 [OpenTelemetry]: https://opentelemetry.io/

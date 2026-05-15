@@ -125,7 +125,7 @@ const {handler, config} = nextJsApiRouter({
 export {handler as default, config};
 ```
 
-This file is a Next.js [catch-all API route](https://nextjs.org/docs/routing/dynamic-routes#catch-all-routes). It will
+This file is a Next.js [catch-all API route](https://nextjs.org/docs/pages/building-your-application/routing/dynamic-routes#catch-all-segments). It will
 serve your Connect RPCs with the `/api` prefix. Make sure to include the `/api` prefix in the `baseUrl` option for
 your client transport.
 

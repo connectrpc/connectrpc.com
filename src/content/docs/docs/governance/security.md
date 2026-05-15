@@ -81,7 +81,7 @@ reviewed and thoroughly tested. Once a fix is prepared in private:
   request, review the fix again, and merge it to the main branch. The fix is
   also backported to any other supported branches.
 * If the CVSS score is under 4.0 ([a low severity
-  score](https://www.first.org/cvss/specification-document#i5)) or the assessed
+  score](https://www.first.org/cvss/specification-document#Qualitative-Severity-Rating-Scale)) or the assessed
   risk is low, the release coordinator may opt to slow the release process down
   in the face of holidays, limited maintainer availability, or other
   constraints. Any intentional slowdown is first discussed on the
