@@ -21,9 +21,9 @@ Array, Number, String, and Boolean.
 
 **Protobuf message are JSON-serializable out of the box if they:**
 
-- Use the "proto3" syntax (which does not require the [prototype chain to track field presence](https://github.com/bufbuild/protobuf-es/blob/v2.2.1/MANUAL.md#field-presence-and-default-values)) or the Editions equivalent.
+- Use the "proto3" syntax (which does not require the [prototype chain to track field presence](https://protobufes.com/guides/messages/#field-presence-and-default-values)) or the Editions equivalent.
 - Do not use `bytes` fields.
-- Do not use `int64` or any other 64-bit integer field (unless they have the [option `jstype = JS_STRING`](https://github.com/bufbuild/protobuf-es/blob/v2.2.1/MANUAL.md#scalar-fields)).
+- Do not use `int64` or any other 64-bit integer field (unless they have the [option `jstype = JS_STRING`](https://protobufes.com/reference/generated-code/field-types/#scalars)).
 - Do not rely on Infinity, or NaN in `double` or `float` fields.
 
 React Server components with Next.js use a more capable serialization logic. In addition to regular JSON-serializable
@@ -31,13 +31,12 @@ types, it also supports BigInt, Infinity, NaN, and Uint8Array.
 
 **Protobuf messages are serializable by React out of the box if they:**
 
-- Use the "proto3" syntax (which does not require the [prototype chain to track field presence](https://github.com/bufbuild/protobuf-es/blob/v2.2.1/MANUAL.md#field-presence-and-default-values)) or the Editions equivalent.
+- Use the "proto3" syntax (which does not require the [prototype chain to track field presence](https://protobufes.com/guides/messages/#field-presence-and-default-values)) or the Editions equivalent.
 
 If your Protobuf messages are not serializable, there's a simple solution: You convert them to JSON with the
-[toJson function](https://github.com/bufbuild/protobuf-es/blob/v2.2.1/MANUAL.md#serializing-messages) from
+[toJson function](https://protobufes.com/guides/serialization/#serialize-and-parse) from
 [`@bufbuild/protobuf`](https://www.npmjs.com/package/@bufbuild/protobuf). You can either use the JSON objects (the
-[JSON types](https://github.com/bufbuild/protobuf-es/blob/v2.2.1/MANUAL.md#json-types) feature will be helpful), or
-parse them again with `fromJson`.
+[JSON types](https://protobufes.com/reference/json-types/) feature will be helpful), or parse them again with `fromJson`.
 
 Let's walk through a few examples in various setups:
 
@@ -202,7 +201,7 @@ Server load functions always run on the server. The data they return is serializ
 sent to the web browser, and hydrated on page load. Svelte 5 uses [devalue](https://github.com/rich-harris/devalue) to
 serialize data, which fully supports BigInt, Infinity, NaN, and Uint8Array.
 
-As long as you use the "proto3" syntax (which does not require the [prototype chain to track field presence](https://github.com/bufbuild/protobuf-es/blob/v2.2.1/MANUAL.md#field-presence-and-default-values)) or the Editions equivalent, you can
+As long as you use the "proto3" syntax (which does not require the [prototype chain to track field presence](https://protobufes.com/guides/messages/#field-presence-and-default-values)) or the Editions equivalent, you can
 safely return Protobuf messages from a server load function.
 
 ### Universal load

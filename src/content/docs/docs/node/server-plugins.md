@@ -211,11 +211,11 @@ All adapters take a set of common options:
 - `interceptors?: Interceptor[]`
   An array of interceptors to apply to all requests. See [Interceptors](/docs/node/interceptors/) for more information.
 - `jsonOptions`
-  Protobuf [JSON serialization options](https://github.com/bufbuild/protobuf-es/blob/v2.2.1/MANUAL.md#json-serialization-options).
+  Protobuf [JSON serialization options](https://protobufes.com/guides/serialization/#json-serialization-options).
   If your service uses `google.protobuf.Any`, provide a `typeRegistry` with the
   allowed message types.
 - `binaryOptions`
-  Protobuf [binary serialization options](https://github.com/bufbuild/protobuf-es/blob/v2.2.1/MANUAL.md#binary-serialization-options).
+  Protobuf [binary serialization options](https://protobufes.com/guides/serialization/#binary-serialization-options).
 
 ## HTTP/2, TLS, and gRPC
 
