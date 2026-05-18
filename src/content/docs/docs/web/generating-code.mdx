@@ -1,0 +1,127 @@
+---
+title: Generating code
+---
+
+We mentioned earlier that the ELIZA service defines a Protocol Buffer schema.
+So what _is_ that schema? It is really just a simple file that describes the
+service, its methods, and their argument and return types:
+
+```protobuf
+syntax = "proto3";
+
+service ElizaService {
+  rpc Say(SayRequest) returns (SayResponse) {}
+}
+
+message SayRequest {
+  string sentence = 1;
+}
+
+message SayResponse {
+  string sentence = 1;
+}
+```
+
+You can see the full version including comments and some additional RPCs
+[on the Buf Schema Registry](https://buf.build/connectrpc/eliza/file/main:connectrpc/eliza/v1/eliza.proto) (BSR).
+The `rpc` keyword stands for Remote Procedure Call — a method you can invoke
+remotely. The schema is the contract between server and client, and it
+precisely defines how data is exchanged down to the very details of
+serialization.
+
+The schema comes to life by generating code. For the server, an interface
+is generated, and the developer can focus on filling the methods with business
+logic. For the client, there really isn't anything to do — the developer can
+just call the client methods, rely on the generated types for compile-time
+type-safety and serialization, and focus on the application logic.
+
+## Generated SDKs
+
+In the tutorial, we have been using [generated SDKs](https://buf.build/docs/bsr/generated-sdks/npm)
+with an `npm install` command. When the package was requested on the BSR NPM registry, it ran
+the schema through a code generator, and served the generated files as a
+package with all required dependencies.
+
+If you want to use a Connect or gRPC service whose schema is published on the
+BSR, you can simply use `npm` to install the package, and hit the service with
+a Connect client.
+
+See our [documentation on generated SDKs](https://buf.build/docs/bsr/generated-sdks/overview)
+for details.
+
+## Local generation
+
+We're going to generate our code using [Buf](https://buf.build/product/cli/),
+a modern replacement for Google's protobuf compiler, and a compiler plugin for ECMAScript:
+
+- [@bufbuild/buf](https://www.npmjs.com/package/@bufbuild/buf) — compiles Protobuf files and generates code for many different languages
+- [@bufbuild/protoc-gen-es](https://www.npmjs.com/package/@bufbuild/protoc-gen-es) — generates TypeScript or JavaScript code from the Protobuf schema
+
+The code we will generate has three runtime dependencies:
+
+- [@connectrpc/connect](https://www.npmjs.com/package/@connectrpc/connect) — provides clients, interceptors, errors, and other primitives for Connect
+- [@connectrpc/connect-web](https://www.npmjs.com/package/@connectrpc/connect-web) — provides the Connect and gRPC-web protocols for web browsers
+- [@bufbuild/protobuf](https://www.npmjs.com/package/@bufbuild/protobuf) — provides Protobuf serialization and more
+
+First, let's install `buf`, the plugin, and runtime dependencies:
+
+```shellsession
+$ npm install --save-dev @bufbuild/buf @bufbuild/protoc-gen-es
+$ npm install @connectrpc/connect @connectrpc/connect-web @bufbuild/protobuf
+```
+
+Next, tell Buf to use the plugin with a new configuration file:
+
+```yaml title="buf.gen.yaml"
+# buf.gen.yaml defines a local generation template.
+# For details, see https://buf.build/docs/configuration/v2/buf-gen-yaml
+version: v2
+plugins:
+  # This will invoke protoc-gen-es and write output to src/gen
+  - local: protoc-gen-es
+    out: src/gen
+    # Also generate any imported dependencies
+    include_imports: true
+    # Add more plugin options here
+    opt: target=ts
+```
+
+If desired, you can also skip local plugin installation and use [remote plugins](https://buf.build/docs/bsr/remote-plugins/overview).
+See the [connect-es example](https://buf.build/docs/bsr/remote-plugins/usage/#connect-es) for a buf.gen.yaml which uses remote plugins.
+
+Finally, tell Buf to generate code for the ELIZA schema:
+
+```shellsession
+$ npx buf generate buf.build/connectrpc/eliza
+```
+
+If you prefer, you can use `protoc` instead of Buf — the plugins behave like
+any other plugin.
+
+### Output
+
+Let's take a peek at what was generated. There is a new file `src/gen/connectrpc/eliza/v1/eliza_pb.ts` containing the service:
+
+```ts
+export const ElizaService: GenService<{
+  say: {
+    methodKind: "unary";
+    input: typeof SayRequestSchema;
+    output: typeof SayResponseSchema;
+  },
+}> = serviceDesc(file_connectrpc_eliza_v1_eliza, 0);
+```
+
+The full file includes comments, additional RPCs, and exports for several messages, but the `const`
+above really is all Connect needs to provide [clients](/docs/web/using-clients).
+
+To learn more about what `protoc-gen-es` generates, head over to the [Protobuf-ES documentation](http://protobufes.com/reference/generated-code/).
+
+### Using the local files
+
+To use the locally generated files in the tutorial, update the import path:
+
+```diff
+- import { ElizaService } from "@buf/connectrpc_eliza.bufbuild_es/connectrpc/eliza/v1/eliza_pb";
++ import { ElizaService } from "./gen/connectrpc/eliza/v1/eliza_pb";
+```

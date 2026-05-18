@@ -1,5 +1,4 @@
-:root {
-  --cards-neg-margin: -13rem;
+.guideBackground {
   --card-gap: 1.5rem;
   --card-padding-x: 1.75rem;
   --card-padding-y: 1.75rem;
@@ -10,7 +9,7 @@
 
 .guideList {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: space-between;
   width: 100%;
   gap: 20px;
@@ -25,12 +24,12 @@
   box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.06);
   border-radius: 6px;
   background-color: #fff;
-  height: 180px;
+  min-height: 180px;
   display: flex;
   flex-direction: column;
 }
 
-html[data-theme="dark"] .guideCard {
+:root[data-theme="dark"] .guideCard {
   background-color: var(--buf-white-01);
   box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.3);
 }
@@ -59,11 +58,11 @@ html[data-theme="dark"] .guideCard {
   margin-bottom: 0;
 }
 
-html[data-theme="dark"] .title {
+:root[data-theme="dark"] .title {
   color: var(--ifm-heading-color);
 }
 
-html[data-theme="dark"] .description {
+:root[data-theme="dark"] .description {
   color: var(--ifm-font-color-base);
 }
 
@@ -86,42 +85,6 @@ html[data-theme="dark"] .description {
   padding-top: 70px;
   padding-bottom: 40px;
   gap: 36px;
-}
-
-.comingSoonCard {
-  background-color: transparent;
-  border: 1px solid var(--buf-ink-blue-01);
-  position: relative;
-  box-shadow: none;
-}
-
-.comingSoonCard > .titleAndIcon {
-  align-items: center;
-  position: relative;
-}
-
-.comingSoonCard > .titleAndIcon > .logoContainer {
-  gap: 10px;
-  height: 46px;
-  flex-shrink: 0;
-}
-
-.comingSoonTag {
-  font-family: var(--buf-mono-font);
-  position: absolute;
-  background-color: #e8e8f2;
-  text-transform: uppercase;
-  font-size: 10px;
-  line-height: 13px;
-  padding: 0.25rem 0.5rem;
-  color: #8d8da9;
-  top: 0;
-  transform: translateY(-50%);
-}
-
-html[data-theme="dark"] .comingSoonTag {
-  background-color: #333333;
-  color: #b0b0b0;
 }
 
 .titleAndIcon {
@@ -150,25 +113,9 @@ html[data-theme="dark"] .comingSoonTag {
     height: auto;
   }
 
-  .comingSoonCard > .titleAndIcon {
-    align-items: center;
-    flex-direction: row;
-  }
-
-  .comingSoonCard > .titleAndIcon > .logoContainer {
-    position: absolute;
-    /* 48px is height of logo */
-    top: calc(-1 * (var(--card-padding-y) + (48px / 2)));
-    right: 0;
-  }
-
   .goto {
     display: flex;
     justify-content: space-between;
-  }
-
-  .comingSoonCard {
-    position: relative;
   }
 
   .guideBackground > :global(.container) {

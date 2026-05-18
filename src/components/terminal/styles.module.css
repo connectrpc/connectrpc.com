@@ -1,38 +1,54 @@
+/* Styling for the interactive ELIZA chat terminal on the home page.
+ * Variables prefixed --ec-frm- come from Expressive Code so the chat frame
+ * visually matches the adjacent <Code frame="terminal" /> blocks and follows
+ * the active light/dark theme automatically. */
+
 .terminalHeaderWrapper {
   display: flex;
-  border-bottom: 1px solid #cbcbde;
-  height: 40px;
-  justify-content: flex-start;
   align-items: center;
-  padding-left: 14px;
-  padding-right: 14px;
-  background-color: #f4f5fe;
+  padding: 4px 1rem 5px;
+  background-color: var(--ec-frm-trmTtbBg);
   width: 100%;
-  border-top-left-radius: 2px;
-  border-top-right-radius: 2px;
+  position: relative;
 }
 
-.terminalHeaderFakeButtons {
-  display: flex;
-  gap: 8px;
+/* Three traffic-light dots, mirroring EC's .frame.is-terminal .header::before.
+ * Copied verbatim from EC's mask-image so the dot count, sizing, and spacing
+ * cannot drift away from EC. */
+.terminalHeaderWrapper::before {
+  content: "";
   position: absolute;
+  left: 1rem;
+  top: 50%;
+  width: 2.1rem;
+  aspect-ratio: 60 / 16;
+  transform: translateY(-50%);
+  background-color: var(--ec-frm-trmTtbDotsFg);
+  opacity: var(--ec-frm-trmTtbDotsOpa);
+  mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2060%2016'%20preserveAspectRatio%3D'xMidYMid%20meet'%3E%3Ccircle%20cx%3D'8'%20cy%3D'8'%20r%3D'8'%2F%3E%3Ccircle%20cx%3D'30'%20cy%3D'8'%20r%3D'8'%2F%3E%3Ccircle%20cx%3D'52'%20cy%3D'8'%20r%3D'8'%2F%3E%3C%2Fsvg%3E");
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  pointer-events: none;
 }
 
-.terminalHeaderFakeButton {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  border: 1px solid #cbcbde;
+/* Thin seam between title bar and code body. EC draws this same line via
+ * its own .header::after with inset: 0 + border-bottom. */
+.terminalHeaderWrapper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-bottom: 1px solid var(--ec-frm-trmTtbBrdBtmCol);
+  pointer-events: none;
 }
 
 .terminalHeaderText {
-  color: #9699b6;
-  font-family: var(--buf-mono-font);
-  text-transform: uppercase;
+  color: var(--ec-frm-trmTtbFg);
+  font-family: var(--ec-uiFontFml);
   font-weight: 400;
-  font-size: 14px;
-  line-height: 18px;
+  font-size: var(--ec-uiFontSize);
+  line-height: var(--ec-uiLineHt);
   text-align: center;
+  text-transform: uppercase;
   letter-spacing: 0.08em;
   flex: 1 1 auto;
   display: flex;
@@ -40,38 +56,47 @@
 }
 
 .terminalContainer {
-  font-family: var(--ifm-font-family-monospace);
-  color: black;
-  box-shadow: none;
-  text-shadow: none;
+  font-family: var(--ec-codeFontFml);
+  font-size: var(--ec-codeFontSize);
+  line-height: var(--ec-codeLineHt);
+  color: var(--ec-codeFg);
+  display: flex;
+  flex-direction: column;
   height: 300px;
   margin-bottom: 15px;
+  background-color: var(--ec-frm-trmBg);
+  border: 1px solid var(--ec-frm-edTabBarBrdCol);
+  border-radius: var(--ec-brdRad);
+  box-shadow: var(--ec-frm-frameBoxShdCssVal);
 }
-.terminal {
-  padding: 25px 40px;
-}
+
 .terminalContainer p {
   margin: 0;
   padding: 5px 0;
 }
+
 .terminalBody {
-  color: black;
-  padding: 20px;
-  background: #f4f5fe;
-  height: 100%;
+  color: var(--ec-codeFg);
+  padding: 1rem;
+  flex: 1 1 auto;
+  min-height: 0;
 }
+
 .terminalOverflow {
   overflow: auto;
   height: 100%;
 }
+
 .inputElement {
   opacity: 0;
   position: absolute;
 }
+
 .spacer::after {
   margin-right: 7px;
   content: ">";
 }
+
 .prompt {
   margin-top: 7px;
   display: flex;
@@ -79,28 +104,28 @@
   width: 100%;
   align-items: center;
 }
+
 .elizaText {
-  color: var(--buf-ink-blue-02);
+  color: var(--sl-color-accent);
   white-space: nowrap;
   overflow: hidden;
   width: 100%;
   animation: linearwipe 500ms steps(60, end);
 }
+
 .elizaText .spacer {
   visibility: hidden;
 }
+
 .userText {
   font-weight: 400;
-  color: black;
+  color: var(--ec-codeFg);
 }
+
 .blinkingCursor {
-  height: 20px;
-  width: 10px;
-  background-color: #111010;
-  -webkit-animation: 1s blink step-end infinite;
-  -moz-animation: 1s blink step-end infinite;
-  -ms-animation: 1s blink step-end infinite;
-  -o-animation: 1s blink step-end infinite;
+  height: 1.1em;
+  width: 0.5em;
+  background-color: var(--ec-codeFg);
   animation: 1s blink step-end infinite;
 }
 
@@ -116,20 +141,13 @@
   }
 }
 
-html[data-theme="dark"] {
-  .terminalHeaderWrapper {
-    background-color: var(--buf-grey-01);
-    border-color: #444444;
-  }
-  /* colors used via style attributes by the pre in the static code blocks */
-  .terminalBody {
-    background: rgb(40, 42, 54);
-  }
-  .terminalBody,
-  .userText {
-    color: rgb(248, 248, 242);
-  }
-  .blinkingCursor {
-    background-color: rgb(248, 248, 242);
+/* On narrow viewports the typewriter wipe truncates the response (e.g.
+ * "Hello, how are you feeling?" gets cut off mid-word on iPhone SE).
+ * Wrap text and drop the animation; the reflow at intermediate widths
+ * looks jumpy if both run together. */
+@media (max-width: 650px) {
+  .elizaText {
+    white-space: normal;
+    animation: none;
   }
 }
