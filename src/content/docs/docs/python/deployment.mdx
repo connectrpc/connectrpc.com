@@ -48,11 +48,11 @@ Cross-origin resource sharing (CORS) is needed to support web clients on origins
 Connect services are standard ASGI and WSGI applications, so any CORS middleware can be used to
 enable CORS.
 
-For example, with an ASGI application using the [asgi-cors](https://pypi.org/project/asgi-cors/)
-middleware:
+For example, with an ASGI application using [Starlette's](https://www.starlette.io/)
+[`CORSMiddleware`](https://www.starlette.io/middleware/#corsmiddleware):
 
 ```python
-from asgi_cors import asgi_cors
+from starlette.middleware.cors import CORSMiddleware
 
 from greet.v1.greet_connect import GreetServiceASGIApplication
 from server import Greeter
@@ -60,12 +60,12 @@ from server import Greeter
 app = GreetServiceASGIApplication(Greeter())
 
 # app is a standard ASGI application - any middleware works as-is
-app = asgi_cors(
+app = CORSMiddleware(
     app,
-    hosts=["https://acme.com"],
+    allow_origins=["https://acme.com"],
     # POST is used for all APIs except for idempotent unary RPCs that may support GET
-    methods=["GET", "POST"],
-    headers=[
+    allow_methods=["GET", "POST"],
+    allow_headers=[
         "content-type",
         "connect-protocol-version",
         "connect-timeout-ms",
@@ -73,3 +73,8 @@ app = asgi_cors(
     ],
 )
 ```
+
+`CORSMiddleware` is used directly as ASGI middleware here — there is no need
+to wrap the Connect application in a full `Starlette` app. The middleware
+handles CORS preflight (`OPTIONS`) requests itself, returning a 200 response
+before they reach the Connect handler.
