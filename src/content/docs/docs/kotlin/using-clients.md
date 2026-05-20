@@ -6,109 +6,115 @@ title: Using clients
 
 ### Supported protocols
 
-Connect-Kotlin currently supports 3 protocols:
+Connect-Kotlin supports three protocols:
 
-- The new [Connect protocol](/docs/protocol/), a simple, HTTP-based protocol that
+- The [Connect protocol](/docs/protocol/), a simple, HTTP-based protocol that
   works over HTTP/1.1 or HTTP/2. It takes the best parts of gRPC/gRPC-Web,
   including streaming, and packages them into a protocol that works well on
-  all platforms, including mobile. By default, JSON- and
-  binary-encoded Protobuf is supported.
-- The [gRPC protocol][grpc]: Allows clients to communicate with
-  existing gRPC services.
-- The [gRPC-Web protocol][grpc-web]: Allows clients to communicate with
-  existing gRPC-Web services. The main difference between gRPC and gRPC-Web is
-  that gRPC-Web does not utilize HTTP trailers in the protocol.
+  all platforms, including mobile. Supports both JSON- and binary-encoded
+  Protobuf.
+- The [gRPC protocol][grpc] to talk to existing gRPC services.
+- The [gRPC-Web protocol][grpc-web] to talk to existing gRPC-Web services.
 
 If your backend services are already using gRPC today,
 [Envoy provides support][envoy-grpc-bridge]
 for converting requests made using the Connect and gRPC-Web protocols to gRPC.
 
-Switching between these protocols is a simple 1-line code change when
-configuring the `ProtocolClientConfig`'s `protocol` field:
+Switching between these protocols is a one-line code change to
+`ProtocolClientConfig`'s `networkProtocol` field:
 
-```kotlin
+```kotlin mark={6}
 val client = ProtocolClient(
-  httpClient = ConnectOkHttpClient(OkHttpClient()),
-  ProtocolClientConfig(
-    host = host,
-    serializationStrategy = GoogleJavaProtobufStrategy(),
-    protocol = Protocol.CONNECT, // Protocol.GRPC or Protocol.GRPC_WEB.
-  ),
+    httpClient = ConnectOkHttpClient(OkHttpClient()),
+    ProtocolClientConfig(
+        host = host,
+        serializationStrategy = GoogleJavaLiteProtobufStrategy(),
+        networkProtocol = NetworkProtocol.CONNECT, // NetworkProtocol.GRPC or NetworkProtocol.GRPC_WEB.
+    ),
 )
 ```
 
 :::note
-These Protocol options are mutually exclusive.
-An instance of a client can only be associated with a single protocol.
-To use both protocols with different APIs in the same application, create a specific `ProtocolClient` for each protocol.
+Each `ProtocolClient` uses a single protocol. To use multiple protocols in the
+same application, create separate clients.
 :::
+
+### Serialization strategies
+
+`ProtocolClientConfig.serializationStrategy` selects the message representation:
+
+- `GoogleJavaLiteProtobufStrategy`: Google Java lite types with Protobuf
+  binary encoding. Smallest footprint; recommended for Android.
+- `GoogleJavaProtobufStrategy`: Google Java types with Protobuf binary
+  encoding. Larger but with the complete Java reflection API.
+- `GoogleJavaJSONStrategy`: Google Java types with JSON encoding.
+
+To switch strategies, change the strategy class and update the matching
+build settings:
+
+| Variant   | `buf.gen.yaml` opt | Protobuf runtime                              | Connect-Kotlin extension              |
+|-----------|--------------------|-----------------------------------------------|---------------------------------------|
+| Java lite | `lite`             | `protobuf-javalite` + `protobuf-kotlin-lite`  | `connect-kotlin-google-javalite-ext`  |
+| Java      | _(none)_           | `protobuf-java` + `protobuf-kotlin`           | `connect-kotlin-google-java-ext`      |
+
+`GoogleJavaProtobufStrategy` and `GoogleJavaJSONStrategy` use the Java
+variant. They differ only in wire format at runtime.
 
 ### Compression
 
-Request compression and response decompression are provided through options
-that register compression pools containing logic for compressing and
-decompressing data. Gzip support is provided by default, and support for
-additional compression algorithms can be provided by replicating the
-functionality provided by the [`GzipCompressionPool`][gzip-option].
+Gzip is enabled by default. For other algorithms, write a `CompressionPool`
+and register it; see [`GzipCompressionPool`][gzip-option] for reference.
 
 ### HTTP stack
 
-By default, HTTP networking is done using [`OkHttp`][okhttp] via the
-`ConnectOkHttpClient` wrapper. Its constructor accepts an
-`OkHttpClient` to use for the underlying network library. Furthermore,
-`ConnectOkHttpClient` is just the OkHttp implementation of the `HTTPClientInterface`.
-If there is another preferred networking library, it is possible to provide a
-custom client to use with Connect-Kotlin!
+By default, HTTP networking uses [OkHttp][okhttp] via the
+`ConnectOkHttpClient` wrapper, which is just the OkHttp implementation of
+`HTTPClientInterface`. Its constructor accepts an `OkHttpClient` for the
+underlying network library. To swap in a different networking library,
+provide your own `HTTPClientInterface` implementation.
 
 ## Using generated clients
 
 ### Coroutines
 
-Generated clients support Kotlin coroutine APIs, making
-it easy to use Connect generated code in coroutine contexts:
+Generated clients expose Kotlin `suspend` methods for unary RPCs:
 
 ```kotlin
-// ProtocolClient is usually stored and passed to generated clients.
 val client = ProtocolClient(
-  httpClient = ConnectOkHttpClient(OkHttpClient()),
-  ProtocolClientConfig(
-    host = "https://demo.connectrpc.com", // Base URL for APIs.
-    serializationStrategy = GoogleJavaProtobufStrategy(), // There is also the GoogleJavaJSONStrategy and GoogleJavaLiteProtobufStrategy.
-    protocol = Protocol.CONNECT, // GRPC and GRPC_WEB are also options.
-  )
+    httpClient = ConnectOkHttpClient(OkHttpClient()),
+    ProtocolClientConfig(
+        host = "https://demo.connectrpc.com",
+        serializationStrategy = GoogleJavaLiteProtobufStrategy(),
+        networkProtocol = NetworkProtocol.CONNECT,
+        ioCoroutineContext = Dispatchers.IO, // Dispatch RPC I/O on Dispatchers.IO.
+    ),
 )
-// Create the Eliza service client.
 val elizaServiceClient = ElizaServiceClient(client)
-// Perform the request with the lifecycleScope.
-lifecycleScope.launch(Dispatchers.IO) {
-  // Make unary request to Eliza.
-  val response = elizaServiceClient.say(SayRequest.newBuilder().setSentence("Hello, Eliza").build())
-  response.success { success ->
-    // Get Eliza's reply from the response and print it.
-    val elizaSentence = success.message.sentence
-    println(elizaSentence)
-  }
-  response.failure { error ->
-    // Handle any errors from the request.
-  }
+lifecycleScope.launch {
+    val response = elizaServiceClient.say(sayRequest { sentence = "Hello, Eliza" })
+    response.success { success ->
+        println(success.message.sentence)
+    }
+    response.failure { error ->
+        // Handle any errors from the request.
+    }
 }
 ```
 
-For server-streaming RPCs, the corresponding method on the client returns
-a `*StreamInterface` object which allows the caller to send data over the stream
-and to iterate over updates from the server using a `ReceiveChannel`:
+For streaming RPCs, the client method returns a `ServerOnlyStreamInterface`
+(for server-streaming) or `BidirectionalStreamInterface` (for bidi) that lets
+you send messages and iterate over server responses using a `ReceiveChannel`:
 
 ```kotlin
 val stream = elizaServiceClient.converse()
-lifecycleScope.launch(Dispatchers.IO) {
-  async {
-    for (response in stream.resultChannel()) {
-        println(response.sentence)
+lifecycleScope.launch {
+    launch {
+        for (response in stream.responseChannel()) {
+            println(response.sentence)
+        }
     }
-  }
-  // Add the message the user is sending to the views.
-  stream.send(ConverseRequest.newBuilder().setSentence("Hello, Eliza").build())
-  stream.sendClose()
+    stream.send(converseRequest { sentence = "Hello, Eliza" })
+    stream.sendClose()
 }
 ```
 
@@ -121,22 +127,10 @@ These methods are not generated by default, but are configurable using the
 [`generateCallbackMethods` option](/docs/kotlin/generating-code/#generation-options):
 
 ```kotlin
-// ProtocolClient is usually stored and passed to generated clients.
-val client = ProtocolClient(
-  httpClient = ConnectOkHttpClient(OkHttpClient()),
-  ProtocolClientConfig(
-    host = "https://demo.connectrpc.com", // Base URL for APIs.
-    serializationStrategy = GoogleJavaProtobufStrategy(), // There is also the GoogleJavaJSONStrategy and GoogleJavaLiteProtobufStrategy.
-    protocol = Protocol.CONNECT, // GRPC and GRPC_WEB are also options.
-  )
-)
-// Create the Eliza service client.
-val elizaServiceClient = ElizaServiceClient(client)
-...
-val cancelable = elizaServiceClient.say(SayRequest.newBuilder().setSentence("hello").build()) { response ->
-  response.success { result ->
-    println(result.message)
-  }
+val cancelable = elizaServiceClient.say(sayRequest { sentence = "hello" }) { response ->
+    response.success { result ->
+        println(result.message.sentence)
+    }
 }
 // cancelable() can be used to cancel the underlying request.
 ```

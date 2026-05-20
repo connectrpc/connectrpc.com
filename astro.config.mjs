@@ -271,6 +271,7 @@ export default defineConfig({
           collapsed: true,
           items: [
             { label: "Getting started", slug: "docs/kotlin/getting-started" },
+            { label: "Android example", slug: "docs/kotlin/android-example" },
             { label: "Generating code", slug: "docs/kotlin/generating-code" },
             { label: "Using clients", slug: "docs/kotlin/using-clients" },
             {
