@@ -22,17 +22,16 @@ Content-Type: application/json
 Connect-Kotlin provides a common [`ConnectException`][connect-exception-source] type
 that represents errors consistently across all supported protocols.
 
-`ResponseMessage` failure values returned by unary API calls expose a
-`cause` and streaming APIs throw a ConnectException if an error
-occurs while reading from the `responseChannel`:
+Unary RPCs return a `ResponseMessage` whose `Failure` variant exposes a
+`cause: ConnectException`. Streaming RPCs throw a `ConnectException` while
+reading from the `responseChannel`.
 
 ```kotlin
-val request = SayRequest(sentence = sentence)
-val response = elizaClient.say(request)
+val response = elizaClient.say(sayRequest { sentence = "" })
 response.failure {
-  print(it.cause.code) // Code.INVALID_ARGUMENT
-  print(it.cause.message) // "sentence cannot be empty"
-  print(it.cause.metadata) // Dictionary of additional server-provided headers/trailers
+    print(it.cause.code)     // Code.INVALID_ARGUMENT
+    print(it.cause.message)  // "sentence cannot be empty"
+    print(it.cause.metadata) // Map of error metadata from the server
 }
 ```
 
@@ -45,26 +44,24 @@ and can be unpacked using the `ConnectException.unpackedDetails()` function by
 specifying the expected error message class type:
 
 ```kotlin
-val request = SayRequest(sentence = sentence)
-val response = elizaClient.say(request)
+val response = elizaClient.say(sayRequest { sentence = "" })
 response.failure {
-  val errorDetails = it.cause.unpackedDetails(ErrorDetail::class)
-  // Work with ErrorDetail.
+    val errorDetails: List<ErrorDetail> = it.cause.unpackedDetails(ErrorDetail::class)
+    // Work with the matching error details.
 }
 ```
 
 ## Cancelation
 
-Generated methods have the `suspend` keyword on the method signature which will cancel the underlying
-request when the Kotlin coroutine context is canceled.
+Suspending RPC methods are cancellable: cancelling the coroutine cancels the
+underlying request.
 
-With the callback unary signature, the result is a canceling handler
-to give control to the user to manually cancel a request:
+Callback-based unary calls return a `Cancelable` (`() -> Unit`) you can invoke
+to cancel the request:
 
 ```kotlin
-val request = sayRequest { sentence = sentence }
-val cancel = elizaServiceClient.say(request) { response ->
-  print(response.code) // Code.CANCELED.
+val cancel = elizaServiceClient.say(sayRequest { sentence = "hello" }) { response ->
+    response.failure { print(it.cause.code) } // Code.CANCELED if cancel() ran.
 }
 cancel()
 ```

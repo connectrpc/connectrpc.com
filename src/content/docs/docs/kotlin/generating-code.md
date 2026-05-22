@@ -27,15 +27,9 @@ A fully documented version of the above definition can be seen
 [in the Buf Schema Registry](https://buf.build/connectrpc/eliza/file/main:connectrpc/eliza/v1/eliza.proto)
 (BSR).
 
-The `rpc` keyword stands for Remote Procedure Call — an API method that can be
+The `rpc` keyword stands for Remote Procedure Call, an API method that can be
 invoked remotely. The schema is a contract between the server and client, and
 it precisely defines how data is exchanged.
-
-The schema comes to life by generating code. For the server, an interface
-is generated, and the engineer can focus on filling the methods with business
-logic. For the client, there really isn't anything more to do — the engineer
-can simply call the client methods, rely on the generated types for
-compile-time type-safety and serialization, and focus on the application logic.
 
 ## Remote plugins
 
@@ -51,21 +45,17 @@ and allows the generation to take place in an isolated
 environment. We'll use [Buf][buf], a modern replacement for
 Google's protobuf compiler, along with [remote plugins][remote-plugins].
 
-This requires installing [Buf's CLI][buf-cli]:
+This requires the [Buf CLI][buf-cli].
 
-```bash
-brew install bufbuild/buf/buf
-```
-
-When developing a new project, 2 new files need to be created:
+When developing a new project, two files need to be created:
 
 - [`buf.yaml`][buf.yaml]
 - [`buf.gen.yaml`][buf.gen.yaml]
 
 The first file, `buf.yaml`, can be created by running:
 
-```bash
-buf config init
+```shellsession
+$ buf config init
 ```
 
 The second file, `buf.gen.yaml`, needs to be created manually and specifies
@@ -74,26 +64,39 @@ file is shown below:
 
 ```yaml
 version: v2
+managed:
+  enabled: true
 plugins:
-  - remote: buf.build/connectrpc/kotlin
+  - remote: buf.build/protocolbuffers/java:v34.0
     out: generated
-  - remote: buf.build/protocolbuffers/java
+    opt: lite
+  - remote: buf.build/protocolbuffers/kotlin:v34.0
+    out: generated
+    opt: lite
+  - remote: buf.build/connectrpc/kotlin:v0.8.0
     out: generated
 ```
 
-This file specifies that the [Connect-Kotlin plugin][connect-kotlin-plugin]
-outputs should be placed in the `generated` directory.
-This plugin is responsible for generating
-`.kt` files which contain Kotlin interfaces and their
-corresponding implementations from the defined `service` and `rpc` types in
-Protobuf files.
+[Managed mode][buf-managed-mode] applies sensible Java defaults
+(one class per message, `com.` package prefix) so the `.proto` file stays
+free of language-specific options.
 
-The config also includes the [`protocolbuffers/java` plugin][java-protobuf-plugin] with
-another set of options that place its `.java` outputs
-in the same `generated` directory. This plugin
-generates models from Protobuf types such as `message` and `enum`.
+The three plugins emit:
 
-Together, the two plugins generate all the needed code.
+- The [`protocolbuffers/java` plugin][java-protobuf-plugin] generates Java
+  message classes for each Protobuf `message` and `enum`. `opt: lite` selects
+  the lite runtime, which produces smaller binaries (useful on Android).
+- The [`protocolbuffers/kotlin` plugin][kotlin-protobuf-plugin] generates
+  Kotlin DSL builders alongside the Java classes (e.g.,
+  `sayRequest { sentence = "..." }`). The matching `opt: lite` keeps it
+  consistent with the Java output.
+- The [Connect-Kotlin plugin][connect-kotlin-plugin] generates the
+  service-client interface and implementation from each `service` definition.
+
+If you don't need the Kotlin DSL builders, you can omit the
+`protocolbuffers/kotlin` plugin. If you need full Java reflection rather than
+lite, drop the `opt: lite` lines and switch your dependencies to
+`protobuf-java` / `connect-kotlin-google-java-ext`.
 
 :::tip
 Details on configuring plugins in `buf.gen.yaml` may be found in
@@ -101,11 +104,10 @@ Details on configuring plugins in `buf.gen.yaml` may be found in
 available remote plugins are found [here][available-plugins].
 :::
 
-With these configuration files in place, to generate code execute the following
-command:
+With these configuration files in place, generate code by running:
 
-```bash
-buf generate
+```shellsession
+$ buf generate
 ```
 
 Given the above config and example `eliza.proto` file, there should now be some
@@ -113,54 +115,56 @@ generated files in the `generated` directory:
 
 ```text
 generated
-└── connectrpc
-    └── eliza
-        └── v1
-            ├── ConverseRequest.java
-            ├── ConverseRequestOrBuilder.java
-            ├── ConverseResponse.java
-            ├── ConverseResponseOrBuilder.java
-            ├── ElizaProto.java
-            ├── ElizaServiceClient.kt
-            ├── ElizaServiceClientInterface.kt
-            ├── IntroduceRequest.java
-            ├── IntroduceRequestOrBuilder.java
-            ├── IntroduceResponse.java
-            ├── IntroduceResponseOrBuilder.java
-            ├── SayRequest.java
-            ├── SayRequestOrBuilder.java
-            ├── SayResponse.java
-            └── SayResponseOrBuilder.java
+└── com
+    └── connectrpc
+        └── eliza
+            └── v1
+                ├── ElizaProto.java
+                ├── ElizaProtoKt.proto.kt
+                ├── ElizaServiceClient.kt
+                ├── ElizaServiceClientInterface.kt
+                ├── SayRequest.java
+                ├── SayRequestKt.kt
+                ├── SayRequestOrBuilder.java
+                ├── SayResponse.java
+                ├── SayResponseKt.kt
+                └── SayResponseOrBuilder.java
 ```
+
+The `*.java` files come from `protocolbuffers/java`, the `*Kt.kt` files from
+`protocolbuffers/kotlin`, and `ElizaServiceClient*.kt` from `connectrpc/kotlin`.
 
 ## Using generated code
 
-Generate directly into a specified directory for a Gradle project.
+Point `out:` at a directory on your Gradle source set
+(`src/main/java` for a single-module JVM project, or `app/src/main/java` for
+a typical Android project) so the generated files are picked up automatically.
 
-The generated code depends on both the `Connect` and Google Java protobuf libraries.
-Add these dependencies through following
-[these steps in the Getting started tutorial](/docs/kotlin/getting-started/).
-
-For guidance on how to call the generated code, see the
-[documentation for using clients](/docs/kotlin/using-clients/).
+The generated code depends on the Connect-Kotlin runtime and the Google Java
+Protobuf libraries. See
+[Getting started → Set up Gradle](/docs/kotlin/getting-started/#set-up-gradle)
+for the matching Gradle dependencies, and
+[Using clients → Using generated clients](/docs/kotlin/using-clients/#using-generated-clients)
+for how to call the generated client.
 
 ## Generation options
 
 The following generation options can be combined in the `opt` field of the `buf.gen.yaml` file to customize outputs:
 
-| **Option**                     | **Type** | **Default** | **Repeatable** | **Details**                                     |
-|--------------------------------|:--------:|:-----------:|:--------------:|-------------------------------------------------|
-| `generateCallbackMethods`      | Boolean  |   `false`   |       No       | Generate callback signatures for unary methods. |
-| `generateCoroutineMethods`     | Boolean  |   `true`    |       No       | Generate suspend signatures for unary methods.  |
-| `generateBlockingUnaryMethods` | Boolean  |   `false`   |       No       | Generate blocking signatures for unary methods. |
+| **Option**                     | **Type** | **Default** | **Details**                                     |
+|--------------------------------|:--------:|:-----------:|-------------------------------------------------|
+| `generateCallbackMethods`      |   bool   |   `false`   | Generate callback signatures for unary methods. |
+| `generateCoroutineMethods`     |   bool   |   `true`    | Generate suspend signatures for unary methods.  |
+| `generateBlockingUnaryMethods` |   bool   |   `false`   | Generate blocking signatures for unary methods. |
 
 [available-plugins]: https://buf.build/plugins
 [buf]: https://buf.build/docs/
 [buf.gen.yaml]: https://buf.build/docs/configuration/v2/buf-gen-yaml
 [buf.yaml]: https://buf.build/docs/configuration/v2/buf-yaml
 [buf-cli]: https://buf.build/docs/installation
-[connect-kotlin]: https://github.com/connectrpc/connect-kotlin
+[buf-managed-mode]: https://buf.build/docs/generate/managed-mode
 [connect-kotlin-plugin]: https://buf.build/connectrpc/kotlin
 [java-protobuf-plugin]: https://buf.build/protocolbuffers/java
+[kotlin-protobuf-plugin]: https://buf.build/protocolbuffers/kotlin
 [protobuf]: https://developers.google.com/protocol-buffers
 [remote-plugins]: https://buf.build/docs/bsr/remote-plugins/usage
