@@ -121,15 +121,17 @@ service from the [getting started documentation](/docs/python/getting-started/) 
   <TabItem label="ASGI">
 
     ```python
-    class GoodbyeInterceptor(UnaryInterceptor):
-        def __init__(self, users: list[str]):
+    from collections.abc import Awaitable, Callable
+
+    class GoodbyeInterceptor:
+        def __init__(self, users: list[str]) -> None:
             self._users = users
 
         async def intercept_unary(
             self,
-            call_next: Callable[[GreetRequest, RequestContext], Awaitable[GreetResponse]],
+            call_next: Callable[[GreetRequest, RequestContext[GreetRequest, GreetResponse]], Awaitable[GreetResponse]],
             request: GreetRequest,
-            ctx: RequestContext,
+            ctx: RequestContext[GreetRequest, GreetResponse],
         ) -> GreetResponse:
             if request.name in self._users:
                 return GreetResponse(greeting=f"Goodbye, {request.name}!")
@@ -140,15 +142,17 @@ service from the [getting started documentation](/docs/python/getting-started/) 
   <TabItem label="WSGI">
 
     ```python
-    class GoodbyeInterceptor(UnaryInterceptorSync):
-        def __init__(self, users: list[str]):
+    from collections.abc import Awaitable, Callable
+
+    class GoodbyeInterceptor:
+        def __init__(self, users: list[str]) -> None:
             self._users = users
 
         def intercept_unary_sync(
             self,
-            call_next: Callable[[GreetRequest, RequestContext], GreetResponse],
+            call_next: Callable[[GreetRequest, RequestContext[GreetRequest, GreetResponse]], Awaitable[GreetResponse]],
             request: GreetRequest,
-            ctx: RequestContext,
+            ctx: RequestContext[GreetRequest, GreetResponse],
         ) -> GreetResponse:
             if request.name in self._users:
                 return GreetResponse(greeting=f"Goodbye, {request.name}!")
@@ -213,11 +217,11 @@ An authentication interceptor checking bearer tokens and storing them to a conte
 
     _auth_token: ContextVar[str] = ContextVar("current_auth_token")
 
-    class ServerAuthInterceptor(MetadataInterceptor):
-        def __init__(self, valid_tokens: list[str]):
+    class ServerAuthInterceptor:
+        def __init__(self, valid_tokens: list[str]) -> None:
             self._valid_tokens = valid_tokens
 
-        async def on_start(self, ctx: RequestContext) -> Token[str]:
+        async def on_start[REQ, RES](self, ctx: RequestContext[REQ, RES]) -> Token[str]:
             authorization = ctx.request_headers().get("authorization")
             if not authorization or not authorization.startswith("Bearer "):
                 raise ConnectError(Code.UNAUTHENTICATED, "missing or malformed bearer token")
@@ -226,7 +230,7 @@ An authentication interceptor checking bearer tokens and storing them to a conte
                 raise ConnectError(Code.PERMISSION_DENIED, "token not recognized")
             return _auth_token.set(token)
 
-        async def on_end(self, token: Token[str], ctx: RequestContext, error: Exception | None):
+        async def on_end[REQ, RES](self, token: Token[str], ctx: RequestContext[REQ, RES], error: Exception | None) -> None:
             _auth_token.reset(token)
     ```
 
@@ -238,11 +242,11 @@ An authentication interceptor checking bearer tokens and storing them to a conte
 
     _auth_token: ContextVar[str] = ContextVar("current_auth_token")
 
-    class ServerAuthInterceptor(MetadataInterceptorSync):
-        def __init__(self, valid_tokens: list[str]):
+    class ServerAuthInterceptor:
+        def __init__(self, valid_tokens: list[str]) -> None:
             self._valid_tokens = valid_tokens
 
-        def on_start_sync(self, ctx: RequestContext) -> Token[str]:
+        def on_start_sync[REQ, RES](self, ctx: RequestContext[REQ, RES]) -> Token[str]:
             authorization = ctx.request_headers().get("authorization")
             if not authorization or not authorization.startswith("Bearer "):
                 raise ConnectError(Code.UNAUTHENTICATED, "missing or malformed bearer token")
@@ -251,7 +255,7 @@ An authentication interceptor checking bearer tokens and storing them to a conte
                 raise ConnectError(Code.PERMISSION_DENIED, "token not recognized")
             return _auth_token.set(token)
 
-        def on_end_sync(self, token: Token[str], ctx: RequestContext, error: Exception | None):
+        def on_end_sync[REQ, RES](self, token: Token[str], ctx: RequestContext[REQ, RES], error: Exception | None) -> None:
             _auth_token.reset(token)
     ```
 
@@ -270,16 +274,15 @@ the authorization header.
     ```python
     from contextvars import ContextVar
 
+    from connectrpc.request import RequestContext
+
     _auth_token: ContextVar[str] = ContextVar("current_auth_token")
 
-    class ClientAuthInterceptor(MetadataInterceptor):
-        async def on_start(self, ctx: RequestContext) -> None:
+    class ClientAuthInterceptor:
+        async def on_start[REQ, RES](self, ctx: RequestContext[REQ, RES]) -> None:
             auth_token = _auth_token.get(None)
             if auth_token:
                 ctx.request_headers()["authorization"] = f"Bearer {auth_token}"
-
-        async def on_end(self, token: None, ctx: RequestContext, error: Exception | None) -> None:
-            return
     ```
 
   </TabItem>
@@ -288,23 +291,21 @@ the authorization header.
     ```python
     from contextvars import ContextVar
 
+    from connectrpc.request import RequestContext
+
     _auth_token: ContextVar[str] = ContextVar("current_auth_token")
 
-    class ClientAuthInterceptor(MetadataInterceptorSync):
-        def on_start_sync(self, ctx: RequestContext) -> None:
+    class ClientAuthInterceptor:
+        def on_start_sync[REQ, RES](self, ctx: RequestContext[REQ, RES]) -> None:
             auth_token = _auth_token.get(None)
             if auth_token:
                 ctx.request_headers()["authorization"] = f"Bearer {auth_token}"
-
-        def on_end_sync(self, token: None, ctx: RequestContext, error: Exception | None) -> None:
-            return
     ```
 
   </TabItem>
 </Tabs>
 
-`MetadataInterceptor` requires both `on_start` and `on_end`, so we provide a no-op `on_end`
-even when we only care about populating the outbound headers.
+Note that in the client interceptor, we do not need to define `on_end`.
 
 The above interceptors would allow a server to receive and validate an auth token and automatically
 propagate it to the authorization header of backend calls.
