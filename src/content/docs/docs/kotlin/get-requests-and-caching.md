@@ -2,39 +2,39 @@
 title: Get Requests and Caching
 ---
 
-Connect supports performing idempotent, side-effect free requests using an HTTP
-GET-based protocol. This makes it easier to cache certain kinds of requests in
-the browser, on your CDN, or in proxies and other middleboxes.
+Connect supports HTTP GET for idempotent, side-effect-free RPCs. This makes
+the requests cacheable by browsers, CDNs, and intermediate proxies.
 
-First, configure your server to handle HTTP GET requests using Connect. Refer
-to the documentation that corresponds to your server:
+First, configure your server to handle HTTP GET. See the server-side guide
+for your backend:
 
 * [Connect Go](/docs/go/get-requests-and-caching/)
 * [Connect Node](/docs/node/get-requests-and-caching/)
 * [Connect Python](/docs/python/get-requests-and-caching/)
 
-If you are using clients to make query-style requests, you may want the ability
-to use Connect HTTP GET request support. To opt-in for a given procedure, you
-must mark it as being side-effect free using the
-[`MethodOptions.IdempotencyLevel`][idempotency-level] option:
+To opt a procedure into GET, mark it as side-effect-free with
+[`MethodOptions.IdempotencyLevel`][idempotency-level]:
 
 ```protobuf
 service ElizaService {
-  rpc Say(stream SayRequest) returns (SayResponse) {
+  rpc Say(SayRequest) returns (SayResponse) {
     option idempotency_level = NO_SIDE_EFFECTS;
   }
 }
 ```
 
-Clients will not automatically use GET requests by default.
-To do that, you'll need to update your `ProtocolClientConfig` with
-the enabled `GETConfiguration`.
+GET requests are off by default. Opt in by setting `getConfiguration` on
+`ProtocolClientConfig`:
 
 ```kotlin
 val config = ProtocolClientConfig(
-  getConfiguration = GETConfiguration.Enabled,
-  ...
+    getConfiguration = GETConfiguration.Enabled,
+    ...
 )
 ```
+
+`GETConfiguration.EnabledWithFallback(maxMessageBytes)` is also available; it
+sends a GET only when the encoded message fits within `maxMessageBytes` and
+falls back to POST otherwise.
 
 [idempotency-level]: https://github.com/protocolbuffers/protobuf/blob/e5679c01e8f47e8a5e7172444676bda1c2ada875/src/google/protobuf/descriptor.proto#L795
