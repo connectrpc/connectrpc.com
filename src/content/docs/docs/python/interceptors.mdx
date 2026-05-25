@@ -121,15 +121,17 @@ service from the [getting started documentation](/docs/python/getting-started/) 
   <TabItem label="ASGI">
 
     ```python
+    from collections.abc import Awaitable, Callable
+
     class GoodbyeInterceptor:
-        def __init__(self, users: list[str]):
+        def __init__(self, users: list[str]) -> None:
             self._users = users
 
         async def intercept_unary(
             self,
-            call_next: Callable[[GreetRequest, RequestContext], Awaitable[GreetResponse]],
+            call_next: Callable[[GreetRequest, RequestContext[GreetRequest, GreetResponse]], Awaitable[GreetResponse]],
             request: GreetRequest,
-            ctx: RequestContext,
+            ctx: RequestContext[GreetRequest, GreetResponse],
         ) -> GreetResponse:
             if request.name in self._users:
                 return GreetResponse(greeting=f"Goodbye, {request.name}!")
@@ -140,15 +142,17 @@ service from the [getting started documentation](/docs/python/getting-started/) 
   <TabItem label="WSGI">
 
     ```python
+    from collections.abc import Awaitable, Callable
+
     class GoodbyeInterceptor:
-        def __init__(self, users: list[str]):
+        def __init__(self, users: list[str]) -> None:
             self._users = users
 
         def intercept_unary_sync(
             self,
-            call_next: Callable[[GreetRequest, RequestContext], GreetResponse],
+            call_next: Callable[[GreetRequest, RequestContext[GreetRequest, GreetResponse]], Awaitable[GreetResponse]],
             request: GreetRequest,
-            ctx: RequestContext,
+            ctx: RequestContext[GreetRequest, GreetResponse],
         ) -> GreetResponse:
             if request.name in self._users:
                 return GreetResponse(greeting=f"Goodbye, {request.name}!")
@@ -164,14 +168,14 @@ To apply our new interceptor to handlers, we can pass it to the application with
   <TabItem label="ASGI">
 
     ```python
-    app = GreetingServiceASGIApplication(service, interceptors=[GoodbyeInterceptor(["user1", "user2"])])
+    app = GreetServiceASGIApplication(Greeter(), interceptors=[GoodbyeInterceptor(["user1", "user2"])])
     ```
 
   </TabItem>
   <TabItem label="WSGI">
 
     ```python
-    app = GreetingServiceWSGIApplication(service, interceptors=[GoodbyeInterceptor(["user1", "user2"])])
+    app = GreetServiceWSGIApplication(Greeter(), interceptors=[GoodbyeInterceptor(["user1", "user2"])])
     ```
 
   </TabItem>
@@ -183,14 +187,14 @@ Client constructors also accept an `interceptors=` parameter.
   <TabItem label="Async">
 
     ```python
-    client = GreetingServiceClient("http://localhost:8000", interceptors=[GoodbyeInterceptor(["user1", "user2"])])
+    client = GreetServiceClient("http://localhost:8000", interceptors=[GoodbyeInterceptor(["user1", "user2"])])
     ```
 
   </TabItem>
   <TabItem label="Sync">
 
     ```python
-    client = GreetingServiceClientSync("http://localhost:8000", interceptors=[GoodbyeInterceptor(["user1", "user2"])])
+    client = GreetServiceClientSync("http://localhost:8000", interceptors=[GoodbyeInterceptor(["user1", "user2"])])
     ```
 
   </TabItem>
@@ -211,22 +215,22 @@ An authentication interceptor checking bearer tokens and storing them to a conte
     ```python
     from contextvars import ContextVar, Token
 
-    _auth_token = ContextVar["auth_token"]("current_auth_token")
+    _auth_token: ContextVar[str] = ContextVar("current_auth_token")
 
     class ServerAuthInterceptor:
-        def __init__(self, valid_tokens: list[str]):
+        def __init__(self, valid_tokens: list[str]) -> None:
             self._valid_tokens = valid_tokens
 
-        async def on_start(self, ctx: RequestContext) -> Token["auth_token"]:
+        async def on_start[REQ, RES](self, ctx: RequestContext[REQ, RES]) -> Token[str]:
             authorization = ctx.request_headers().get("authorization")
             if not authorization or not authorization.startswith("Bearer "):
-                raise ConnectError(Code.UNAUTHENTICATED)
+                raise ConnectError(Code.UNAUTHENTICATED, "missing or malformed bearer token")
             token = authorization[len("Bearer "):]
             if token not in self._valid_tokens:
-                raise ConnectError(Code.PERMISSION_DENIED)
+                raise ConnectError(Code.PERMISSION_DENIED, "token not recognized")
             return _auth_token.set(token)
 
-        async def on_end(self, token: Token["auth_token"], ctx: RequestContext, error: Exception | None):
+        async def on_end[REQ, RES](self, token: Token[str], ctx: RequestContext[REQ, RES], error: Exception | None) -> None:
             _auth_token.reset(token)
     ```
 
@@ -236,22 +240,22 @@ An authentication interceptor checking bearer tokens and storing them to a conte
     ```python
     from contextvars import ContextVar, Token
 
-    _auth_token = ContextVar["auth_token"]("current_auth_token")
+    _auth_token: ContextVar[str] = ContextVar("current_auth_token")
 
     class ServerAuthInterceptor:
-        def __init__(self, valid_tokens: list[str]):
+        def __init__(self, valid_tokens: list[str]) -> None:
             self._valid_tokens = valid_tokens
 
-        def on_start_sync(self, ctx: RequestContext) -> Token["auth_token"]:
+        def on_start_sync[REQ, RES](self, ctx: RequestContext[REQ, RES]) -> Token[str]:
             authorization = ctx.request_headers().get("authorization")
             if not authorization or not authorization.startswith("Bearer "):
-                raise ConnectError(Code.UNAUTHENTICATED)
+                raise ConnectError(Code.UNAUTHENTICATED, "missing or malformed bearer token")
             token = authorization[len("Bearer "):]
             if token not in self._valid_tokens:
-                raise ConnectError(Code.PERMISSION_DENIED)
+                raise ConnectError(Code.PERMISSION_DENIED, "token not recognized")
             return _auth_token.set(token)
 
-        def on_end_sync(self, token: Token["auth_token"], ctx: RequestContext, error: Exception | None):
+        def on_end_sync[REQ, RES](self, token: Token[str], ctx: RequestContext[REQ, RES], error: Exception | None) -> None:
             _auth_token.reset(token)
     ```
 
@@ -270,10 +274,12 @@ the authorization header.
     ```python
     from contextvars import ContextVar
 
-    _auth_token = ContextVar["auth_token"]("current_auth_token")
+    from connectrpc.request import RequestContext
+
+    _auth_token: ContextVar[str] = ContextVar("current_auth_token")
 
     class ClientAuthInterceptor:
-        async def on_start(self, ctx: RequestContext):
+        async def on_start[REQ, RES](self, ctx: RequestContext[REQ, RES]) -> None:
             auth_token = _auth_token.get(None)
             if auth_token:
                 ctx.request_headers()["authorization"] = f"Bearer {auth_token}"
@@ -285,10 +291,12 @@ the authorization header.
     ```python
     from contextvars import ContextVar
 
-    _auth_token = ContextVar["auth_token"]("current_auth_token")
+    from connectrpc.request import RequestContext
+
+    _auth_token: ContextVar[str] = ContextVar("current_auth_token")
 
     class ClientAuthInterceptor:
-        def on_start_sync(self, ctx: RequestContext):
+        def on_start_sync[REQ, RES](self, ctx: RequestContext[REQ, RES]) -> None:
             auth_token = _auth_token.get(None)
             if auth_token:
                 ctx.request_headers()["authorization"] = f"Bearer {auth_token}"

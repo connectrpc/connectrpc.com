@@ -24,19 +24,26 @@ and health check, but likely will in the future.
 
 ## Clients
 
-Clients default to using the Connect protocol. To use the gRPC protocol, set `grpc = True` during
-client construction. If the gRPC server is using TLS, Connect clients work with no further configuration.
-If the gRPC server is using HTTP/2 without TLS, you'll need to configure the transport to explicitly use HTTP/2.
-Connect-Python uses [pyqwest](https://pyqwest.dev/) as its transport for its support of HTTP/2 trailers and bidirectional streaming.
-Configure it for HTTP/2 like this:
+Clients default to using the Connect protocol. To use the gRPC protocol, pass
+`protocol=ProtocolType.GRPC` during client construction. If the gRPC server is using TLS, Connect
+clients work with no further configuration. If the gRPC server is using HTTP/2 without TLS, you'll
+need to configure the transport to explicitly use HTTP/2. Connect-Python uses
+[pyqwest](https://pyqwest.dev/) as its transport for its support of HTTP/2 trailers and bidirectional
+streaming. Configure it for HTTP/2 like this:
 
 <Tabs syncKey="python-type">
   <TabItem label="async">
 
       ```python
+      from connectrpc.protocol import ProtocolType
+      from pyqwest import Client, HTTPTransport, HTTPVersion
+
+      from greet.v1.greet_connect import GreetServiceClient
+      from greet.v1.greet_pb2 import GreetRequest
+
       async with (
-          HTTPTransport(http_version = HTTPVersion.HTTP2) as transport,
-          GreetServiceClient(url, grpc=True, http_client=Client(transport)) as client,
+          HTTPTransport(http_version=HTTPVersion.HTTP2) as transport,
+          GreetServiceClient(url, protocol=ProtocolType.GRPC, http_client=Client(transport)) as client,
       ):
           res = await client.greet(GreetRequest(name="Jane"))
       ```
@@ -44,13 +51,19 @@ Configure it for HTTP/2 like this:
   </TabItem>
   <TabItem label="sync">
 
-    ```python
+      ```python
+      from connectrpc.protocol import ProtocolType
+      from pyqwest import HTTPVersion, SyncClient, SyncHTTPTransport
+
+      from greet.v1.greet_connect import GreetServiceClientSync
+      from greet.v1.greet_pb2 import GreetRequest
+
       with (
-          SyncHTTPTransport(http_version = HTTPVersion.HTTP2) as transport,
-          GreetServiceClientSync(url, grpc=True, http_client=SyncClient(transport)) as client,
+          SyncHTTPTransport(http_version=HTTPVersion.HTTP2) as transport,
+          GreetServiceClientSync(url, protocol=ProtocolType.GRPC, http_client=SyncClient(transport)) as client,
       ):
           res = client.greet(GreetRequest(name="Jane"))
-    ```
+      ```
 
   </TabItem>
 </Tabs>

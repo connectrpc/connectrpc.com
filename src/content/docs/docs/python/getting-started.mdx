@@ -31,17 +31,17 @@ First, we'll set up the Python environment and dependencies.
 <Tabs syncKey="python-type">
   <TabItem label="ASGI">
 
-      ```bash
-      uv init
-      uv add connectrpc uvicorn
+      ```shellsession
+      $ uv init
+      $ uv add connectrpc uvicorn
       ```
 
   </TabItem>
   <TabItem label="WSGI">
 
-    ```bash
-    uv init
-    uv add connectrpc gunicorn
+    ```shellsession
+    $ uv init
+    $ uv add connectrpc gunicorn
     ```
 
   </TabItem>
@@ -93,7 +93,7 @@ modules:
   - path: proto
 lint:
   use:
-    - DEFAULT
+    - STANDARD
 breaking:
   use:
     - FILE
@@ -154,11 +154,13 @@ in one Python file. `touch server.py` and add:
   <TabItem label="ASGI">
 
     ```python
+    from connectrpc.request import RequestContext
+
     from greet.v1.greet_connect import GreetService, GreetServiceASGIApplication
-    from greet.v1.greet_pb2 import GreetResponse
+    from greet.v1.greet_pb2 import GreetRequest, GreetResponse
 
     class Greeter(GreetService):
-        async def greet(self, request, ctx):
+        async def greet(self, request: GreetRequest, ctx: RequestContext[GreetRequest, GreetResponse]) -> GreetResponse:
             print("Request headers: ", ctx.request_headers())
             response = GreetResponse(greeting=f"Hello, {request.name}!")
             ctx.response_headers()["greet-version"] = "v1"
@@ -192,15 +194,15 @@ In a separate terminal window, you can now start your server:
 <Tabs syncKey="python-type">
   <TabItem label="ASGI">
 
-    ```bash
-    uv run uvicorn server:app
+    ```shellsession
+    $ uv run uvicorn server:app
     ```
 
   </TabItem>
   <TabItem label="WSGI">
 
-    ```bash
-    uv run gunicorn server:app
+    ```shellsession
+    $ uv run gunicorn server:app
     ```
 
   </TabItem>
