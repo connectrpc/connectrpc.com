@@ -56,6 +56,10 @@ export default defineConfig({
     "/web/query": "/docs/web/query/",
     "/docs/query/getting-started":
       "https://github.com/connectrpc/connect-query-es#quickstart",
+    "/docs/governance/rfc/go-cors-authn":
+      "/docs/governance/rfc/002-go-cors-authn/",
+    "/docs/web/query/getting-started": "/docs/web/query/",
+    "/docs/faq/web/choosing-a-protocol": "/docs/web/choosing-a-protocol/",
   },
   integrations: [
     react(),
