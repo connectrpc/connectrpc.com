@@ -105,7 +105,7 @@ After running `buf generate` to update our generated code, we can amend our serv
 
     ```python
     from greet.v1.greet_connect import GreetService, GreetServiceASGIApplication
-    from greet.v1.greet_pb2 import GreetResponse
+    from greet.v1.greet_pb import GreetResponse
 
     class Greeter(GreetService):
         async def greet(self, request, ctx):
@@ -125,7 +125,7 @@ After running `buf generate` to update our generated code, we can amend our serv
 
     ```python
     from greet.v1.greet_connect import GreetServiceSync, GreetServiceWSGIApplication
-    from greet.v1.greet_pb2 import GreetResponse
+    from greet.v1.greet_pb import GreetResponse
 
     class Greeter(GreetServiceSync):
         def greet(self, request, ctx):

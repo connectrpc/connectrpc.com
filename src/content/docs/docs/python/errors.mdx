@@ -117,7 +117,7 @@ Errors can include strongly-typed details using Protobuf messages:
 from connectrpc.code import Code
 from connectrpc.errors import ConnectError
 from connectrpc.request import RequestContext
-from google.protobuf.struct_pb2 import Struct, Value
+from protobuf.wkt import Struct, Value
 
 async def create_user(self, request: CreateUserRequest, ctx: RequestContext) -> CreateUserResponse:
     if not request.email:
@@ -148,33 +148,6 @@ except ConnectError as e:
             unpacked = Struct()
             detail.Unpack(unpacked)
             print(f"Error detail: {unpacked}")
-```
-
-### Standard error detail types
-
-With `googleapis-common-protos` installed, you can use standard types like:
-
-- `BadRequest`: Field violations in a request
-- `RetryInfo`: When to retry
-- `Help`: Links to documentation
-- `QuotaFailure`: Quota violations
-- `ErrorInfo`: Structured error metadata
-
-Example:
-
-```python
-from google.rpc.error_details_pb2 import BadRequest
-
-bad_request = BadRequest()
-violation = bad_request.field_violations.add()
-violation.field = "email"
-violation.description = "Must be a valid email address"
-
-raise ConnectError(
-    Code.INVALID_ARGUMENT,
-    "Invalid email format",
-    details=[bad_request]
-)
 ```
 
 ## HTTP representation

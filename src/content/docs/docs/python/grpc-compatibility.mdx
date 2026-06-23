@@ -19,7 +19,7 @@ In Python, this typically means using [pyvoy](https://pyvoy.dev/), the same serv
 If using a server with trailers support, there is no other setup required to support gRPC. If you
 run in a server that doesn't support it, you will get a runtime error when making a request.
 
-Connect-Python does not currently provide implementations of gRPC standard endpoints like reflection
+Connect does not currently provide implementations of gRPC standard endpoints like reflection
 and health check, but likely will in the future.
 
 ## Clients
@@ -27,7 +27,7 @@ and health check, but likely will in the future.
 Clients default to using the Connect protocol. To use the gRPC protocol, pass
 `protocol=ProtocolType.GRPC` during client construction. If the gRPC server is using TLS, Connect
 clients work with no further configuration. If the gRPC server is using HTTP/2 without TLS, you'll
-need to configure the transport to explicitly use HTTP/2. Connect-Python uses
+need to configure the transport to explicitly use HTTP/2. Connect uses
 [pyqwest](https://pyqwest.dev/) as its transport for its support of HTTP/2 trailers and bidirectional
 streaming. Configure it for HTTP/2 like this:
 
@@ -39,7 +39,7 @@ streaming. Configure it for HTTP/2 like this:
       from pyqwest import Client, HTTPTransport, HTTPVersion
 
       from greet.v1.greet_connect import GreetServiceClient
-      from greet.v1.greet_pb2 import GreetRequest
+      from greet.v1.greet_pb import GreetRequest
 
       async with (
           HTTPTransport(http_version=HTTPVersion.HTTP2) as transport,
@@ -56,7 +56,7 @@ streaming. Configure it for HTTP/2 like this:
       from pyqwest import HTTPVersion, SyncClient, SyncHTTPTransport
 
       from greet.v1.greet_connect import GreetServiceClientSync
-      from greet.v1.greet_pb2 import GreetRequest
+      from greet.v1.greet_pb import GreetRequest
 
       with (
           SyncHTTPTransport(http_version=HTTPVersion.HTTP2) as transport,

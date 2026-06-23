@@ -20,7 +20,7 @@ specification][protocol].
 * [connect-swift]: Swift clients
 * [connect-kotlin]: Kotlin clients
 * [connect-dart]: Kotlin clients
-* [connect-python]: Python servers and clients
+* [connect-py]: Python servers and clients
 * [conformance]: Connect, gRPC, and gRPC-Web interoperability tests
 * [examples-go]: Go server powering demo.connectrpc.com
 * and [much more][github-org].
@@ -36,7 +36,7 @@ Offered under the [Apache 2 license][license].
 [connect-swift]: https://github.com/connectrpc/connect-swift
 [connect-kotlin]: https://github.com/connectrpc/connect-kotlin
 [connect-dart]: https://github.com/connectrpc/connect-dart
-[connect-python]: https://github.com/connectrpc/connect-python
+[connect-py]: https://github.com/connectrpc/connect-py
 [examples-go]: https://github.com/connectrpc/examples-go
 [license]: LICENSE
 [protocol]: https://connectrpc.com/docs/protocol
