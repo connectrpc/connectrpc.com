@@ -79,7 +79,7 @@ guide][kotlin-getting-started].
 
 ## Python
 
-[`connect-python`][connect-python] is available in beta.
+[Connect for Python][connect-py] is available in beta.
 You can get started with our [Python guide][python-getting-started].
 
 ## What's next?
@@ -89,7 +89,7 @@ like to bring Connect to more languages and frameworks. Our current roadmap is
 always pinned to the top of our [GitHub discussions][announcement-discussions],
 and we gauge interest in new languages with [GitHub polls][poll-discussions].
 
-[connect-python]: https://github.com/connectrpc/connect-python
+[connect-py]: https://github.com/connectrpc/connect-py
 [python-getting-started]: /docs/python/getting-started
 [connect-conformance]: https://github.com/connectrpc/conformance
 [connect-go]: https://github.com/connectrpc/connect-go

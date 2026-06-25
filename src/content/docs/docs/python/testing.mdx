@@ -8,7 +8,7 @@ import VersionWarning from './_version-warning.mdx';
 
 <VersionWarning />
 
-This guide covers testing Connect-Python services and clients.
+This guide covers testing Connect services and clients.
 
 ## Setup
 
@@ -16,7 +16,7 @@ For [pytest](https://docs.pytest.org/en/stable/) examples in this guide, you'll 
 
 ## Recommended approach: In-memory testing
 
-The recommended approach is **in-memory testing** using pyqwest's ASGI/WSGI transports (provided by pyqwest, not Connect-Python). This tests your full application stack (routing, serialization, error handling, interceptors) while remaining fast and isolated - no network overhead or port conflicts.
+The recommended approach is **in-memory testing** using pyqwest's ASGI/WSGI transports (provided by pyqwest, not Connect). This tests your full application stack (routing, serialization, error handling, interceptors) while remaining fast and isolated - no network overhead or port conflicts.
 
 Here's a minimal example without any test framework:
 
@@ -27,7 +27,7 @@ Here's a minimal example without any test framework:
     from pyqwest import Client
     from pyqwest.testing import ASGITransport
     from greet.v1.greet_connect import GreetServiceASGIApplication, GreetServiceClient
-    from greet.v1.greet_pb2 import GreetRequest
+    from greet.v1.greet_pb import GreetRequest
     from server import Greeter  # Your service implementation
 
     # Create ASGI app with your service
@@ -51,7 +51,7 @@ Here's a minimal example without any test framework:
     from pyqwest import SyncClient
     from pyqwest.testing import WSGITransport
     from greet.v1.greet_connect import GreetServiceWSGIApplication, GreetServiceClientSync
-    from greet.v1.greet_pb2 import GreetRequest
+    from greet.v1.greet_pb import GreetRequest
     from server import GreeterSync  # Your service implementation
 
     # Create WSGI app with your service
@@ -86,7 +86,7 @@ Testing the service we created in the [Getting Started](/docs/python/getting-sta
     from pyqwest import Client
     from pyqwest.testing import ASGITransport
     from greet.v1.greet_connect import GreetServiceASGIApplication, GreetServiceClient
-    from greet.v1.greet_pb2 import GreetRequest
+    from greet.v1.greet_pb import GreetRequest
     from server import Greeter  # Import your actual service implementation
 
     @pytest.mark.asyncio
@@ -110,7 +110,7 @@ Testing the service we created in the [Getting Started](/docs/python/getting-sta
     from pyqwest import SyncClient
     from pyqwest.testing import WSGITransport
     from greet.v1.greet_connect import GreetServiceWSGIApplication, GreetServiceClientSync
-    from greet.v1.greet_pb2 import GreetRequest
+    from greet.v1.greet_pb import GreetRequest
     from server import GreeterSync  # Import your actual service implementation
 
     def test_greet():
@@ -143,7 +143,7 @@ The same in-memory testing approach works with unittest:
     from pyqwest import Client
     from pyqwest.testing import ASGITransport
     from greet.v1.greet_connect import GreetServiceASGIApplication, GreetServiceClient
-    from greet.v1.greet_pb2 import GreetRequest
+    from greet.v1.greet_pb import GreetRequest
     from server import Greeter
 
     class TestGreet(unittest.TestCase):
@@ -168,7 +168,7 @@ The same in-memory testing approach works with unittest:
     from pyqwest import SyncClient
     from pyqwest.testing import WSGITransport
     from greet.v1.greet_connect import GreetServiceWSGIApplication, GreetServiceClientSync
-    from greet.v1.greet_pb2 import GreetRequest
+    from greet.v1.greet_pb import GreetRequest
     from server import GreeterSync
 
     class TestGreet(unittest.TestCase):
@@ -207,7 +207,7 @@ For cleaner tests, use pytest fixtures to set up clients and services:
     import pytest
     import pytest_asyncio
     from greet.v1.greet_connect import GreetServiceASGIApplication, GreetServiceClient
-    from greet.v1.greet_pb2 import GreetRequest
+    from greet.v1.greet_pb import GreetRequest
     from server import Greeter
 
     @pytest_asyncio.fixture
@@ -237,7 +237,7 @@ For cleaner tests, use pytest fixtures to set up clients and services:
     from pyqwest.testing import WSGITransport
     import pytest
     from greet.v1.greet_connect import GreetServiceWSGIApplication, GreetServiceClientSync
-    from greet.v1.greet_pb2 import GreetRequest
+    from greet.v1.greet_pb import GreetRequest
     from server import GreeterSync
 
     @pytest.fixture
@@ -265,7 +265,7 @@ This pattern:
 - Reduces code duplication across multiple tests
 - Makes tests more readable and focused on behavior
 - Follows pytest best practices
-- Matches the pattern used in Connect-Python's own test suite
+- Matches the pattern used in Connect's own test suite
 
 With your test client setup, you can use any Connect code for interacting with the service under test including [streaming](/docs/python/streaming/), reading [headers and trailers](/docs/python/headers-and-trailers/), or checking [errors](/docs/python/errors/). For example, to test error handling:
 
@@ -294,7 +294,7 @@ For testing client code that calls Connect services, use the same in-memory test
     from connectrpc.code import Code
     from connectrpc.errors import ConnectError
     from greet.v1.greet_connect import GreetService, GreetServiceASGIApplication, GreetServiceClient
-    from greet.v1.greet_pb2 import GreetRequest, GreetResponse
+    from greet.v1.greet_pb import GreetRequest, GreetResponse
 
     async def fetch_user_greeting(user_id: str, client: GreetServiceClient):
         """Client code that handles errors."""
@@ -340,7 +340,7 @@ For testing client code that calls Connect services, use the same in-memory test
     from connectrpc.code import Code
     from connectrpc.errors import ConnectError
     from greet.v1.greet_connect import GreetServiceSync, GreetServiceWSGIApplication, GreetServiceClientSync
-    from greet.v1.greet_pb2 import GreetRequest, GreetResponse
+    from greet.v1.greet_pb import GreetRequest, GreetResponse
 
     def fetch_user_greeting(user_id: str, client: GreetServiceClientSync):
         """Client code that handles errors."""
@@ -393,7 +393,7 @@ Test interceptors as part of your full application stack. For example, testing t
     from connectrpc.code import Code
     from connectrpc.errors import ConnectError
     from greet.v1.greet_connect import GreetServiceASGIApplication, GreetServiceClient
-    from greet.v1.greet_pb2 import GreetRequest
+    from greet.v1.greet_pb import GreetRequest
     from interceptors import ServerAuthInterceptor
     from server import Greeter
 
@@ -444,7 +444,7 @@ Test interceptors as part of your full application stack. For example, testing t
     from connectrpc.code import Code
     from connectrpc.errors import ConnectError
     from greet.v1.greet_connect import GreetServiceWSGIApplication, GreetServiceClientSync
-    from greet.v1.greet_pb2 import GreetRequest
+    from greet.v1.greet_pb import GreetRequest
     from interceptors import ServerAuthInterceptor
     from server import GreeterSync
 
