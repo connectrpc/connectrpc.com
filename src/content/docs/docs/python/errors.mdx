@@ -136,17 +136,16 @@ async def create_user(self, request: CreateUserRequest, ctx: RequestContext) -> 
 
 ### Reading error details on the client
 
-Error details are `google.protobuf.Any` messages that can be unpacked to their original types:
+Error details are `connectrpc.errors.ErrorDetail` classes that can be unpacked into
+the original message.
 
 ```python
 try:
     response = await client.some_method(request)
 except ConnectError as e:
     for detail in e.details:
-        # Check the type before unpacking
-        if detail.Is(Struct.DESCRIPTOR):
-            unpacked = Struct()
-            detail.Unpack(unpacked)
+        # Returns None if type does not match
+        if unpacked := detail.value(Struct):
             print(f"Error detail: {unpacked}")
 ```
 
