@@ -9,7 +9,7 @@ Connect implementations:
 - [connect-kotlin][kotlin],
 - [connect-dart][dart],
 - [connect-py][python], and
-- [connect-rust][rust]
+- [connect-rust][rust].
 
 [go]: https://github.com/connectrpc/connect-go/blob/main/MAINTAINERS.md
 [es]: https://github.com/connectrpc/connect-es/blob/main/MAINTAINERS.md
