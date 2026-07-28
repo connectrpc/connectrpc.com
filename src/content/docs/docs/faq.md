@@ -74,10 +74,16 @@ the implications.
 ### How do I proxy the Connect protocol through NGINX?
 
 Request-response (unary) RPCs made with the Connect protocol don't require
-end-to-end HTTP/2, so they can be proxied through NGINX. Streaming RPCs typically
-require end-to-end HTTP/2, which NGINX doesn't support. Rather than NGINX, we
-recommend using Envoy, Apache, or TCP-level load balancers like HAProxy, all of
-which support the full Connect protocol.
+end-to-end HTTP/2, so they can be proxied through NGINX with no special
+configuration. Streaming RPCs typically require end-to-end HTTP/2, which NGINX
+supports &mdash; but it isn't enabled by default. Turn it on for clients with
+[`ngx_http_v2_module`](https://nginx.org/en/docs/http/ngx_http_v2_module.html),
+and for upstream connections with
+[`proxy_http_version 2`](https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_http_version)
+(NGINX 1.29.4 and later).
+
+Envoy, Apache, and TCP-level load balancers like HAProxy also support the full
+Connect protocol.
 
 ### Do half duplex streams have a unary and streaming component?
 
