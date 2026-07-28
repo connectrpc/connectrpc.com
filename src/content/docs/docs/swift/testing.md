@@ -211,12 +211,10 @@ To use the [generated mocks](#generating-mocks), you will need to include the
 `ConnectMocks` library which is available in the
 [Connect-Swift repo][connect-swift] alongside the `Connect` library.
 
-It can be integrated via either:
-
-- Swift Package Manager, using the same [GitHub URL][connect-swift]
-  and [instructions](./getting-started#add-the-connect-swift-package) as the
-  main `Connect` library.
-- CocoaPods, using the `Connect-Swift-Mocks` CocoaPod.
+It can be integrated via Swift Package Manager, using the same
+[GitHub URL][connect-swift] and
+[instructions](./getting-started#add-the-connect-swift-package) as the
+main `Connect` library.
 
 You can then write unit tests that inject the mock implementations instead of
 the production implementations, making validating requests and providing mocked

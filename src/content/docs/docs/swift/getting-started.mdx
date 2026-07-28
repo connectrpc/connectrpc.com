@@ -163,25 +163,6 @@ not necessary when using the Connect or gRPC-Web protocol.**
 
 :::
 
-### Alternative: Use CocoaPods
-
-CocoaPods is also supported as an alternative to Swift Package Manager.
-To use Connect-Swift with CocoaPods, simply add this line to your `Podfile`:
-
-```ruby
-pod 'Connect-Swift'
-pod 'SwiftProtobuf'
-```
-
-:::note
-
-Although Connect-Swift provides support for both the Connect and
-the gRPC-Web protocols through CocoaPods, gRPC support is only available when
-using Swift Package Manager due to the fact that
-[SwiftNIO does not support CocoaPods](https://github.com/apple/swift-nio/issues/2393).
-
-:::
-
 ## Integrate into the app
 
 First, add the generated `.swift` files from the previous steps to your
@@ -454,7 +435,6 @@ the Connect-Swift repository on GitHub. These examples demonstrate:
 
 - Using streaming APIs
 - Integrating with Swift Package Manager
-- Integrating with CocoaPods
 - Using the [Connect protocol](/docs/protocol/)
 - Using the [gRPC protocol][grpc]
 - Using the [gRPC-Web protocol][grpc-web]
