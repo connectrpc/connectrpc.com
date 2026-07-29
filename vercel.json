@@ -36,6 +36,11 @@
       "destination": "/connect.html",
       "permanent": true
     },
+    {
+      "source": "/connect/v2/",
+      "destination": "/connect-v2.html",
+      "permanent": true
+    },
     { "source": "/cors/", "destination": "/cors.html", "permanent": true },
     {
       "source": "/grpchealth/",
