@@ -24,8 +24,8 @@
     "publish": "npm install && npm run lint && npm run check:types && npm run build"
   },
   "dependencies": {
-    "@astrojs/react": "^5.0.6",
-    "@astrojs/starlight": "^0.39.2",
+    "@astrojs/react": "^6.0.2",
+    "@astrojs/starlight": "^0.41.5",
     "@buf/connectrpc_eliza.bufbuild_es": "^2.2.2-20230913231627-233fca715f49.2",
     "@bufbuild/protobuf": "^2.13.0",
     "@connectrpc/connect": "^2.1.2",
@@ -34,14 +34,14 @@
     "@fontsource/inter": "^5.3.0",
     "@fontsource/work-sans": "^5.3.0",
     "@react-hookz/web": "^26.1.0",
-    "astro": "^6.4.2",
+    "astro": "^7.1.6",
     "clsx": "^2.1.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "remark-custom-heading-id": "^2.0.0"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.4",
+    "@astrojs/check": "^0.9.10",
     "@biomejs/biome": "2.4.16",
     "@bufbuild/license-header": "^0.0.4",
     "@types/react": "^19.2.17",
