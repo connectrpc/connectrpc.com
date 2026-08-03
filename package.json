@@ -33,11 +33,11 @@
     "@fontsource/dm-mono": "^5.2.7",
     "@fontsource/inter": "^5.2.8",
     "@fontsource/work-sans": "^5.2.8",
-    "@react-hookz/web": "^25.2.0",
+    "@react-hookz/web": "^26.1.0",
     "astro": "^6.4.2",
     "clsx": "^2.1.1",
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
     "remark-custom-heading-id": "^2.0.0"
   },
   "devDependencies": {
