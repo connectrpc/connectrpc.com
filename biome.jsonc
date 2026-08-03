@@ -14,6 +14,9 @@
       "!**/.astro",
       "!**/.ssg-cache",
       "!**/build",
+      // Written by rumdl during lint:md. It self-ignores via its own .gitignore,
+      // but vcs.useIgnoreFile is off, so Biome needs telling separately.
+      "!**/.rumdl_cache",
       // Biome lacks .astro support; the toolchain handles formatting via Astro itself.
       "!**/*.astro",
       // Skip Go vanity URL HTML files.

@@ -8,6 +8,7 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
+    "clean": "rm -rf dist .astro node_modules/.astro .rumdl_cache",
     "astro": "astro",
     "check:types": "astro check && tsc --noEmit",
     "format": "npm run format:src && npm run format:md",
