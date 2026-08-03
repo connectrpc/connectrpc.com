@@ -18,10 +18,17 @@ import { defineConfig } from "astro/config";
 import { remarkHeadingId } from "remark-custom-heading-id";
 import { remarkLinkChecker } from "./src/plugins/remark-link-checker";
 
+// Canonical site URL. On Vercel, VERCEL_URL is always set — even on
+// production builds — to the unique per-deployment hostname (e.g.
+// connectrpc-com-abc123.vercel.app). Keying off its presence made
+// production pages emit canonical/og/sitemap URLs pointing at the
+// deployment host, which caused Google to treat that vercel.app URL as
+// canonical instead of connectrpc.com. Only fall back to VERCEL_URL for
+// preview deployments so their absolute links still resolve.
 const publicUrl =
-  process.env.VERCEL_URL === undefined
-    ? "https://connectrpc.com"
-    : `https://${process.env.VERCEL_URL}`;
+  process.env.VERCEL_ENV === "preview" && process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : "https://connectrpc.com";
 
 export default defineConfig({
   site: publicUrl,
