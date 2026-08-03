@@ -30,7 +30,7 @@
     "enabled": true,
     "includes": ["**"],
     "rules": {
-      "recommended": true
+      "preset": "recommended"
     }
   },
   "javascript": {
@@ -48,5 +48,26 @@
     "parser": {
       "cssModules": true
     }
-  }
+  },
+  "overrides": [
+    {
+      // Biome 2.5 began linting standalone .svg assets. Both rules below target
+      // SVG inlined into markup, where the usage site decides whether a graphic
+      // is decorative or meaningful; an asset file on its own has no usage site
+      // to judge. Ours are either referenced through <img alt> or inlined by
+      // components that set aria-hidden/aria-label themselves. Most are also
+      // vendored brand assets, so edits here would be lost on the next refresh.
+      "includes": ["**/*.svg"],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "noSvgWithoutTitle": "off"
+          },
+          "correctness": {
+            "noUnknownProperty": "off"
+          }
+        }
+      }
+    }
+  ]
 }

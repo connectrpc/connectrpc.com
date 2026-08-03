@@ -61,9 +61,13 @@ const { hasSidebar } = Astro.locals.starlightRoute;
     <div class="sl-hidden md:sl-flex desktop-extras">
       <ThemeSelect />
       <LanguageSelect />
-      <a href="https://buf.build" class="buf-button sl-hidden md:sl-flex">
+      <a
+        href="https://buf.build"
+        class="buf-button sl-hidden md:sl-flex"
+        aria-label="Created by Buf"
+      >
         <span>Created by</span>
-        <span class="buf-logo"><BufLogo /></span>
+        <span class="buf-logo"><BufLogo aria-hidden="true" /></span>
       </a>
     </div>
     <div class="sl-flex md:sl-hidden mobile-extras">
@@ -116,9 +120,13 @@ const { hasSidebar } = Astro.locals.starlightRoute;
                 ))}
                 <a href="/demo/" class="mobile-menu-link">Demo</a>
               </nav>
-              <a href="https://buf.build" class="mobile-menu-buf-button">
+              <a
+                href="https://buf.build"
+                class="mobile-menu-buf-button"
+                aria-label="Created by Buf"
+              >
                 <span>Created by</span>
-                <span class="buf-logo"><BufLogo /></span>
+                <span class="buf-logo"><BufLogo aria-hidden="true" /></span>
               </a>
             </div>
           </details>
