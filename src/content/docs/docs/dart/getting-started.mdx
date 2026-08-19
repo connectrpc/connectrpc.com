@@ -30,6 +30,8 @@ This tutorial should take ~10 minutes from start to finish.
 - [The Buf CLI][buf-cli] installed, and include it in the `$PATH`.
 - [Flutter][flutter] installed and setup for at least one platform other than web.
   For web related setup please see [HTTP stack](using-clients#http-stack), after the getting started guide.
+- Dart 3.7 or later, which ships with Flutter 3.29 and later.
+- [Protobuf runtime][dart-protobuf] v6.
 
 :::note
 Some platforms might need [additional configuration][network-permissions] to make HTTP requests.
@@ -118,8 +120,6 @@ plugins:
     out: lib/gen
   - remote: buf.build/protocolbuffers/dart
     out: lib/gen
-    include_wkt: true
-    include_imports: true
 ```
 
 With those configuration files in place, we can now generate code:
@@ -364,9 +364,9 @@ import './gen/eliza.connect.client.dart';
 
 final transport = protocol.Transport(
   baseUrl: "https://demo.connectrpc.com",
-  codec: const JsonCodec(), // Or JsonCodec()
+  codec: const ProtoCodec(), // Or JsonCodec()
   httpClient: createHttpClient(),
-  statusParser: const StatusParser()
+  statusParser: const StatusParser(),
 );
 ```
 
