@@ -357,6 +357,40 @@ if let Some(remaining) = ctx.time_remaining() {
 }
 ```
 
+## Bounding decode cost
+
+`Limits` bounds what a single request may cost the server to receive and decode.
+Build one from `Limits::default()` (or `Limits::unlimited()`) and chain the
+setters; the fields are private and the type is `#[non_exhaustive]`, so a
+struct literal won't compile:
+
+```rust
+use connectrpc::{ConnectRpcService, Limits};
+
+let service = ConnectRpcService::new(router).with_limits(
+    Limits::default()
+        .with_max_request_body_size(4 * 1024 * 1024)
+        .with_max_message_size(1024 * 1024)
+        .with_element_memory_limit(128 * 1024 * 1024),
+);
+```
+
+The first two are byte counts on the wire. The third is different, and worth
+understanding before you change it: buffa bounds the memory a single decode may
+commit to repeated, map, string, and bytes *elements*, defaulting to 32 MiB. It
+is charged on element footprint rather than on contents, so one large field never
+trips it however big it grows, while a message carrying very many small elements
+can. Raise it when a legitimate message is rejected; a rejection reports
+`resource_exhausted` and names the setter that lifts it.
+
+The budget applies to every server receive path, unary and streaming alike, and
+on a Protobuf wire it also covers an interceptor's own decode through
+`Payload::message` and `Payload::view`, so an interceptor is held to the same
+budget as the handler behind it. JSON bodies are decoded without it.
+Clients have the matching pair for responses:
+[`ClientConfig::with_default_element_memory_limit` and
+`CallOptions::with_element_memory_limit`](/docs/rust/using-clients/#per-call-options).
+
 ## Testing handlers
 
 Handlers can be tested directly, without starting a server or opening a socket.

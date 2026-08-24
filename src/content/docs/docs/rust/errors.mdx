@@ -16,8 +16,8 @@ pub struct ConnectError {
     pub code: ErrorCode,
     pub message: Option<String>,
     pub details: Vec<ErrorDetail>,
-    // Response headers and trailers are private, and reachable
-    // through accessors.
+    // Response headers, trailers, and the underlying cause are private,
+    // and reachable through accessors.
 }
 ```
 
@@ -143,6 +143,36 @@ return Err(err);
 
 `with_headers` and `with_trailers` set whole maps in builder position, and
 `response_headers()` and `trailers()` read them back.
+
+## Keeping the cause without leaking it
+
+Failures usually start life as something else: an `io::Error`, a database error,
+a TLS handshake failure. `with_source` attaches that underlying error so it stays
+available for logging without ever going over the wire:
+
+```rust
+let rows = self.db.query(sql).await.map_err(|err| {
+    ConnectError::internal("could not load user").with_source(err)
+})?;
+```
+
+The source is reachable through `std::error::Error::source()`, and through
+`err.source_arc()` as a `SharedSource` handle you can move into another error
+type. It is never serialized, so a `ConnectError` decoded from a server response
+always has `source().is_none()`, even when `message` is populated. Only an error
+that this process attached a cause to carries one.
+
+On the client, whether a source is present tells you where the failure was
+classified. The built-in transports keep the underlying `hyper`, `rustls`, or
+`std::io` error for DNS resolution, connection refused, TLS handshake, HTTP/2
+connection establishment, and request send, so `err.source()` yields the original
+typed error and downcasts for things like an `io::ErrorKind`. Failures the call
+path synthesizes itself carry no source: the call deadline, request construction
+and encoding, response decoding, and a body-read reset.
+
+A custom `ClientTransport` that builds its own errors should follow the same
+convention, either by calling `.with_source(..)` or by constructing the error
+with `ConnectError::unavailable_from_transport`.
 
 ## HTTP representation
 

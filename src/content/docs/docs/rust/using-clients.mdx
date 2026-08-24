@@ -17,7 +17,7 @@ What the `client` feature adds is the built-in transports, `HttpClient` and
 `Http2Connection`, which need platform networking:
 
 ```toml
-connectrpc = { version = "0.8", features = ["client"] }
+connectrpc = { version = "0.9", features = ["client"] }
 ```
 
 That split is what lets a wasm build turn `client` off and still use the same
@@ -182,7 +182,7 @@ rest alone. In the call above the five second timeout wins, but the
 `authorization` header from `ClientConfig` still applies.
 
 `CallOptions` covers `with_timeout`, `with_header` and `with_headers`,
-`with_max_message_size`, and `with_compress`.
+`with_max_message_size`, `with_element_memory_limit`, and `with_compress`.
 
 ## Reading the response
 
@@ -263,7 +263,7 @@ generated client runs against a `web-sys::fetch` transport there. The
 needs a C toolchain, so a wasm build turns them off:
 
 ```toml
-connectrpc = { version = "0.8", default-features = false, features = ["gzip"] }
+connectrpc = { version = "0.9", default-features = false, features = ["gzip"] }
 ```
 
 The [`wasm-client` example][wasm-example] has a complete fetch-based transport.

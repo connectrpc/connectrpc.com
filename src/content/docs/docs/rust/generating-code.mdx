@@ -28,7 +28,7 @@ Add the build dependency:
 
 ```toml
 [build-dependencies]
-connectrpc-build = "0.8"
+connectrpc-build = "0.9"
 ```
 
 Then describe your schema in `build.rs`:
@@ -127,7 +127,7 @@ plugins:
 
 To use the remote plugin instead of a local binary, replace the
 `local: protoc-gen-connect-rust` entry with
-`remote: buf.build/connectrpc/rust:v0.8.0`.
+`remote: buf.build/connectrpc/rust:v0.9.0`.
 
 Mount both trees in your crate:
 
@@ -201,6 +201,7 @@ Both workflows expose the same knobs, as plugin `opt:` entries for
 | `gate_client_feature` | `.gate_client_feature(true)` | Prefix generated clients with `#[cfg(feature = "client")]` so server-only builds can drop the transport stack |
 | `encodable_impls=all_messages` | `.encodable_impls(..)` | Emit view-body impls for every message, not just those used as RPC types |
 | `file_per_package` | `.file_per_package(true)` | One output file per Protobuf package |
+| `element_memory_limit=N` | `BUFFA_ELEMENT_MEMORY_LIMIT=N` | Raise buffa's decode budget when a very large descriptor set exceeds it |
 
 ## Proto-only builds
 
@@ -216,9 +217,9 @@ every handler, router, and client signature:
 
 ```toml
 # `default-features = false` is the only way to drop `json`, so it also drops
-# the default compression features (`gzip`, `zstd`, `streaming`). Re-list the
-# ones you still want.
-connectrpc = { version = "0.8", default-features = false, features = ["server", "gzip", "zstd", "streaming"] }
+# the default compression features (`gzip`, `zstd`). Re-list the ones you still
+# want.
+connectrpc = { version = "0.9", default-features = false, features = ["server", "gzip", "zstd"] }
 ```
 
 A proto-only server rejects JSON at content negotiation, before it reads the

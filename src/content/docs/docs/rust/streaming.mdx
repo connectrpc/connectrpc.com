@@ -116,12 +116,30 @@ while let Some(msg) = stream.message().await? {
 
 ### Client streaming
 
-The method takes `impl IntoIterator<Item = Request>`, uploaded as the request
-body, so a `Vec` or any iterator works:
+The method takes an async `Stream` of requests, so messages go out as they become
+available instead of being buffered up front. The stream backs the request body
+directly, which makes backpressure HTTP/2 flow control. For a collection you
+already have, `connectrpc::stream_iter` is a re-export of `futures::stream::iter`,
+so there's no `futures` dependency to add:
 
 ```rust
-let res = client.sum(vec![req1, req2, req3]).await?;
-let res = client.sum((1..=4).map(make_request)).await?;
+let res = client.sum(connectrpc::stream_iter(vec![req1, req2, req3])).await?;
+```
+
+For a live producer, feed the call from a channel. The bound is
+`Stream<Item = Request> + Send + 'static`, and since the stream backs the request
+body it has to yield owned messages rather than borrows of local state:
+
+```rust
+let (tx, rx) = tokio::sync::mpsc::channel(16);
+tokio::spawn(async move {
+    while let Some(chunk) = source.recv().await {
+        if tx.send(request_for(chunk)).await.is_err() {
+            break; // the call ended, stop producing
+        }
+    }
+});
+let res = client.sum(tokio_stream::wrappers::ReceiverStream::new(rx)).await?;
 ```
 
 ### Bidirectional streaming
@@ -137,6 +155,28 @@ if let Some(reply) = bidi.message().await? {
 bidi.close_send();
 ```
 
+For true full duplex, split the handle into independently owned halves and drive
+them from separate tasks. The split is a plain move of the two sides, with no
+locking added:
+
+```rust
+let (mut send, mut recv) = client.running_sum().await?.into_split();
+let reader = tokio::spawn(async move {
+    while let Some(reply) = recv.message().await? {
+        println!("{}", reply.view().total);
+    }
+    Ok::<_, connectrpc::ConnectError>(())
+});
+for req in requests {
+    send.send(req).await?;
+}
+send.close_send();
+reader.await.expect("reader task")?;
+```
+
+Dropping the send half, like calling `close_send`, ends the request body cleanly
+while the RPC continues. Dropping the receive half cancels the RPC.
+
 :::caution[Full duplex needs HTTP/2]
 A send that depends on having already received a response requires an HTTP/2
 transport. On HTTP/1.1 no response arrives until the upload completes, so a
@@ -145,10 +185,16 @@ Half-duplex bidi, where the client sends everything and then reads, works on
 both.
 :::
 
-## Stream errors
+## Errors and cancellation
 
 `?` on `message()` is the whole error story. `Ok(None)` means the server
 finished cleanly, and any terminal error, including a gRPC or gRPC-Web stream
 that ends without a usable `grpc-status`, comes back as `Err`. The error is
 sticky across subsequent calls, and the `error()` and `trailers()` accessors
 stay available afterwards for inspection.
+
+Dropping a client-streaming call cancels it. The request body is dropped along
+with the future, so messages the stream hadn't yet yielded never reach the
+server. Wrapping such a call in a `timeout` therefore abandons the upload rather
+than truncating it cleanly, so drive the call to completion whenever the request
+has to be delivered.

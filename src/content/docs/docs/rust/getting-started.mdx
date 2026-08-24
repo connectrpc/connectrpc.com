@@ -42,23 +42,23 @@ edition = "2024"
 default-run = "connect-rust-example"
 
 [dependencies]
-connectrpc = { version = "0.8", features = ["axum", "client"] }
-buffa = { version = "0.8.1", features = ["json"] }
-buffa-types = { version = "0.8", features = ["json"] }
+connectrpc = { version = "0.9", features = ["axum", "client"] }
+buffa = { version = "0.9", features = ["json"] }
+buffa-types = { version = "0.9", features = ["json"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 axum = "0.8"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 
 [build-dependencies]
-connectrpc-build = "0.8"
+connectrpc-build = "0.9"
 ```
 
 `connectrpc` keeps its optional pieces behind Cargo features, so a server-only
 binary never compiles a client transport it doesn't use. `axum` pulls in the
 integration we mount the router with, and `client` pulls in the hyper-backed
-transport the client half of this guide needs. `json`, `gzip`, `zstd`, and
-`streaming` are on by default.
+transport the client half of this guide needs. `json`, `gzip`, and `zstd` are on
+by default.
 
 The `buffa` and `serde` entries are there for the generated message types.
 [buffa][buffa] is the Protobuf implementation Connect for Rust generates against.
@@ -68,11 +68,13 @@ the JSON codec.
 
 :::caution[Keep `buffa` in step with `connectrpc`]
 Generated code has to compile against the same `buffa` your `connectrpc` release
-was built against: `connectrpc` 0.8 pairs with `buffa` 0.8. A mismatch resolves
-two semver-incompatible copies into the graph, and your generated types then fail
-the runtime's trait bounds with a wall of errors ending in `note: there are
-multiple different versions of crate buffa in the dependency graph`. `cargo tree
--i buffa` should list exactly one version.
+was built against: `connectrpc` 0.9 pairs with `buffa` 0.9. The floor is hard,
+not a preference, because buffa 0.9 widened its size arithmetic, so code emitted
+by a 0.8 generator will not compile against it. A mismatch resolves two
+semver-incompatible copies into the graph and your generated types fail the
+runtime's trait bounds, ending in `note: there are multiple different versions of
+crate buffa in the dependency graph`. `cargo tree -i buffa` should list exactly
+one version, and upgrading means regenerating.
 :::
 
 ## Define the schema
