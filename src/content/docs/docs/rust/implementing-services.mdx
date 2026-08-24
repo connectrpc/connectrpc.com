@@ -1,0 +1,410 @@
+---
+title: Implementing services
+---
+
+import VersionWarning from './_version-warning.mdx';
+
+<VersionWarning />
+
+Every service in your schema becomes a Rust trait. The trait name matches the
+Protobuf service name, so `service GreetService` generates `trait GreetService`,
+and each RPC becomes an async method. Implementing the service means
+implementing the trait; there is no registration macro and no dynamic
+dispatch table to fill in.
+
+## Handler signatures
+
+Unary handlers take a read-only `RequestContext` and a borrowed
+`ServiceRequest<'_, Request>`, and return `ServiceResult<Response>`:
+
+```rust
+use connectrpc::{RequestContext, Response, ServiceRequest, ServiceResult};
+
+impl GreetService for GreetServer {
+    async fn greet(
+        &self,
+        _ctx: RequestContext,
+        req: ServiceRequest<'_, GreetRequest>,
+    ) -> ServiceResult<GreetResponse> {
+        Response::ok(GreetResponse {
+            greeting: format!("Hello, {}!", req.name),
+            ..Default::default()
+        })
+    }
+}
+```
+
+`ServiceRequest` dereferences to a view of the request, so a field like
+`req.name` is a `&str` borrowed directly out of the request bytes rather than an
+owned value copied out of them. The borrow can be held across `.await` points.
+
+The request is borrowed from a buffer the dispatcher owns, so it cannot outlive
+the call. Anything that needs to outlive it, including a value moved into
+`tokio::spawn`, needs an owned copy. Call `.to_owned_message()` for that. The
+conversion is infallible, because a request that decoded successfully always
+re-materializes.
+
+`ServiceResult<B>` is just `Result<Response<B>, ConnectError>`. See
+[Errors](/docs/rust/errors/) for the failure path.
+
+## The `refining_impl_trait` lint
+
+The generated trait declares unary and client-streaming returns as
+`ServiceResult<impl Encodable<M>>`, so a handler can return either the owned
+message or an `OwnedView` backed by retained message bytes. Writing your impl as
+`-> ServiceResult<GreetResponse>` *refines* that opaque bound to a concrete
+type, which triggers `refining_impl_trait_internal` and
+`refining_impl_trait_reachable`.
+
+That refinement is the point, so the warning is expected. Silence it at your
+crate root:
+
+```rust
+#![allow(refining_impl_trait_internal, refining_impl_trait_reachable)]
+```
+
+or with `#[allow(refining_impl_trait)]` on the impl block.
+
+The same generality is why `cargo doc` and rust-analyzer show unary methods with
+the full return type, `impl Future<Output = ServiceResult<impl Encodable<GreetResponse> + Send + 'static + use<Self>>> + Send`.
+You never write that form: `async fn` desugars the outer future, and returning
+the concrete response type satisfies the rest.
+
+## Reading the request context
+
+Request-side metadata lives on `RequestContext`. It is `#[non_exhaustive]`, so
+read it through the accessors rather than by destructuring, which lets new
+request-scoped metadata arrive in minor releases.
+
+| Accessor | Purpose |
+|---|---|
+| `ctx.header(name)`, `ctx.headers()` | Caller-supplied headers, after protocol-prefix stripping |
+| `ctx.deadline()` | Absolute `Instant` if the caller set a timeout |
+| `ctx.time_remaining()` | Saturating `Option<Duration>` until the deadline |
+| `ctx.extensions()` | `http::Extensions` carried over from the underlying `http::Request` |
+| `ctx.path()` | Requested procedure path, `/package.Service/Method` |
+| `ctx.spec()` | Static metadata for the dispatched method |
+| `ctx.protocol()` | Negotiated wire protocol: `Connect`, `Grpc`, or `GrpcWeb` |
+| `ctx.peer_addr()` | Remote socket address (requires the `server` feature) |
+| `ctx.peer_certs()` | TLS client certificate chain (requires `server-tls`) |
+
+[Headers and metadata](/docs/rust/headers-and-metadata/) covers these in depth,
+including how to attach headers and trailers to the response.
+
+## Building the response
+
+`Response::ok(body)` is the happy path. When you need to attach metadata, build
+the response and use the `with_*` builders:
+
+```rust
+async fn greet(
+    &self,
+    _ctx: RequestContext,
+    req: ServiceRequest<'_, GreetRequest>,
+) -> ServiceResult<GreetResponse> {
+    Ok(Response::new(GreetResponse { /* ... */ })
+        .with_header("x-greet-version", "v2")
+        .with_trailer("x-server-id", "node-7"))
+}
+```
+
+`Response` also carries a `compress` override, which lets a handler force
+compression on or off for a single response regardless of the server's policy:
+
+```rust
+let mut resp = Response::new(body);
+if response_is_huge() {
+    resp = resp.compress(true);
+}
+Ok(resp)
+```
+
+## Returning a view body
+
+Handlers that often return their input unchanged, like proxies, filters, and
+validators, can avoid materializing an owned message entirely. The
+`Encodable<M>` bound in the generated trait accepts an `OwnedView` rebuilt from
+the retained request bytes. Code generation emits an `OwnedFooView` alias and
+the matching `Encodable` impl for each RPC type, and `MaybeBorrowed` covers the
+case where you only sometimes need to modify the message:
+
+```rust
+use connectrpc::{MaybeBorrowed, RequestContext, Response, ServiceRequest, ServiceResult};
+
+async fn redact(
+    &self,
+    _ctx: RequestContext,
+    req: ServiceRequest<'_, Record>,
+) -> ServiceResult<MaybeBorrowed<Record, OwnedRecordView>> {
+    if req.email.is_empty() && req.ssn.is_empty() {
+        // Pass through. The response has to be 'static, so rebuild an
+        // OwnedView from the retained body bytes: a refcount bump and a
+        // decode walk, with no per-field copy.
+        return Response::ok(MaybeBorrowed::Borrowed(req.to_owned_view()));
+    }
+    let mut owned = req.to_owned_message();
+    owned.email.clear();
+    owned.ssn.clear();
+    Response::ok(MaybeBorrowed::Owned(owned))
+}
+```
+
+Two limits are worth knowing. View bodies only encode for the Protobuf codec, so
+a JSON client calling such a handler receives `unimplemented`. And view-body
+impls are not emitted for types mapped through `extern_path`, because the impl
+would be an orphan in the consuming crate. If you generate that crate yourself,
+regenerate it with `encodable_impls=all_messages`; for types you don't generate,
+such as well-known types, return the owned message or use `PreEncoded::from_view`.
+
+## Registering services on a router
+
+`Router` collects services and turns them into something you can serve.
+Registering top to bottom reads naturally when there is more than one:
+
+```rust
+let router = Router::new()
+    .add_service(Arc::new(GreetServer))
+    .add_service(Arc::new(BillingServer));
+```
+
+The generated `register` extension method is still there when the inside-out
+form is more convenient:
+
+```rust
+let router = Arc::new(GreetServer).register(Router::new());
+```
+
+Routers built separately can be combined with `Router::merge` (owned and
+chainable), `Router::merge_in_place`, or the `merge_routers` free function for
+several at once. Merging two routers that register the same method path panics,
+so an accidental collision stops startup instead of silently shadowing a
+service. When last-wins replacement is what you want, say so:
+
+```rust
+let router = defaults.allow_overrides().merge(overrides);
+```
+
+When the routers come from dynamic input, such as a plugin list or a
+config-driven service set, a collision should probably be handled rather than
+crash the process. `Router::try_merge` and `Router::try_merge_in_place` return a
+`RouterMergeError` listing the conflicting paths instead of panicking.
+
+## Hosting
+
+### With Axum
+
+`Router::into_axum_service()` returns a Tower service you mount with
+`axum::Router::fallback_service`, and `into_axum_router()` returns a
+ready-to-merge Axum router. This is the common path, because it lets you compose
+RPC routes with ordinary HTTP routes for health checks, static files, or OAuth
+callbacks:
+
+```rust
+let app = axum::Router::new()
+    .route("/health", axum::routing::get(|| async { "OK" }))
+    .fallback_service(connect_router.into_axum_service())
+    .layer(/* tower layers */);
+
+let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await?;
+axum::serve(listener, app).await?;
+```
+
+Requires the `axum` feature.
+
+### Standalone server
+
+Enable the `server` feature for a built-in hyper server. This is the no-frills
+path when you don't need Axum's routing:
+
+```rust
+use connectrpc::Server;
+
+Server::new(connect_router)
+    .serve("127.0.0.1:8080".parse()?)
+    .await?;
+```
+
+It handles HTTP/1.1, HTTP/2 with prior knowledge, and graceful shutdown. It is a
+single dispatcher with no per-route configuration, so for ordinary HTTP routes
+such as health checks, mount the Connect service behind Axum or another HTTP
+router.
+
+### TLS
+
+With the `server-tls` feature, the standalone server takes a rustls config
+directly:
+
+```rust
+let server_config: Arc<rustls::ServerConfig> = /* load PEMs, build config */;
+
+Server::new(connect_router)
+    .with_tls(server_config)
+    .serve("0.0.0.0:8443".parse()?)
+    .await?;
+```
+
+For the Axum path, `connectrpc::axum::serve_tls` (which needs both the `axum`
+and `server-tls` features) is a drop-in replacement for `axum::serve` that owns
+the rustls accept loop. It stamps `PeerAddr` and `PeerCerts` into request
+extensions exactly as the standalone server does, so handler code that reads
+`ctx.peer_certs()` works the same on both:
+
+```rust
+let listener = tokio::net::TcpListener::bind("0.0.0.0:8443").await?;
+connectrpc::axum::serve_tls(listener, app, server_config)
+    .with_graceful_shutdown(shutdown_signal)
+    .await?;
+```
+
+### Driving hyper directly
+
+For transport tuning the built-in server doesn't expose, such as flow-control
+windows, HPACK table size, or exact keepalive behavior, run your own hyper
+accept loop. Add `hyper-util` with the `server-auto`, `service`, and `tokio`
+features, then wrap `ConnectRpcService` with `TowerToHyperService`:
+
+```rust
+use connectrpc::{ConnectRpcService, Router};
+use hyper_util::{
+    rt::{TokioExecutor, TokioIo},
+    server::conn::auto::Builder as AutoBuilder,
+    service::TowerToHyperService,
+};
+
+let connect_service = ConnectRpcService::new(Router::new().add_service(greeter));
+
+let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await?;
+let mut builder = AutoBuilder::new(TokioExecutor::new());
+builder
+    .http2()
+    .max_concurrent_streams(1_000)
+    .max_frame_size(1 << 20)
+    .adaptive_window(true);
+
+loop {
+    let (stream, _peer_addr) = listener.accept().await?;
+    let conn = builder
+        .serve_connection(
+            TokioIo::new(stream),
+            TowerToHyperService::new(connect_service.clone()),
+        )
+        .into_owned();
+
+    tokio::spawn(async move {
+        if let Err(err) = conn.await {
+            eprintln!("connection ended with error: {err}");
+        }
+    });
+}
+```
+
+Unlike the built-in server and `serve_tls`, a raw hyper loop does not insert
+`PeerAddr` or `PeerCerts` into request extensions. If your handlers call
+`ctx.peer_addr()` or `ctx.peer_certs()`, insert those extensions yourself in a
+Tower layer before the request reaches `ConnectRpcService`.
+
+## Bounding request deadlines
+
+Connect and gRPC clients send a per-request timeout header. With no policy
+configured, the server trusts it, which means a `Connect-Timeout-Ms: 1` request
+drops the handler at its next await point, a `Connect-Timeout-Ms: 86400000`
+request holds a worker for a day, and a request with no timeout header runs
+unbounded.
+`DeadlinePolicy` gives the server the final say:
+
+```rust
+use connectrpc::{ConnectRpcService, DeadlinePolicy};
+
+let policy = DeadlinePolicy::new()
+    .with_min(Duration::from_millis(5))            // reject "cancel me instantly"
+    .with_max(Duration::from_secs(30))             // bound worker lifetime
+    .with_default_timeout(Duration::from_secs(10)) // applied when the client asserts nothing
+    .with_enforce_on_streams(true);                // also bound streaming bodies
+
+let service = ConnectRpcService::new(router).with_deadline_policy(policy);
+```
+
+`with_max` is the one that matters most for any service accepting untrusted
+callers, since without it a client decides how long your worker stays busy. For
+unary and server-streaming RPCs the capped budget covers receiving the request
+body as well as running the handler, so size it for uploads and not just handler
+runtime.
+
+`with_enforce_on_streams(true)` closes the streaming gap. By default the
+deadline only bounds time-to-first-response: once a streaming handler returns
+its stream, items flow unbounded. Enabling it wraps the response body so the
+first item after the deadline becomes a `deadline_exceeded` error and the stream
+ends. Cancellation drops the inner stream at the next yield point with no grace
+period, so work that must survive caller cancellation has to be managed
+independently of the request future.
+
+`with_inter_message_timeout(d)` is separate, and detects stalled streams rather
+than long ones. It arms when the response stream is first polled and resets on
+each item.
+
+`DeadlinePolicy::new()` with no builder calls is a no-op, so existing services
+see no change until they opt in. When a client's value is clamped, a
+`tracing::debug!` event fires on target `connectrpc::deadline` with the path and
+the before and after durations. Set `RUST_LOG=connectrpc::deadline=debug` to
+find misbehaving clients.
+
+Inside a handler, `ctx.deadline()` reports the moderated value, so budgeting a
+downstream call from the time remaining does the right thing:
+
+```rust
+if let Some(remaining) = ctx.time_remaining() {
+    options = options.with_timeout(remaining.saturating_sub(margin));
+}
+```
+
+## Testing handlers
+
+Handlers can be tested directly, without starting a server or opening a socket.
+Build the inputs the same way the dispatcher does:
+
+```rust
+use buffa::Message;               // encode_to_vec / decode_from_slice
+use buffa::view::HasMessageView;  // GreetRequest::decode_view
+use connectrpc::Encodable;
+
+#[tokio::test]
+async fn greet_uses_the_name() {
+    let svc = GreetServer;
+
+    // Encode the request, decode a view over it, then wrap the pair.
+    let body = Bytes::from(
+        GreetRequest { name: "ada".into(), ..Default::default() }.encode_to_vec(),
+    );
+    let view = GreetRequest::decode_view(&body).unwrap();
+    let req = ServiceRequest::<GreetRequest>::from_parts(&view, &body);
+
+    let resp = svc
+        .greet(RequestContext::new(HeaderMap::new()), req)
+        .await
+        .unwrap();
+
+    // The trait's body type is an opaque `impl Encodable<GreetResponse>`, so
+    // encode it exactly as the dispatcher would and decode to assert on
+    // fields. Headers and trailers are readable directly on `resp`. The UFCS
+    // call disambiguates from `buffa::Message::encode`, also in scope.
+    let bytes = Encodable::encode(&resp.body, CodecFormat::Proto).unwrap();
+    let reply = GreetResponse::decode_from_slice(&bytes).unwrap();
+    assert_eq!(reply.greeting, "Hello, ada!");
+}
+```
+
+[Streaming](/docs/rust/streaming/) handlers take one more line.
+`StreamMessage::from_message` builds an
+item, and a boxed `futures::stream::iter` becomes the `InboundStream`:
+
+```rust
+let items = [Ok(StreamMessage::from_message(&SumRequest {
+    value: Some(3),
+    ..Default::default()
+}))];
+let requests: InboundStream<SumRequest> = Box::pin(futures::stream::iter(items));
+let resp = svc.sum(RequestContext::new(HeaderMap::new()), requests).await?;
+```
+
+`RequestContext::new` takes the request headers, and its `with_*` builders cover
+peer identity and the other per-call inputs.

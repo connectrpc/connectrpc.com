@@ -1,0 +1,175 @@
+---
+title: Errors
+---
+
+import VersionWarning from './_version-warning.mdx';
+
+<VersionWarning />
+
+Every failed RPC surfaces as a `ConnectError`, regardless of the wire protocol.
+It carries one of Connect's [16 error codes](/docs/protocol/#error-codes),
+a message, any structured details, and optional response metadata. Handlers
+return one to fail a call, and clients get the same type back.
+
+```rust
+pub struct ConnectError {
+    pub code: ErrorCode,
+    pub message: Option<String>,
+    pub details: Vec<ErrorDetail>,
+    // Response headers and trailers are private, and reachable
+    // through accessors.
+}
+```
+
+`ErrorCode` is a fieldless enum over the canonical Connect and gRPC status set:
+`Canceled`, `Unknown`, `InvalidArgument`, `DeadlineExceeded`, `NotFound`,
+`AlreadyExists`, `PermissionDenied`, `ResourceExhausted`, `FailedPrecondition`,
+`Aborted`, `OutOfRange`, `Unimplemented`, `Internal`, `Unavailable`, `DataLoss`,
+and `Unauthenticated`. It is `Copy`, and `as_str`, `http_status`, `grpc_code`,
+and `from_grpc_code` convert between the wire representations.
+
+## Returning errors from a handler
+
+```rust
+use connectrpc::{ConnectError, ErrorCode};
+
+async fn greet(
+    &self,
+    _ctx: RequestContext,
+    req: ServiceRequest<'_, GreetRequest>,
+) -> ServiceResult<GreetResponse> {
+    if req.name.is_empty() {
+        return Err(ConnectError::invalid_argument("name is required"));
+    }
+    let Some(user) = self.lookup(req.name).await else {
+        return Err(ConnectError::new(
+            ErrorCode::NotFound,
+            format!("user {:?} not found", req.name),
+        ));
+    };
+    Response::ok(GreetResponse { /* ... */ })
+}
+```
+
+`ConnectError::new(code, message)` is the general form, and every code has a
+constructor named after it (`invalid_argument`, `not_found`,
+`permission_denied`, and so on) for the common cases.
+
+From there the dispatcher maps the code to an HTTP status and encodes the error
+in whichever protocol the caller is speaking. A handler never has to know which
+one that is.
+
+## Inspecting errors on the client
+
+Client methods return `Result<_, ConnectError>`, so an RPC composes with `?` like
+any other fallible call. To branch on the failure, match the code:
+
+```rust
+match client.greet(req).await {
+    Ok(res) => println!("{}", res.view().greeting),
+    Err(err) if err.code == ErrorCode::NotFound => {
+        // Fall back to a default greeting.
+    }
+    Err(err) => {
+        eprintln!("{}: {}", err.code.as_str(), err.message.as_deref().unwrap_or(""));
+    }
+}
+```
+
+This works against any Connect, gRPC, or gRPC-Web server, whether or not it was
+built with Connect.
+
+## Error details
+
+Details carry structured data alongside the code and message: for example,
+backoff parameters, a localized message, or a pointer to the offending field.
+Each is a Protobuf message wrapped in `ErrorDetail`.
+
+```rust
+use connectrpc::{ConnectError, ErrorDetail};
+
+let retry_info = RetryInfo {
+    retry_delay: Some(Duration { seconds: 10, ..Default::default() }),
+    ..Default::default()
+};
+
+return Err(ConnectError::unavailable("overloaded: back off and retry")
+    .with_detail(ErrorDetail::from_message(
+        "google.rpc.RetryInfo",
+        &retry_info,
+    )));
+```
+
+`from_message` takes the fully qualified Protobuf message name, without the
+`type.googleapis.com/` prefix, and handles the base64 encoding the Connect
+protocol requires. It adds that prefix back on the gRPC path for you.
+
+`ErrorDetail` is a plain struct, so clients read details from `err.details` by
+matching on `type_url` and decoding `value`:
+
+```rust
+use base64::Engine as _;
+use base64::engine::general_purpose::STANDARD_NO_PAD;
+use buffa::Message;
+
+fn extract_retry_info(err: &ConnectError) -> Option<RetryInfo> {
+    let detail = err
+        .details
+        .iter()
+        .find(|d| d.type_url.ends_with("google.rpc.RetryInfo"))?;
+    let bytes = STANDARD_NO_PAD.decode(detail.value.as_ref()?).ok()?;
+    RetryInfo::decode_from_slice(&bytes).ok()
+}
+```
+
+Match with `ends_with` rather than `==` and the same code keeps working whether
+the detail arrived over the Connect protocol, which carries the bare name, or
+over gRPC, which carries the `Any` type URL prefix.
+
+## Attaching metadata to errors
+
+An error can carry response headers and trailers, which is how protocol-level
+metadata rides along with a failure. A `WWW-Authenticate` challenge is the usual
+case:
+
+```rust
+let mut err = ConnectError::unauthenticated("missing bearer token");
+err.response_headers_mut().insert(
+    http::header::WWW_AUTHENTICATE,
+    http::HeaderValue::from_static("Bearer"),
+);
+return Err(err);
+```
+
+`with_headers` and `with_trailers` set whole maps in builder position, and
+`response_headers()` and `trailers()` read them back.
+
+## HTTP representation
+
+The Rust API is identical across protocols, but the wire shapes are not. A unary
+Connect error is JSON in the response body, with the HTTP status derived from the
+code:
+
+```json
+{
+  "code": "invalid_argument",
+  "message": "name is required"
+}
+```
+
+The other three use HTTP 200 and report the RPC status separately. gRPC puts it
+in HTTP trailers. gRPC-Web carries the equivalent trailers in a frame at the end
+of the body. Connect streaming reports errors in its end-of-stream frame.
+
+`ErrorCode::http_status` and `ErrorCode::grpc_code` expose those mappings when
+you need them directly. See the
+[Connect protocol](/docs/protocol/#error-codes) for the full description.
+
+## See also
+
+- [Interceptors](/docs/rust/interceptors/) for mapping application failures to
+  `ConnectError`s in one place, and for short-circuiting a call before the
+  handler runs
+- [Headers and metadata](/docs/rust/headers-and-metadata/) for the metadata an
+  error can carry
+- [Streaming](/docs/rust/streaming/) for how errors terminate a stream

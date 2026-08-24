@@ -1,0 +1,154 @@
+---
+title: Streaming
+---
+
+import VersionWarning from './_version-warning.mdx';
+
+<VersionWarning />
+
+Connect supports all four RPC types, and `connect-rust` implements every one of
+them over all three protocols. Declare them in your schema with the standard
+`stream` keyword:
+
+```protobuf
+service NumberService {
+  rpc Square(SquareRequest) returns (SquareResponse);                            // unary
+  rpc Range(RangeRequest) returns (stream RangeResponse);                        // server stream
+  rpc Sum(stream SumRequest) returns (SumResponse);                              // client stream
+  rpc RunningSum(stream RunningSumRequest) returns (stream RunningSumResponse);  // bidi
+}
+```
+
+Unary RPCs are simpler to operate. They work over HTTP/1.1 without caveats, and
+ordinary HTTP tooling can cache, balance, and debug them. Use streaming where it
+earns its keep.
+
+The trait signatures use `Pin<Box<dyn Stream<..> + Send>>` for inbound and
+outbound streams, which is verbose to write out. The examples below use
+`connectrpc::ServiceStream<T>`, a boxed `Send` stream of
+`Result<T, ConnectError>`, and `connectrpc::InboundStream<T>` for the request
+side.
+
+## Server streaming
+
+The handler returns a stream of responses. Build it from any `futures::Stream`
+and wrap it with `Response::stream_ok`:
+
+```rust
+async fn range(
+    &self,
+    _ctx: RequestContext,
+    req: ServiceRequest<'_, RangeRequest>,
+) -> ServiceResult<ServiceStream<RangeResponse>> {
+    let stream = futures::stream::iter(/* ... */);
+    Response::stream_ok(stream)
+}
+```
+
+Use `Ok(Response::stream(s).with_header(..))` instead when the response needs
+[metadata](/docs/rust/headers-and-metadata/).
+
+## Client streaming
+
+The handler receives an `InboundStream<Req>` and returns a single response. Each
+item owns its decoded buffer and is `Send + 'static`, so it can be buffered or
+moved into a spawned task:
+
+```rust
+async fn sum(
+    &self,
+    _ctx: RequestContext,
+    mut requests: InboundStream<SumRequest>,
+) -> ServiceResult<SumResponse> {
+    let mut total: i64 = 0;
+    while let Some(req) = requests.next().await {
+        total += req?.view().value as i64;
+    }
+    Response::ok(SumResponse { total, ..Default::default() })
+}
+```
+
+The `?` on each item matters. The request stream yields
+[`Err(ConnectError)`](/docs/rust/errors/) if
+the upload fails partway, from a truncated body or a broken transport, so a
+partial stream is never mistaken for a complete one. Propagating that error as
+the RPC's failure is the right default for a handler that aggregates its input.
+Only a clean `None` means the client finished sending.
+
+## Bidirectional streaming
+
+Take a request stream, return a response stream. Both sides emit independently:
+
+```rust
+async fn running_sum(
+    &self,
+    _ctx: RequestContext,
+    requests: InboundStream<RunningSumRequest>,
+) -> ServiceResult<ServiceStream<RunningSumResponse>> {
+    let response_stream = futures::stream::unfold(/* ... */);
+    Response::stream_ok(response_stream)
+}
+```
+
+Mapping the request stream to the response stream covers the common case, where
+each response follows from a request. For true full-duplex behavior, where the
+server emits on its own schedule rather than in reply to the client's send rate,
+use a channel: spawn a task that reads from `requests` and writes to a
+`tokio::sync::mpsc` sender, and return the receiver as the response stream.
+
+## Calling streaming RPCs
+
+Generated clients expose a method per RPC, returning a handle rather than a
+value.
+
+### Server streaming
+
+Call `.message().await?` until it yields `None`. Each item is a
+`StreamMessage`, the same wrapper server handlers receive, so fields are
+readable zero-copy through `.view()`:
+
+```rust
+let mut stream = client.range(req).await?;
+while let Some(msg) = stream.message().await? {
+    println!("{}", msg.view().value);
+}
+```
+
+### Client streaming
+
+The method takes `impl IntoIterator<Item = Request>`, uploaded as the request
+body, so a `Vec` or any iterator works:
+
+```rust
+let res = client.sum(vec![req1, req2, req3]).await?;
+let res = client.sum((1..=4).map(make_request)).await?;
+```
+
+### Bidirectional streaming
+
+The handle sends and receives:
+
+```rust
+let mut bidi = client.running_sum().await?;
+bidi.send(req).await?;
+if let Some(reply) = bidi.message().await? {
+    println!("{}", reply.view().total);
+}
+bidi.close_send();
+```
+
+:::caution[Full duplex needs HTTP/2]
+A send that depends on having already received a response requires an HTTP/2
+transport. On HTTP/1.1 no response arrives until the upload completes, so a
+client that waits for a reply before sending its next message deadlocks.
+Half-duplex bidi, where the client sends everything and then reads, works on
+both.
+:::
+
+## Stream errors
+
+`?` on `message()` is the whole error story. `Ok(None)` means the server
+finished cleanly, and any terminal error, including a gRPC or gRPC-Web stream
+that ends without a usable `grpc-status`, comes back as `Err`. The error is
+sticky across subsequent calls, and the `error()` and `trailers()` accessors
+stay available afterwards for inspection.

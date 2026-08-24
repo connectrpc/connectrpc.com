@@ -170,6 +170,12 @@ pre {
   padding-inline: var(--ifm-spacing-horizontal);
 }
 
+/* Absorb the scrollbar-width overhang from `100vw` full-bleed breakouts.
+ * `clip`, not `hidden`: `hidden` would break `position: sticky`. */
+html {
+  overflow-x: clip;
+}
+
 /* Splash pages (template: "splash") have no sidebar and use their own
  * full-bleed section backgrounds. Starlight's ContentPanel wraps content
  * in `.sl-container { max-width: var(--sl-content-width); }` (67.5rem on

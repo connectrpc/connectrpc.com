@@ -1,0 +1,341 @@
+---
+title: Getting started
+description: "Build a Connect service in Rust: define a Protobuf schema, generate code, implement the service trait, and call it from a generated client."
+---
+
+import VersionWarning from './_version-warning.mdx';
+
+<VersionWarning />
+
+Connect for Rust turns a Protobuf schema into a service trait you implement and a
+client you call. The generated server is an ordinary [`tower::Service`][tower], so
+it mounts into [Axum][axum], [hyper][hyper], or whatever Tower stack you already
+run, and it answers Connect, gRPC, and gRPC-Web callers on a single port.
+
+This walkthrough builds a greeting service end to end, then calls it three ways:
+with cURL, with `buf curl`, and with the generated Rust client.
+
+## Prerequisites
+
+* Rust 1.88 or newer. The crates use the 2024 edition, and 1.88 is the declared
+  MSRV. See [Install Rust][install-rust] if you don't have a toolchain yet.
+* Either [`protoc`][protoc] or the [Buf CLI][buf]. `connectrpc-build` shells out
+  to one of them during `cargo build`, and we cover both.
+* [cURL][], to call the service without writing any code.
+
+## Set up the crate
+
+```shellsession
+$ cargo new connect-rust-example
+$ cd connect-rust-example
+```
+
+Edit `Cargo.toml` to add our dependencies. It should look like this after:
+
+```toml
+[package]
+name = "connect-rust-example"
+version = "0.1.0"
+edition = "2024"
+# We add a second binary (the client) further down, so pick which one
+# a bare `cargo run` means.
+default-run = "connect-rust-example"
+
+[dependencies]
+connectrpc = { version = "0.8", features = ["axum", "client"] }
+buffa = { version = "0.8.1", features = ["json"] }
+buffa-types = { version = "0.8", features = ["json"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+axum = "0.8"
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+
+[build-dependencies]
+connectrpc-build = "0.8"
+```
+
+`connectrpc` keeps its optional pieces behind Cargo features, so a server-only
+binary never compiles a client transport it doesn't use. `axum` pulls in the
+integration we mount the router with, and `client` pulls in the hyper-backed
+transport the client half of this guide needs. `json`, `gzip`, `zstd`, and
+`streaming` are on by default.
+
+The `buffa` and `serde` entries are there for the generated message types.
+[buffa][buffa] is the Protobuf implementation Connect for Rust generates against.
+It emits zero-copy view types, so `string` and `bytes` fields borrow out of the
+request buffer instead of being copied into owned `String`s, and `serde` backs
+the JSON codec.
+
+:::caution[Keep `buffa` in step with `connectrpc`]
+Generated code has to compile against the same `buffa` your `connectrpc` release
+was built against: `connectrpc` 0.8 pairs with `buffa` 0.8. A mismatch resolves
+two semver-incompatible copies into the graph, and your generated types then fail
+the runtime's trait bounds with a wall of errors ending in `note: there are
+multiple different versions of crate buffa in the dependency graph`. `cargo tree
+-i buffa` should list exactly one version.
+:::
+
+## Define the schema
+
+```shellsession
+$ mkdir -p proto/greet/v1
+$ touch proto/greet/v1/greet.proto
+```
+
+Open `proto/greet/v1/greet.proto` and add:
+
+```protobuf
+syntax = "proto3";
+
+package greet.v1;
+
+message GreetRequest {
+  string name = 1;
+}
+
+message GreetResponse {
+  string greeting = 1;
+}
+
+service GreetService {
+  rpc Greet(GreetRequest) returns (GreetResponse) {}
+}
+```
+
+Connect derives routes from the schema, so this service is served at
+`/greet.v1.GreetService/Greet`. The names you pick here are used for the API
+endpoints.
+
+## Generate code
+
+Compile the schema from a build script, so there is nothing to install and
+nothing to check in. Add `build.rs` next to `Cargo.toml`:
+
+```rust
+// build.rs
+fn main() {
+    connectrpc_build::Config::new()
+        .files(&["proto/greet/v1/greet.proto"])
+        .includes(&["proto/"])
+        .include_file("_connectrpc.rs")
+        .compile()
+        .unwrap();
+}
+```
+
+This writes into Cargo's `OUT_DIR` and regenerates whenever a `.proto` changes.
+You pull the result into your crate with the `include_generated!` macro in the
+next step. For each service in the schema the generator emits a trait for the
+server and a client struct; for each message, an owned type and its zero-copy
+view.
+
+This step needs `protoc` on your `PATH`, or the `PROTOC` environment variable
+pointing at it. `connectrpc-build` can drive `buf` or a precompiled descriptor
+set instead, which
+[Generating code](/docs/rust/generating-code/#choosing-a-compiler) covers.
+
+Build scripts are one of two supported workflows. If you'd rather commit
+generated code, split messages and services into separate module trees, or
+generate Rust alongside other languages from one schema, use the `buf generate`
+plugin workflow described in [Generating code](/docs/rust/generating-code/).
+
+## Implement the service trait
+
+Marshaling, routing, and content negotiation are generated. What's left is the
+greeting logic, which is one async method on the generated `GreetService` trait.
+Put this in `src/main.rs`:
+
+```rust
+use std::sync::Arc;
+
+use connectrpc::{RequestContext, Response, Router, ServiceRequest, ServiceResult};
+
+pub mod proto {
+    connectrpc::include_generated!();
+}
+use proto::greet::v1::*;
+
+struct GreetServer;
+
+impl GreetService for GreetServer {
+    async fn greet(
+        &self,
+        _ctx: RequestContext,
+        req: ServiceRequest<'_, GreetRequest>,
+    ) -> ServiceResult<GreetResponse> {
+        Response::ok(GreetResponse {
+            greeting: format!("Hello, {}!", req.name),
+            ..Default::default()
+        })
+    }
+}
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    let router = Router::new().add_service(Arc::new(GreetServer));
+
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:8080").await?;
+    axum::serve(listener, router.into_axum_router()).await?;
+    Ok(())
+}
+```
+
+`req` derefs to a view of the request, so `req.name` is a `&str` borrowed
+straight from the bytes the client sent, and reading it allocates nothing. That
+borrow is tied to the call, so reach for `req.to_owned_message()` when a value
+has to outlive it, such as anything you move into `tokio::spawn`.
+`ServiceResult<T>` is an alias for `Result<Response<T>, ConnectError>`, and
+`Response::ok` is its no-metadata constructor.
+
+`cargo build` will warn about `refining_impl_trait`. That is expected here: the
+generated trait is deliberately more general than the impl you write, so that
+handlers can also return borrowed views.
+[Implementing services](/docs/rust/implementing-services/#the-refining_impl_trait-lint)
+covers what the bound buys you and how to allow the lint.
+
+## Run it
+
+```shellsession
+$ cargo run
+```
+
+In another terminal, the simplest call is an HTTP/1.1 POST carrying JSON:
+
+```shellsession
+$ curl \
+    --header "Content-Type: application/json" \
+    --data '{"name": "Jane"}' \
+    http://localhost:8080/greet.v1.GreetService/Greet
+```
+
+```json
+{"greeting": "Hello, Jane!"}
+```
+
+The same handler answers gRPC with no extra configuration:
+
+```shellsession
+$ buf curl \
+  --schema ./proto \
+  --protocol grpc \
+  --http2-prior-knowledge \
+  --data '{"name": "Jane"}' \
+  http://localhost:8080/greet.v1.GreetService/Greet
+```
+
+```json
+{
+  "greeting": "Hello, Jane!"
+}
+```
+
+and the Connect protocol, which is what `buf curl` uses when you don't name one:
+
+```shellsession
+$ buf curl \
+  --schema ./proto \
+  --data '{"name": "Jane"}' \
+  http://localhost:8080/greet.v1.GreetService/Greet
+```
+
+## Call it from Rust
+
+That same build script generated a `GreetServiceClient`. Add `src/bin/client.rs`:
+
+```rust
+use connectrpc::client::{ClientConfig, HttpClient};
+
+// The same generated module the server uses.
+pub mod proto {
+    connectrpc::include_generated!();
+}
+use proto::greet::v1::*;
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    let http = HttpClient::plaintext();
+    let config = ClientConfig::new("http://localhost:8080".parse()?);
+    let client = GreetServiceClient::new(http, config);
+
+    let res = client
+        .greet(GreetRequest {
+            name: "Jane".into(),
+            ..Default::default()
+        })
+        .await?;
+
+    println!("{}", res.view().greeting);
+    Ok(())
+}
+```
+
+`HttpClient::plaintext()` is a pooled hyper client that speaks cleartext `http://`
+only, and `HttpClient::with_tls(..)` is its `https://` counterpart. Each rejects
+the other's scheme, so a misconfigured URL fails loudly instead of quietly
+downgrading. Responses are views as well, which is why the greeting is read
+through `res.view()`; `into_owned()` is there when you want the owned struct.
+
+This is the second binary that `default-run` was for. With the server still
+running:
+
+```shellsession
+$ cargo run --bin client
+```
+
+## Switch the client to gRPC
+
+You have already watched the server field all three protocols without being
+configured for any of them: `curl` spoke Connect, and the two `buf curl` calls
+spoke gRPC and Connect. Servers accept all three on one port. Clients pick one,
+and default to the [Connect protocol](/docs/protocol/).
+
+To switch this client, ask the config for `Protocol::Grpc`. The transport has to
+change too: gRPC returns its status in HTTP trailers, so it needs HTTP/2, and
+cleartext has no ALPN to negotiate with. Swap in the prior-knowledge constructor:
+
+```rust mark={3,5}
+use connectrpc::Protocol;
+
+let http = HttpClient::plaintext_http2_only();
+let config = ClientConfig::new("http://localhost:8080".parse()?)
+    .with_protocol(Protocol::Grpc);
+```
+
+This is the same constraint that made `buf curl --protocol grpc` need
+`--http2-prior-knowledge` above. Leave the transport on `plaintext()` and the
+request goes out over HTTP/1.1, where the server cannot write trailers, so the
+call fails with `gRPC response missing grpc-status trailer`. TLS clients are
+exempt, since `with_tls(..)` negotiates HTTP/2 over ALPN.
+
+```shellsession
+$ cargo run --bin client
+```
+
+The output is identical, but the call now goes over the wire as gRPC. The handler
+and the server are untouched.
+
+## Next steps
+
+A fifteen-line schema produced the message types, the server trait, and the
+client. You wrote a handler body, a `Router`, and a listener.
+
+- [Implementing services](/docs/rust/implementing-services/) covers handler
+  signatures, response metadata, view bodies, and hosting.
+- [Using clients](/docs/rust/using-clients/) covers transports, timeouts, and
+  per-call options.
+- [Errors](/docs/rust/errors/) covers failing an RPC and inspecting failures.
+- [Interceptors](/docs/rust/interceptors/) covers auth, validation, and logging
+  across every method.
+- [Streaming](/docs/rust/streaming/) covers the other three RPC types.
+- [docs.rs/connectrpc][docsrs] is the generated API reference.
+
+[axum]: https://docs.rs/axum
+[bsr]: https://buf.build/docs/bsr/
+[buf]: https://buf.build/
+[buffa]: https://github.com/anthropics/buffa
+[cURL]: https://curl.se/
+[docsrs]: https://docs.rs/connectrpc
+[hyper]: https://hyper.rs
+[install-rust]: https://www.rust-lang.org/tools/install
+[protoc]: https://protobuf.dev/installation/
+[tower]: https://docs.rs/tower

@@ -1,0 +1,254 @@
+---
+title: Generating code
+---
+
+import VersionWarning from './_version-warning.mdx';
+
+<VersionWarning />
+
+`connect-rust` offers two code generation workflows. Both generate the same
+traits, clients, and message types, so the choice is mostly about how generation
+fits into your build:
+
+- **`connectrpc-build`** runs the generator from `build.rs` during `cargo build`.
+  Nothing is checked in, and there are no plugin binaries to install. This is
+  what [Getting started](/docs/rust/getting-started/) uses.
+- **`buf generate`** runs the generator as a `protoc` plugin. Generated code
+  lands in your source tree and is committed. Use this when you want the output
+  under review, when you're generating several languages from one schema, or
+  when you need message types and service stubs in separate module trees.
+
+Generation produces two kinds of output: message types from [buffa][buffa], and
+service stubs from `connect-rust`, which are a trait to implement and a client to
+call.
+
+## Generating from `build.rs`
+
+Add the build dependency:
+
+```toml
+[build-dependencies]
+connectrpc-build = "0.8"
+```
+
+Then describe your schema in `build.rs`:
+
+```rust
+fn main() {
+    connectrpc_build::Config::new()
+        .files(&["proto/greet/v1/greet.proto", "proto/billing/v1/billing.proto"])
+        .includes(&["proto/"])
+        .include_file("_connectrpc.rs")
+        .compile()
+        .unwrap();
+}
+```
+
+Message types and service stubs land in one file per proto, written to Cargo's
+`OUT_DIR` and stitched together by the file you named in `include_file`. Pull the
+whole tree into your crate with one macro:
+
+```rust
+pub mod proto {
+    connectrpc::include_generated!();
+}
+```
+
+### Choosing a compiler
+
+`connectrpc-build` shells out to `protoc`, which must be on your `PATH` (or
+named by the `PROTOC` environment variable). Two alternatives are available if
+that doesn't suit your build.
+
+`.use_buf()` invokes `buf build` instead, which is convenient when your schema
+already has a `buf.yaml` and remote dependencies. Two things change under it.
+`.includes()` is ignored, because buf resolves imports from `buf.yaml`. And the
+paths in `.files()` are used twice: once as `buf build --path` arguments,
+resolved against the crate root, and again to match the names buf records in the
+descriptor set, which are relative to the buf module root. Those two agree only
+when the module is rooted at the crate root, so put a `buf.yaml` there:
+
+```yaml
+version: v2
+modules:
+  - path: .
+```
+
+A module rooted at `proto/` instead fails with `file_to_generate
+'proto/greet/v1/greet.proto' not found in descriptor set`.
+
+`.descriptor_set(path)` reads a precompiled `FileDescriptorSet`, so neither tool
+needs to be present at build time. Produce the file once with
+`protoc --descriptor_set_out=... --include_imports`.
+
+By default the config emits `cargo:rerun-if-changed` directives for your proto
+files, so edits trigger regeneration.
+
+## Generating with `buf generate`
+
+This path uses three plugins: `protoc-gen-buffa` for message types,
+`protoc-gen-connect-rust` for service stubs, and `protoc-gen-buffa-packaging` to
+assemble the `mod.rs` tree for each output directory. The two code generation
+plugins run per file; only the packaging plugin needs `strategy: all`.
+
+### Installing the plugins
+
+`protoc-gen-buffa` and `protoc-gen-buffa-packaging` ship from the
+[buffa][buffa] repository. For `protoc-gen-connect-rust` you have three options:
+
+1. **Download a pre-built binary** from the [connect-rust releases page][releases].
+   Linux, macOS, and Windows builds are published, each signed and attested so
+   `gh attestation verify` or `cosign verify-blob` can check what you installed.
+2. **Build from source** with `cargo install --locked connectrpc-codegen`, which
+   puts the binary in `$CARGO_HOME/bin`.
+3. **Use the remote plugin** on the Buf Schema Registry,
+   [`buf.build/connectrpc/rust`][bsr-plugin], and skip the local install
+   entirely.
+
+### Configuring `buf.gen.yaml`
+
+```yaml
+version: v2
+plugins:
+  - local: protoc-gen-buffa
+    out: src/generated/buffa
+    opt: [views=true, json=true]
+  - local: protoc-gen-buffa-packaging
+    out: src/generated/buffa
+    strategy: all
+  - local: protoc-gen-connect-rust
+    out: src/generated/connect
+    opt: [buffa_module=crate::proto]
+  - local: protoc-gen-buffa-packaging
+    out: src/generated/connect
+    strategy: all
+    opt: [filter=services]
+```
+
+To use the remote plugin instead of a local binary, replace the
+`local: protoc-gen-connect-rust` entry with
+`remote: buf.build/connectrpc/rust:v0.8.0`.
+
+Mount both trees in your crate:
+
+```rust
+// src/lib.rs
+#[path = "generated/buffa/mod.rs"]
+pub mod proto;
+#[path = "generated/connect/mod.rs"]
+pub mod connect;
+```
+
+`buffa_module=crate::proto` tells the service stub generator where you mounted
+the message types, which is what ties the two trees together. A method whose
+input is `greet.v1.GreetRequest` is emitted as
+`crate::proto::greet::v1::GreetRequest`: the module root you named, then the
+Protobuf package as nested modules, then the type. Changing the mount point
+means regenerating.
+
+The second packaging invocation passes `filter=services` so the connect tree's
+`mod.rs` only includes files that actually contain service stubs.
+
+`buffa_module=X` is shorthand for `extern_path=.=X`, the same option the Buf
+Schema Registry uses when it generates Cargo SDKs. Any module an `extern_path`
+points at has to contain buffa-generated code with views enabled. The service
+stubs rely on the view types and JSON impls that buffa emits alongside each
+message. One consequence is worth knowing before you pick this layout: view-body
+impls are not emitted for types reached through `extern_path`, so
+[returning a view body](/docs/rust/implementing-services/#returning-a-view-body)
+needs `encodable_impls=all_messages` on the crate that owns the type.
+
+### Inclusion patterns side by side
+
+The most visible difference between the two workflows is how generated code
+enters your crate:
+
+```rust
+// connectrpc-build (build.rs) users:
+pub mod proto { connectrpc::include_generated!(); }
+
+// buf generate users:
+#[path = "generated/proto/mod.rs"]
+pub mod proto;
+```
+
+## One file per package
+
+By default, `buf generate` output is one file per `.proto` file plus a per-package
+stitcher. To get a single file per Protobuf package instead, pass
+`file_per_package` to **both** `protoc-gen-buffa` and `protoc-gen-connect-rust`.
+Each plugin then emits one `<dotted.pkg>.rs` per package with everything inlined.
+That layout is what Buf Schema Registry Cargo SDKs and `tonic`-style build
+integrations expect.
+
+Under this layout you should drop the `protoc-gen-buffa-packaging` invocations,
+since there is nothing left for them to wire together. Keep routing each plugin
+to its own `out:` directory: the filenames are shared between them and would
+silently overwrite in a single directory.
+
+`connectrpc-build` users get the same behavior from `Config::file_per_package(true)`,
+which inlines service stubs into buffa's per-package file. The include file
+picks up the new filename automatically, so nothing else changes.
+
+## Generation options
+
+Both workflows expose the same knobs, as plugin `opt:` entries for
+`buf generate` and as builder methods on `connectrpc_build::Config`.
+
+| Plugin option | `connectrpc-build` | What it does |
+|---|---|---|
+| `no_json` | `.generate_json(false)` | Emit message types without serde derives, for [proto-only builds](#proto-only-builds) |
+| `gate_client_feature` | `.gate_client_feature(true)` | Prefix generated clients with `#[cfg(feature = "client")]` so server-only builds can drop the transport stack |
+| `encodable_impls=all_messages` | `.encodable_impls(..)` | Emit view-body impls for every message, not just those used as RPC types |
+| `file_per_package` | `.file_per_package(true)` | One output file per Protobuf package |
+
+## Proto-only builds
+
+The Connect protocol supports two codecs: binary Protobuf and Protobuf JSON. The
+JSON codec requires every message type to implement `serde::Serialize` and
+`Deserialize`, which is why the generator derives them by default. A deployment
+that only ever speaks binary Protobuf can turn JSON off and shed those derives.
+
+It takes two coordinated settings. First, generate without the derives using
+`no_json` (or `.generate_json(false)`). Second, disable the runtime `json`
+feature, which relaxes the message-type bounds so serde-free types still satisfy
+every handler, router, and client signature:
+
+```toml
+# `default-features = false` is the only way to drop `json`, so it also drops
+# the default compression features (`gzip`, `zstd`, `streaming`). Re-list the
+# ones you still want.
+connectrpc = { version = "0.8", default-features = false, features = ["server", "gzip", "zstd", "streaming"] }
+```
+
+A proto-only server rejects JSON at content negotiation, before it reads the
+request body: `application/json` and `application/connect+json` come back as
+HTTP 415 Unsupported Media Type, and the gRPC JSON content types get a gRPC
+error status. Handler errors stay JSON-encoded, as the Connect protocol requires
+regardless of the request codec.
+
+:::caution
+`json` is an additive, default-on Cargo feature, so it is only off when *every*
+crate in your dependency graph that depends on `connectrpc`
+disables it. If any other crate pulls in `connectrpc` with `json` enabled,
+feature unification turns it back on for the whole build and your serde-free
+types stop compiling with a `Serialize is not satisfied` error that names the
+trait rather than the feature. Proto-only mode fits a leaf binary or a fully
+proto-only dependency graph, not one library inside a mixed workspace.
+:::
+
+## Descriptor sets for reflection
+
+If you need the compiled `FileDescriptorSet` at runtime, most commonly to feed
+the `connectrpc-reflection` crate, chain `.emit_descriptor_set("app.fds.bin")`
+before `.compile()`. The name must be a bare filename with no path separators.
+The set is written to `OUT_DIR` with its full transitive import closure, ready
+to embed:
+
+```rust
+let bytes: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/app.fds.bin"));
+```
+
+[buffa]: https://github.com/anthropics/buffa
+[bsr-plugin]: https://buf.build/connectrpc/rust
+[releases]: https://github.com/connectrpc/connect-rust/releases

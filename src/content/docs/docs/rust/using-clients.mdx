@@ -1,0 +1,271 @@
+---
+title: Using clients
+---
+
+import VersionWarning from './_version-warning.mdx';
+
+<VersionWarning />
+
+For each service in your schema, code generation emits a client alongside the
+server trait. `service GreetService` produces `GreetServiceClient`, with one
+method per RPC. Clients are generic over a transport, so the same generated code
+works against a pooled hyper client, a single HTTP/2 connection, a Tower stack
+you assembled yourself, or a browser `fetch` transport under wasm.
+
+The generated client itself is always emitted, with no Cargo feature required.
+What the `client` feature adds is the built-in transports, `HttpClient` and
+`Http2Connection`, which need platform networking:
+
+```toml
+connectrpc = { version = "0.8", features = ["client"] }
+```
+
+That split is what lets a wasm build turn `client` off and still use the same
+generated client against a `fetch` transport of its own. (Code generation can
+also gate clients behind a feature of *your* crate with `gate_client_feature`,
+but that is opt-in.)
+
+## Constructing a client
+
+A client is a transport plus a `ClientConfig`:
+
+```rust
+use connectrpc::client::{ClientConfig, HttpClient};
+
+let http = HttpClient::plaintext();
+let config = ClientConfig::new("http://localhost:8080".parse()?);
+let client = GreetServiceClient::new(http, config);
+
+let res = client
+    .greet(GreetRequest { name: "Jane".into(), ..Default::default() })
+    .await?;
+```
+
+## Transports
+
+### `HttpClient`
+
+`HttpClient` is the standard transport, a pooled hyper client. Over TLS it
+negotiates HTTP/1.1 or HTTP/2 with ALPN; over cleartext there is no negotiation,
+so you pick the version with the constructor. It's the right default for the
+Connect protocol and for gRPC-Web.
+
+There are three constructors, and no bare `::new()`:
+
+```rust
+use connectrpc::client::HttpClient;
+
+// Cleartext http:// only. Uses HTTP/1.1.
+let http = HttpClient::plaintext();
+
+// Cleartext http:// over HTTP/2 with prior knowledge (h2c).
+let http = HttpClient::plaintext_http2_only();
+
+// https:// only. Requires the client-tls or tls feature.
+let tls_config: Arc<rustls::ClientConfig> = /* trust store + ALPN */;
+let http = HttpClient::with_tls(tls_config);
+```
+
+A `plaintext()` client refuses `https://` URIs and a `with_tls()` client refuses
+`http://` URIs, so a scheme mismatch returns an error rather than silently
+downgrading.
+Taking an `Arc<rustls::ClientConfig>` rather than building one internally means
+your existing certificate rotation setup keeps working.
+
+Which cleartext constructor you want depends on the protocol. There's no ALPN on
+a cleartext connection, so `plaintext()` speaks HTTP/1.1, which is fine for the
+Connect protocol and for gRPC-Web. The gRPC protocol carries its status in HTTP
+trailers and therefore needs HTTP/2, so pair `Protocol::Grpc` with
+`plaintext_http2_only()`. Getting this wrong surfaces as `gRPC response missing
+grpc-status trailer`. Over TLS the question doesn't arise, since `with_tls(..)`
+negotiates HTTP/2 through ALPN.
+
+### `Http2Connection`
+
+`Http2Connection` is a single raw HTTP/2 connection with honest `poll_ready`
+backpressure. It composes with `tower::balance` to spread load across N
+connections, and it's the better choice for gRPC and for Connect at high
+throughput.
+
+It's also the transport to reach for when you need connection-level control:
+
+```rust
+use connectrpc::client::Http2Connection;
+
+let conn = Http2Connection::builder()
+    .establishment_timeout(Duration::from_secs(10))
+    .keep_alive_interval(Duration::from_secs(30))
+    .keep_alive_while_idle(true)
+    .connect_tls(uri, tls_config)
+    .await?;
+```
+
+The builder proxies hyper's HTTP/2 keep-alive and flow-control knobs
+(`keep_alive_interval`, `keep_alive_timeout`, `keep_alive_while_idle`,
+`initial_stream_window_size`, `initial_connection_window_size`,
+`adaptive_window`) with a Tokio timer already wired up, and `h2_settings(|b| ...)`
+exposes the underlying hyper builder for anything not surfaced directly.
+
+On a multi-homed host, `local_address(IpAddr)` binds the connector's socket to
+one of the host's addresses before connecting, so the connection and every
+reconnect originate from there. Resolved peer addresses are filtered to that
+address family, so a peer with no address of that family fails to connect rather
+than quietly connecting from a kernel-chosen source.
+
+### Connection establishment bounds
+
+Both transports bound connection establishment by default: a 20 second
+wall-clock budget on the whole DNS, TCP, and TLS chain, plus an additional 5
+second per-address TCP bound. Exceeding either surfaces as
+`ErrorCode::Unavailable`, so a server that accepts the TCP connection but stalls
+the TLS handshake cannot park `poll_ready` indefinitely.
+
+Adjust them through `builder()`, or chain
+`.no_establishment_timeout().no_tcp_connect_timeout()` to opt out entirely.
+
+## Client-wide defaults
+
+`ClientConfig` carries the base URI plus the defaults that apply to every call
+made through that client. Use it for cross-cutting concerns like authentication
+headers or a baseline timeout:
+
+```rust
+use connectrpc::client::ClientConfig;
+
+let config = ClientConfig::new("http://localhost:8080".parse()?)
+    .with_default_timeout(Duration::from_secs(30))
+    .with_default_header("authorization", "Bearer demo-token")
+    .with_default_header("x-trace-id", "trace-12345");
+```
+
+The plain generated method picks these up automatically, so there's nothing to
+repeat at each call site.
+
+### Choosing a protocol and codec
+
+Clients speak the Connect protocol with binary Protobuf by default. Both are
+configurable:
+
+```rust
+use connectrpc::{CodecFormat, Protocol};
+
+let config = ClientConfig::new(uri)
+    .with_protocol(Protocol::Grpc)   // or Protocol::GrpcWeb
+    .with_codec_format(CodecFormat::Json);
+```
+
+`ClientConfig::json()` and `ClientConfig::proto()` are shorthands for the codec.
+The `json()` shorthand is removed from the API entirely in a
+[proto-only build](/docs/rust/generating-code/#proto-only-builds), so JSON can't
+be selected by accident.
+
+## Per-call options
+
+Every generated method has a `_with_options` sibling that takes `CallOptions`:
+
+```rust
+use connectrpc::client::CallOptions;
+
+let res = client
+    .greet_with_options(
+        GreetRequest { name: "Jane".into(), ..Default::default() },
+        CallOptions::default()
+            .with_timeout(Duration::from_secs(5))
+            .with_header("x-request-id", request_id)
+            .with_max_message_size(1024 * 1024),
+    )
+    .await?;
+```
+
+Per-call options replace config defaults for the fields they set, and leave the
+rest alone. In the call above the five second timeout wins, but the
+`authorization` header from `ClientConfig` still applies.
+
+`CallOptions` covers `with_timeout`, `with_header` and `with_headers`,
+`with_max_message_size`, and `with_compress`.
+
+## Reading the response
+
+A unary response gives you four access patterns, with different ownership and
+metadata trade-offs:
+
+```rust
+let res = client.greet(req).await?;
+
+// 1. Borrow the view. `.greeting` is a &str borrowed from the response
+//    buffer, and the handle keeps headers and trailers available.
+println!("{}", res.view().greeting);
+let _ = res.headers();
+let _ = res.trailers();
+
+// 2. Consume into the OwnedView. Still borrows its string and bytes fields,
+//    read through .reborrow(), but discards headers and trailers.
+let msg = client.greet(req).await?.into_view();
+let greeting: &str = msg.reborrow().greeting;
+
+// 3. The owned struct, copying the borrowed string and bytes fields.
+let owned: GreetResponse = client.greet(req).await?.into_owned();
+
+// 4. The owned struct plus metadata.
+let (headers, owned, trailers) = client.greet(req).await?.into_owned_parts();
+```
+
+Errors come back as `ConnectError` regardless of which protocol the client is
+speaking. See [Errors](/docs/rust/errors/).
+
+## Streaming calls
+
+Streaming RPCs get the same generated method treatment, returning a stream
+handle rather than a single response. See [Streaming](/docs/rust/streaming/) for
+the full set of patterns.
+
+## Custom transports
+
+Generated clients are generic over `ClientTransport`. `HttpClient` implements it,
+and so does `SharedHttp2Connection`, the `Clone`-able handle returned by
+`Http2Connection::shared`. The raw `Http2Connection` does not: it is `!Clone` by
+design, since one value tracks one connection, and `shared` is what wraps it in a
+buffer so it can be cloned and shared. So a single HTTP/2 connection becomes a
+transport once you call `shared`:
+
+```rust
+use connectrpc::client::Http2Connection;
+
+let conn = Http2Connection::connect_plaintext(uri).await?.shared(1024);
+let client = GreetServiceClient::new(conn, config);
+```
+
+To put a Tower stack in front, wrap it in `ServiceTransport`, which adapts any
+`tower::Service` taking `http::Request<ClientBody>` and returning an
+`http::Response`. One bound is easy to trip over: the service's error type has to
+be a concrete `std::error::Error`, and most Tower layers box theirs into
+`BoxError`, which is unsized and so does not qualify. Map it back to a concrete
+type at the top of the stack:
+
+```rust
+use connectrpc::client::{Http2Connection, ServiceTransport};
+use connectrpc::ConnectError;
+use tower::{BoxError, ServiceBuilder};
+
+let conn = Http2Connection::connect_plaintext(uri).await?.shared(1024);
+let stacked = ServiceBuilder::new()
+    .map_err(|e: BoxError| ConnectError::unavailable(e.to_string()))
+    .layer(tower::limit::ConcurrencyLimitLayer::new(16))
+    .service(conn);
+
+let client = GreetServiceClient::new(ServiceTransport::new(stacked), config);
+```
+
+This is also how clients work in the browser. The core crate compiles for
+`wasm32-unknown-unknown`, and because the transport is a parameter, the same
+generated client runs against a `web-sys::fetch` transport there. The
+`client`, `server`, and `tls` features need platform networking and `zstd`
+needs a C toolchain, so a wasm build turns them off:
+
+```toml
+connectrpc = { version = "0.8", default-features = false, features = ["gzip"] }
+```
+
+The [`wasm-client` example][wasm-example] has a complete fetch-based transport.
+
+[wasm-example]: https://github.com/connectrpc/connect-rust/tree/main/examples/wasm-client

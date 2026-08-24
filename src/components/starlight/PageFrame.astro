@@ -104,7 +104,9 @@ const { hasSidebar } = Astro.locals.starlightRoute;
      * splash and docs pages. The negative-margin breakout pulls the box
      * edges out to 100vw; inner padding stays at the standard nav pad.
      * When the page is narrower than 100vw, `50vw - 50%` evaluates to 0,
-     * so the rule is a no-op and matches the un-centered layout. */
+     * so the rule is a no-op and matches the un-centered layout.
+     * `100vw` counts the scrollbar gutter; `html { overflow-x: clip }` in
+     * custom.css absorbs the overhang. */
     .header {
       grid-column: 1 / -1;
       z-index: var(--sl-z-index-navbar);
