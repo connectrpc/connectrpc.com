@@ -66,17 +66,6 @@ It emits zero-copy view types, so `string` and `bytes` fields borrow out of the
 request buffer instead of being copied into owned `String`s, and `serde` backs
 the JSON codec.
 
-:::caution[Keep `buffa` in step with `connectrpc`]
-Generated code has to compile against the same `buffa` your `connectrpc` release
-was built against: `connectrpc` 0.9 pairs with `buffa` 0.9. The floor is hard,
-not a preference, because buffa 0.9 widened its size arithmetic, so code emitted
-by a 0.8 generator will not compile against it. A mismatch resolves two
-semver-incompatible copies into the graph and your generated types fail the
-runtime's trait bounds, ending in `note: there are multiple different versions of
-crate buffa in the dependency graph`. `cargo tree -i buffa` should list exactly
-one version, and upgrading means regenerating.
-:::
-
 ## Define the schema
 
 ```shellsession
