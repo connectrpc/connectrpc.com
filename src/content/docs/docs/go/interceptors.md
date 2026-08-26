@@ -36,39 +36,31 @@ Most unary interceptors are best implemented as a `UnaryInterceptorFunc`.
 
 ## An example
 
-That's a little abstract, so let's consider an example: we'd like to apply a
-simple header-based authentication scheme to our RPCs. We could add this logic
-to each method on our server, but it's less error-prone to write an interceptor
-instead.
+That's a little abstract, so let's consider an example: we'd like to log every
+RPC. We could add logging to each method on our server, but it's less
+error-prone to write an interceptor instead.
 
 ```go
 package example
 
 import (
 	"context"
-	"errors"
+	"log/slog"
 
 	"connectrpc.com/connect"
 )
 
-const tokenHeader = "Acme-Token"
-
-func NewAuthInterceptor() connect.UnaryInterceptorFunc {
+func NewLoggingInterceptor() connect.UnaryInterceptorFunc {
 	return func(next connect.UnaryFunc) connect.UnaryFunc {
 		return func(
 			ctx context.Context,
 			req connect.AnyRequest,
 		) (connect.AnyResponse, error) {
-			if req.Spec().IsClient {
-				// Send a token with client requests.
-				req.Header().Set(tokenHeader, "sample")
-			} else if req.Header().Get(tokenHeader) == "" {
-				// Check token in handlers.
-				return nil, connect.NewError(
-					connect.CodeUnauthenticated,
-					errors.New("no token provided"),
-				)
-			}
+			spec := req.Spec()
+			slog.InfoContext(ctx, "rpc",
+				"procedure", spec.Procedure,
+				"is_client", spec.IsClient,
+			)
 			return next(ctx, req)
 		}
 	}
@@ -81,7 +73,7 @@ To apply our new interceptor to handlers or clients, we can use
 ```go
 // For handlers:
 interceptors := connect.WithInterceptors(
-	NewAuthInterceptor(),
+	NewLoggingInterceptor(),
 	validate.NewInterceptor(),
 )
 mux := http.NewServeMux()
@@ -96,6 +88,16 @@ mux.Handle(greetv1connect.NewGreetServiceHandler(
 client := greetv1connect.NewGreetServiceClient(
 	http.DefaultClient,
 	"http://localhost:8080",
-	connect.WithInterceptors(NewAuthInterceptor()),
+	connect.WithInterceptors(NewLoggingInterceptor()),
 )
 ```
+
+## Authentication
+
+Don't use interceptors to authenticate requests on the server. Handlers run
+unary interceptors _after_ the request message has been read, decompressed, and
+unmarshaled. An interceptor-based check lets unauthenticated clients consume
+memory and CPU on your server. Instead, authenticate at the HTTP layer with
+standard `net/http` middleware, which runs before Connect reads the request
+body. The [authn-go](https://github.com/connectrpc/authn-go) package provides
+authentication middleware designed for Connect servers.
