@@ -7,10 +7,10 @@ or middleware you may have seen in other libraries. Interceptors may
 mutate the request and response, catch errors and retry/recover, emit
 logs, or do nearly anything else.
 
-For a simple example, this interceptor logs all requests:
+For a simple example, this interceptor logs every RPC:
 
 ```ts
-import { Interceptor } from "@connectrpc/connect";
+import type { Interceptor } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
 
 const logger: Interceptor = (next) => async (req) => {
@@ -72,59 +72,33 @@ async function* logEach(stream: AsyncIterable<any>) {
 
 ## Context values
 
-Context values are a type safe way to pass arbitrary values from the call site or from one interceptor to the next. You can use `createContextValues` function to create a new `ContextValues`. The `contextValues` call option can be used to provide a `ContextValues` instance for each request.
+Context values are a type safe way to attach arbitrary values to a call, and share them with interceptors through the full request/response cycle. They can be used to modify interceptor behavior from the call site.
 
-`ContextValues` has methods to set, get, and delete values. The keys are `ContextKey` objects:
-
-### Context Keys
-
-`ContextKey` is a type safe and collision free way to use context values. It is defined using `createContextKey` function which takes a default value and returns a `ContextKey` object. The default value is used when the context value is not set.
+The `ContextValues` type is a map-like object with methods to set, get, and delete values:
 
 ```ts
+import { createContextValues, type ContextValues } from "@connectrpc/connect";
 import { createContextKey } from "@connectrpc/connect";
 
-type User = { name: string };
+const key = createContextKey("default value");
 
-const kUser = createContextKey<User>(
-  { name: "Anonymous" }, // Default value
-  {
-    description: "Current user", // Description useful for debugging
-  },
-);
-
-export { kUser };
+const values: ContextValues = createContextValues();
+values.get(key); // "default value"
+values.set(key, "custom value");
 ```
 
-For values where a default doesn't make sense you can just modify the type:
+The keys are `ContextKey` objects, and enable type safe and collision-free use of context values. They carry a default value that is used when the context value is not set, and an optional description that's helpful for debugging.
 
-```ts
-import { createContextKey } from "@connectrpc/connect";
-
-type User = { name: string };
-
-const kUser = createContextKey<User | undefined>(undefined, {
-  description: "Authenticated user",
-});
-
-export { kUser };
-```
-
-It is best to define context keys in a separate file and export them. This is better for code splitting and also avoids circular imports. This also helps in the case where the provider changes based on the environment.
-
-### Example
-
-Let's say you want to log the response body. But you don't want to do it for every request. You only want to do it from a specific component. You can use context values to achieve this.
+As a practical example of context values, let's say that you have implemented the logging interceptor from the top of the page, but you don't want to log the response messages for every request. You only want to do it from a specific component. You can use context values to achieve this.
 
 First create a context key in `log-body-context.ts`:
 
 ```ts
 import { createContextKey } from "@connectrpc/connect";
 
-const kLogBody = createContextKey<boolean>(false, {
+export const kLogBody = createContextKey<boolean>(false, {
   description: "Log request/response body",
 });
-
-export { kLogBody };
 ```
 
 Then in your interceptor, check the context value:
@@ -137,7 +111,7 @@ const logger: Interceptor = (next) => async (req) => {
   console.log(`sending message to ${req.url}`);
   const res = await next(req);
   if (!res.stream && req.contextValues.get(kLogBody)) {
-    console.log("message:", res.message);
+    // log response messages here
   }
   return res;
 };
@@ -146,8 +120,12 @@ const logger: Interceptor = (next) => async (req) => {
 Then in your component, set the context value:
 
 ```ts
+import { createContextValues } from "@connectrpc/connect";
 import { kLogBody } from "./log-body-context";
 import { elizaClient } from "./eliza-client";
 
-const res = elizaClient.say({ sentence: "Hey!" }, { contextValues: createContextValues().set(kLogBody, true) });
+const res = elizaClient.say(
+  { sentence: "Hey!" },
+  { contextValues: createContextValues().set(kLogBody, true) },
+);
 ```

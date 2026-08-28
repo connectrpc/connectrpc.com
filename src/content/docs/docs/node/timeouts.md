@@ -22,7 +22,7 @@ The signal can be passed to other functions or used to gracefully stop processes
 RPC returns. Using `signal` works for any operation you might want to call as long as the API supports it.
 
 ```ts
-import type { HandlerContext } from "@bufbuild/connect";
+import type { HandlerContext } from "@connectrpc/connect";
 
 const say = async (req: SayRequest, ctx: HandlerContext) => {
 
@@ -49,7 +49,7 @@ aware of the deadline, regardless of network issues. In gRPC, the concept is als
 known as [deadline propagation](https://grpc.io/docs/guides/deadlines/#deadline-propagation).
 
 ```ts
-import type { HandlerContext } from "@bufbuild/connect";
+import type { HandlerContext } from "@connectrpc/connect";
 
 const say = async (req: SayRequest, ctx: HandlerContext) => {
 
@@ -63,9 +63,7 @@ const say = async (req: SayRequest, ctx: HandlerContext) => {
 };
 ```
 
-In addition to server-side support for timeouts, there is also a related option on `ConnectRouter`
-that helps constraining timeout values: `maxTimeoutMs`. For an explanation of this option,
-see the docs on [Server Plugins](server-plugins#common-options)
+In addition to server-side support for timeouts, there is also a related option on `ConnectRouter` to constrain timeout values: `maxTimeoutMs`. If a client requests a timeout that is greater than `maxTimeoutMs`, the server responds with the error code `invalid_argument`.
 
 Also note that while this page discusses timeouts in the context of a server, Connect-ES clients
 honor timeout values and will raise a `ConnectError` with code `DeadlineExceeded`. Even if a connection
