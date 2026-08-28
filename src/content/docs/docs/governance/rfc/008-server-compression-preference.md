@@ -1,5 +1,5 @@
 ---
-title: "008: Use server preference for compression priority"
+title: "008: Server compression preference"
 ---
 
 This RFC proposes amending the Connect protocol to have servers define the
