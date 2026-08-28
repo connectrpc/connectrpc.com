@@ -16,7 +16,7 @@ impact.
 
 The compression algorithm to use for a request is determined by two factors
 
-- The compression methods supported by a server
+- The compression methods supported by a server, configured by the user
 - The list of compressions in the client's `Accept-Encoding` header, e.g., `gzip, br, zstd`
 
 Currently, it is the order in the `Accept-Encoding` header that determines which
