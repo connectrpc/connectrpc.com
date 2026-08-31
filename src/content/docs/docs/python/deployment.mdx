@@ -2,12 +2,14 @@
 title: Deployment
 ---
 
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
 import VersionWarning from './_version-warning.mdx';
 
 <VersionWarning />
 
 After building a Connect service, you still need to deploy it to production. This guide covers how to
-use a Python application server to run a service.
+use a Python application server to run a service, configure message size limits, and enable CORS.
 
 ## Application Servers
 
@@ -41,6 +43,49 @@ very new and needs more time with real-world applications to verify stability.
 
 Keep the above in mind when picking an HTTP/2 server and let us know how it goes if you give any a try.
 When in doubt, if you do not use bidirectional streaming, we recommend one of the HTTP/1.1 servers.
+
+## Message size limits
+
+By default, Connect limits the size of messages to 4MB, so a client can't make your server
+buffer an arbitrarily large message in memory. To change the limit, pass `read_max_bytes`
+to the application constructor:
+
+<Tabs syncKey="python-type">
+  <TabItem label="ASGI">
+
+    ```python
+    app = GreetServiceASGIApplication(
+        Greeter(),
+        read_max_bytes=1024 * 1024 * 16,  # 16MB per message
+    )
+    ```
+
+  </TabItem>
+  <TabItem label="WSGI">
+
+    ```python
+    app = GreetServiceWSGIApplication(
+        Greeter(),
+        read_max_bytes=1024 * 1024 * 16,  # 16MB per message
+    )
+    ```
+
+  </TabItem>
+</Tabs>
+
+The limit applies to each message, both as read from the network and after decompression.
+Messages over the limit fail with `Code.RESOURCE_EXHAUSTED`.
+
+Because streaming RPCs exchange many messages, `read_max_bytes` bounds each message but not
+the stream as a whole. To also bound the total number of bytes read from the network, wrap
+the application with ASGI or WSGI middleware such as Starlette's
+[`RequestBodyLimitMiddleware`](https://www.starlette.io/middleware/#requestbodylimitmiddleware):
+
+```python
+from starlette.middleware.body_limit import RequestBodyLimitMiddleware
+
+app = RequestBodyLimitMiddleware(app, max_body_size=1024 * 1024 * 32)  # 32MB per request
+```
 
 ## CORS
 
