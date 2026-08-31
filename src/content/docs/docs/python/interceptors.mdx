@@ -224,7 +224,7 @@ An interceptor timing each RPC and logging its duration may look like this:
 
         async def on_end[REQ, RES](self, start: float, ctx: RequestContext[REQ, RES], error: Exception | None) -> None:
             duration = time.perf_counter() - start
-            logger.info("%s took %.3fs", ctx.method().name, duration)
+            logger.info("%s took %.3fs", ctx.method.name, duration)
     ```
 
   </TabItem>
