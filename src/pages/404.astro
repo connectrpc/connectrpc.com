@@ -1,0 +1,68 @@
+---
+// Copyright 2021-2026 The Connect Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
+---
+
+<StarlightPage
+  frontmatter={{ title: "Page not found", template: "splash", tableOfContents: false }}
+  headings={[]}
+>
+  <div class="not-content not-found">
+    <h1>Page not found</h1>
+    <p>The page you’re looking for has moved or doesn’t exist.</p>
+    <p>
+      Try the <a href="/docs/introduction/">documentation</a>, or use the
+      search above (<kbd>⌘K</kbd>) to find what you’re after.
+    </p>
+  </div>
+</StarlightPage>
+
+<script is:inline>
+  // Track 404 hits via Fathom so we can identify broken links over time.
+  window.addEventListener("load", function () {
+    if (
+      typeof fathom !== "undefined" &&
+      window.location.host === "connectrpc.com"
+    ) {
+      fathom.trackEvent("404 " + window.location.pathname);
+    }
+  });
+</script>
+
+<style>
+  .not-found {
+    max-width: 40rem;
+    margin-inline: auto;
+    padding-block: 4rem;
+    text-align: center;
+  }
+  .not-found h1 {
+    font-size: var(--sl-text-h1);
+    margin-bottom: 1.5rem;
+  }
+  .not-found p {
+    margin-bottom: 1rem;
+    color: var(--sl-color-text);
+  }
+  .not-found kbd {
+    background: var(--sl-color-bg-sidebar);
+    border: 1px solid var(--sl-color-hairline);
+    border-radius: 3px;
+    padding: 0.1em 0.4em;
+    font-family: var(--sl-font-mono);
+    font-size: 0.9em;
+  }
+</style>

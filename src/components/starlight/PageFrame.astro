@@ -1,0 +1,234 @@
+---
+// Copyright 2021-2026 The Connect Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// Custom PageFrame override modeled on protovalidate.com: lays out the page
+// with CSS Grid (sidebar / main / footer) and switches the sidebar pane from
+// position:fixed to position:sticky so it scrolls naturally with the page,
+// terminating above the footer without needing JavaScript.
+import MobileMenuToggle from "virtual:starlight/components/MobileMenuToggle";
+import SiteFooter from "./SiteFooter.astro";
+
+const { hasSidebar } = Astro.locals.starlightRoute;
+---
+
+<div class="page">
+  <header class="header"><slot name="header" /></header>
+  {
+    hasSidebar && (
+      <nav
+        class="sidebar print:hidden"
+        aria-label={Astro.locals.t("sidebarNav.accessibleLabel")}
+      >
+        <MobileMenuToggle />
+        <div id="starlight__sidebar" class="sidebar-pane">
+          <div class="sidebar-content sl-flex">
+            <slot name="sidebar" />
+          </div>
+        </div>
+      </nav>
+    )
+  }
+  <div class="main-frame"><slot /></div>
+  <SiteFooter />
+</div>
+
+<script is:inline>
+  // Keep the active right-rail TOC link in view as the page scrolls.
+  // Starlight's <starlight-toc> sets aria-current="true" on the link that
+  // matches the heading currently in view; we observe that attribute and
+  // scroll the TOC pane so the active link is visible.
+  (function () {
+    function track() {
+      document.querySelectorAll(".right-sidebar-panel starlight-toc").forEach((toc) => {
+        if (toc.dataset.followScroll) return;
+        toc.dataset.followScroll = "1";
+        const scrollIntoToc = (link) => {
+          if (!link) return;
+          // Use the TOC pane as the scroll container, not the whole window.
+          link.scrollIntoView({ block: "nearest", inline: "nearest" });
+        };
+        const obs = new MutationObserver((mutations) => {
+          for (const m of mutations) {
+            if (m.attributeName !== "aria-current") continue;
+            if (m.target.getAttribute("aria-current") === "true") {
+              scrollIntoToc(m.target);
+            }
+          }
+        });
+        toc.querySelectorAll("a").forEach((a) =>
+          obs.observe(a, { attributes: true, attributeFilter: ["aria-current"] }),
+        );
+        // Scroll to the currently-active link on initial load.
+        scrollIntoToc(toc.querySelector('a[aria-current="true"]'));
+      });
+    }
+    document.addEventListener("DOMContentLoaded", track);
+    document.addEventListener("astro:page-load", track);
+  })();
+</script>
+
+<style>
+  @layer starlight.core {
+    /* Grid layout: header full-width, sidebar+main side-by-side, footer
+     * full-width below. The sidebar nav fills its grid cell vertically,
+     * giving its sticky child a natural container to terminate against.
+     *
+     * `.page` is constrained to a centered max-width so on wide viewports
+     * the sidebar/content/TOC stay within a readable column rather than
+     * stretching edge-to-edge. The header keeps a full-viewport background
+     * via the negative-margin breakout pattern below. Splash pages opt out
+     * via the `.page:not(:has(> .sidebar))` rule further down. */
+    .page {
+      display: grid;
+      grid-template-columns: var(--sl-sidebar-width) 1fr;
+      grid-template-rows: auto 1fr auto;
+      min-height: 100vh;
+      max-width: 90rem;
+      margin-inline: auto;
+    }
+
+    /* Header: sticky inside the centered grid, but its box spans the full
+     * viewport so logo/nav/search align edge-to-edge consistently across
+     * splash and docs pages. The negative-margin breakout pulls the box
+     * edges out to 100vw; inner padding stays at the standard nav pad.
+     * When the page is narrower than 100vw, `50vw - 50%` evaluates to 0,
+     * so the rule is a no-op and matches the un-centered layout. */
+    .header {
+      grid-column: 1 / -1;
+      z-index: var(--sl-z-index-navbar);
+      position: sticky;
+      top: 0;
+      height: var(--sl-nav-height);
+      border-bottom: 1px solid var(--sl-color-hairline-shade);
+      background-color: var(--sl-color-bg-nav);
+      padding: var(--sl-nav-pad-y) var(--sl-nav-pad-x);
+      width: 100vw;
+      margin-inline: calc(-50vw + 50%);
+    }
+
+    .sidebar {
+      grid-column: 1;
+      grid-row: 2;
+    }
+
+    .main-frame {
+      grid-column: 2;
+      grid-row: 2;
+      /* Allow the grid column to shrink below its content min-width
+       * (default `auto` aka min-content) so long URLs or code blocks
+       * don't force the column wider than 1fr and push the page sideways. */
+      min-width: 0;
+      /* Reserve space for the fixed-position MobileTableOfContents bar
+       * that Starlight renders below the header at md-to-lg widths. The
+       * variable is 0 above the lg breakpoint where the right-rail TOC
+       * takes over, so no spacing is added on wide viewports. */
+      padding-top: var(--sl-mobile-toc-height);
+    }
+
+    /* SiteFooter spans both columns in row 3 below the sidebar / content. */
+    .page > :global(.site-footer) {
+      grid-column: 1 / -1;
+      grid-row: 3;
+    }
+
+    /* Sticky sidebar pane: stays at the top during scroll, then scrolls up
+     * with the rest once the nav grid cell's bottom edge is reached
+     * (immediately above the footer row). Use the body bg variable so the
+     * sidebar visually matches the surrounding page in both themes; the
+     * explicit bg also anchors the pane against flicker during the brief
+     * dark→light theme switch that StarlightThemeProvider performs after
+     * paint. The inline-end hairline marks the column boundary. */
+    .sidebar-pane {
+      visibility: var(--sl-sidebar-visibility, hidden);
+      position: sticky;
+      top: var(--sl-nav-height);
+      width: 100%;
+      height: calc(100vh - var(--sl-nav-height));
+      background-color: var(--sl-color-bg);
+      border-inline-end: 1px solid var(--sl-color-hairline-shade);
+      overflow-y: auto;
+    }
+
+    /* Mobile sidebar drawer: positioned absolutely for off-canvas behaviour. */
+    @media (max-width: 50rem) {
+      .sidebar-pane {
+        visibility: var(--sl-sidebar-visibility, hidden);
+        position: fixed;
+        z-index: var(--sl-z-index-menu);
+        inset-block: var(--sl-nav-height) 0;
+        inset-inline-start: 0;
+        height: auto;
+        background-color: var(--sl-color-black);
+        border-inline-end: none;
+      }
+      :global([aria-expanded="true"]) ~ .sidebar-pane {
+        --sl-sidebar-visibility: visible;
+      }
+      .sidebar,
+      .main-frame {
+        grid-column: 1 / -1;
+      }
+      .page {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (min-width: 50rem) {
+      .sidebar-pane {
+        --sl-sidebar-visibility: visible;
+      }
+    }
+
+    .sidebar-content {
+      height: 100%;
+      min-height: max-content;
+      padding: 1rem var(--sl-sidebar-pad-x) 0;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    @media (min-width: 50rem) {
+      .sidebar-content::after {
+        content: "";
+        padding-bottom: 1px;
+      }
+    }
+
+    /* On layouts without a sidebar, main spans both columns. Splash pages
+     * also opt out of the centered max-width so their full-bleed sections
+     * (see custom.css `html:not([data-has-sidebar]) .sl-container`) can
+     * extend to the viewport edges. */
+    .page:not(:has(> .sidebar)) {
+      grid-template-columns: 1fr;
+      max-width: none;
+    }
+    .page:not(:has(> .sidebar)) .main-frame {
+      grid-column: 1 / -1;
+    }
+  }
+
+  /* Mirror the sticky pattern on the right-rail TOC so it also terminates
+   * above the footer. Only active at the lg breakpoint where Starlight
+   * actually shows the TOC column; below that, the TOC is hidden and the
+   * right-sidebar wrapper must not occupy layout space. */
+  @media (min-width: 72rem) {
+    :global(.right-sidebar) {
+      position: sticky !important;
+      top: var(--sl-nav-height) !important;
+      height: calc(100vh - var(--sl-nav-height)) !important;
+      overflow-y: auto;
+    }
+  }
+</style>

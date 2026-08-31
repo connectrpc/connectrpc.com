@@ -1,0 +1,218 @@
+---
+title: Getting started
+description: "Generate a Connect-Kotlin client from a Protobuf schema and call an RPC from a tiny JVM application."
+---
+
+Connect-Kotlin generates type-safe, idiomatic Kotlin clients from
+[Protobuf][protobuf] schemas. This quickstart builds a small JVM program that
+chats with [ELIZA](https://en.wikipedia.org/wiki/ELIZA), a natural-language
+processor that runs at [demo.connectrpc.com](https://connectrpc.com/demo).
+
+:::tip[Building an Android app?]
+See the [Android example](/docs/kotlin/android-example/) for a full
+Android Studio walkthrough.
+:::
+
+## Prerequisites
+
+- JDK 17 or later (Connect-Kotlin supports JDK 8+).
+- [Gradle](https://gradle.org/install/) installed and on `$PATH`.
+- The [Buf CLI][buf-cli] installed and on `$PATH`.
+
+## Define a service
+
+The directory layout must match the Protobuf package, so:
+
+```shellsession
+$ mkdir -p proto/connectrpc/eliza/v1
+$ touch proto/connectrpc/eliza/v1/eliza.proto
+```
+
+```protobuf title="proto/connectrpc/eliza/v1/eliza.proto"
+syntax = "proto3";
+
+package connectrpc.eliza.v1;
+
+message SayRequest {
+  string sentence = 1;
+}
+
+message SayResponse {
+  string sentence = 1;
+}
+
+service ElizaService {
+  rpc Say(SayRequest) returns (SayResponse) {}
+}
+```
+
+`ElizaService` defines a single unary RPC, `Say`, that takes a `SayRequest`
+and returns a `SayResponse`.
+
+## Generate code
+
+Scaffold a `buf.yaml` with `buf config init`, then edit it to add the `proto`
+module:
+
+```yaml title="buf.yaml" ins={3-4}
+# For details on buf.yaml configuration, visit https://buf.build/docs/configuration/v2/buf-yaml
+version: v2
+modules:
+  - path: proto
+lint:
+  use:
+    - STANDARD
+breaking:
+  use:
+    - FILE
+```
+
+Create `buf.gen.yaml` to tell Buf which plugins to run:
+
+```yaml title="buf.gen.yaml"
+# For details on buf.gen.yaml configuration, visit https://buf.build/docs/configuration/v2/buf-gen-yaml
+version: v2
+managed:
+  enabled: true
+plugins:
+  - remote: buf.build/protocolbuffers/java:v34.0
+    out: src/main/java
+    opt: lite
+  - remote: buf.build/protocolbuffers/kotlin:v34.0
+    out: src/main/java
+    opt: lite
+  - remote: buf.build/connectrpc/kotlin:v0.8.0
+    out: src/main/java
+```
+
+Generate the code:
+
+```shellsession
+$ buf lint
+$ buf generate
+```
+
+You should now have generated files under
+`src/main/java/com/connectrpc/eliza/v1/`.
+
+## Set up Gradle
+
+Create `settings.gradle.kts`:
+
+```kotlin title="settings.gradle.kts"
+rootProject.name = "eliza-quickstart"
+```
+
+Create `build.gradle.kts`:
+
+```kotlin title="build.gradle.kts"
+plugins {
+    kotlin("jvm") version "2.2.21"
+    application
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation("com.connectrpc:connect-kotlin-okhttp:0.8.0")
+    implementation("com.connectrpc:connect-kotlin-google-javalite-ext:0.8.0")
+    implementation("com.google.protobuf:protobuf-javalite:4.34.0")
+    implementation("com.google.protobuf:protobuf-kotlin-lite:4.34.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+}
+
+application {
+    mainClass.set("com.example.eliza.MainKt")
+}
+
+tasks.named<JavaExec>("run") {
+    // Forward stdin to the app (only needed for interactive runs).
+    standardInput = System.`in`
+}
+```
+
+## Talk to Eliza
+
+Create `src/main/kotlin/com/example/eliza/Main.kt`:
+
+```kotlin title="src/main/kotlin/com/example/eliza/Main.kt"
+package com.example.eliza
+
+import com.connectrpc.ProtocolClientConfig
+import com.connectrpc.eliza.v1.ElizaServiceClient
+import com.connectrpc.eliza.v1.sayRequest
+import com.connectrpc.extensions.GoogleJavaLiteProtobufStrategy
+import com.connectrpc.impl.ProtocolClient
+import com.connectrpc.okhttp.ConnectOkHttpClient
+import com.connectrpc.protocols.NetworkProtocol
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import okhttp3.OkHttpClient
+
+fun main() = runBlocking {
+    val okHttp = OkHttpClient()
+    val client = ProtocolClient(
+        httpClient = ConnectOkHttpClient(okHttp),
+        ProtocolClientConfig(
+            host = "https://demo.connectrpc.com",
+            serializationStrategy = GoogleJavaLiteProtobufStrategy(),
+            networkProtocol = NetworkProtocol.CONNECT,
+            ioCoroutineContext = Dispatchers.IO,
+        ),
+    )
+    val eliza = ElizaServiceClient(client)
+    try {
+        println("Talk to Eliza. Press Ctrl-D or type 'quit' to exit.")
+        while (true) {
+            print("> ")
+            val input = readlnOrNull()?.trim() ?: break
+            if (input.equals("quit", ignoreCase = true)) break
+            if (input.isEmpty()) continue
+            val response = eliza.say(sayRequest { sentence = input })
+            response.success { println("Eliza: ${it.message.sentence}") }
+            response.failure { println("Error: ${it.cause.message}") }
+        }
+    } finally {
+        // Shut down the OkHttp dispatcher so the JVM can exit.
+        okHttp.dispatcher.executorService.shutdown()
+    }
+}
+```
+
+## Run it
+
+```shellsession
+$ gradle run --console=plain -q
+```
+
+`--console=plain -q` keeps Gradle's progress bars out of the chat output.
+Try a prompt:
+
+```text
+Talk to Eliza. Press Ctrl-D or type 'quit' to exit.
+> I had a strange dream last night.
+Eliza: Tell me more about your dream.
+> quit
+```
+
+That's it. You've made an RPC call to a Connect service from a Kotlin
+program.
+
+## More examples
+
+The [Connect-Kotlin repository][more-examples] has more examples, including
+streaming RPCs and integrations with [Google's Java][pgjava-example] and
+[Java lite][pgjavalite-example] Protobuf.
+
+[buf-cli]: https://buf.build/docs/installation
+
+[more-examples]: https://github.com/connectrpc/connect-kotlin/tree/main/examples
+
+[pgjava-example]: https://github.com/connectrpc/connect-kotlin/tree/main/examples/kotlin-google-java
+
+[pgjavalite-example]: https://github.com/connectrpc/connect-kotlin/tree/main/examples/kotlin-google-javalite
+
+[protobuf]: https://developers.google.com/protocol-buffers

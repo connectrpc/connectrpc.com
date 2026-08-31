@@ -1,4 +1,4 @@
-// Copyright 2021-2025 The Connect Authors
+// Copyright 2021-2026 The Connect Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,15 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import React, {
-  ChangeEvent,
-  KeyboardEvent,
-  PropsWithChildren,
+import clsx from "clsx";
+import type React from "react";
+import {
+  type ChangeEvent,
+  type KeyboardEvent,
+  type PropsWithChildren,
   useEffect,
   useRef,
   useState,
 } from "react";
-import clsx from "clsx";
 import styles from "./styles.module.css";
 
 interface TerminalProps {
@@ -42,11 +43,6 @@ export const TerminalHeader: React.FC<TerminalHeaderProps> = ({
 }: PropsWithChildren<TerminalHeaderProps>) => {
   return (
     <div className={clsx(styles.terminalHeaderWrapper)}>
-      <div className={styles.terminalHeaderFakeButtons}>
-        <div className={styles.terminalHeaderFakeButton} />
-        <div className={styles.terminalHeaderFakeButton} />
-        <div className={styles.terminalHeaderFakeButton} />
-      </div>
       <div className={styles.terminalHeaderText}>{children}</div>
     </div>
   );
@@ -66,7 +62,7 @@ export const Terminal: React.FC<TerminalProps> = ({
 
   // Focuses the hidden input
   const handleTerminalFocus = () => {
-    inputRef.current.focus();
+    inputRef.current?.focus();
   };
 
   // Handler for typing into the terminal into the hidden input element
@@ -83,20 +79,26 @@ export const Terminal: React.FC<TerminalProps> = ({
   };
 
   // If focusOnMount is true, focus the terminal input when the component mounts
+  // biome-ignore-start lint/correctness/useExhaustiveDependencies: focusOnMount and handleTerminalFocus are stable
   useEffect(() => {
     if (focusOnMount) {
       handleTerminalFocus();
     }
-  }, []);
+  }, [focusOnMount, handleTerminalFocus]);
+  // biome-ignore-end lint/correctness/useExhaustiveDependencies: focusOnMount and handleTerminalFocus are stable
 
+  // biome-ignore-start lint/correctness/useExhaustiveDependencies: re-scroll whenever the conversation grows
   useEffect(() => {
-    // If the terminal scroll container has a scroll visibile, scroll to the bottom
-    if (terminalRef.current.scrollHeight > terminalRef.current.clientHeight) {
-      terminalRef.current?.scrollTo(0, terminalRef.current?.scrollHeight);
+    const el = terminalRef.current;
+    if (el && el.scrollHeight > el.clientHeight) {
+      el.scrollTo(0, el.scrollHeight);
     }
   }, [conversation]);
+  // biome-ignore-end lint/correctness/useExhaustiveDependencies: re-scroll whenever the conversation grows
 
   return (
+    // biome-ignore lint/a11y/noStaticElementInteractions: interactive terminal container
+    // biome-ignore lint/a11y/useKeyWithClickEvents: click focuses input
     <div className={styles.terminalContainer} onClick={handleTerminalFocus}>
       <TerminalHeader>Connect-Web</TerminalHeader>
       <div className={styles.terminalBody}>
@@ -106,19 +108,20 @@ export const Terminal: React.FC<TerminalProps> = ({
             if (msg.sender === "user") {
               return (
                 <p key={key} className={styles.userText}>
-                  <span className={styles.spacer}></span>
+                  <span className={styles.spacer} />
                   {msg.text}
                 </p>
               );
             }
             return (
               <p key={key} className={styles.elizaText}>
-                <span className={styles.spacer}></span>Eliza: {msg.text}
+                <span className={styles.spacer} />
+                Eliza: {msg.text}
               </p>
             );
           })}
           <div className={styles.prompt}>
-            <span className={styles.spacer}></span>
+            <span className={styles.spacer} />
             <input
               className={styles.inputElement}
               onKeyDown={handleKeyPress}
@@ -126,7 +129,8 @@ export const Terminal: React.FC<TerminalProps> = ({
               value={inputText}
               onChange={handleInputChange}
               type="text"
-            ></input>
+            />
+            {/* biome-ignore-start lint/suspicious/noArrayIndexKey: rendering individual characters */}
             {inputText.split("").map((letter, i) => {
               return (
                 <span key={`inputText${i}`}>
@@ -135,7 +139,8 @@ export const Terminal: React.FC<TerminalProps> = ({
                 </span>
               );
             })}
-            <div className={styles.blinkingCursor}></div>
+            {/* biome-ignore-end lint/suspicious/noArrayIndexKey: rendering individual characters */}
+            <div className={styles.blinkingCursor} />
           </div>
         </div>
       </div>

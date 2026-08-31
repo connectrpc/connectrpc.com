@@ -1,0 +1,102 @@
+.container {
+  position: relative;
+  display: flex;
+  gap: 24px;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 76px;
+  margin-bottom: 170px;
+}
+
+.exampleContainer {
+  display: flex;
+}
+
+.exampleTextContainer {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 30%;
+}
+
+.codeBlockWrapper {
+  width: 70%;
+  /* Restore the subtle upper-right offset shadow the original Docusaurus
+   * home page applied to code blocks. EC's default is a darker
+   * bottom-right drop shadow that looks too heavy on the marketing page. */
+  --ec-frm-frameBoxShdCssVal: 18px -18px 24px rgba(0, 0, 0, 0.02);
+}
+
+.exampleHeader {
+  border-bottom: 1px solid #cbcbde;
+  /* Aligns the bottom border with the adjacent EC terminal title bar. */
+  height: var(--ec-frame-title-height);
+  font-size: 14px;
+  padding-top: 4px;
+  color: #9699b6;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  letter-spacing: 0.08em;
+}
+
+.exampleHeader > span {
+  color: #090a3a;
+}
+
+.exampleText {
+  font-size: 18px;
+  color: #090a3a;
+  margin-bottom: 0;
+}
+
+:root[data-theme="dark"] .exampleHeader {
+  border-bottom-color: #444c56;
+  color: #999999;
+}
+
+:root[data-theme="dark"] .exampleHeader > span {
+  color: #ffffff;
+}
+
+:root[data-theme="dark"] .exampleText {
+  color: #e3e3e3;
+}
+
+.elizaExample {
+  display: flex;
+  align-items: center;
+}
+
+@media screen and (max-width: 966px) {
+  .container {
+    gap: 15px;
+    margin-left: var(--ifm-spacing-horizontal);
+    margin-right: var(--ifm-spacing-horizontal);
+    margin-top: 54px;
+  }
+
+  .exampleContainer {
+    flex-direction: column;
+    gap: 20px;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .exampleTextContainer {
+    align-items: center;
+    text-align: center;
+    max-width: none;
+  }
+
+  .exampleText {
+    font-size: 20px;
+  }
+
+  .codeBlockWrapper {
+    width: 100%;
+  }
+
+  .elizaExample {
+    justify-content: center;
+  }
+}

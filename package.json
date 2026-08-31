@@ -2,69 +2,60 @@
   "name": "connect-docs",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "start": "docusaurus start",
-    "build": "docusaurus build",
-    "clear": "docusaurus clear",
-    "serve": "docusaurus serve",
-    "swizzle": "docusaurus swizzle",
-    "check:types": "tsc --noEmit",
-    "format": "prettier --write './src'",
-    "lint": "eslint .",
-    "lint:fix": "eslint --fix",
-    "write:translations": "docusaurus write-translations",
-    "write:heading-ids": "docusaurus write-heading-ids",
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "clean": "rm -rf dist .astro node_modules/.astro .rumdl_cache",
+    "astro": "astro",
+    "check:types": "astro check && tsc --noEmit",
+    "format": "npm run format:src && npm run format:md",
+    "format:src": "biome format --write .",
+    "format:md": "rumdl fmt .",
+    "lint": "npm run lint:src && npm run lint:md",
+    "lint:src": "biome lint .",
+    "lint:fix": "biome lint --write .",
+    "lint:md": "rumdl check .",
+    "check": "biome check .",
+    "check:fix": "biome check --write .",
     "license-header": "license-header",
-    "ci": "npm run build && npm run format && npm run lint:fix && npm run check:types && npm run license-header",
+    "ci": "npm run build && npm run check:fix && npm run lint:md && npm run check:types && npm run license-header",
     "publish": "npm install && npm run lint && npm run check:types && npm run build"
   },
   "dependencies": {
+    "@astrojs/react": "^6.0.2",
+    "@astrojs/starlight": "^0.41.5",
     "@buf/connectrpc_eliza.bufbuild_es": "^2.2.2-20230913231627-233fca715f49.2",
-    "@bufbuild/protobuf": "^2.10.2",
-    "@connectrpc/connect": "^2.1.1",
-    "@connectrpc/connect-web": "^2.1.1",
-    "@docusaurus/core": "^3.5.2",
-    "@docusaurus/plugin-google-gtag": "^3.5.2",
-    "@docusaurus/preset-classic": "^3.5.2",
-    "@docusaurus/theme-search-algolia": "^3.5.2",
-    "@react-hookz/web": "^25.2.0",
+    "@bufbuild/protobuf": "^2.13.0",
+    "@connectrpc/connect": "^2.1.2",
+    "@connectrpc/connect-web": "^2.1.2",
+    "@fontsource/dm-mono": "^5.3.0",
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/work-sans": "^5.3.0",
+    "@react-hookz/web": "^26.1.0",
+    "astro": "^7.1.6",
     "clsx": "^2.1.1",
-    "prism-react-renderer": "^2.4.1",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "remark-custom-heading-id": "^2.0.0"
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@biomejs/biome": "2.5.6",
     "@bufbuild/license-header": "^0.0.4",
-    "@docusaurus/eslint-plugin": "^3.5.2",
-    "@docusaurus/module-type-aliases": "^3.5.2",
-    "@docusaurus/tsconfig": "^3.9.2",
-    "@types/react": "^18.3.12",
-    "@typescript-eslint/eslint-plugin": "^8.22.0",
-    "@typescript-eslint/parser": "^8.22.0",
-    "eslint": "^8.57.0",
-    "eslint-plugin-jsx-a11y": "^6.10.2",
-    "eslint-plugin-react": "^7.37.4",
-    "prettier": "^3.7.4",
-    "typescript": "^5.8.3"
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.0.0",
+    "rumdl": "^0.2.45",
+    "typescript": "^6.0.3"
   },
   "licenseHeader": {
     "licenseType": "apache",
-    "yearRange": "2021-2025",
+    "yearRange": "2021-2026",
     "copyrightHolder": "The Connect Authors"
   },
-  "browserslist": {
-    "production": [
-      ">0.5%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
   "engines": {
-    "node": ">=18.0"
+    "node": ">=24"
   }
 }

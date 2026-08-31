@@ -1,0 +1,122 @@
+---
+title: Errors
+---
+
+Similar to the familiar "404 Not Found" and "500 Internal Server Error" status
+codes you may have seen in HTTP, Connect uses a set of [16 error codes](/docs/protocol#error-codes).
+In the Connect protocol, an error is always represented as JSON, and is easily
+readable in the developer tools of your browser. For example:
+
+```http
+HTTP/1.1 400 Bad Request
+Content-Type: application/json
+
+{
+  "code": "invalid_argument",
+  "message": "sentence cannot be empty"
+}
+```
+
+With the gRPC-web protocol, errors are usually not human-readable, but
+Connect provides a common type that represents errors consistently across
+all supported protocols.
+
+## Working with errors
+
+All errors are represented by [`ConnectError`](https://github.com/connectrpc/connect-es/blob/1c1dc4cfd300e120d07a486f488d5693139f9dee/packages/connect/src/connect-error.ts#L27), a subtype of the built-in `Error` class. Using a try-catch block, we can catch any error that occurred during a call:
+
+```ts
+import { ConnectError } from "@connectrpc/connect";
+
+try {
+  await client.say({sentence: ""});
+} catch (err) {
+  // We have to verify err is a ConnectError
+  // before using it as one.
+  if (err instanceof ConnectError) {
+    err.code;    // Code.InvalidArgument
+    err.message; // "[invalid_argument] sentence cannot be empty"
+  }
+  // Alternatively, we can use ConnectError.from()
+  // It returns a ConnectError as is, and converts any
+  // other error to a ConnectError.
+  const connectErr = ConnectError.from(err);
+  connectErr.code;    // Code.InvalidArgument
+  connectErr.message; // "[invalid_argument] sentence cannot be empty"
+}
+```
+
+## Error codes
+
+The `code` property holds one of Connect's [error codes](/docs/protocol#error-codes).
+All error codes are available through the TypeScript enumeration [`Code`](https://github.com/connectrpc/connect-es/blob/1c1dc4cfd300e120d07a486f488d5693139f9dee/packages/connect/src/code.ts#L16).
+Note that a code is an integer value, but can easily be converted to and
+from a string value.
+
+```ts
+import { Code } from "@connectrpc/connect";
+
+let code = Code.InvalidArgument;
+code; // 3
+let name = Code[code]; // "InvalidArgument"
+let val: Code = Code["InvalidArgument"]; // 3
+```
+
+## Error messages
+
+The `message` property contains a descriptive error message. In most cases,
+the message is provided by the backend implementing the service. Because
+`message` is the only property that shows up in the browser console for
+uncaught errors, the error message is always prefixed with the error code.
+In case you _do_ want the original error message without a code prefix, use
+the property `rawMessage`.
+
+```ts
+err.message; // "[invalid_argument] sentence cannot be empty"
+if (err.code == Code.InvalidArgument) {
+  err.rawMessage; // "sentence cannot be empty"
+}
+```
+
+## Metadata
+
+If you catch an error, your program takes an exception from the regular code
+path, but you might still want to access a header or trailer value. Connect
+provides a union of header and trailer values in the `metadata` property as a
+simple `Headers` object:
+
+```ts
+err.metadata.get("Custom-Header-Value");
+err.metadata.get("Custom-Trailer-Value");
+```
+
+## Error details
+
+On the wire, error details are wrapped with `google.protobuf.Any`, so that a
+server or middleware can attach arbitrary data to an error. Using the method
+`findDetails()`, you can decode the details from an error. The method takes a
+message schema as an argument, and returns an array of decoded messages of this
+type.
+
+This example looks up a localized error message in the user's preferred
+language:
+
+```ts
+import { ConnectError } from "@connectrpc/connect";
+import { LocalizedMessageSchema } from "./gen/google/rpc/error_details_pb";
+
+function handle(err: ConnectError) {
+  const localized = err.findDetails(LocalizedMessageSchema)
+    .find(i => i.locale === navigator.language);
+  console.log(localized?.message);
+}
+```
+
+We are using the protobuf message [`google.rpc.LocalizedMessage`](https://buf.build/googleapis/googleapis/docs/main:google.rpc#google.rpc.LocalizedMessage)
+in this example - run `npx buf generate buf.build/googleapis/googleapis` to
+generate this message - but any Protobuf message can be transmitted as error
+details.
+
+Alternatively, `findDetails()` takes a registry as an argument. See the
+[Protobuf-ES documentation](https://protobufes.com/reference/reflection/registries/)
+for details.

@@ -1,0 +1,143 @@
+---
+// Copyright 2021-2026 The Connect Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+import { Icon } from "@astrojs/starlight/components";
+
+const label = Astro.locals.t("themeSelect.accessibleLabel");
+---
+
+<connect-theme-toggle>
+  <button
+    type="button"
+    class="theme-toggle"
+    aria-label={label}
+    title={label}
+    data-theme-pref="auto"
+  >
+    <span class="theme-icon theme-icon-auto" aria-hidden="true">
+      <Icon name="laptop" />
+    </span>
+    <span class="theme-icon theme-icon-light" aria-hidden="true">
+      <Icon name="sun" />
+    </span>
+    <span class="theme-icon theme-icon-dark" aria-hidden="true">
+      <Icon name="moon" />
+    </span>
+  </button>
+</connect-theme-toggle>
+
+<script is:inline>
+  // Reflect the persisted preference on the toggle before paint so the
+  // correct icon is visible immediately, avoiding a flash of the default.
+  (() => {
+    const stored =
+      typeof localStorage !== "undefined" &&
+      localStorage.getItem("starlight-theme");
+    const pref = stored === "light" || stored === "dark" ? stored : "auto";
+    for (const el of document.querySelectorAll("connect-theme-toggle button")) {
+      el.dataset.themePref = pref;
+    }
+  })();
+</script>
+
+<script>
+  type Theme = "auto" | "dark" | "light";
+
+  const storageKey = "starlight-theme";
+  const order: readonly Theme[] = ["auto", "light", "dark"];
+
+  const parseTheme = (v: unknown): Theme =>
+    v === "light" || v === "dark" || v === "auto" ? v : "auto";
+
+  const loadTheme = (): Theme =>
+    parseTheme(
+      typeof localStorage !== "undefined"
+        ? localStorage.getItem(storageKey)
+        : null,
+    );
+
+  function storeTheme(theme: Theme): void {
+    if (typeof localStorage === "undefined") return;
+    localStorage.setItem(
+      storageKey,
+      theme === "light" || theme === "dark" ? theme : "",
+    );
+  }
+
+  const getPreferredColorScheme = (): "light" | "dark" =>
+    matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+
+  function applyTheme(theme: Theme): void {
+    document.documentElement.dataset.theme =
+      theme === "auto" ? getPreferredColorScheme() : theme;
+    storeTheme(theme);
+    for (const el of document.querySelectorAll<HTMLButtonElement>(
+      "connect-theme-toggle button",
+    )) {
+      el.dataset.themePref = theme;
+    }
+  }
+
+  matchMedia("(prefers-color-scheme: light)").addEventListener("change", () => {
+    if (loadTheme() === "auto") applyTheme("auto");
+  });
+
+  class ConnectThemeToggle extends HTMLElement {
+    constructor() {
+      super();
+      const button = this.querySelector("button");
+      button?.addEventListener("click", () => {
+        const current = loadTheme();
+        const next = order[(order.indexOf(current) + 1) % order.length];
+        applyTheme(next);
+      });
+    }
+  }
+  customElements.define("connect-theme-toggle", ConnectThemeToggle);
+
+  // Sync initial state in case the inline pre-paint script ran before
+  // additional toggles were inserted (e.g. inside <details> drawers).
+  applyTheme(loadTheme());
+</script>
+
+<style>
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    background: transparent;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 4px;
+    color: var(--sl-color-gray-2);
+    cursor: pointer;
+    line-height: 1;
+  }
+  .theme-toggle:hover {
+    color: var(--sl-color-white);
+  }
+  .theme-icon {
+    display: none;
+    font-size: 1rem;
+    line-height: 0;
+  }
+  .theme-toggle[data-theme-pref="auto"] .theme-icon-auto,
+  .theme-toggle[data-theme-pref="light"] .theme-icon-light,
+  .theme-toggle[data-theme-pref="dark"] .theme-icon-dark {
+    display: inline-flex;
+  }
+</style>

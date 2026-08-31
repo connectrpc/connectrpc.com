@@ -1,0 +1,36 @@
+---
+// Copyright 2021-2026 The Connect Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+import Default from "@astrojs/starlight/components/PageTitle.astro";
+
+// Splash-template pages render their own hero/title in the page body, so
+// the auto-generated Starlight <h1> would just duplicate it. This covers
+// the home page, demo, 404, and any future splash page without needing a
+// hardcoded route list (the 404 page's entry id is the requested URL,
+// so a route-id allowlist can't match it).
+const template = Astro.locals.starlightRoute.entry.data.template;
+const suppress = template === "splash";
+---
+
+{!suppress && <Default {...Astro.props}><slot /></Default>}
+
+<style is:global>
+  /* When PageTitle renders nothing, hide the otherwise-empty content panel
+     Starlight wraps it in to avoid a stray top padding above the slot. */
+  main > .content-panel:first-child:not(:has(h1)) {
+    display: none;
+  }
+</style>
+

@@ -1,0 +1,155 @@
+---
+// Copyright 2021-2026 The Connect Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+import Default from "@astrojs/starlight/components/Head.astro";
+
+// Preload the woff2 subsets used above the fold. The `?url` suffix tells
+// Vite to emit the file and return its hashed URL.
+import dmMonoLatinHref from "@fontsource/dm-mono/files/dm-mono-latin-400-normal.woff2?url";
+import interRegularHref from "@fontsource/inter/files/inter-latin-400-normal.woff2?url";
+import interRegularItalicHref from "@fontsource/inter/files/inter-latin-400-italic.woff2?url";
+import interBoldHref from "@fontsource/inter/files/inter-latin-700-normal.woff2?url";
+import interBoldItalicHref from "@fontsource/inter/files/inter-latin-700-italic.woff2?url";
+
+const publicUrl =
+  Astro.site?.toString().replace(/\/$/, "") ?? "https://connectrpc.com";
+const ogImage = `${publicUrl}/img/og@2x.png`;
+const description = "Simple, reliable, interoperable: Protobuf RPC that works.";
+const gaTrackingID = import.meta.env.PUBLIC_GOOGLE_ANALYTICS_GTAG ?? "";
+
+const jsonLd = {
+  "@context": "https://schema.org/",
+  "@type": "WebSite",
+  name: "Protobuf RPC that works",
+  url: "https://connectrpc.com/",
+};
+---
+
+<Default {...Astro.props}><slot /></Default>
+<link
+  rel="preload"
+  as="font"
+  type="font/woff2"
+  href={dmMonoLatinHref}
+  crossorigin
+/>
+<link
+  rel="preload"
+  as="font"
+  type="font/woff2"
+  href={interRegularHref}
+  crossorigin
+/>
+{/* Static Inter with font-display: optional so cached pageloads use the
+    real font instantly and uncached loads show the system fallback (no
+    mid-render swap). */}
+<style
+  is:global
+  set:html={`
+@font-face {
+  font-family: 'DM Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: optional;
+  src: url('${dmMonoLatinHref}') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: optional;
+  src: url('${interRegularHref}') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: italic;
+  font-weight: 400;
+  font-display: optional;
+  src: url('${interRegularItalicHref}') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: optional;
+  src: url('${interBoldHref}') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: italic;
+  font-weight: 700;
+  font-display: optional;
+  src: url('${interBoldItalicHref}') format('woff2');
+}
+`}
+/>
+<meta property="og:site_name" content="Protobuf RPC that works" />
+<meta property="og:type" content="website" />
+<meta property="og:image" content={ogImage} />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content={ogImage} />
+<meta name="twitter:domain" content={publicUrl.replace(/^https?:\/\//, "")} />
+<meta name="twitter:url" content={publicUrl} />
+<meta name="twitter:title" content="Connect" />
+<meta name="twitter:description" content={description} />
+<script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+<!-- Strip shell prompts and command output from copy buttons inside
+     Expressive Code terminal frames. EC stores the clipboard text in
+     data-code (newlines encoded as \x7F). For terminal frames we keep only
+     lines that start with "$ " (the actual command, with the prompt removed)
+     plus their backslash-continuations.
+     See https://github.com/expressive-code/expressive-code/discussions/372 -->
+<script is:inline>
+  function processTerminalCopyButtons() {
+    document
+      .querySelectorAll('.is-terminal .copy button[data-code]:not([data-processed])')
+      .forEach(function (button) {
+        button.dataset.processed = '';
+        var decoded = button.dataset.code.replace(/\x7f/g, '\n');
+        var commandLines = [];
+        var inContinuation = false;
+        decoded.split('\n').forEach(function (line) {
+          if (/^\s*\$ /.test(line)) {
+            var stripped = line.replace(/^\s*\$ /, '');
+            commandLines.push(stripped);
+            inContinuation = /\\\s*$/.test(stripped);
+          } else if (inContinuation) {
+            commandLines.push(line);
+            inContinuation = /\\\s*$/.test(line);
+          }
+        });
+        button.dataset.code = commandLines.join('\n').replace(/\n/g, '\x7f');
+      });
+  }
+  document.addEventListener('astro:page-load', processTerminalCopyButtons);
+  document.addEventListener('DOMContentLoaded', processTerminalCopyButtons);
+</script>
+{
+  gaTrackingID && (
+    <>
+      <script
+        is:inline
+        async
+        src={`https://www.googletagmanager.com/gtag/js?id=${gaTrackingID}`}
+      />
+      <script is:inline define:vars={{ gaTrackingID }}>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag("js", new Date());
+        gtag("config", gaTrackingID, { anonymize_ip: true });
+      </script>
+    </>
+  )
+}

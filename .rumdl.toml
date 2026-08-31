@@ -1,0 +1,48 @@
+[global]
+disable = [
+  # MD001: Heading levels should only increment by one — some pages intentionally jump levels
+  # (e.g., body content starts at h3 below the Starlight frontmatter title, or h4 subsections
+  # under an h2 with no h3 in between).
+  "MD001",
+  # MD003: Heading style — files use a mix of ATX and setext styles; don't normalize.
+  "MD003",
+  # MD004: Unordered list marker style — files use a mix of * and -; don't normalize.
+  "MD004",
+  # MD013: Line length — docs routinely exceed 80 characters due to URLs, inline code, and
+  # one-sentence-per-line style. Enforcing a hard limit would harm readability.
+  "MD013",
+  # MD014: Flags `$`-prefixed commands in code blocks without output and removes the `$` on
+  # auto-fix. We use `$` consistently as a prompt indicator regardless of output.
+  "MD014",
+  # MD025: Treats frontmatter `title:` as an implicit h1, incorrectly demoting body h1 headings.
+  # Starlight renders the frontmatter title as the page header, separate from any body h1.
+  "MD025",
+  # MD033: Inline HTML — some pages use HTML for custom styling (<br/>, <details>, <summary>)
+  # and MDX components (<Tabs>, <TabItem>, <Aside>) that Markdown can't express.
+  "MD033",
+  # MD034: No bare URLs — the autofix wraps bare URLs in angle brackets, which we don't want
+  # for prose-style links like raw GitHub URLs.
+  "MD034",
+  # MD040: Adds `text` as a language specifier to bare fenced code blocks. This is a content
+  # decision (authors choose whether to specify a language), not a formatting one.
+  "MD040",
+  # MD041: First line in file should be a top-level heading — content pages start with YAML
+  # frontmatter, and partials (files prefixed with `_`) are embedded into other pages so
+  # neither has a leading h1.
+  "MD041",
+  # MD053: Unused link/image reference definitions — cleanup tracked separately from formatting.
+  "MD053",
+  # MD057: Relative link path does not exist — link validity checking is handled separately
+  # on the built site (see src/plugins/remark-link-checker.ts). Duplicating this in source
+  # is noisy.
+  "MD057",
+  # MD059: Link text should be descriptive — some pages intentionally use contextual link text
+  # (e.g., "[here](url)") that reads naturally in prose. This is a content style decision.
+  "MD059",
+]
+
+[code-block-tools]
+enabled = true
+
+[code-block-tools.languages]
+go = { format = ["gofmt"] }

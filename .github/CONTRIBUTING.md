@@ -22,11 +22,11 @@ you to sign your commits when you open your pull request, and provide helpful ti
 
 Most documentation changes only require updating or adding Markdown. Fork, then
 clone the repository, and make your changes locally. If you have Node.js
-installed locally, you can preview your changes with `npm install && npm run
-start`. More complex changes may require consulting the
-[Docusaurus][docusaurus] documentation and understanding [this project's
-component swizzling][swizzling]. When you're satisfied with your changes, [open
-a pull request](https://github.com/connectrpc/connectrpc.com/compare).
+installed locally (you'll need Node.js in the version specified in `.nvmrc`),
+you can preview your changes with `npm install && npm run start`. More complex
+changes may require consulting the [Astro][astro] and [Starlight][starlight]
+documentation. When you're satisfied with your changes, [open a pull
+request](https://github.com/connectrpc/connectrpc.com/compare).
 
 At this point, you're waiting on us to review your changes. We *try* to respond
 to issues and pull requests within a few business days, and we may suggest some
@@ -56,6 +56,6 @@ required work in other repositories can begin.
 [fork]: https://github.com/connectrpc/connectrpc.com/fork
 [open-issue]: https://github.com/connectrpc/connectrpc.com/issues/new
 [dco]: https://developercertificate.org
-[docusaurus]: https://docusaurus.io
+[astro]: https://docs.astro.build
+[starlight]: https://starlight.astro.build
 [vercel]: https://vercel.com
-[swizzling]: https://docusaurus.io/docs/swizzling

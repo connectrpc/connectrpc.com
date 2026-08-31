@@ -1,0 +1,466 @@
+---
+title: Android example
+description: "Build a Connect client for Android with Kotlin. A chat app for the ELIZA service, using OkHttp and Connect-Kotlin."
+---
+
+This tutorial walks through building a full Android chat app for
+[ELIZA](https://en.wikipedia.org/wiki/ELIZA), a classic natural-language
+processor that runs at [demo.connectrpc.com](https://connectrpc.com/demo). If
+you just want to see Connect-Kotlin make a request from a Kotlin program, the
+[Getting started](/docs/kotlin/getting-started/) quickstart is shorter.
+
+The ELIZA service is [implemented using Connect-Go][go-demo] and supports the
+[gRPC][grpc], [gRPC-Web][grpc-web], and [Connect](/docs/protocol/) protocols,
+all of which Connect-Kotlin can talk to.
+
+## Prerequisites
+
+* [Android Studio][android-studio] installed.
+* [The Buf CLI][buf-cli] installed, and included in the `$PATH`.
+* Set up [a virtual device][android-studio-virtual-device] in Android Studio, or
+use a physical device.
+
+## Create a new Android project from Android Studio
+
+Once Android Studio is set up, click **New Project** in the welcome screen and
+walk through the wizard:
+
+import { Image } from 'astro:assets';
+import SelectActivityScreenshot from './android-studio-select-empty-activity.png';
+import NewProjectScreenshot from './android-studio-new-project.png';
+
+1. Under **Phone and Tablet**, select **Empty Views Activity** and click **Next**.<br/>
+<Image src={SelectActivityScreenshot} width="800" alt="Select Empty Views Activity in Android Studio" />
+2. Set **Name** to `Eliza` and **Package name** to `com.example.eliza`. Set
+**Minimum SDK** to `API 28 (Android 9.0)`. Leave the defaults for language
+(Kotlin) and Build configuration language (Kotlin DSL).<br/>
+<Image src={NewProjectScreenshot} width="800" alt="Configure your new Eliza project in Android Studio" />
+3. Click **Finish**.
+
+:::note
+If you keep Android Studio's defaults (`My Application` /
+`com.example.myapplication`), replace `com.example.eliza` with
+`com.example.myapplication` everywhere in the snippets below.
+:::
+
+## Define a service
+
+Add a Protobuf file with the service definition. We'll use a stripped-down
+ELIZA with a single unary RPC. The directory layout must match the Protobuf
+package, so:
+
+```shellsession
+$ mkdir -p proto/connectrpc/eliza/v1
+$ touch proto/connectrpc/eliza/v1/eliza.proto
+```
+
+Open the new file and add the following:
+
+```protobuf title="proto/connectrpc/eliza/v1/eliza.proto"
+syntax = "proto3";
+
+package connectrpc.eliza.v1;
+
+message SayRequest {
+  string sentence = 1;
+}
+
+message SayResponse {
+  string sentence = 1;
+}
+
+service ElizaService {
+  rpc Say(SayRequest) returns (SayResponse) {}
+}
+```
+
+The schema declares one service (`ElizaService`) with one unary RPC (`Say`)
+and the corresponding request/response messages.
+
+## Generate code
+
+Generate the code with [`buf`][buf], a modern replacement for `protoc`.
+Scaffold `buf.yaml` with `buf config init`, then add the `proto` module:
+
+```yaml title="buf.yaml" ins={3-4}
+# For details on buf.yaml configuration, visit https://buf.build/docs/configuration/v2/buf-yaml
+version: v2
+modules:
+  - path: proto
+lint:
+  use:
+    - STANDARD
+breaking:
+  use:
+    - FILE
+```
+
+Define plugins in [`buf.gen.yaml`][buf.gen.yaml]. We use
+[remote plugins][remote-plugins] (a [Buf Schema Registry][bsr] feature) so
+nothing needs to be installed locally:
+
+```yaml title="buf.gen.yaml"
+# For details on buf.gen.yaml configuration, visit https://buf.build/docs/configuration/v2/buf-gen-yaml
+version: v2
+managed:
+  enabled: true
+plugins:
+  - remote: buf.build/protocolbuffers/java:v34.0
+    out: app/src/main/java
+    opt: lite
+  - remote: buf.build/protocolbuffers/kotlin:v34.0
+    out: app/src/main/java
+    opt: lite
+  - remote: buf.build/connectrpc/kotlin:v0.8.0
+    out: app/src/main/java
+```
+
+See the [Generating code](/docs/kotlin/generating-code/) reference for what
+each plugin emits and the available options. Lint the schema and run codegen:
+
+```shellsession
+$ buf lint
+$ buf generate
+```
+
+The generated code lands under `app/src/main/java/com/connectrpc/eliza/v1/`:
+
+```text
+app/src/main/java/com/connectrpc/eliza/v1
+├── ElizaProto.java
+├── ElizaProtoKt.proto.kt
+├── ElizaServiceClient.kt
+├── ElizaServiceClientInterface.kt
+├── SayRequest.java
+├── SayRequestKt.kt
+├── SayRequestOrBuilder.java
+├── SayResponse.java
+├── SayResponseKt.kt
+└── SayResponseOrBuilder.java
+```
+
+## Update the application dependencies
+
+Now we'll add the libraries the app needs. Edit `app/build.gradle.kts`
+(**not** the top-level `build.gradle.kts` in the project root) and replace the
+`dependencies` block with:
+
+```kotlin title="app/build.gradle.kts"
+dependencies {
+    // ...
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
+
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.connectrpc:connect-kotlin-okhttp:0.8.0")
+    implementation("com.connectrpc:connect-kotlin-google-javalite-ext:0.8.0")
+    implementation("com.google.protobuf:protobuf-javalite:4.34.0")
+    implementation("com.google.protobuf:protobuf-kotlin-lite:4.34.0")
+}
+```
+
+Sync Gradle once the dependencies are in place.
+
+## Set up the resources
+
+### Layouts
+
+Create a new file in the `layout` directory called `item.xml` to describe a
+single chat row. The row has a sender label (shown only for Eliza's messages)
+and the message text:
+
+```shellsession
+$ touch app/src/main/res/layout/item.xml
+```
+
+```xml title="app/src/main/res/layout/item.xml"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp">
+        <TextView
+            android:id="@+id/sender_name_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Eliza"
+            android:textColor="#161EDE"
+            android:visibility="gone"/>
+        <TextView
+            android:id="@+id/message_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"/>
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#E0E0E0"/>
+</LinearLayout>
+```
+
+Next, replace the contents of `activity_main.xml` (created by the wizard) with
+the chat screen layout (a title, the message list, and the input row):
+
+```xml title="app/src/main/res/layout/activity_main.xml"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+    <TextView
+        android:id="@+id/title_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="center"
+        android:text="Eliza"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"/>
+    <View
+        android:id="@+id/title_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#E0E0E0"
+        app:layout_constraintTop_toBottomOf="@+id/title_text_view"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layoutManager="LinearLayoutManager"
+        app:layout_constraintTop_toBottomOf="@+id/title_divider"
+        app:layout_constraintBottom_toTopOf="@+id/edit_text_view"/>
+    <EditText
+        android:id="@+id/edit_text_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:autofillHints="text"
+        android:inputType="text"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/send_button"/>
+    <Button
+        android:id="@+id/send_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Send"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+</androidx.constraintlayout.widget.ConstraintLayout>
+```
+
+:::note
+Android Studio shows the rendered UI by default when an XML file is opened.
+To view the raw code, click **Code** in the top-right corner of the editor.
+:::
+
+### Manifest
+
+The wizard's `AndroidManifest.xml` doesn't request network access. Add the
+two `uses-permission` declarations:
+
+```xml title="app/src/main/AndroidManifest.xml" ins={4-5}
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
+    <application
+        android:allowBackup="true"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
+```
+
+## Android Kotlin view scaffolding
+
+To render the chat list we need a `RecyclerView.Adapter` and `ViewHolder`. Add
+a new file:
+
+```shellsession
+$ touch app/src/main/java/com/example/eliza/ChatRecycler.kt
+```
+
+```kotlin title="app/src/main/java/com/example/eliza/ChatRecycler.kt"
+package com.example.eliza
+
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+
+class Adapter : RecyclerView.Adapter<ViewHolder>() {
+
+    private val messages = mutableListOf<MessageData>()
+
+    fun add(message: MessageData) {
+        messages.add(message)
+        notifyItemInserted(messages.size - 1)
+    }
+
+    override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
+        val view = LayoutInflater.from(viewGroup.context)
+            .inflate(R.layout.item, viewGroup, false)
+        return ViewHolder(view)
+    }
+
+    override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
+        val data = messages[position]
+        viewHolder.messageTextView.text = data.message
+        val params = viewHolder.messageTextView.layoutParams as LinearLayout.LayoutParams
+        params.gravity = if (data.isEliza) Gravity.START else Gravity.END
+        viewHolder.messageTextView.layoutParams = params
+        viewHolder.senderNameTextView.visibility =
+            if (data.isEliza) View.VISIBLE else View.GONE
+    }
+
+    override fun getItemCount(): Int = messages.size
+}
+
+class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    val senderNameTextView: TextView = view.findViewById(R.id.sender_name_text_view)
+    val messageTextView: TextView = view.findViewById(R.id.message_text_view)
+}
+
+data class MessageData(
+    val message: String,
+    val isEliza: Boolean,
+)
+```
+
+## Talk with Eliza
+
+Now we're ready to wire up the network code. Open `MainActivity.kt` and
+replace its contents with:
+
+```kotlin title="app/src/main/java/com/example/eliza/MainActivity.kt"
+package com.example.eliza
+
+import android.os.Bundle
+import android.util.Log
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.RecyclerView
+import com.connectrpc.ProtocolClientConfig
+import com.connectrpc.eliza.v1.ElizaServiceClient
+import com.connectrpc.eliza.v1.sayRequest
+import com.connectrpc.extensions.GoogleJavaLiteProtobufStrategy
+import com.connectrpc.impl.ProtocolClient
+import com.connectrpc.okhttp.ConnectOkHttpClient
+import com.connectrpc.protocols.NetworkProtocol
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+
+class MainActivity : AppCompatActivity() {
+
+    private val adapter: Adapter = Adapter()
+    private lateinit var titleTextView: TextView
+    private lateinit var editTextView: EditText
+    private lateinit var buttonView: Button
+    private lateinit var elizaServiceClient: ElizaServiceClient
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        editTextView = findViewById(R.id.edit_text_view)
+        titleTextView = findViewById(R.id.title_text_view)
+        buttonView = findViewById(R.id.send_button)
+        // Default question to ask as a pre-fill.
+        editTextView.setText("I had a strange dream last night.")
+        val recyclerView = findViewById<RecyclerView>(R.id.recycler_view)
+        recyclerView.adapter = adapter
+
+        // Create a ProtocolClient.
+        val client = ProtocolClient(
+            httpClient = ConnectOkHttpClient(),
+            ProtocolClientConfig(
+                host = "https://demo.connectrpc.com",
+                serializationStrategy = GoogleJavaLiteProtobufStrategy(),
+                networkProtocol = NetworkProtocol.CONNECT,
+                // Dispatch RPC I/O on Dispatchers.IO.
+                ioCoroutineContext = Dispatchers.IO,
+            ),
+        )
+        // Create the Eliza service client.
+        elizaServiceClient = ElizaServiceClient(client)
+
+        // Set up click listener to make a request to Eliza.
+        buttonView.setOnClickListener {
+            val sentence = editTextView.text.toString()
+            adapter.add(MessageData(sentence, false))
+            editTextView.setText("")
+
+            lifecycleScope.launch {
+                val response = elizaServiceClient.say(sayRequest { this.sentence = sentence })
+                val elizaSentence = response.success { success ->
+                    success.message.sentence
+                }
+                response.failure { failure ->
+                    Log.e("MainActivity", "Failed to talk to eliza", failure.cause)
+                }
+                displayElizaResponse(elizaSentence)
+            }
+        }
+    }
+
+    private fun displayElizaResponse(sentence: String?) {
+        if (!sentence.isNullOrBlank()) {
+            adapter.add(MessageData(sentence, true))
+        } else {
+            adapter.add(MessageData("...No response from Eliza...", true))
+        }
+    }
+}
+```
+
+## Run the app
+
+Build and run via the play button in Android Studio.
+
+import ElizaChatScreenshot from './success-request-finish.png';
+
+<Image src={ElizaChatScreenshot} width="300" alt="Chat with Eliza!" />
+
+[android-studio]: https://developer.android.com/studio
+
+[android-studio-virtual-device]: https://developer.android.com/studio/run/managing-avds
+
+[bsr]: https://buf.build/docs/tutorials/getting-started-with-bsr
+
+[buf]: https://buf.build/docs/
+
+[buf-cli]: https://buf.build/docs/installation
+
+[buf.gen.yaml]: https://buf.build/docs/configuration/v2/buf-gen-yaml
+
+[go-demo]: https://github.com/connectrpc/examples-go
+
+[grpc]: https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md
+
+[grpc-web]: https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-WEB.md
+
+[remote-plugins]: https://buf.build/docs/bsr/remote-plugins/usage

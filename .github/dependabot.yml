@@ -15,15 +15,11 @@ updates:
       timezone: UTC
       time: "07:00"
     open-pull-requests-limit: 50
-    ignore:
-      # These are required by docusaurus
-      - dependency-name: "react"
-      - dependency-name: "react-dom"
     groups:
-      docusaurus:
+      astro:
         patterns:
-          - "@docusaurus/*"
-          - "@tsconfig/docusaurus"
+          - "astro"
+          - "@astrojs/*"
       format:
         patterns:
           - "@bufbuild/license-header"
@@ -35,11 +31,6 @@ updates:
           - "react-dom"
           - "@types/react"
           - "@react-hookz/web"
-      eslint:
-        patterns:
-          - "@typescript-eslint/*"
-          - "*eslint-*"
-          - "eslint"
       demo:
         patterns:
           - "@buf/connectrpc*"

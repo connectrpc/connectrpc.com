@@ -1,0 +1,36 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  padding-top: 5rem;
+  padding-bottom: 110px;
+}
+
+.moreInfo {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  gap: 20px;
+}
+
+@media screen and (max-width: 650px) {
+  .moreInfo {
+    flex-direction: column;
+  }
+
+  .moreInfo > * {
+    width: 100%;
+  }
+
+  .buttons {
+    padding-top: 50px;
+    padding-bottom: 50px;
+  }
+}
