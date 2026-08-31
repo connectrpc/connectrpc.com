@@ -63,6 +63,12 @@ export default defineConfig({
     "/web/query": "/docs/web/query/",
     "/docs/query/getting-started":
       "https://github.com/connectrpc/connect-query-es#quickstart",
+    // The Connect-ES v1 to v2 migration pages are retired;
+    // redirect to the migration guide in the connect-es repository.
+    "/docs/web/migrating-to-v2":
+      "https://github.com/connectrpc/connect-es/blob/main/MIGRATING.md",
+    "/docs/node/migrating-to-v2":
+      "https://github.com/connectrpc/connect-es/blob/main/MIGRATING.md",
   },
   integrations: [
     react(),
@@ -220,14 +226,12 @@ export default defineConfig({
             },
             { label: "Server-Side Rendering (SSR)", slug: "docs/web/ssr" },
             { label: "Connect for TanStack Query", slug: "docs/web/query" },
-            { label: "Migrating to v2", slug: "docs/web/migrating-to-v2" },
           ],
         },
         {
           label: "Connect for Node.js",
           collapsed: true,
           items: [
-            { label: "Migrating to v2", slug: "docs/node/migrating-to-v2" },
             { label: "Getting started", slug: "docs/node/getting-started" },
             {
               label: "Implementing services",
