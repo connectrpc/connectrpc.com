@@ -31,6 +31,7 @@ We propose changing the algorithm so that servers are configured with an ordered
 and the first matching method present in the `Accept-Encoding` header is selected.
 
 For example, given `Accept-Encoding: gzip, br, zstd`
+
 - If the server is configured with `gzip, br, zstd`, then `gzip` is selected.
 - If the server is configured with `br, zstd, gzip`, then `br` is selected.
 
