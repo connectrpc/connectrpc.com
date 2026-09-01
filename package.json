@@ -47,7 +47,7 @@
     "@bufbuild/license-header": "^0.0.4",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.0.0",
-    "rumdl": "^0.2.45",
+    "rumdl": "^0.2.62",
     "typescript": "^6.0.3"
   },
   "licenseHeader": {
