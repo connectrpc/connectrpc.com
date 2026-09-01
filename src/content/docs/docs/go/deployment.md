@@ -3,8 +3,8 @@ title: Deployment & h2c
 ---
 
 After building a Connect API, you still need to deploy it to production. This
-guide covers how to configure timeouts, observability, HTTP/2 without TLS and
-CORS.
+guide covers how to configure timeouts, message size limits, observability,
+HTTP/2 without TLS and CORS.
 
 ## Timeouts and connection pools
 
@@ -48,6 +48,34 @@ Also, if your [http.Server](https://pkg.go.dev/net/http#Server) has the
 `ReadTimeout` or `WriteTimeout` field configured, it applies to the entire
 operation duration, even for streaming calls. See the [FAQ](/docs/faq/#stream-error)
 for more information.
+
+## Message size limits
+
+By default, Connect doesn't limit the size of messages. A client can make your
+server buffer an arbitrarily large message in memory. Before exposing a server
+to untrusted clients, always set a limit with
+[`WithReadMaxBytes`][read-max-bytes]:
+
+```go
+mux.Handle(greetv1connect.NewGreetServiceHandler(
+	&GreetServer{},
+	connect.WithReadMaxBytes(4*1024*1024), // 4 MiB per message
+))
+```
+
+The limit applies to each message after decompression. Messages over the limit
+fail with `CodeResourceExhausted`. The same option works on clients, where it
+protects against oversized responses.
+
+Because streaming RPCs exchange many messages, `WithReadMaxBytes` bounds each
+message but not the stream as a whole. To also bound the total number of bytes
+read from the network, wrap your handlers with
+[`http.MaxBytesHandler`][max-bytes-handler]:
+
+```go
+var handler http.Handler = mux
+handler = http.MaxBytesHandler(handler, 32*1024*1024) // 32 MiB per request
+```
 
 ## Observability
 
@@ -114,6 +142,8 @@ func newInsecureClient() *http.Client {
 [cloudflare-timeouts]: https://blog.cloudflare.com/the-complete-guide-to-golang-net-http-timeouts/
 [go-deadlines]: https://github.com/golang/go/issues/16100
 [http-protocols]: https://pkg.go.dev/net/http#Protocols
+[max-bytes-handler]: https://pkg.go.dev/net/http#MaxBytesHandler
+[read-max-bytes]: https://pkg.go.dev/connectrpc.com/connect#WithReadMaxBytes
 
 ## CORS
 
