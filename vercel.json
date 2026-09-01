@@ -46,6 +46,11 @@
       "destination": "/connect-v2.html",
       "permanent": true
     },
+    {
+      "source": "/connect/v2/cmd/connect-go-v2-migrate/",
+      "destination": "/connect-v2-migrate.html",
+      "permanent": true
+    },
     { "source": "/cors/", "destination": "/cors.html", "permanent": true },
     {
       "source": "/grpchealth/",
