@@ -39,6 +39,9 @@ For example, given this header from a client: `Accept-Encoding: gzip, br, zstd`
 If the request is compressed, including a `Content-Encoding` header with a valid compression algorithm, that algorithm must be
 used without consulting `Accept-Encoding`.
 
+The above matching should be used for all RPCs, including unary and streaming. For non-Connect protocol RPCs, the header names
+may be different but should otherwise select a compression in the same way.
+
 Moving preference to the server will allow preferring the more efficient algorithms, finally
 unlocking them for connect-web. Servers like Envoy and NGINX behave in the same way for the
 same reason.
