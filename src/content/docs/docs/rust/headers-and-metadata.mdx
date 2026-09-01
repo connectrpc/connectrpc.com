@@ -1,0 +1,239 @@
+---
+title: Headers & metadata
+---
+
+import VersionWarning from './_version-warning.mdx';
+
+<VersionWarning />
+
+Connect uses ordinary HTTP headers and trailers for RPC metadata, so
+`connect-rust` exposes them as the `http` crate's `HeaderMap` rather than
+inventing a parallel type. If you're coming from gRPC, headers are what that
+ecosystem calls request and response metadata, and trailers are what it calls
+trailing metadata.
+
+Metadata is split by direction, which keeps the ownership story simple:
+request-side metadata is read from the `RequestContext` your handler is passed,
+and response-side metadata is attached to the `Response` it returns.
+
+## Reading request metadata
+
+`RequestContext` is `#[non_exhaustive]`, so read it through the accessors. New
+request-scoped metadata can then be added in minor releases without breaking
+your code.
+
+```rust
+async fn greet(
+    &self,
+    ctx: RequestContext,
+    req: ServiceRequest<'_, GreetRequest>,
+) -> ServiceResult<GreetResponse> {
+    if let Some(token) = ctx.header("authorization") {
+        // ...
+    }
+    for (name, value) in ctx.headers() {
+        // ...
+    }
+    Response::ok(/* ... */)
+}
+```
+
+`ctx.header` yields an `Option<&http::HeaderValue>`, so call `.to_str()` when you
+need a string. The headers you see have already had protocol-specific prefixes
+stripped, so a
+handler reads the same names whether the caller arrived over the Connect
+protocol, gRPC, or gRPC-Web.
+
+Beyond headers, the context carries the rest of the per-request facts:
+
+| Accessor | Purpose |
+|---|---|
+| `ctx.deadline()` | Absolute `Instant` if the caller set a timeout |
+| `ctx.time_remaining()` | Saturating `Option<Duration>` until the deadline, `None` when there is no deadline |
+| `ctx.path()` | Requested procedure path, `/package.Service/Method` |
+| `ctx.protocol()` | Negotiated wire protocol as `Option<Protocol>`: `Connect`, `Grpc`, or `GrpcWeb` |
+| `ctx.spec()` | Static metadata for the dispatched method, see [below](#static-method-metadata) |
+| `ctx.extensions()` | `http::Extensions` carried over from the underlying request |
+| `ctx.peer_addr()` | Remote socket address, requires the `server` feature |
+| `ctx.peer_certs()` | TLS client certificate chain, requires `server-tls` |
+
+### Deadlines
+
+Use `ctx.time_remaining()` when a handler makes downstream calls. It does the
+subtraction for you and reflects the deadline *after* any [`DeadlinePolicy`](/docs/rust/implementing-services/#bounding-request-deadlines)
+clamping. Leave a margin for encoding the response and the network hop back:
+
+```rust
+if let Some(remaining) = ctx.time_remaining() {
+    let budget = remaining.saturating_sub(Duration::from_millis(50));
+    options = options.with_timeout(budget);
+}
+```
+
+### Peer identity
+
+`ctx.peer_addr()` and `ctx.peer_certs()` return `None` rather than panicking when
+the transport didn't supply them, which leaves the handler to decide what a
+plaintext or uncertified connection means. If client certificates are what
+authorizes the call, treat their absence as a failure rather than skipping the
+check:
+
+```rust
+let Some(certs) = ctx.peer_certs() else {
+    return Err(ConnectError::unauthenticated("client certificate required"));
+};
+authorize(certs)?;
+```
+
+Matching with `if let Some(..)` and no `else` fails open: mount the same handler
+on a plaintext listener and authorization silently stops running.
+
+The built-in `Server` and `connectrpc::axum::serve_tls` insert both, but they
+report different things: `peer_addr()` is available on any connection, while
+`peer_certs()` is populated only when TLS actually supplied a client chain, so it
+stays `None` on a plaintext listener. A raw hyper accept loop inserts neither, so
+add them in your own Tower layer if you go that route.
+
+## Attaching response metadata
+
+Response headers are sent before the body, and trailers after it. Both hang off
+`Response`:
+
+```rust
+Ok(Response::new(GreetResponse { /* ... */ })
+    .with_header("x-greet-version", "v2")
+    .with_trailer("x-server-id", "node-7"))
+```
+
+Trailers are the natural place for anything you only know once the work is done,
+such as a row count or a cache-hit ratio. The runtime represents them
+appropriately for each protocol. For gRPC-Web and Connect streaming responses,
+where real HTTP trailers aren't available, it encodes them into the response
+body.
+
+Errors carry metadata too, which matters because a failed RPC often needs to say
+something structured about the failure:
+
+```rust
+let mut err = ConnectError::unauthenticated("missing bearer token");
+err.response_headers_mut().insert(
+    http::header::WWW_AUTHENTICATE,
+    http::HeaderValue::from_static("Bearer"),
+);
+return Err(err);
+```
+
+See [Errors](/docs/rust/errors/) for more.
+
+## Client-side metadata
+
+Headers that belong on every call go on `ClientConfig`, which is the right home
+for authentication and tracing identifiers:
+
+```rust
+let config = ClientConfig::new("http://localhost:8080".parse()?)
+    .with_default_header("authorization", "Bearer demo-token")
+    .with_default_header("x-trace-id", trace_id);
+```
+
+Headers that vary per call go on `CallOptions`, passed to the `_with_options`
+variant of the generated method:
+
+```rust
+let res = client
+    .greet_with_options(
+        req,
+        CallOptions::default().with_header("x-request-id", request_id),
+    )
+    .await?;
+```
+
+Per-call options replace config defaults only for the fields they set, so the
+`authorization` header above still applies.
+
+Reading response metadata back requires keeping the response handle, since some
+of the [response access patterns](/docs/rust/using-clients/#reading-the-response)
+discard it:
+
+```rust
+let res = client.greet(req).await?;
+let version = res.headers().get("x-greet-version");
+let served_by = res.trailers().get("x-server-id");
+println!("{}", res.view().greeting);
+
+// Or, when you want the owned message and the metadata together:
+let (headers, owned, trailers) = client.greet(req).await?.into_owned_parts();
+```
+
+## Passing data from middleware to handlers
+
+The dispatcher moves the request's `http::Extensions` into the request context
+verbatim, which makes extensions the channel for handing per-request state from
+a Tower layer down to a handler. Authentication identity, trace IDs, and
+transport facts all travel this way:
+
+```rust
+// In the middleware:
+req.extensions_mut().insert(UserId(user.into()));
+next.run(req).await
+
+// In the handler:
+let user = ctx.extensions().get::<UserId>();
+```
+
+For peer address and client certificates, prefer the typed `ctx.peer_addr()` and
+`ctx.peer_certs()` accessors over reaching into extensions yourself.
+
+An [interceptor](/docs/rust/interceptors/) can also mutate `ctx` before calling
+`next.run`, and those changes are visible to the handler. That's usually the
+better tool when the middleware needs to know which RPC it's wrapping.
+
+## Static method metadata
+
+`ctx.spec()` returns metadata about the dispatched method itself, so handlers
+and interceptors can identify the RPC without re-parsing the request URI:
+
+```rust
+if let Some(spec) = ctx.spec() {
+    tracing::info_span!(
+        "rpc",
+        "rpc.system" = "connect_rpc",
+        "rpc.service" = spec.service(),
+        "rpc.method" = spec.method(),
+    );
+}
+```
+
+`Spec` carries only registration-time facts, the ones identical for every request
+to that method. These include the fully qualified procedure path, the message-flow
+shape, the idempotency level declared in the schema, and whether the spec came
+from a server dispatcher or a generated client. Anything that varies per request
+lives on `RequestContext` instead. This mirrors the `Spec` and `Peer` split in
+`connect-go`.
+
+It is `Copy`, contains only `'static` data, and is `#[non_exhaustive]`, so
+destructure with a trailing `..`:
+
+```rust
+use connectrpc::{IdempotencyLevel, Spec, SpecOrigin, StreamType};
+
+let Spec { procedure, stream_type, origin, idempotency_level, .. } = spec;
+```
+
+Code generation also emits a `pub const` spec per method, which is useful for
+static lookup tables, routing assertions, and tests, since it needs no request
+in flight:
+
+```rust
+use crate::connect::greet::v1::GREET_SERVICE_GREET_SPEC;
+
+assert_eq!(GREET_SERVICE_GREET_SPEC.procedure, "/greet.v1.GreetService/Greet");
+assert_eq!(GREET_SERVICE_GREET_SPEC.stream_type, StreamType::Unary);
+```
+
+Both dispatch paths populate `ctx.spec()`: a generated per-service server always
+supplies one, and the dynamic `Router` gets one because the generated
+`register()` attaches it to each route. The only handlers that see `None` are
+those wired up through low-level manual registration without a spec.
+`ctx.path()` is populated unconditionally, so prefer it when you only need the
+procedure name and want to tolerate a missing spec.

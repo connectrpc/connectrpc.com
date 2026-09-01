@@ -58,6 +58,8 @@ export default defineConfig({
     "/docs/kotlin": "/docs/kotlin/getting-started/",
     "/swift": "/docs/swift/getting-started/",
     "/docs/swift": "/docs/swift/getting-started/",
+    "/rust": "/docs/rust/getting-started/",
+    "/docs/rust": "/docs/rust/getting-started/",
     "/web": "/docs/web/getting-started/",
     "/docs/web": "/docs/web/getting-started/",
     "/web/query": "/docs/web/query/",
@@ -275,6 +277,26 @@ export default defineConfig({
             },
             { label: "Observability", slug: "docs/python/observability" },
             { label: "Testing", slug: "docs/python/testing" },
+          ],
+        },
+        {
+          label: "Connect for Rust",
+          collapsed: true,
+          items: [
+            { label: "Getting started", slug: "docs/rust/getting-started" },
+            { label: "Generating code", slug: "docs/rust/generating-code" },
+            {
+              label: "Implementing services",
+              slug: "docs/rust/implementing-services",
+            },
+            { label: "Using clients", slug: "docs/rust/using-clients" },
+            { label: "Errors", slug: "docs/rust/errors" },
+            {
+              label: "Headers & metadata",
+              slug: "docs/rust/headers-and-metadata",
+            },
+            { label: "Interceptors", slug: "docs/rust/interceptors" },
+            { label: "Streaming", slug: "docs/rust/streaming" },
           ],
         },
         {
