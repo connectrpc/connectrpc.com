@@ -30,10 +30,10 @@ connect-web users to use the more modern and efficient `br` and `zstd` algorithm
 We propose changing the algorithm so that servers are configured with an ordered list of compression methods,
 and the first matching method present in the `Accept-Encoding` header is selected.
 
-For example, given `Accept-Encoding: gzip, br, zstd`
+For example, given this header from a client: `Accept-Encoding: gzip, br, zstd`
 
-- If the server is configured with `gzip, br, zstd`, then `gzip` is selected.
-- If the server is configured with `br, zstd, gzip`, then `br` is selected.
+- If the server's list of supported compression methods is `[gzip, br, zstd]`, then the server selects `gzip` as the compression method.
+- If the server's list of supported compression methods is `[br, zstd, gzip]`, then the server selects `br` as the compression method.
 
 Moving preference to the server will allow preferring the more efficient algorithms, finally
 unlocking them for connect-web. Servers like Envoy and NGINX behave in the same way for the
