@@ -258,6 +258,6 @@ unary interceptors _after_ the request message has been read, decompressed, and
 deserialized. An interceptor-based check lets unauthenticated clients consume
 memory and CPU on your server. Instead, authenticate with standard ASGI or WSGI middleware,
 which runs before Connect reads the request body. Starlette's
-[`AuthenticationMiddleware`](https://www.starlette.io/authentication/) provides
+[`AuthenticationMiddleware`](https://starlette.dev/authentication/) provides
 authentication middleware that works with any ASGI application, including
 Connect servers.
