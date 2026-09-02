@@ -31,6 +31,9 @@ The `rpc` keyword stands for Remote Procedure Call — an API method that can be
 invoked remotely. The schema is a contract between the server and client, and
 it precisely defines how data is exchanged.
 
+Connect-Dart supports files written in `proto2`, `proto3` and editions 2023 and
+2024.
+
 The schema comes to life by generating code. For the server, an interface
 is generated, and the engineer can focus on filling the methods with business
 logic. For the client, there really isn't anything more to do — the engineer
@@ -79,8 +82,6 @@ plugins:
     out: lib/gen
   - remote: buf.build/protocolbuffers/dart
     out: lib/gen
-    include_wkt: true
-    include_imports: true
 ```
 
 This file specifies that the [`connect-dart` plugin][connect-dart-plugin]
@@ -146,8 +147,6 @@ plugins:
     out: lib/gen
   - local: protoc-gen-dart # protoc-gen-dart in your PATH
     out: lib/gen
-    include_wkt: true
-    include_imports: true
 ```
 
 ## Using generated code

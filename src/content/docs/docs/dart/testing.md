@@ -78,7 +78,9 @@ final fakeTransport = FakeTransportBuilder().unary(
   (req, _) async {
     return SayResponse(sentence: 'I feel happy.');
   },
-).server(ElizaService.converse, (req, _) async* {
+).server(ElizaService.introduce, (req, _) async* {
+  yield IntroduceResponse();
+}).bidi(ElizaService.converse, (req, _) async* {
   yield ConverseResponse();
 }).build();
 ```

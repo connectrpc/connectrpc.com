@@ -19,7 +19,7 @@ specification][protocol].
 * [connect-es]: TypeScript servers and clients
 * [connect-swift]: Swift clients
 * [connect-kotlin]: Kotlin clients
-* [connect-dart]: Kotlin clients
+* [connect-dart]: Dart clients
 * [connect-py]: Python servers and clients
 * [conformance]: Connect, gRPC, and gRPC-Web interoperability tests
 * [examples-go]: Go server powering demo.connectrpc.com
