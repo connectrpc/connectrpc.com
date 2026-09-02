@@ -182,11 +182,11 @@ If the client omits **Accept-Encoding**, servers must assume that the client
 accepts the **Content-Encoding** used for the request if present. Servers must
 assume that all clients accept "identity" as their least preferred encoding,
 even when **Accept-Encoding** is omitted. Servers should treat **Accept-Encoding**
-as an ordered list, with the client's most preferred encoding first and least
-preferred encoding last. This is a simplification of standard HTTP semantics
-that excludes quality values. If the client uses an unsupported **Content-Encoding**,
-servers should return an error with code "unimplemented" and a message listing the
-supported encodings.
+as a list of equal preference and decide an appropriate encoding based on it.
+Clients must not include quality values in **Accept-Encoding**.
+
+If the client uses an unsupported **Content-Encoding**, servers should return an
+error with code "unimplemented" and a message listing the supported encodings.
 
 If **Timeout** is omitted, the server should assume an infinite timeout. The
 protocol accommodates timeouts of more than 100 days. Client implementations
@@ -280,11 +280,11 @@ accepts the **Compression-Query** value used for the request. Servers must
 assume that all clients accept "identity" as their least preferred encoding.
 Server implementations may choose to accept the full HTTP quality value syntax
 for **Accept-Encoding**, but client implementations must restrict themselves to
-sending the easy-to-parse subset outlined above. Servers should treat
-**Accept-Encoding** as an ordered list, with the client's most preferred
-encoding first and least preferred encoding last. If the client uses an
-unsupported **Compression-Query** value, servers should return an error with
-code "unimplemented" and a message listing the supported encodings.
+sending the easy-to-parse subset outlined above. Servers should treat **Accept-Encoding**
+as a list of equal preference and decide an appropriate encoding based on it.
+
+If the client uses an unsupported **Compression-Query** value, servers should return
+an error with code "unimplemented" and a message listing the supported encodings.
 Servers must not attempt to decompress zero-length **Message-Query**.
 
 If **Timeout** is omitted, the server should assume an infinite timeout. The
@@ -440,8 +440,7 @@ prevents HTTP clients unaware of Connect's semantics from interpreting a
 streaming error response, which uses an HTTP Status of 200 OK, as successful.
 
 Servers must interpret **Streaming-Content-Encoding** and
-**Streaming-Accept-Encoding** using the same inference and error-reporting
-rules as **Content-Encoding** and **Accept-Encoding**.
+**Streaming-Accept-Encoding** using the same rules as **Content-Encoding** and **Accept-Encoding**.
 
 The HTTP request content is a sequence of zero or more **Enveloped-Message**.
 The first byte is **Envelope-Flags**, a set of 8 bitwise flags.
