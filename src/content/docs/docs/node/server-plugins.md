@@ -6,7 +6,7 @@ If you just need an API server, using a built-in Node.js server might be
 sufficient, but Connect also supports several server frameworks on Node.js.
 
 The following code snippets expect that you've already added a `connect.ts` file with your Connect RPCs to your
-project. See [Implementing services](/docs/node/implementing-services/) for more.
+project (see [Implementing services](/docs/node/implementing-services/)). This function is registered with the required `routes` option in all servers.
 
 ## Vanilla Node.js
 
@@ -195,27 +195,25 @@ supported.
 
 All adapters take a set of common options:
 
-- `routes: (router: ConnectRouter) => void`
-  The adapter will call this function, and lets you register your services.
-  See [Implementing services](/docs/node/implementing-services/) for an example.
-- `maxTimeoutMs?: number`
-  The maximum value for [timeouts](./timeouts) that clients may specify.
-  If a client requests a timeout that is greater than `maxTimeoutMs`,
-  the server responds with the error code `invalid_argument`.
-- `connect?: boolean`
-  Whether to enable the Connect protocol for your routes. Enabled by default.
-- `grpcWeb?: boolean`
-  Whether to enable the gRPC-web protocol for your routes. Enabled by default.
-- `grpc?: boolean`
-  Whether to enable the gRPC protocol for your routes. Enabled by default.
-- `interceptors?: Interceptor[]`
-  An array of interceptors to apply to all requests. See [Interceptors](/docs/node/interceptors/) for more information.
-- `jsonOptions`
-  Protobuf [JSON serialization options](https://protobufes.com/guides/serialization/#json-serialization-options).
-  If your service uses `google.protobuf.Any`, provide a `typeRegistry` with the
-  allowed message types.
-- `binaryOptions`
-  Protobuf [binary serialization options](https://protobufes.com/guides/serialization/#binary-serialization-options).
+**Serialization options:** Protobuf serialization options determine whether unknown fields are retained, and provide depth limits for decoding. `jsonOptions` are the [ProtoJSON serialization options](https://protobufes.com/guides/serialization/#json-serialization-options) from [@bufbuild/protobuf](https://www.npmjs.com/package/@bufbuild/protobuf), and `binaryOptions` are the [binary serialization options](https://protobufes.com/guides/serialization/#binary-serialization-options).
+If your service uses `google.protobuf.Any`, provide a `registry` with the allowed message types to allow for ProtoJSON serialization.
+
+**Message size limits:** by default, servers accept request messages of any size. If you expose your server to untrusted clients, set a limit for incoming messages:
+
+```ts
+connectNodeAdapter({
+  routes,
+  readMaxBytes: 1024 * 1024 * 4, // 4 MiB per incoming message
+})
+```
+
+**Interceptors and the request gate:** `interceptors` is an array of [Interceptors](/docs/node/interceptors/) to apply to all requests. `requestGate` is a function that runs after the request headers are available. Throwing a `ConnectError` in the gate rejects a request before messages are read, decompressed, or parsed. See the section on [authentication in Interceptors](/docs/node/interceptors/#authentication) for more information.
+
+**Compression:** by default, servers support gzip and brotli for requests and responses. Use the `acceptCompression` option to set your own compression algorithms. `compressMinBytes` sets a minimum size threshold for compression — messages below this threshold will not be compressed.
+
+**Supported protocols:** by default, servers accept all three protocols. Use the options `grpc`, `grpcWeb`, and `connect` to disable protocols individually.
+
+Besides setting these options specific to Connect, make sure to follow the guidance and best practices of Node.js and Fastify, Express, or Next.js for your deployment.
 
 ## HTTP/2, TLS, and gRPC
 

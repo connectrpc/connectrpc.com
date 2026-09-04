@@ -2,14 +2,12 @@
 title: Interceptors
 ---
 
-An interceptor can add logic to server/clients, similar to the decorators
+An interceptor can add logic to servers and clients, similar to the decorators
 or middleware you may have seen in other libraries. Interceptors may
 mutate the request and response, catch errors and retry/recover, emit
 logs, or do nearly anything else.
 
-For client side interceptors, please refer to the documentation for [Web](../web/interceptors).
-
-For a simple example, this interceptor logs every RPC:
+For a simple example, this interceptor logs every RPC on a Node.js server:
 
 ```ts
 import * as http from "http";
@@ -65,7 +63,7 @@ const logger: Interceptor = (next) => async (req) => {
   return res;
 };
 
-async function* logEach(stream: AsyncIterable<AnyMessage>) {
+async function* logEach(stream: AsyncIterable<any>) {
   for await (const m of stream) {
     console.log("sending response message", m);
     yield m;
@@ -73,165 +71,108 @@ async function* logEach(stream: AsyncIterable<AnyMessage>) {
 }
 ```
 
+Interceptors can be applied to clients via the `interceptors` option in `createConnectTransport()`. Refer to the documentation for [Web](/docs/web/interceptors/) for an example.
+
 ## Context Values
 
-Context values are a type safe way to pass arbitrary values from server plugins or one interceptor to the next all the way to the handler. You can use `createContextValues` function to create a new `ContextValues`. Each request will have its own `ContextValues` instance. The `ContextValues` instance is passed to the handler via the interceptors and can be used to retrieve the values. Server plugins can also provide a `ContextValues` instance for each request by using the `contextValues` option of [server plugins](/docs/node/server-plugins/).
+Context values are a type safe way to attach arbitrary values to a call, and share them with interceptors, all the way down to the handler.
 
-`ContextValues` has methods to set, get, and delete values. The keys are `ContextKey` objects:
-
-### Context Keys
-
-`ContextKey` is a type safe and collision free way to use context values. It is defined using `createContextKey` function which takes a default value and returns a `ContextKey` object. The default value is used when the context value is not set.
+The `ContextValues` type is a map-like object with methods to set, get, and delete values:
 
 ```ts
+import { createContextValues, type ContextValues } from "@connectrpc/connect";
 import { createContextKey } from "@connectrpc/connect";
 
-type User = { name: string };
+const key = createContextKey("default value");
 
-export const kUser = createContextKey<User>(
-  { name: "Anonymous" }, // Default value
-  {
-    description: "Current user", // Description useful for debugging
+const values: ContextValues = createContextValues();
+values.get(key); // "default value"
+values.set(key, "custom value");
+```
+
+The keys are `ContextKey` objects, and enable type safe and collision-free use of context values. They carry a default value that is used when the context value is not set, and an optional description that's helpful for debugging.
+
+Context values can be populated via the `contextValues` option of [server plugins](/docs/node/server-plugins/), and they can be read or set by the [requestGate option](/docs/node/server-plugins/#common-options):
+
+```ts
+connectNodeAdapter({
+  routes,
+  contextValues: (nodeServerRequest): ContextValues => {
+    const httpVersion = nodeServerRequest.httpVersion;
+    return createContextValues().set(kHttpVersion, httpVersion);
   },
-);
+  requestGate: (context: HandlerContext) => {
+    if (context.values.get(kHttpVersion) === "1.0") {
+      throw new ConnectError("HTTP 1.0 is not supported", Code.Unimplemented);
+    }
+  },
+})
 ```
 
-For values where a default doesn't make sense you can just modify the type:
+Interceptors have full access to context values:
 
 ```ts
-import { createContextKey } from "@connectrpc/connect";
-
-type User = { name: string };
-
-export const kUser = createContextKey<User | undefined>(undefined, {
-  description: "Authenticated user",
-});
-```
-
-It's best to define context keys in a separate file and export them. This is better for code splitting and also avoids circular imports. This also helps in the case where the provider changes based on the environment. For example, in a test environment we could set up an interceptor that adds a mock user and in production we will have the actual user.
-
-### Example
-
-One of the common use cases of interceptors is to a handle logic that is common to many requests, like authentication. We can add authentication logic like so:
-
-```ts
-// This can come from an auth library like passport.js
-import { authenticate } from "./authenticate";
-
-const authenticator: Interceptor = (next) => async (req) => {
-  // `authenticate` takes the authorization header value
-  // and returns the user that represents the token.
-  const user = authenticate(req.header.get("Authorization"));
-  if (user === undefined) {
-    throw new ConnectError("User not authenticated", Code.Unauthenticated);
-  }
+const logger: Interceptor = (next) => async (req) => {
+  const httpVersion = req.contextValues.get(kHttpVersion);
+  console.log(`HTTP version ${httpVersion}`);
   return await next(req);
 };
 ```
 
-But what if we need the user info in one of our RPC implementations? One way is to parse the header again:
+And handlers can access them through the `HandlerContext`:
 
-```ts
-import { ConnectRouter } from "@connectrpc/connect";
-import { ElizaService } from "./gen/eliza_pb";
-import { authenticate } from "authenticate";
-
-export default (router: ConnectRouter) =>
-  // registers connectrpc.eliza.v1.ElizaService
-  router.service(ElizaService, {
-    // implements rpc Say
-    async say(req, context) {
-      const user = authenticate(context.requestHeader.get("Authorization"))!;
-      return {
-        sentence: `Hey ${user.name}! You said: ${req.sentence}`,
-      };
-    },
-  });
+```ts title=connect.ts
+function say(req: SayRequest, context: HandlerContext) {
+  const httpVersion = context.values.get(kHttpVersion);
+  return { sentence: `You are using HTTP ${httpVersion}` };
+}
 ```
 
-But this means authentication happens twice, once in the interceptor and again in our handler. This is where context values come in. We can add the user as a context value which can then be retrieved in the handler. To do so we need to define a context key:
+## Authentication
 
-```ts title=user-context.ts
-import { createContextKey } from "@connectrpc/connect";
-
-type User = { name: string };
-
-const kUser = createContextKey<User>(
-  { name: "Anonymous" }, // Default value
-);
-
-export { kUser };
-```
-
-`ContextKey` is a type safe way to use context values. It also avoids collisions that are otherwise unavoidable with plain string keys. For more on context keys refer to the [Context Keys](#context-keys) section.
-
-We can modify the interceptor to pass the user information using the context key:
+Don't use interceptors to authenticate requests on the server. For unary RPCs,
+interceptors run after the request message is received, decompressed, and parsed.
+To turn away requests earlier than that, use the [requestGate option](/docs/node/server-plugins/#common-options):
 
 ```ts
+import * as http from "http";
+import routes from "./connect";
+import { connectNodeAdapter } from "@connectrpc/connect-node";
+import { Code, ConnectError } from "@connectrpc/connect";
+import type { HandlerContext } from "@connectrpc/connect";
+// This can come from an auth library like passport.js
 import { authenticate } from "./authenticate";
-import { kUser } from "./user-context";
-import type { Interceptor } from "@connectrpc/connect";
-import { ConnectError, Code } from "@connectrpc/connect";
 
-const authenticator: Interceptor = (next) => async (req) => {
-  // `authenticate` takes the authorization header value
-  // and returns the user that represents the token.
-  const user = authenticate(req.header.get("Authorization"));
+function authGate(context: HandlerContext) {
+  if (authenticate(context.requestHeader.get("Authorization")) === undefined) {
+    throw new ConnectError("User not authenticated", Code.Unauthenticated);
+  }
+}
+
+http
+  .createServer(
+    connectNodeAdapter({
+      routes,
+      requestGate: authGate,
+    }),
+  )
+  .listen(8080);
+```
+
+Use context values to pass information from the gate to your interceptors and implementation:
+
+```ts
+import { createContextKey } from "@connectrpc/connect";
+import { authenticate, type User } from "./authenticate";
+
+const kUser = createContextKey<User | undefined>(undefined);
+
+function authGate(context: HandlerContext) {
+  const user = authenticate(context.requestHeader.get("Authorization"));
   if (user === undefined) {
     throw new ConnectError("User not authenticated", Code.Unauthenticated);
   }
   // Add the user to the request context.
-  req.contextValues.set(kUser, user);
-  return await next(req);
-};
-```
-
-And then in our handler we can use it:
-
-```ts
-import { ConnectRouter } from "@connectrpc/connect";
-import { ElizaService } from "./gen/eliza_pb";
-import { authenticate } from "./authenticate";
-import { kUser } from "./user-context";
-
-export default (router: ConnectRouter) =>
-  // registers connectrpc.eliza.v1.ElizaService
-  router.service(ElizaService, {
-    // implements rpc Say
-    async say(req, context) {
-      const user = context.values.get(kUser);
-      return {
-        sentence: `Hey ${user.name}! You said: ${req.sentence}`,
-      };
-    },
-  });
-```
-
-You can also pass the context value from the server plugin:
-
-```ts
-import { fastify } from "fastify";
-import { createContextValues } from "@connectrpc/connect";
-import { fastifyConnectPlugin } from "@connectrpc/connect-fastify";
-import { createValidateInterceptor } from "@connectrpc/validate";
-import { kUser } from "./user-context";
-import { authenticate } from "./authenticate";
-import routes from "./connect";
-
-async function main() {
-  const server = fastify();
-  await server.register(fastifyConnectPlugin, {
-    // Validation via Protovalidate is almost always recommended
-    interceptors: [createValidateInterceptor()],
-    routes,
-    contextValues: (req) => 
-      createContextValues().set(kUser, authenticate(req)),
-  });
-  await server.listen({ host: "localhost", port: 8080 });
+  context.values.set(kUser, user);
 }
-// You can remove the main() wrapper if you set type: module in your package.json,
-// and update your tsconfig.json with target: es2017 and module: es2022.
-void main();
 ```
-
-The request passed to the `contextValues` function is different for each server plugin, please refer to the documentation for the server plugin you are using.
