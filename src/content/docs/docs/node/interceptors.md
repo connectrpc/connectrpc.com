@@ -132,7 +132,7 @@ function say(req: SayRequest, context: HandlerContext) {
 
 Don't use interceptors to authenticate requests on the server. For unary RPCs,
 interceptors run after the request message is received, decompressed, and parsed.
-To turn away requests without spending anything on them, use the [requestGate option](/docs/node/server-plugins/#common-options):
+To turn away requests earlier than that, use the [requestGate option](/docs/node/server-plugins/#common-options):
 
 ```ts
 import * as http from "http";
