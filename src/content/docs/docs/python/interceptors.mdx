@@ -203,109 +203,61 @@ Client constructors also accept an `interceptors=` parameter.
 ## Metadata interceptors
 
 Because the signature is different for each RPC type, we have an interceptor protocol for each
-to be able to intercept RPC messages. However, many interceptors, such as for authentication or
+to be able to intercept RPC messages. However, many interceptors, such as for metrics or
 tracing, only need access to headers and not messages. Connect provides a metadata interceptor
 protocol that can be implemented to work with any RPC type.
 
-An authentication interceptor checking bearer tokens and storing them to a context variable may look like this:
+An interceptor timing each RPC and logging its duration may look like this:
 
 <Tabs syncKey="python-type">
   <TabItem label="ASGI">
 
     ```python
-    from contextvars import ContextVar, Token
+    import logging
+    import time
 
-    _auth_token: ContextVar[str] = ContextVar("current_auth_token")
+    logger = logging.getLogger(__name__)
 
-    class ServerAuthInterceptor:
-        def __init__(self, valid_tokens: list[str]) -> None:
-            self._valid_tokens = valid_tokens
+    class TimingInterceptor:
+        async def on_start[REQ, RES](self, ctx: RequestContext[REQ, RES]) -> float:
+            return time.perf_counter()
 
-        async def on_start[REQ, RES](self, ctx: RequestContext[REQ, RES]) -> Token[str]:
-            authorization = ctx.request_headers().get("authorization")
-            if not authorization or not authorization.startswith("Bearer "):
-                raise ConnectError(Code.UNAUTHENTICATED, "missing or malformed bearer token")
-            token = authorization[len("Bearer "):]
-            if token not in self._valid_tokens:
-                raise ConnectError(Code.PERMISSION_DENIED, "token not recognized")
-            return _auth_token.set(token)
-
-        async def on_end[REQ, RES](self, token: Token[str], ctx: RequestContext[REQ, RES], error: Exception | None) -> None:
-            _auth_token.reset(token)
+        async def on_end[REQ, RES](self, start: float, ctx: RequestContext[REQ, RES], error: Exception | None) -> None:
+            duration = time.perf_counter() - start
+            logger.info("%s took %.3fs", ctx.method.name, duration)
     ```
 
   </TabItem>
   <TabItem label="WSGI">
 
     ```python
-    from contextvars import ContextVar, Token
+    import logging
+    import time
 
-    _auth_token: ContextVar[str] = ContextVar("current_auth_token")
+    logger = logging.getLogger(__name__)
 
-    class ServerAuthInterceptor:
-        def __init__(self, valid_tokens: list[str]) -> None:
-            self._valid_tokens = valid_tokens
+    class TimingInterceptor:
+        def on_start_sync[REQ, RES](self, ctx: RequestContext[REQ, RES]) -> float:
+            return time.perf_counter()
 
-        def on_start_sync[REQ, RES](self, ctx: RequestContext[REQ, RES]) -> Token[str]:
-            authorization = ctx.request_headers().get("authorization")
-            if not authorization or not authorization.startswith("Bearer "):
-                raise ConnectError(Code.UNAUTHENTICATED, "missing or malformed bearer token")
-            token = authorization[len("Bearer "):]
-            if token not in self._valid_tokens:
-                raise ConnectError(Code.PERMISSION_DENIED, "token not recognized")
-            return _auth_token.set(token)
-
-        def on_end_sync[REQ, RES](self, token: Token[str], ctx: RequestContext[REQ, RES], error: Exception | None) -> None:
-            _auth_token.reset(token)
+        def on_end_sync[REQ, RES](self, start: float, ctx: RequestContext[REQ, RES], error: Exception | None) -> None:
+            duration = time.perf_counter() - start
+            logger.info("%s took %.3fs", ctx.method().name, duration)
     ```
 
   </TabItem>
 </Tabs>
 
 `on_start` can return any value, which is passed to the optional `on_end` method. Here, we
-return the token to reset the context variable.
+return the start time to compute the RPC's duration.
 
-Clients can add an interceptor that reads the token from the context variable and populates
-the authorization header.
+## Authentication
 
-<Tabs syncKey="python-type">
-  <TabItem label="Async">
-
-    ```python
-    from contextvars import ContextVar
-
-    from connectrpc.request import RequestContext
-
-    _auth_token: ContextVar[str] = ContextVar("current_auth_token")
-
-    class ClientAuthInterceptor:
-        async def on_start[REQ, RES](self, ctx: RequestContext[REQ, RES]) -> None:
-            auth_token = _auth_token.get(None)
-            if auth_token:
-                ctx.request_headers()["authorization"] = f"Bearer {auth_token}"
-    ```
-
-  </TabItem>
-  <TabItem label="Sync">
-
-    ```python
-    from contextvars import ContextVar
-
-    from connectrpc.request import RequestContext
-
-    _auth_token: ContextVar[str] = ContextVar("current_auth_token")
-
-    class ClientAuthInterceptor:
-        def on_start_sync[REQ, RES](self, ctx: RequestContext[REQ, RES]) -> None:
-            auth_token = _auth_token.get(None)
-            if auth_token:
-                ctx.request_headers()["authorization"] = f"Bearer {auth_token}"
-    ```
-
-  </TabItem>
-</Tabs>
-
-Note that in the client interceptor, we do not need to define `on_end`.
-
-The above interceptors would allow a server to receive and validate an auth token and automatically
-propagate it to the authorization header of backend calls.
+Don't use interceptors to authenticate requests on the server. Handlers run
+unary interceptors _after_ the request message has been read, decompressed, and
+deserialized. An interceptor-based check lets unauthenticated clients consume
+memory and CPU on your server. Instead, authenticate with standard ASGI or WSGI middleware,
+which runs before Connect reads the request body. Starlette's
+[`AuthenticationMiddleware`](https://starlette.dev/authentication/) provides
+authentication middleware that works with any ASGI application, including
+Connect servers.
