@@ -7,6 +7,10 @@ updates:
       day: "monday"
       timezone: UTC
       time: "07:00"
+    groups:
+      actions:
+        patterns:
+          - "*"
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
