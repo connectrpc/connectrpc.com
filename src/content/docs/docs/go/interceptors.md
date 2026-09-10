@@ -97,7 +97,47 @@ client := greetv1connect.NewGreetServiceClient(
 Don't use interceptors to authenticate requests on the server. Handlers run
 unary interceptors _after_ the request message has been read, decompressed, and
 unmarshaled. An interceptor-based check lets unauthenticated clients consume
-memory and CPU on your server. Instead, authenticate at the HTTP layer with
-standard `net/http` middleware, which runs before Connect reads the request
-body. The [authn-go](https://github.com/connectrpc/authn-go) package provides
+memory and CPU on your server.
+
+Instead, use a request gate. Gates run once the request headers are available,
+before Connect reads any message and before the interceptor chain. Returning an
+error rejects the RPC immediately, so neither your interceptors nor your
+handler run.
+
+```go
+type userKey struct{}
+
+func authGate(
+	ctx context.Context,
+	_ connect.Spec,
+	_ connect.Peer,
+	header http.Header,
+) (context.Context, error) {
+	// authenticate comes from your auth library.
+	user, ok := authenticate(header.Get("Authorization"))
+	if !ok {
+		return nil, connect.NewError(
+			connect.CodeUnauthenticated,
+			errors.New("invalid credentials"),
+		)
+	}
+	// Pass the user along to interceptors and the handler.
+	return context.WithValue(ctx, userKey{}, user), nil
+}
+```
+
+Register the gate with
+[`WithRequestGate`](https://pkg.go.dev/connectrpc.com/connect#WithRequestGate):
+
+```go
+mux.Handle(greetv1connect.NewGreetServiceHandler(
+	&GreetServer{},
+	connect.WithRequestGate(authGate),
+))
+```
+
+Rejected RPCs never reach the interceptor chain, so logging and metrics
+interceptors don't observe them. To turn requests away even earlier, use
+standard `net/http` middleware. The
+[authn-go](https://github.com/connectrpc/authn-go) package provides
 authentication middleware designed for Connect servers.
