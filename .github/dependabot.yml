@@ -30,6 +30,7 @@ updates:
           - "react"
           - "react-dom"
           - "@types/react"
+          - "@types/react-dom"
           - "@react-hookz/web"
       demo:
         patterns:
