@@ -26,9 +26,9 @@ updates:
           - "@astrojs/*"
       format:
         patterns:
+          - "@biomejs/biome"
           - "@bufbuild/license-header"
-          - "prettier"
-          - "esbuild"
+          - "rumdl"
       react:
         patterns:
           - "react"
