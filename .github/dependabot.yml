@@ -7,6 +7,10 @@ updates:
       day: "monday"
       timezone: UTC
       time: "07:00"
+    groups:
+      actions:
+        patterns:
+          - "*"
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
@@ -22,14 +26,18 @@ updates:
           - "@astrojs/*"
       format:
         patterns:
+          - "@biomejs/biome"
           - "@bufbuild/license-header"
-          - "prettier"
-          - "esbuild"
+          - "rumdl"
+      fonts:
+        patterns:
+          - "@fontsource/*"
       react:
         patterns:
           - "react"
           - "react-dom"
           - "@types/react"
+          - "@types/react-dom"
           - "@react-hookz/web"
       demo:
         patterns:
