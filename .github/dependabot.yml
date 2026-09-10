@@ -29,6 +29,9 @@ updates:
           - "@biomejs/biome"
           - "@bufbuild/license-header"
           - "rumdl"
+      fonts:
+        patterns:
+          - "@fontsource/*"
       react:
         patterns:
           - "react"
