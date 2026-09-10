@@ -13,17 +13,18 @@ type-safe client in any supported language.
 
 Each Connect implementation is _focused_: just the essential features,
 built on top of time-tested HTTP libraries and designed to get out of your way.
-In Go, Connect is just [one package][connect-go] &mdash; short enough to read
+In Go, Connect is just [one package][connect-go], which is short enough to read
 in an afternoon.
 
 Connect is our vision of production-grade RPC. It's simple, reliable, and
 unobtrusive, because nobody has time to debug overcomplicated networking or
 sift through a hundred esoteric options. Under the hood, it's just Protocol
-Buffers and `net/http`, `fetch`, `URLSession`, or your language's gold standard
-for HTTP.
+Buffers and the HTTP client your language already ships: `net/http` in Go,
+`fetch` in the browser, `URLSession` on Apple platforms.
 
 Most of all, Connect is stable. We take backward compatibility _very_
-seriously, and we'll never break your build after tagging a stable release.
+seriously: stable implementations follow semantic versioning, so upgrading
+within a major version will never break your build.
 
 ## Seamless multi-protocol support
 
@@ -40,11 +41,12 @@ Connect's own protocol.
   on a translating proxy like Envoy.
 - Finally, Connect supports [its own protocol][connect-protocol]: a
   straightforward HTTP-based protocol that works over HTTP/1.1, HTTP/2, and
-  HTTP/3. It takes the best parts of gRPC and gRPC-Web, including streaming,
-  and packages them into a protocol that's equally at home in browsers,
-  monoliths, and microservices. By default, implementations support both JSON-
-  and binary-encoded Protobuf. You can call our live [demo service][demo] with
-  cURL:
+  HTTP/3. It keeps what gRPC and gRPC-Web are good at, including streaming,
+  error details, and metadata, but stays close enough to ordinary HTTP that
+  browsers, proxies, and cURL can all work with it, which makes it equally at
+  home in browsers, monoliths, and microservices. Implementations support JSON
+  and binary Protobuf encodings by default. You can call our live [demo
+  service][demo] with cURL:
 
   ```bash
   curl \
@@ -55,19 +57,19 @@ Connect's own protocol.
 
 By default, Connect servers support ingress from all three protocols. Clients
 default to using the Connect protocol, but can switch to gRPC or gRPC-Web with
-a configuration toggle &mdash; no further code changes required. The APIs for
+a configuration toggle, requiring no further code changes. The APIs for
 errors, headers, trailers, and streaming are all protocol-agnostic.
 
 ## Go
 
-Connect's Go implementation is stable and used by several companies (including
-Buf) in production. You can [get started with `connect-go`
+Connect's Go implementation is stable, and runs in production at Buf and
+several other companies. You can [get started with `connect-go`
 now][go-getting-started].
 
 ## TypeScript and JavaScript
 
-Connect for ECMAScript is stable and used by several companies (including Buf)
-in production. You can get started now on the [web][web-getting-started] or in
+Connect for ECMAScript is stable and covers both ends of the stack. Get started
+in the browser on the [web][web-getting-started], or on the server with
 [Node.js][node-getting-started].
 
 ## Swift and Kotlin
@@ -77,10 +79,22 @@ For mobile applications, [`connect-swift`][connect-swift] (stable) and
 with our [Swift guide][swift-getting-started] and [Kotlin
 guide][kotlin-getting-started].
 
+## Dart
+
+[Connect for Dart][connect-dart] is stable, for Flutter applications and
+server-side Dart alike. Get started with our [Dart guide][dart-getting-started].
+
 ## Python
 
 [Connect for Python][connect-py] is available in beta.
 You can get started with our [Python guide][python-getting-started].
+
+## Rust
+
+[Connect for Rust][connect-rust] is pre-1.0, though the runtime already passes
+the full conformance suite as both client and server across all three
+protocols. It's built on [Tower][tower], so it drops into Axum, hyper, and the
+rest of that ecosystem. Get started with our [Rust guide][rust-getting-started].
 
 ## What's next?
 
@@ -92,6 +106,11 @@ and we gauge interest in new languages with [GitHub polls][poll-discussions].
 [connect-py]: https://github.com/connectrpc/connect-py
 [python-getting-started]: /docs/python/getting-started
 [connect-conformance]: https://github.com/connectrpc/conformance
+[connect-dart]: https://github.com/connectrpc/connect-dart
+[dart-getting-started]: /docs/dart/getting-started
+[connect-rust]: https://github.com/connectrpc/connect-rust
+[rust-getting-started]: /docs/rust/getting-started
+[tower]: https://docs.rs/tower
 [connect-go]: https://github.com/connectrpc/connect-go
 [connect-kotlin]: https://github.com/connectrpc/connect-kotlin
 [connect-swift]: https://github.com/connectrpc/connect-swift

@@ -1,0 +1,251 @@
+---
+title: Interceptors
+---
+
+import VersionWarning from './_version-warning.mdx';
+
+<VersionWarning />
+
+`connect-rust` gives you two places to put cross-cutting logic, and picking the
+right one is most of the work.
+
+Tower middleware operates on `http::Request` and `http::Response`. Because
+the Connect router is a `tower::Service`, every layer in the Tower ecosystem
+composes on top of it. This is the right level for concerns that don't need to
+know they're wrapping an RPC at all: compression, raw header manipulation,
+connection-scoped tracing.
+
+Interceptors are the typed RPC layer above that. An interceptor is a single
+async hook per call that runs after envelope decoding, decompression, and
+protocol header parsing, and before the handler. It sees the resolved
+[`Spec`](/docs/rust/headers-and-metadata/#static-method-metadata), the parsed
+headers, the deadline, the negotiated protocol, the request extensions, and a
+lazily decoded message body. That's what an authentication boundary, span
+builder, validator, or rate limiter actually needs. Interceptors are the
+equivalent of `connect-go`'s `WithInterceptors`.
+
+|  | Tower middleware | Interceptor |
+|---|---|---|
+| Operates on | `http::Request` / `http::Response` | RPC context: `Spec`, headers, deadline, plus a lazy `Payload` |
+| Runs | Before envelope decode and protocol parse | After envelope decode and protocol parse |
+| Sees the RPC method | No, must re-parse the URI | Yes, via `ctx.path()` and `ctx.spec()` |
+| Sees the message body | Compressed, enveloped wire bytes | Lazily decoded, codec-aware `Payload` |
+| Short-circuits | By returning an `http::Response` | By returning `Err` or a `UnaryResponse` |
+| Best for | gzip, raw header rewriting, generic HTTP concerns | Auth, RPC-aware tracing, validation, rate limiting |
+
+The two compose. A Tower layer wraps the whole `ConnectRpcService`, interceptor
+chain included, and an interceptor that needs an HTTP-level fact reads it from
+`ctx.extensions()` after a Tower layer puts it there.
+
+## Writing an interceptor
+
+Implement the `Interceptor` trait. The default methods are passthroughs, so
+override only the hook you need:
+
+```rust
+use connectrpc::interceptor::{UnaryRequest, UnaryResponse};
+use connectrpc::{ConnectError, Interceptor, Next};
+
+struct Logging;
+
+#[connectrpc::async_trait]
+impl Interceptor for Logging {
+    async fn intercept_unary(
+        &self,
+        req: UnaryRequest,
+        next: Next<'_>,
+    ) -> Result<UnaryResponse, ConnectError> {
+        let path = req.ctx.path().unwrap_or("<unknown>").to_owned();
+        let started = std::time::Instant::now();
+        let resp = next.run(req).await;
+        tracing::info!(rpc = %path, elapsed = ?started.elapsed(), ok = resp.is_ok());
+        resp
+    }
+}
+```
+
+Annotate the impl with the re-exported `#[connectrpc::async_trait]`. There's no
+separate `async-trait` dependency to add.
+
+Register it on the service:
+
+```rust
+let server = GreetServiceServer::new(GreetServiceImpl);
+let service = ConnectRpcService::new(server).with_interceptor(Logging);
+```
+
+For one-off interceptors, the `unary_interceptor` and `streaming_interceptor`
+closure helpers skip the struct boilerplate entirely.
+
+## Ordering and registration
+
+`with_interceptor` registers outermost-first, matching `connect-go`'s
+`WithInterceptors`. The first interceptor registered sees the request first and
+the response last:
+
+```text
+.with_interceptor(A).with_interceptor(B)
+
+request:   A → B → handler
+response:  A ← B ← handler
+```
+
+A service with no interceptors registered pays only a single `is_empty()` branch
+on the dispatch path.
+
+To share one interceptor instance across several services, which is what you
+want when it owns a token cache or a process-wide rate limit counter, use
+`with_interceptor_arc(Arc<dyn Interceptor>)`. Plain `with_interceptor` allocates
+a fresh `Arc` per registration; `with_interceptor_arc` takes the one you already
+hold.
+
+## Reading and rewriting the request
+
+`UnaryRequest` is a `RequestContext` plus a `Payload`. Mutating the context
+before `next.run` propagates to the handler, so an interceptor can add or
+rewrite headers and extensions.
+
+The payload is the request body: wire bytes plus a lazy decode cache. Most
+interceptors never touch it. Those that do call `payload.message::<M>()`, which
+decodes once and caches, so the handler reuses that decode instead of decoding
+again:
+
+```rust
+async fn intercept_unary(
+    &self,
+    mut req: UnaryRequest,
+    next: Next<'_>,
+) -> Result<UnaryResponse, ConnectError> {
+    // Decode once. The handler reuses this decode via the Payload cache.
+    let body = req.payload.message::<GreetRequest>()?;
+    if body.name.is_empty() {
+        return Err(ConnectError::invalid_argument("name is required"));
+    }
+    // Replacing the body means the handler sees the replacement.
+    let mut rewritten = body.clone();
+    rewritten.name = rewritten.name.trim().to_owned();
+    req.payload.set_message(rewritten);
+    next.run(req).await
+}
+```
+
+A schema-validation interceptor follows the same pattern: decode the message,
+check it, and fail with `invalid_argument` before the handler runs.
+
+## Short-circuiting
+
+Returning without calling `next.run()` stops the chain. Neither inner
+interceptors nor the handler run. Returning `Err` surfaces the failure on the
+protocol's [normal error path](/docs/rust/errors/), including any response
+headers the error carries:
+
+```rust
+async fn intercept_unary(
+    &self,
+    req: UnaryRequest,
+    next: Next<'_>,
+) -> Result<UnaryResponse, ConnectError> {
+    let Some(token) = req.ctx.header("authorization") else {
+        let mut err = ConnectError::unauthenticated("missing bearer token");
+        err.response_headers_mut().insert(
+            http::header::WWW_AUTHENTICATE,
+            http::HeaderValue::from_static("Bearer"),
+        );
+        return Err(err);
+    };
+    self.tokens.verify(token)?;
+    next.run(req).await
+}
+```
+
+## Streaming RPCs
+
+`intercept_streaming` covers server-streaming, client-streaming, and
+bidirectional RPCs with one hook. It runs once at stream establishment, before
+any messages flow, and receives the inbound `PayloadStream` plus a `NextStream`
+continuation:
+
+```rust
+use connectrpc::interceptor::{StreamRequest, StreamResponse};
+use connectrpc::{Interceptor, NextStream, PayloadStream};
+
+#[connectrpc::async_trait]
+impl Interceptor for AuthInterceptor {
+    async fn intercept_streaming(
+        &self,
+        req: StreamRequest,
+        inbound: PayloadStream,
+        next: NextStream<'_>,
+    ) -> Result<StreamResponse, ConnectError> {
+        // Auth runs once at establishment, not per message.
+        self.check(&req.ctx)?;
+        let resp = next.run(req, inbound).await?;
+        Ok(resp.with_header("x-served-by", &self.node_id))
+    }
+}
+```
+
+Running once at establishment is the right default for authentication and
+metadata, and it's why the hook isn't per-message. To observe or transform
+individual messages, wrap `inbound` (or the returned `resp.body`) with a
+`futures::Stream` adapter such as `.map()`, `.then()`, or `.filter()`.
+
+There's no per-message `send()` to hook because Rust handlers *return* a stream
+rather than *pushing* into a connection. This is the same shape Tower, tonic, and
+Axum use for body interception.
+
+Coordinating across directions, deciding an outbound item based on something
+observed inbound, needs shared state captured by both adapter closures. That's
+rare; most interceptors observe one direction or neither.
+
+For server-streaming the inbound stream yields exactly one item, and for
+client-streaming the outbound stream yields exactly one. Branch on cardinality
+with `req.ctx.spec().map(|s| s.stream_type)`.
+
+## Tower middleware
+
+Use `tower::ServiceBuilder` for readable ordering, mounted with
+`axum::Router::layer()` so Axum handles the body conversion:
+
+```rust
+use tower::ServiceBuilder;
+use tower_http::{timeout::TimeoutLayer, trace::TraceLayer};
+
+let app = axum::Router::new()
+    .fallback_service(connect_router.into_axum_service())
+    .layer(
+        ServiceBuilder::new()
+            .layer(TraceLayer::new_for_http())                  // outermost
+            .layer(axum::middleware::from_fn_with_state(tokens, auth_middleware))
+            .layer(TimeoutLayer::with_status_code(              // innermost
+                http::StatusCode::REQUEST_TIMEOUT,
+                Duration::from_secs(5),
+            )),
+    );
+```
+
+`ServiceBuilder` applies layers top to bottom, so the first `.layer()` sees
+requests first and responses last. A request flows trace, then auth, then
+timeout, then the dispatcher, then your handler.
+
+`axum::middleware::from_fn` (or `from_fn_with_state`) is usually the lightest
+way to write one, since it lets the middleware be a plain async function. A
+hand-rolled `tower::Layer` and `tower::Service` pair works too when you need
+finer control.
+
+A layer can short-circuit by returning a response without calling the inner
+service. It sits outside protocol dispatch, so what the caller sees depends on
+the protocol. Set an HTTP status that maps to the code you mean and every client
+derives the right code from it: a 401 arrives as `unauthenticated` for Connect,
+gRPC, and gRPC-Web alike. The body is a different story. A Connect-protocol JSON
+error body reaches Connect clients with its message intact, but gRPC and
+gRPC-Web clients discard it and report the bare status, so the message they see
+is `HTTP error 401`. When a useful message has to reach every caller, put the
+check in an interceptor instead: it runs inside dispatch and encodes the error
+per protocol.
+
+The [`middleware` example][middleware-example] puts the whole pattern together:
+bearer-token auth that stamps caller identity into request extensions, chained
+with `tower-http`'s `TraceLayer` and `TimeoutLayer`.
+
+[middleware-example]: https://github.com/connectrpc/connect-rust/tree/main/examples/middleware
