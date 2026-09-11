@@ -162,6 +162,10 @@ export default defineConfig({
                   label: "007: Rust Implementation",
                   slug: "docs/governance/rfc/007-rust-implementation",
                 },
+                {
+                  label: "008: Server compression preference",
+                  slug: "docs/governance/rfc/008-server-compression-preference",
+                },
               ],
             },
           ],
