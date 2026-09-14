@@ -49,7 +49,7 @@ export const featureList: FeatureItem[] = [
   {
     title: "No boilerplate",
     descriptionHtml:
-      'Define your APIs using <a href="https://developers.google.com/protocol-buffers">Protocol Buffers</a>, the industry’s most battle-tested schema definition language, and skip the hand-written boilerplate. Connect handles server-side routing, serialization, and compression, and it generates idiomatic clients in Go, TypeScript, Swift, Kotlin, Dart, and Python.',
+      'Define your APIs using <a href="https://developers.google.com/protocol-buffers">Protocol Buffers</a>, the industry’s most battle-tested schema definition language, and skip the hand-written boilerplate. Connect handles server-side routing, serialization, and compression, and it generates idiomatic clients in Go, TypeScript, Rust, Swift, Kotlin, Dart, and Python.',
   },
 ];
 
@@ -106,6 +106,14 @@ export const guides: GuideProps[][] = [
       href: "/docs/python/getting-started/",
       logos: ["/img/logos/python.svg"],
       title: "Python guide",
+      description: "Servers and clients",
+    },
+  ],
+  [
+    {
+      href: "/docs/rust/getting-started/",
+      logos: ["/img/logos/rust.svg"],
+      title: "Rust guide",
       description: "Servers and clients",
     },
   ],
