@@ -28,9 +28,11 @@ Especially if you're serving your Connect API alongside other HTTP handlers, you
 may want to prefix your RPC routes with `/api/`, `/connect/`, or something similar.
 You can do this using `net/http`:
 
-```go mark={6}
+```go mark={8}
+server := connect.NewServer()
+greetv1connect.RegisterGreetServiceHandler(server, &greetServer{})
 api := http.NewServeMux()
-api.Handle(greetv1connect.NewGreetServiceHandler(&greetServer{}))
+connecthttp.Mount(api, server)
 
 mux := http.NewServeMux()
 mux.Handle("/", newHTMLHandler())
