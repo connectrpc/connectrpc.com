@@ -181,11 +181,13 @@ omits **Content-Encoding**.
 If the client omits **Accept-Encoding**, servers must assume that the client
 accepts the **Content-Encoding** used for the request if present. Servers must
 assume that all clients accept "identity" as their least preferred encoding,
-even when **Accept-Encoding** is omitted. Servers must use the same encoding
-as **Content-Encoding** when it is not identity. When it is identity,
-servers should treat **Accept-Encoding** as a list of equal preference and
-decide an appropriate encoding based on it. Clients must not include quality
-values in **Accept-Encoding**.
+even when **Accept-Encoding** is omitted. When it is identity, servers should
+treat **Accept-Encoding** as a list of equal preference and decide an appropriate
+encoding based on it. Clients must not include quality values in **Accept-Encoding**.
+
+Servers may treat **Accept-Encoding** as an ordered list of preference and select
+the first supported one if they have good reasons, (e.g., for backward compatibility
+reasons in a stable server release).
 
 If the client uses an unsupported **Content-Encoding**, servers should return an
 error with code "unimplemented" and a message listing the supported encodings.
@@ -282,10 +284,13 @@ accepts the **Compression-Query** value used for the request. Servers must
 assume that all clients accept "identity" as their least preferred encoding.
 Server implementations may choose to accept the full HTTP quality value syntax
 for **Accept-Encoding**, but client implementations must restrict themselves to
-sending the easy-to-parse subset outlined above. Servers must use the same encoding
-as **Content-Encoding** when it is not identity. When it is identity, servers
+sending the easy-to-parse subset outlined above. When it is identity, servers
 should treat **Accept-Encoding** as a list of equal preference and decide an
 appropriate encoding based on it.
+
+Servers may treat **Accept-Encoding** as an ordered list of preference and select
+the first supported one if they have good reasons, (e.g., for backward compatibility
+reasons in a stable server release).
 
 If the client uses an unsupported **Compression-Query** value, servers should return
 an error with code "unimplemented" and a message listing the supported encodings.
