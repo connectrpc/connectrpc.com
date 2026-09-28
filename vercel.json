@@ -58,8 +58,18 @@
       "permanent": true
     },
     {
+      "source": "/grpchealth/v2/",
+      "destination": "/grpchealth-v2.html",
+      "permanent": true
+    },
+    {
       "source": "/grpcreflect/",
       "destination": "/grpcreflect.html",
+      "permanent": true
+    },
+    {
+      "source": "/grpcreflect/v2/",
+      "destination": "/grpcreflect-v2.html",
       "permanent": true
     },
     {
