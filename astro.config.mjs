@@ -184,6 +184,11 @@ export default defineConfig({
             { label: "Interceptors", slug: "docs/go/interceptors" },
             { label: "Observability", slug: "docs/go/observability" },
             { label: "Streaming", slug: "docs/go/streaming" },
+            { label: "Testing", slug: "docs/go/testing" },
+            {
+              label: "In-process transport",
+              slug: "docs/go/in-process-transport",
+            },
             { label: "Deployment & h2c", slug: "docs/go/deployment" },
             {
               label: "Get Requests and Caching",
@@ -192,6 +197,7 @@ export default defineConfig({
             { label: "gRPC compatibility", slug: "docs/go/grpc-compatibility" },
             { label: "Common errors", slug: "docs/go/common-errors" },
             { label: "Godoc", slug: "docs/go/godoc" },
+            { label: "Migrating to v2", slug: "docs/go/migrating-to-v2" },
           ],
         },
         {

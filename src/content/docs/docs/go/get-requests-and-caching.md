@@ -30,19 +30,21 @@ service GreetService {
 }
 ```
 
-Handlers will automatically support GET requests using this option, but ensure
-you have a recent enough version of Connect Go; v1.7.0 or newer is required.
-You will also need to re-run the code generation with v1.7.0 or newer.
+Handlers will automatically support GET requests using this option.
 
 It is still necessary to opt-in to HTTP GET on your client, as well. If you are
-using a Go client, you would specify the `WithHTTPGet` option when creating the
-Connect client.
+using a Go client, you would specify the `connecthttp.WithHTTPGet` option when
+creating the transport.
 
 ```go
 client := greetv1connect.NewGreetServiceClient(
-	http.DefaultClient,
-	"http://localhost:8080",
-	connect.WithHTTPGet(),
+	connect.NewClient(
+		connecthttp.NewTransport(
+			http.DefaultClient,
+			"http://localhost:8080",
+			connecthttp.WithHTTPGet(),
+		),
+	),
 )
 ```
 
@@ -66,7 +68,7 @@ For example, you may wish to set the `Cache-Control` header with a `max-age`
 directive:
 
 ```go
-callInfo, ok := connect.CallInfoForHandlerContext(ctx)
+callInfo, ok := connect.CallInfoForServerContext(ctx)
 if ok {
 	callInfo.ResponseHeader().Set("Cache-Control", "max-age=604800")
 }
@@ -80,19 +82,48 @@ would specify that the request should only be cached in private caches, such as
 the user agent itself, and *not* CDNs or reverse proxies&mdash;this would be
 appropriate, for example, for authenticated requests.
 
+Handlers can also support HTTP [conditional
+requests][conditional-requests]. Set an `Etag` header identifying the current
+version of the response. When a client repeats the request, its cache sends
+that value back in the `If-None-Match` header. If the ETag still matches, the
+handler can skip its work and return `connecthttp.NewNotModifiedError()` to
+tell the client its cached copy is still fresh:
+
+```go
+callInfo, ok := connect.CallInfoForServerContext(ctx)
+if !ok {
+	return nil, connect.NewError(connect.CodeInternal, "no call info in context")
+}
+callInfo.ResponseHeader().Set("Etag", etag)
+serverInfo, ok := connecthttp.ServerInfoForContext(ctx)
+if ok && serverInfo.HTTPMethod() == http.MethodGet &&
+	callInfo.RequestHeader().Get("If-None-Match") == etag {
+	return nil, connecthttp.NewNotModifiedError()
+}
+// ...build the response as usual...
+```
+
+"Not modified" is not a failure. Like `io.EOF`, it's a sentinel error used as
+a signal, because a handler has no other way to return without a response
+message. On the wire it becomes HTTP's 304 Not Modified status, which caches
+treat as a successful revalidation. Clients detect the signal with
+`connecthttp.IsNotModifiedError` and reuse the cached response.
+
 ## Distinguishing GET Requests
 
 In some cases, you might want to introduce behavior that only occurs when
-handling HTTP GET requests. This can be accomplished using the `HTTPMethod` method
-on the `CallInfo` type in context:
+handling HTTP GET requests. This can be accomplished using the `HTTPMethod`
+method on the `connecthttp.ServerInfo` type in context:
 
 ```go
-callInfo, ok := connect.CallInfoForHandlerContext(ctx)
-if ok && callInfo.HTTPMethod() == http.MethodGet {
+callInfo, ok := connect.CallInfoForServerContext(ctx)
+info, httpOK := connecthttp.ServerInfoForContext(ctx)
+if ok && httpOK && info.HTTPMethod() == http.MethodGet {
 	callInfo.ResponseHeader().Set("Cache-Control", "max-age=604800")
 }
 ```
 
 [connect-grpc-bridge-docs]: https://www.envoyproxy.io/docs/envoy/v1.26.0/configuration/http/http_filters/connect_grpc_bridge_filter#config-http-filters-connect-grpc-bridge
 [cache-control-response-directives]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#response_directives
+[conditional-requests]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Conditional_requests
 [idempotency-level]: https://github.com/protocolbuffers/protobuf/blob/e5679c01e8f47e8a5e7172444676bda1c2ada875/src/google/protobuf/descriptor.proto#L795
