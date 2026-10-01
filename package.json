@@ -37,16 +37,16 @@
     "@react-hookz/web": "^26.1.0",
     "astro": "^7.1.6",
     "clsx": "^2.1.1",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
     "remark-custom-heading-id": "^2.0.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "@biomejs/biome": "2.5.11",
     "@bufbuild/license-header": "^0.0.4",
-    "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.7",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "rumdl": "^0.2.62",
     "typescript": "^6.0.3"
   },
