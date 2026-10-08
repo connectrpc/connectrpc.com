@@ -82,6 +82,11 @@ guide][kotlin-getting-started].
 [Connect for Python][connect-py] is available in beta.
 You can get started with our [Python guide][python-getting-started].
 
+## Rust
+
+[Connect for Rust][connect-rust] is available as a pre-1.0 release.
+You can get started with our [Rust guide][rust-getting-started].
+
 ## What's next?
 
 In addition to improving our current Connect implementations, we'd eventually
@@ -91,6 +96,8 @@ and we gauge interest in new languages with [GitHub polls][poll-discussions].
 
 [connect-py]: https://github.com/connectrpc/connect-py
 [python-getting-started]: /docs/python/getting-started
+[connect-rust]: https://github.com/connectrpc/connect-rust
+[rust-getting-started]: /docs/rust/getting-started
 [connect-conformance]: https://github.com/connectrpc/conformance
 [connect-go]: https://github.com/connectrpc/connect-go
 [connect-kotlin]: https://github.com/connectrpc/connect-kotlin

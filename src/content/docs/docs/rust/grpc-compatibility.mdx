@@ -1,0 +1,112 @@
+---
+title: gRPC compatibility
+---
+
+import VersionWarning from './_version-warning.mdx';
+
+<VersionWarning />
+
+Connect fully supports the gRPC and gRPC-Web protocols, including streaming. We
+validate our implementation of these protocols using [an extended
+version][connect-conformance] of Google's own interoperability tests.
+
+## Handlers
+
+Handlers support the gRPC protocol by default: they work with `tonic`,
+`grpcurl`, and any other gRPC client without any special configuration. Both
+the built-in `Server` and `axum::serve` support HTTP/2 without TLS
+([h2c](/docs/rust/deployment/#h2c)), and the built-in `Server` supports TLS
+with the `server-tls` feature.
+
+Handlers also automatically support the binary gRPC-Web protocol directly,
+without a translating proxy like Envoy. Since modern browsers all support
+binary payloads, Connect doesn't support gRPC-Web's text mode: if you're using
+`protoc-gen-grpc-web`, you must use `mode=grpcweb` when generating code.
+
+Many gRPC-specific tools depend on server reflection, which lets callers
+access your service's Protobuf schema at runtime. Connect supports server
+reflection with the [`connectrpc-reflection`][connectrpc-reflection] crate.
+Keep in mind that there are two versions of the gRPC server reflection API,
+and many tools (including `grpcurl`) still use the older one &mdash;
+`connectrpc_reflection::install` mounts both.
+
+Container orchestration and health-checking systems often support the gRPC
+health checking API. If you'd prefer gRPC-style health checks instead of more
+traditional HTTP checks, use the [`connectrpc-health`][connectrpc-health] crate.
+
+## Clients
+
+Clients default to using the Connect protocol. To use the gRPC or gRPC-Web
+protocols, call `with_protocol` on the client's `ClientConfig` with
+`Protocol::Grpc` or `Protocol::GrpcWeb`. The gRPC protocol requires HTTP/2. If
+the gRPC server is using TLS, clients created with `HttpClient::with_tls`
+negotiate HTTP/2 with no further configuration. If the gRPC server is using
+HTTP/2 without TLS, create your client with `HttpClient::plaintext_http2_only`
+as described in the [deployment documentation](/docs/rust/deployment/#h2c):
+
+```rust
+use connectrpc::Protocol;
+use connectrpc::client::{ClientConfig, HttpClient};
+
+let client = GreetServiceClient::new(
+    HttpClient::plaintext_http2_only(),
+    ClientConfig::new("http://localhost:8080".parse()?).with_protocol(Protocol::Grpc),
+);
+```
+
+If you use `HttpClient::plaintext` instead, the client sends requests with
+HTTP/1.1, and calls fail with an error like this:
+
+```text
+internal: gRPC response missing grpc-status trailer
+```
+
+## Migration
+
+There's no ironclad guide to migrating an existing `tonic` service to
+`connect-rust` &mdash; every codebase uses a different subset of `tonic`
+features and will need a slightly different approach. Unlike many RPC framework
+migrations, remember that you do _not_ need to modify your service's clients:
+they can continue to use their current gRPC clients. Your current Protobuf
+schema will also work without modification.
+
+The particulars of your codebase will be unique, but most migrations include a
+few common steps:
+
+1. Begin generating code with `buf.build/anthropics/buffa` and
+   `buf.build/connectrpc/rust`. Connect for Rust uses buffa instead of `prost`
+   for Protobuf messages, so the generated message types are different from
+   the ones `tonic` uses. During the migration, generate the Connect code into a
+   separate module so your code can use `connect-rust` and `tonic` code without
+   any problems.
+1. Change your service implementations to implement the generated Connect
+   traits. Handlers receive a `RequestContext` and a zero-copy view of the
+   request instead of a `tonic::Request`, and return a `Response` instead of a
+   `tonic::Response`. Rather than using `tonic::metadata`, read request
+   headers from the `RequestContext` and set response headers on the
+   `Response`.
+1. Where necessary, change your service implementations to return
+   `ConnectError`. Connect and gRPC use the same error codes, so this is often a
+   straightforward replacement of `tonic::Status` with `ConnectError`.
+1. Migrate any streaming handlers to use `InboundStream` and `ServiceStream`.
+   These are broadly similar to their `tonic` equivalents.
+1. Once you've migrated your service implementations to Connect, switch your
+   `main` function to use Connect's `Server`, or mount your `Router` in axum,
+   instead of `tonic::transport::Server`. At this point, you're halfway done:
+   your service should compile, and you could deploy it without migrating your
+   calls to downstream services.
+1. Next, tackle your downstream calls. Switch to Connect's generated client
+   types. Rather than wrapping requests in `tonic::Request` to set metadata,
+   pass `CallOptions` to the `_with_options` methods. Don't forget to call
+   `with_protocol(Protocol::Grpc)` when configuring your client, and if
+   necessary [configure your HTTP clients to use
+   h2c](/docs/rust/deployment/#h2c).
+1. Where necessary, switch from `tonic::Status` and `tonic::Code` to
+   `ConnectError` and `ErrorCode`.
+1. Migrate any streaming calls to the Connect stream types.
+1. You're done! Unless your service is in the same repository as its clients,
+   you can stop generating code with `tonic`.
+
+[connect-conformance]: https://github.com/connectrpc/conformance
+[connectrpc-health]: https://docs.rs/connectrpc-health
+[connectrpc-reflection]: https://docs.rs/connectrpc-reflection
