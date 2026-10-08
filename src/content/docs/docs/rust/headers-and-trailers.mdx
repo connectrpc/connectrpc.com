@@ -1,0 +1,194 @@
+---
+title: Headers & trailers
+---
+
+import VersionWarning from './_version-warning.mdx';
+
+<VersionWarning />
+
+To integrate with other systems, you may need to read or write custom HTTP
+headers with your RPCs. For example, distributed tracing, authentication,
+authorization, and rate limiting often require working with headers. Connect
+also supports trailers, which serve a similar purpose but can be written
+_after_ the response body. This document outlines how to work with headers and
+trailers for unary (request-response) RPCs. The [streaming
+documentation](/docs/rust/streaming/) covers headers and trailers for streaming RPCs.
+
+## Headers
+
+Connect headers are just HTTP headers, modeled using the familiar `HeaderMap`
+type from the [`http`][http] crate. On the server, request headers are available
+from the handler's `RequestContext`, and response headers are set on the
+`Response` the handler returns:
+
+```rust
+impl GreetService for GreetServer {
+    async fn greet(
+        &self,
+        ctx: RequestContext,
+        _request: ServiceRequest<'_, GreetRequest>,
+    ) -> ServiceResult<GreetResponse> {
+        println!("{:?}", ctx.header("acme-tenant-id"));
+        Ok(Response::new(GreetResponse::default()).with_header("greet-version", "v1"))
+    }
+}
+```
+
+From the client's perspective, every generated method has a `_with_options`
+variant that accepts `CallOptions`, which hold the request headers. Response
+headers are available on the returned response:
+
+```rust
+use connectrpc::client::CallOptions;
+
+let client = GreetServiceClient::new(HttpClient::plaintext(), config);
+let res = client
+    .greet_with_options(
+        GreetRequest {
+            name: "Jane".into(),
+            ..Default::default()
+        },
+        CallOptions::default().with_header("acme-tenant-id", "1234"),
+    )
+    .await?;
+println!("{:?}", res.headers().get("greet-version"));
+```
+
+To send the same headers on every call, use `with_default_header` on the
+client's `ClientConfig` instead.
+
+When sending or receiving errors, handlers and clients may use the
+`response_headers` and `response_headers_mut` methods of `ConnectError` to
+access headers:
+
+```rust
+// Handler
+use connectrpc::ConnectError;
+use http::HeaderValue;
+
+impl GreetService for GreetServer {
+    async fn greet(
+        &self,
+        _ctx: RequestContext,
+        _request: ServiceRequest<'_, GreetRequest>,
+    ) -> ServiceResult<GreetResponse> {
+        let mut err = ConnectError::unknown("oh no!");
+        err.response_headers_mut()
+            .insert("greet-version", HeaderValue::from_static("v1"));
+        Err(err)
+    }
+}
+```
+
+```rust
+// Client
+let client = GreetServiceClient::new(HttpClient::plaintext(), config);
+let result = client
+    .greet(GreetRequest {
+        name: "Jane".into(),
+        ..Default::default()
+    })
+    .await;
+if let Err(err) = result {
+    println!("{:?}", err.response_headers().get("greet-version"));
+}
+```
+
+Keep in mind that Connect headers are just HTTP headers, so it's perfectly fine
+to work with them in Tower middleware!
+
+Both the gRPC and Connect protocols [require](/docs/protocol/#unary-request)
+that header keys contain only ASCII letters, numbers, underscores, hyphens, and
+periods, and the protocols reserve all keys beginning with "Connect-" or
+"Grpc-". Similarly, header values may contain only printable ASCII and spaces.
+In our experience, application code writing reserved or non-ASCII headers is
+unusual; rather than wrapping `HeaderMap` in a fat validation layer, we
+rely on your good judgment.
+
+## Binary headers
+
+To send non-ASCII values in headers, the gRPC and Connect protocols require
+base64 encoding. Suffix your key with "-Bin" and encode and decode values with
+the [`base64`][base64] crate:
+
+```rust
+// Handler
+use base64::Engine;
+use base64::engine::general_purpose::STANDARD_NO_PAD;
+
+impl GreetService for GreetServer {
+    async fn greet(
+        &self,
+        _ctx: RequestContext,
+        _request: ServiceRequest<'_, GreetRequest>,
+    ) -> ServiceResult<GreetResponse> {
+        Ok(Response::new(GreetResponse::default())
+            .with_header("greet-emoji-bin", STANDARD_NO_PAD.encode("👋")))
+    }
+}
+```
+
+```rust
+// Client
+use base64::Engine;
+use base64::engine::general_purpose::STANDARD_NO_PAD;
+
+let client = GreetServiceClient::new(HttpClient::plaintext(), config);
+let res = client
+    .greet(GreetRequest {
+        name: "Jane".into(),
+        ..Default::default()
+    })
+    .await?;
+if let Some(encoded) = res.headers().get("greet-emoji-bin") {
+    let emoji = STANDARD_NO_PAD.decode(encoded.to_str()?.trim_end_matches('='))?;
+    println!("{}", String::from_utf8(emoji)?);
+}
+```
+
+Use this mechanism sparingly, and consider whether error details are a better
+fit for your use case.
+
+## Trailers
+
+Connect's Rust APIs for manipulating response trailers work identically for the
+gRPC, gRPC-Web, and Connect protocols, even though each of the three protocols
+encodes trailers differently. Trailers are most useful in streaming handlers,
+which may need to send some metadata to the client after sending a few
+messages. Unary handlers should nearly always use headers instead.
+
+If you find yourself needing trailers, unary handlers and clients can access
+them much like headers:
+
+```rust
+// Handler
+impl GreetService for GreetServer {
+    async fn greet(
+        &self,
+        _ctx: RequestContext,
+        _request: ServiceRequest<'_, GreetRequest>,
+    ) -> ServiceResult<GreetResponse> {
+        // Sent as the HTTP header Trailer-Greet-Version.
+        Ok(Response::new(GreetResponse::default()).with_trailer("greet-version", "v1"))
+    }
+}
+```
+
+```rust
+// Client
+let client = GreetServiceClient::new(HttpClient::plaintext(), config);
+let res = client
+    .greet(GreetRequest {
+        name: "Jane".into(),
+        ..Default::default()
+    })
+    .await?;
+// Doesn't contain "greet-version" because any HTTP headers prefixed with
+// Trailer- are treated as trailers.
+println!("{:?}", res.headers());
+// Prefixes are automatically stripped.
+println!("{:?}", res.trailers().get("greet-version"));
+```
+
+[base64]: https://docs.rs/base64
+[http]: https://docs.rs/http

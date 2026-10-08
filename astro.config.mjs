@@ -60,6 +60,8 @@ export default defineConfig({
     "/docs/swift": "/docs/swift/getting-started/",
     "/web": "/docs/web/getting-started/",
     "/docs/web": "/docs/web/getting-started/",
+    "/rust": "/docs/rust/getting-started/",
+    "/docs/rust": "/docs/rust/getting-started/",
     "/web/query": "/docs/web/query/",
     "/docs/query/getting-started":
       "https://github.com/connectrpc/connect-query-es#quickstart",
@@ -275,6 +277,36 @@ export default defineConfig({
             },
             { label: "Observability", slug: "docs/python/observability" },
             { label: "Testing", slug: "docs/python/testing" },
+          ],
+        },
+        {
+          label: "Connect for Rust",
+          collapsed: true,
+          items: [
+            { label: "Getting started", slug: "docs/rust/getting-started" },
+            { label: "Routing", slug: "docs/rust/routing" },
+            {
+              label: "Serialization & compression",
+              slug: "docs/rust/serialization-and-compression",
+            },
+            { label: "Errors", slug: "docs/rust/errors" },
+            {
+              label: "Headers & trailers",
+              slug: "docs/rust/headers-and-trailers",
+            },
+            { label: "Interceptors", slug: "docs/rust/interceptors" },
+            { label: "Streaming", slug: "docs/rust/streaming" },
+            { label: "Deployment", slug: "docs/rust/deployment" },
+            {
+              label: "Get Requests and Caching",
+              slug: "docs/rust/get-requests-and-caching",
+            },
+            {
+              label: "gRPC compatibility",
+              slug: "docs/rust/grpc-compatibility",
+            },
+            { label: "Testing", slug: "docs/rust/testing" },
+            { label: "docs.rs", slug: "docs/rust/docs-rs" },
           ],
         },
         {
