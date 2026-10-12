@@ -12,22 +12,26 @@ If you use a Connect client to call a `grpc-go` server but forget the `WithGRPC`
 option, you'll see a long error that looks like this:
 
 ```text
-unavailable: possible missing connect.WithGRPC() client option when talking to
-gRPC server, see https://connectrpc.com/docs/go/common-errors: Post
+unavailable: possible missing connecthttp.WithGRPC() client option when talking
+to gRPC server, see https://connectrpc.com/docs/go/common-errors: Post
 "http://0.0.0.0:3000/buf.ping.v1alpha1.PingService/Ping": http2: Transport:
 cannot retry err [stream error: stream ID 3; PROTOCOL_ERROR; received from
 peer] after Request.Body was written; define Request.GetBody to avoid this
 error
 ```
 
-You can fix this error by using the `WithGRPC` client option when constructing
-your client.
+You can fix this error by using the `connecthttp.WithGRPC` transport option
+when constructing your client.
 
 ```go
 client := greetv1connect.NewGreetServiceClient(
-	http.DefaultClient, // though you may also need h2c, see below
-	"http://localhost:8080",
-	connect.WithGRPC(),
+	connect.NewClient(
+		connecthttp.NewTransport(
+			http.DefaultClient, // though you may also need h2c, see below
+			"http://localhost:8080",
+			connecthttp.WithGRPC(),
+		),
+	),
 )
 ```
 
@@ -58,18 +62,22 @@ TLS. If so, make sure your HTTP client [has h2c enabled](/docs/go/deployment/#h2
 
 ```go
 client := greetv1connect.NewGreetServiceClient(
-	&http.Client{
-		Transport: &http2.Transport{
-			AllowHTTP: true,
-			DialTLS: func(network, addr string, _ *tls.Config) (net.Conn, error) {
-				// If you're also using this client for non-h2c traffic, you may want to
-				// delegate to tls.Dial if the network isn't TCP or the addr isn't in an
-				// allowlist.
-				return net.Dial(network, addr)
+	connect.NewClient(
+		connecthttp.NewTransport(
+			&http.Client{
+				Transport: &http2.Transport{
+					AllowHTTP: true,
+					DialTLS: func(network, addr string, _ *tls.Config) (net.Conn, error) {
+						// If you're also using this client for non-h2c traffic, you may want to
+						// delegate to tls.Dial if the network isn't TCP or the addr isn't in an
+						// allowlist.
+						return net.Dial(network, addr)
+					},
+				},
 			},
-		},
-	},
-	"http://localhost:8080",
-	connect.WithGRPC(),
+			"http://localhost:8080",
+			connecthttp.WithGRPC(),
+		),
+	),
 )
 ```

@@ -9,95 +9,120 @@ functionality.
 If you followed the [getting started](/docs/go/getting-started/) guide, you've already seen an interceptor in action:
 the [validate-go](https://github.com/connectrpc/validate-go/) interceptor powers the Protovalidate integration that made sure every `GreetRequest` contained a valid name.
 
-On this page you'll learn how to build unary interceptors &mdash; more complex use
-cases are covered in the [streaming documentation](/docs/go/streaming/).
+On this page you'll learn how to build interceptors. Interceptors work the
+same way for unary and streaming RPCs &mdash; streaming examples are covered
+in the [streaming documentation](/docs/go/streaming/).
 
 Take care when writing interceptors! They're powerful, but overly complex
 interceptors can make debugging difficult.
 
 ## Interceptors are functions
 
-Unary interceptors are built on two interfaces: `AnyRequest` and `AnyResponse`
-and provide access to the request and response data only as an `any`. With these
-interfaces, we can model all unary RPCs as:
+Interceptors come in client and server flavors, built on two function types.
+Every RPC &mdash; including unary &mdash; is modeled as a stream that sends
+and receives messages, so we can model all RPCs as:
 
 ```go
-type UnaryFunc func(context.Context, AnyRequest) (AnyResponse, error)
+type ClientFunc func(ctx context.Context, spec Spec) (ClientStream, error)
+type ServerFunc func(ctx context.Context, spec Spec, stream ServerStream) error
 ```
 
 An interceptor wraps an RPC with some additional logic, so it's transforming
-one `UnaryFunc` into another:
+one function into another:
 
 ```go
-type UnaryInterceptorFunc func(UnaryFunc) UnaryFunc
+type ClientInterceptor func(next ClientFunc) ClientFunc
+type ServerInterceptor func(next ServerFunc) ServerFunc
 ```
 
-Most unary interceptors are best implemented as a `UnaryInterceptorFunc`.
+Client interceptors wrap the initialization of the stream. To observe
+messages or the end of the RPC, wrap the `ClientStream` returned by `next`,
+including its `Close` method. Server interceptors wrap the full lifecycle of
+the RPC. The stream is passed in, and it is closed when the `ServerFunc`
+returns.
 
 ## An example
 
-That's a little abstract, so let's consider an example: we'd like to log every
-RPC. We could add logging to each method on our server, but it's less
-error-prone to write an interceptor instead.
+That's a little abstract, so let's consider an example: we'd like to apply a
+simple header-based authentication scheme to our RPCs. We could add this logic
+to each method on our server, but it's less error-prone to write an interceptor
+instead. [Headers](/docs/go/headers-and-trailers/) are reached through the
+`CallInfo` in the context.
 
 ```go
 package example
 
 import (
 	"context"
-	"log/slog"
 
-	"connectrpc.com/connect"
+	"connectrpc.com/connect/v2"
 )
 
-func NewLoggingInterceptor() connect.UnaryInterceptorFunc {
-	return func(next connect.UnaryFunc) connect.UnaryFunc {
-		return func(
-			ctx context.Context,
-			req connect.AnyRequest,
-		) (connect.AnyResponse, error) {
-			spec := req.Spec()
-			slog.InfoContext(ctx, "rpc",
-				"procedure", spec.Procedure,
-				"is_client", spec.IsClient,
-			)
-			return next(ctx, req)
+const tokenHeader = "Acme-Token"
+
+func NewAuthClientInterceptor() connect.ClientInterceptor {
+	return func(next connect.ClientFunc) connect.ClientFunc {
+		return func(ctx context.Context, spec connect.Spec) (connect.ClientStream, error) {
+			// Send a token with client requests.
+			if info, ok := connect.CallInfoForClientContext(ctx); ok {
+				info.RequestHeader().Set(tokenHeader, "sample")
+			}
+			return next(ctx, spec)
+		}
+	}
+}
+
+func NewAuthServerInterceptor() connect.ServerInterceptor {
+	return func(next connect.ServerFunc) connect.ServerFunc {
+		return func(ctx context.Context, spec connect.Spec, stream connect.ServerStream) error {
+			// Check the token in handlers.
+			info, ok := connect.CallInfoForServerContext(ctx)
+			if !ok || info.RequestHeader().Get(tokenHeader) == "" {
+				return connect.NewError(connect.CodeUnauthenticated, "no token provided")
+			}
+			return next(ctx, spec, stream)
 		}
 	}
 }
 ```
 
-To apply our new interceptor to handlers or clients, we can use
-`WithInterceptors`:
+To apply our new interceptors to handlers or clients, pass them to the
+constructors:
 
 ```go
 // For handlers:
-interceptors := connect.WithInterceptors(
-	NewLoggingInterceptor(),
-	validate.NewInterceptor(),
+server := connect.NewServer(
+	NewAuthServerInterceptor(),
+	validate.NewServerInterceptor(),
 )
-mux := http.NewServeMux()
-mux.Handle(greetv1connect.NewGreetServiceHandler(
-	&GreetServer{},
-	interceptors,
-))
+greetv1connect.RegisterGreetServiceHandler(server, &GreetServer{})
 ```
 
 ```go
 // For clients:
 client := greetv1connect.NewGreetServiceClient(
-	http.DefaultClient,
-	"http://localhost:8080",
-	connect.WithInterceptors(NewLoggingInterceptor()),
+	connect.NewClient(
+		connecthttp.NewTransport(http.DefaultClient, "http://localhost:8080"),
+		NewAuthClientInterceptor(),
+	),
 )
 ```
 
+Interceptors fire in argument order. The first interceptor wraps the
+outermost call.
+
 ## Authentication
 
-Don't use interceptors to authenticate requests on the server. Handlers run
-unary interceptors _after_ the request message has been read, decompressed, and
-unmarshaled. An interceptor-based check lets unauthenticated clients consume
-memory and CPU on your server. Instead, authenticate at the HTTP layer with
-standard `net/http` middleware, which runs before Connect reads the request
-body. The [authn-go](https://github.com/connectrpc/authn-go) package provides
+Authenticating in a server interceptor is safe. A `ServerInterceptor` wraps the
+whole RPC, and the handler pulls messages off the stream with `Receive`, so your
+interceptor runs before Connect reads or decodes any request message. Rejecting
+an unauthenticated call there costs no decoding work.
+
+This differs from connect-go v1, where unary interceptors ran after the request
+message was already read and unmarshaled. Code that moved authentication out of
+an interceptor to avoid that cost can move back.
+
+To turn requests away even earlier, before Connect sees them at all,
+authenticate at the HTTP layer with standard `net/http` middleware. The
+[authn-go](https://github.com/connectrpc/authn-go) package provides
 authentication middleware designed for Connect servers.

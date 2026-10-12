@@ -8,7 +8,8 @@ HTTP/2 without TLS and CORS.
 
 ## Timeouts and connection pools
 
-Connect stays close to `net/http`, so you should configure your servers and
+Connect's HTTP transport, `connecthttp`, stays close to `net/http`, so you
+should configure your servers and
 clients as you normally would. (If you're not sure what all the different
 timeouts mean, [this Cloudflare blog post][cloudflare-timeouts] is a good place
 to start.) There are a few RPC-specific nuances, though:
@@ -57,10 +58,9 @@ to untrusted clients, always set a limit with
 [`WithReadMaxBytes`][read-max-bytes]:
 
 ```go
-mux.Handle(greetv1connect.NewGreetServiceHandler(
-	&GreetServer{},
-	connect.WithReadMaxBytes(4*1024*1024), // 4 MiB per message
-))
+connecthttp.Mount(mux, server,
+	connecthttp.WithReadMaxBytes(4*1024*1024), // 4 MiB per message
+)
 ```
 
 The limit applies to each message after decompression. Messages over the limit
@@ -143,7 +143,7 @@ func newInsecureClient() *http.Client {
 [go-deadlines]: https://github.com/golang/go/issues/16100
 [http-protocols]: https://pkg.go.dev/net/http#Protocols
 [max-bytes-handler]: https://pkg.go.dev/net/http#MaxBytesHandler
-[read-max-bytes]: https://pkg.go.dev/connectrpc.com/connect#WithReadMaxBytes
+[read-max-bytes]: https://pkg.go.dev/connectrpc.com/connect/v2/connecthttp#WithReadMaxBytes
 
 ## CORS
 
