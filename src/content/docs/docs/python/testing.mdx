@@ -52,10 +52,10 @@ Here's a minimal example without any test framework:
     from pyqwest.testing import WSGITransport
     from greet.v1.greet_connect import GreetServiceWSGIApplication, GreetServiceClientSync
     from greet.v1.greet_pb import GreetRequest
-    from server import GreeterSync  # Your service implementation
+    from server import Greeter  # Your service implementation
 
     # Create WSGI app with your service
-    app = GreetServiceWSGIApplication(GreeterSync())
+    app = GreetServiceWSGIApplication(Greeter())
 
     # Connect client to service using in-memory transport
     client = GreetServiceClientSync(
@@ -111,11 +111,11 @@ Testing the service we created in the [Getting Started](/docs/python/getting-sta
     from pyqwest.testing import WSGITransport
     from greet.v1.greet_connect import GreetServiceWSGIApplication, GreetServiceClientSync
     from greet.v1.greet_pb import GreetRequest
-    from server import GreeterSync  # Import your actual service implementation
+    from server import Greeter  # Import your actual service implementation
 
     def test_greet():
         # Create the WSGI application with your service
-        app = GreetServiceWSGIApplication(GreeterSync())
+        app = GreetServiceWSGIApplication(Greeter())
 
         # Test using pyqwest with WSGI transport
         client = GreetServiceClientSync(
@@ -169,11 +169,11 @@ The same in-memory testing approach works with unittest:
     from pyqwest.testing import WSGITransport
     from greet.v1.greet_connect import GreetServiceWSGIApplication, GreetServiceClientSync
     from greet.v1.greet_pb import GreetRequest
-    from server import GreeterSync
+    from server import Greeter
 
     class TestGreet(unittest.TestCase):
         def test_greet(self):
-            app = GreetServiceWSGIApplication(GreeterSync())
+            app = GreetServiceWSGIApplication(Greeter())
             client = GreetServiceClientSync(
                 "http://test",
                 http_client=SyncClient(WSGITransport(app))
@@ -238,11 +238,11 @@ For cleaner tests, use pytest fixtures to set up clients and services:
     import pytest
     from greet.v1.greet_connect import GreetServiceWSGIApplication, GreetServiceClientSync
     from greet.v1.greet_pb import GreetRequest
-    from server import GreeterSync
+    from server import Greeter
 
     @pytest.fixture
     def greet_client():
-        app = GreetServiceWSGIApplication(GreeterSync())
+        app = GreetServiceWSGIApplication(Greeter())
         return GreetServiceClientSync(
             "http://test",
             http_client=SyncClient(WSGITransport(app))
@@ -381,7 +381,7 @@ For testing client code that calls Connect services, use the same in-memory test
 
 ## Testing interceptors
 
-Test interceptors as part of your full application stack. For example, testing the `ServerAuthInterceptor` from the [Interceptors](/docs/python/interceptors/#metadata-interceptors) guide:
+Test interceptors as part of your full application stack. For example, testing the `GoodbyeInterceptor` from the [Interceptors](/docs/python/interceptors/#an-example) guide:
 
 <Tabs syncKey="python-type">
   <TabItem label="ASGI">
@@ -390,19 +390,16 @@ Test interceptors as part of your full application stack. For example, testing t
     import pytest
     from pyqwest import Client
     from pyqwest.testing import ASGITransport
-    from connectrpc.code import Code
-    from connectrpc.errors import ConnectError
     from greet.v1.greet_connect import GreetServiceASGIApplication, GreetServiceClient
     from greet.v1.greet_pb import GreetRequest
-    from interceptors import ServerAuthInterceptor
+    from interceptors import GoodbyeInterceptor
     from server import Greeter
 
     @pytest.mark.asyncio
-    async def test_server_auth_interceptor():
-        interceptor = ServerAuthInterceptor(["valid-token"])
+    async def test_goodbye_interceptor():
         app = GreetServiceASGIApplication(
             Greeter(),
-            interceptors=[interceptor]
+            interceptors=[GoodbyeInterceptor(["Bob"])]
         )
 
         client = GreetServiceClient(
@@ -410,49 +407,30 @@ Test interceptors as part of your full application stack. For example, testing t
             http_client=Client(ASGITransport(app))
         )
 
-        # Valid token succeeds
-        response = await client.greet(
-            GreetRequest(name="Alice"),
-            headers={"authorization": "Bearer valid-token"}
-        )
+        # Other callers reach the service
+        response = await client.greet(GreetRequest(name="Alice"))
         assert response.greeting == "Hello, Alice!"
 
-        # Invalid token format fails with UNAUTHENTICATED
-        with pytest.raises(ConnectError) as exc_info:
-            await client.greet(
-                GreetRequest(name="Bob"),
-                headers={"authorization": "invalid"}
-            )
-        assert exc_info.value.code == Code.UNAUTHENTICATED
-
-        # Wrong token fails with PERMISSION_DENIED
-        with pytest.raises(ConnectError) as exc_info:
-            await client.greet(
-                GreetRequest(name="Bob"),
-                headers={"authorization": "Bearer wrong-token"}
-            )
-        assert exc_info.value.code == Code.PERMISSION_DENIED
+        # Listed callers get the interceptor's response
+        response = await client.greet(GreetRequest(name="Bob"))
+        assert response.greeting == "Goodbye, Bob!"
     ```
 
   </TabItem>
   <TabItem label="WSGI">
 
     ```python
-    import pytest
     from pyqwest import SyncClient
     from pyqwest.testing import WSGITransport
-    from connectrpc.code import Code
-    from connectrpc.errors import ConnectError
     from greet.v1.greet_connect import GreetServiceWSGIApplication, GreetServiceClientSync
     from greet.v1.greet_pb import GreetRequest
-    from interceptors import ServerAuthInterceptor
-    from server import GreeterSync
+    from interceptors import GoodbyeInterceptor
+    from server import Greeter
 
-    def test_server_auth_interceptor():
-        interceptor = ServerAuthInterceptor(["valid-token"])
+    def test_goodbye_interceptor():
         app = GreetServiceWSGIApplication(
-            GreeterSync(),
-            interceptors=[interceptor]
+            Greeter(),
+            interceptors=[GoodbyeInterceptor(["Bob"])]
         )
 
         client = GreetServiceClientSync(
@@ -460,28 +438,13 @@ Test interceptors as part of your full application stack. For example, testing t
             http_client=SyncClient(WSGITransport(app))
         )
 
-        # Valid token succeeds
-        response = client.greet(
-            GreetRequest(name="Alice"),
-            headers={"authorization": "Bearer valid-token"}
-        )
+        # Other callers reach the service
+        response = client.greet(GreetRequest(name="Alice"))
         assert response.greeting == "Hello, Alice!"
 
-        # Invalid token format fails with UNAUTHENTICATED
-        with pytest.raises(ConnectError) as exc_info:
-            client.greet(
-                GreetRequest(name="Bob"),
-                headers={"authorization": "invalid"}
-            )
-        assert exc_info.value.code == Code.UNAUTHENTICATED
-
-        # Wrong token fails with PERMISSION_DENIED
-        with pytest.raises(ConnectError) as exc_info:
-            client.greet(
-                GreetRequest(name="Bob"),
-                headers={"authorization": "Bearer wrong-token"}
-            )
-        assert exc_info.value.code == Code.PERMISSION_DENIED
+        # Listed callers get the interceptor's response
+        response = client.greet(GreetRequest(name="Bob"))
+        assert response.greeting == "Goodbye, Bob!"
     ```
 
   </TabItem>

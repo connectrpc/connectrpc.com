@@ -19,8 +19,10 @@ In Python, this typically means using [pyvoy](https://pyvoy.dev/), the same serv
 If using a server with trailers support, there is no other setup required to support gRPC. If you
 run in a server that doesn't support it, you will get a runtime error when making a request.
 
-Connect does not currently provide implementations of gRPC standard endpoints like reflection
-and health check, but likely will in the future.
+The [`connectrpc-grpcreflect`](https://pypi.org/project/connectrpc-grpcreflect/) package
+provides the gRPC server reflection service, so tools like [`buf curl`](https://buf.build/docs/curl/)
+and `grpcurl` can call your services without their schema. Connect does not currently provide
+the gRPC health check service.
 
 ## Clients
 
@@ -32,38 +34,38 @@ need to configure the transport to explicitly use HTTP/2. Connect uses
 streaming. Configure it for HTTP/2 like this:
 
 <Tabs syncKey="python-type">
-  <TabItem label="async">
+  <TabItem label="Async">
 
-      ```python
-      from connectrpc.protocol import ProtocolType
-      from pyqwest import Client, HTTPTransport, HTTPVersion
+    ```python
+    from connectrpc.protocol import ProtocolType
+    from pyqwest import Client, HTTPTransport, HTTPVersion
 
-      from greet.v1.greet_connect import GreetServiceClient
-      from greet.v1.greet_pb import GreetRequest
+    from greet.v1.greet_connect import GreetServiceClient
+    from greet.v1.greet_pb import GreetRequest
 
-      async with (
-          HTTPTransport(http_version=HTTPVersion.HTTP2) as transport,
-          GreetServiceClient(url, protocol=ProtocolType.GRPC, http_client=Client(transport)) as client,
-      ):
-          res = await client.greet(GreetRequest(name="Jane"))
-      ```
+    async with (
+        HTTPTransport(http_version=HTTPVersion.HTTP2) as transport,
+        GreetServiceClient("http://localhost:8000", protocol=ProtocolType.GRPC, http_client=Client(transport)) as client,
+    ):
+        res = await client.greet(GreetRequest(name="Jane"))
+    ```
 
   </TabItem>
-  <TabItem label="sync">
+  <TabItem label="Sync">
 
-      ```python
-      from connectrpc.protocol import ProtocolType
-      from pyqwest import HTTPVersion, SyncClient, SyncHTTPTransport
+    ```python
+    from connectrpc.protocol import ProtocolType
+    from pyqwest import HTTPVersion, SyncClient, SyncHTTPTransport
 
-      from greet.v1.greet_connect import GreetServiceClientSync
-      from greet.v1.greet_pb import GreetRequest
+    from greet.v1.greet_connect import GreetServiceClientSync
+    from greet.v1.greet_pb import GreetRequest
 
-      with (
-          SyncHTTPTransport(http_version=HTTPVersion.HTTP2) as transport,
-          GreetServiceClientSync(url, protocol=ProtocolType.GRPC, http_client=SyncClient(transport)) as client,
-      ):
-          res = client.greet(GreetRequest(name="Jane"))
-      ```
+    with (
+        SyncHTTPTransport(http_version=HTTPVersion.HTTP2) as transport,
+        GreetServiceClientSync("http://localhost:8000", protocol=ProtocolType.GRPC, http_client=SyncClient(transport)) as client,
+    ):
+        res = client.greet(GreetRequest(name="Jane"))
+    ```
 
   </TabItem>
 </Tabs>
@@ -87,7 +89,7 @@ The particulars of your codebase will be unique, but most migrations include a f
 1. Once you've migrated your service implementations to Connect, replace your `main` function which starts
    a gRPC server with module-level initialization of an `app` or similarly named variable set to the
    WSGI or ASGI application corresponding to your service. For ASGI applications needing async initialization,
-   pass an `async def` function that yields your initialized service to the application constructor.
+   pass an async generator that yields your initialized service to the application constructor.
 1. Set up your local development and production scripts, such as Dockerfile, to run the application with pyvoy
    and release. You now have a server handling requests with `connectrpc` that supports both Connect and
    gRPC clients.
