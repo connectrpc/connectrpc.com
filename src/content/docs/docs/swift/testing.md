@@ -213,7 +213,7 @@ To use the [generated mocks](#generating-mocks), you will need to include the
 
 It can be integrated via Swift Package Manager, using the same
 [GitHub URL][connect-swift] and
-[instructions](./getting-started#add-the-connect-swift-package) as the
+[instructions](/docs/swift/getting-started/#add-the-connect-swift-package) as the
 main `Connect` library.
 
 You can then write unit tests that inject the mock implementations instead of
