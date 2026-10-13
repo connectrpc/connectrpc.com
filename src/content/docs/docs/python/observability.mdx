@@ -23,7 +23,7 @@ OpenTelemetry can be quite complex, so this guide assumes that readers are famil
 
 - What [observability](https://opentelemetry.io/docs/concepts/observability-primer/) is.
 - A basic understanding of [OpenTelemetry metrics and tracing](https://opentelemetry.io/docs/specs/otel/).
-- How [TextMapPropagators](https://opentelemetry.io/docs/specs/otel/context/api-propagators/), [MeterProviders](https://opentelemetry.io/docs/specs/otel/metrics/sdk/), and [TracerProviders](https://opentelemetry.io/docs/concepts/signals/traces/) are initialized and used.
+- How [TextMapPropagators](https://opentelemetry.io/docs/specs/otel/context/api-propagators/#textmap-propagator), [MeterProviders](https://opentelemetry.io/docs/specs/otel/metrics/sdk/#meterprovider), and [TracerProviders](https://opentelemetry.io/docs/concepts/signals/traces/#tracer-provider) are initialized and used.
 
 ## Enabling OpenTelemetry for Connect
 
@@ -34,7 +34,7 @@ servers and clients will be automatically instrumented and generate telemetry.
 To manually instrument your app instead, just register the `OpenTelemetryInterceptor` when initializing a server or client.
 
 <Tabs syncKey="python-type">
-  <TabItem label="ASGI">
+  <TabItem label="Async">
 
     ```python
     from connectrpc_otel import OpenTelemetryInterceptor
@@ -49,7 +49,7 @@ To manually instrument your app instead, just register the `OpenTelemetryInterce
     ```
 
   </TabItem>
-  <TabItem label="WSGI">
+  <TabItem label="Sync">
 
     ```python
     from connectrpc_otel import OpenTelemetryInterceptor
