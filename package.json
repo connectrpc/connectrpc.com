@@ -43,11 +43,11 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
-    "@biomejs/biome": "2.5.11",
+    "@biomejs/biome": "2.5.15",
     "@bufbuild/license-header": "^0.0.4",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
-    "rumdl": "^0.2.62",
+    "rumdl": "^0.2.79",
     "typescript": "^6.0.3"
   },
   "licenseHeader": {
