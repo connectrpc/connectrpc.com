@@ -131,8 +131,8 @@ Servers return HTTP responses to clients. A [unary response](#unary-response)
 contains exactly one message, while a [streaming response](#streaming-response)
 contains one or more messages.
 
-The rules in this document use HTTP/2-style notation (for example, ":method
-POST" and ":path /foo/bar" instead of "POST /foo/bar HTTP/1.1"). On the wire,
+The rules in this document use HTTP/2-style notation (for example, `:method POST`
+and `:path /foo/bar` instead of `POST /foo/bar HTTP/1.1`). On the wire,
 Connect implementations must represent these semantics appropriately for the
 HTTP version in use.
 
@@ -201,17 +201,17 @@ also be used to support revisions to this protocol.) Clients, especially
 generated clients, should send this header. Servers and proxies may reject
 traffic without this header with an HTTP status code of 400.
 
-Following standard HTTP semantics, servers must assume "identity" if the client
+Following standard HTTP semantics, servers must assume `identity` if the client
 omits `Content-Encoding`.
 
 If the client omits `Accept-Encoding`, servers must assume that the client
 accepts the `Content-Encoding` used for the request if present. Servers must
-assume that all clients accept "identity" as their least preferred encoding,
+assume that all clients accept `identity` as their least preferred encoding,
 even when `Accept-Encoding` is omitted. Servers should treat `Accept-Encoding`
 as an ordered list, with the client's most preferred encoding first and least
 preferred encoding last. This is a simplification of standard HTTP semantics
 that excludes quality values. If the client uses an unsupported `Content-Encoding`,
-servers should return an error with code "unimplemented" and a message listing the
+servers should return an error with code `unimplemented` and a message listing the
 supported encodings.
 
 If `Timeout` is omitted, the server should assume an infinite timeout. The
@@ -220,20 +220,20 @@ may set a default timeout for all RPCs, and server implementations may clamp
 timeouts to an appropriate maximum.
 
 When `Timeout` is present, it must be a positive integer or zero.
-No + or - should be used as a leading character and there should not be a
-decimal point (.). If a timeout of zero is supplied, the handler is not run
+No `+` or `-` should be used as a leading character and there should not be a
+decimal point (`.`). If a timeout of zero is supplied, the handler is not run
 and a `deadline_exceeded` error code is returned with an HTTP status code
-of `504 Gateway Timeout`.
+of 504 Gateway Timeout.
 
 HTTP doesn't allow header values to be arbitrary binary blobs, so Connect
 differentiates between `ASCII-Metadata` and `Binary-Metadata`. Binary
-headers must use keys ending in "-bin", and implementations should emit
+headers must use keys ending in `-bin`, and implementations should emit
 unpadded base64-encoded values. Implementations must accept both padded and
 unpadded values. Because binary and non-ASCII headers are relatively uncommon,
 implementations may represent HTTP headers using an off-the-shelf type rather
 than reifying these rules in a custom type. Implementations using an
 off-the-shelf type should prominently document these rules. For both ASCII and
-binary metadata, keys beginning with "connect-" are reserved for use by the
+binary metadata, keys beginning with `connect-` are reserved for use by the
 Connect protocol.
 
 `Bare-Message` is the RPC request payload, serialized using the codec
@@ -304,23 +304,23 @@ should use base64 encoding. Also, note that clients are still required to
 explicitly specify `Base64-Query` even when base64 encoding is required.
 
 If `Base64-Query` is present, the value of the parameter should be one. Other
-values for the "base64" parameter will simply be ignored. Generally, a request
-with a payload that is not base64-encoded shouldn't need a "base64" parameter.
+values for the `base64` parameter will simply be ignored. Generally, a request
+with a payload that is not base64-encoded shouldn't need a `base64` parameter.
 
 If the server doesn't support the specified `Message-Codec`, it must respond
 with an HTTP status code of 415 Unsupported Media Type.
 
-Servers must assume "identity" if the client omits `Compression-Query`. If
+Servers must assume `identity` if the client omits `Compression-Query`. If
 the client omits `Accept-Encoding`, servers must assume that the client
 accepts the `Compression-Query` value used for the request. Servers must
-assume that all clients accept "identity" as their least preferred encoding.
+assume that all clients accept `identity` as their least preferred encoding.
 Server implementations may choose to accept the full HTTP quality value syntax
 for `Accept-Encoding`, but client implementations must restrict themselves to
 sending the easy-to-parse subset outlined above. Servers should treat
 `Accept-Encoding` as an ordered list, with the client's most preferred
 encoding first and least preferred encoding last. If the client uses an
 unsupported `Compression-Query` value, servers should return an error with
-code "unimplemented" and a message listing the supported encodings.
+code `unimplemented` and a message listing the supported encodings.
 Servers must not attempt to decompress zero-length `Message-Query`.
 
 If `Timeout` is omitted, the server should assume an infinite timeout. The
@@ -330,10 +330,10 @@ timeouts to an appropriate maximum. Note that timeouts, if specified, remain
 specified using HTTP headers rather than query parameters.
 
 When `Timeout` is present, it must be a positive integer or zero.
-No + or - should be used as a leading character and there should not be a
-decimal point (.). If a timeout of zero is supplied, the handler is not run
+No `+` or `-` should be used as a leading character and there should not be a
+decimal point (`.`). If a timeout of zero is supplied, the handler is not run
 and a `deadline_exceeded` error code is returned with an HTTP status code
-of `504 Gateway Timeout`.
+of 504 Gateway Timeout.
 
 The `Connect-Version-Query` parameter distinguishes Connect Get requests from
 other HTTP GET requests. (In the future, it may also be used to support
@@ -361,12 +361,12 @@ Prefixed-Header-Name       = "trailer-" Header-Name
 sent on the wire alongside `Leading-Metadata`, support for trailing metadata
 lets Connect implementations use common interfaces for streaming and unary RPC.
 Implementations must transparently prefix trailing metadata keys with
-"trailer-" when writing data to the wire and strip the prefix when reading data
+`trailer-` when writing data to the wire and strip the prefix when reading data
 from the wire. As noted above, `Leading-Metadata` keys beginning with
-"connect-" and `Prefixed-Trailing-Metadata` keys beginning with
-"trailer-connect-" are reserved for use by the Connect protocol.
+`connect-` and `Prefixed-Trailing-Metadata` keys beginning with
+`trailer-connect-` are reserved for use by the Connect protocol.
 
-If `Content-Encoding` is omitted, clients must assume "identity". Servers
+If `Content-Encoding` is omitted, clients must assume `identity`. Servers
 must either respond with an error or use a `Content-Encoding` supported by
 the client.
 
@@ -380,7 +380,7 @@ HTTP response content (often called the body). Clients must not attempt to decom
 zero-length HTTP response content.
 
 Errors are sent with a non-200 `HTTP-Status`. In those cases,
-`Unary-Content-Type` _must_ be "application/json". `Bare-Message` is either
+`Unary-Content-Type` _must_ be `application/json`. `Bare-Message` is either
 omitted or a JSON-serialized [Error](#error-end-stream), possibly compressed
 using `Content-Encoding` and sent on the wire as the HTTP response content.
 Clients must not attempt to decompress zero-length HTTP response content. If
@@ -491,7 +491,7 @@ Message-Length               = 4OCTET ; unsigned big-endian length of Message
 Message                      = *OCTET
 ```
 
-If `Streaming-Content-Type` does not begin with "application/connect+",
+If `Streaming-Content-Type` does not begin with `application/connect+`,
 servers should respond with an HTTP status of 415 Unsupported Media Type. This
 prevents HTTP clients unaware of Connect's semantics from interpreting a
 streaming error response, which uses an HTTP Status of 200 OK, as successful.
@@ -515,8 +515,8 @@ may set a default timeout for all RPCs, and server implementations may clamp
 timeouts to an appropriate maximum.
 
 When `Timeout` is present, it must be a positive integer or zero.
-No + or - should be used as a leading character and there should not be a
-decimal point (.). If a timeout of zero is supplied, the handler is not run
+No `+` or `-` should be used as a leading character and there should not be a
+decimal point (`.`). If a timeout of zero is supplied, the handler is not run
 and a `deadline_exceeded` error code is returned.
 
 The HTTP request content is a sequence of zero or more `Enveloped-Message`.
@@ -524,7 +524,7 @@ The first byte is `Envelope-Flags`, a set of 8 bitwise flags.
 
 * If the least significant bit is 1, the `Message` is compressed using the
   algorithm specified in `Streaming-Content-Encoding`. If
-  `Streaming-Content-Encoding` is omitted or "identity", this bit must be 0.
+  `Streaming-Content-Encoding` is omitted or `identity`, this bit must be 0.
   Compression contexts are not maintained over message boundaries.
 * If the next least significant bit is 1, the `Message` is an
   [EndStreamResponse](#error-end-stream) rather than the response type
@@ -601,7 +601,7 @@ gRPC. Only the codes below are valid &mdash; there are no user-defined codes.
 | `not_found` | 404 Not Found | User requested a resource (for example, a file or directory) that can't be found. |
 | `already_exists` | 409 Conflict | Caller attempted to create a resource that already exists. |
 | `permission_denied` | 403 Forbidden | Caller isn't authorized to perform the operation. |
-| `resource_exhausted` | 429 Too Many Requests | Operation can't be completed because some resource is exhausted. Use unavailable if the server is temporarily overloaded and the caller should retry later. |
+| `resource_exhausted` | 429 Too Many Requests | Operation can't be completed because some resource is exhausted. Use `unavailable` if the server is temporarily overloaded and the caller should retry later. |
 | `failed_precondition` | 400 Bad Request | Operation can't be completed because the system isn't in the required state. |
 | `aborted` | 409 Conflict | The operation was aborted, often because of concurrency issues like a database transaction abort. |
 | `out_of_range` | 400 Bad Request | The operation was attempted past the valid range. |
@@ -641,7 +641,7 @@ If clients receive a response with non-200 HTTP status codes and no explicit
 Connect error code, they should infer a Connect code using the following table.
 This mapping is a superset of gRPC's: in all cases where gRPC maps an HTTP
 status code to a specific gRPC status code (that is, something other than
-unknown or internal), Connect maps to the semantically-equivalent error code.
+`unknown` or `internal`), Connect maps to the semantically-equivalent error code.
 
 #### HTTP to Error Code {#http-to-error-code}
 
@@ -676,13 +676,13 @@ simplest form of `Error` contains just a code:
 ```
 
 Details are an optional mechanism for servers to attach strongly-typed messages
-to errors. Each detail is an object with "type" and "value" properties and any
-number of other properties. The "type" field contains the fully-qualified
-Protobuf message name as a UTF-8 string, and the "value" field contains
+to errors. Each detail is an object with `type` and `value` properties and any
+number of other properties. The `type` field contains the fully-qualified
+Protobuf message name as a UTF-8 string, and the `value` field contains
 unpadded, base64-encoded binary Protobuf data. For readability on the wire,
 server implementations may also serialize the detail to JSON and include the
-resulting value under the "debug" key. Clients must not depend on data in the
-"debug" key when deserializing details.
+resulting value under the `debug` key. Clients must not depend on data in the
+`debug` key when deserializing details.
 
 ```json
 {
@@ -702,7 +702,7 @@ An `EndStreamMessage` is the final message in streaming response. It conveys
 whether or not the RPC succeeded and any trailing metadata. Trailing metadata
 is modeled as an object: keys follow `Header-Name`, and values are arrays of
 UTF-8 strings. Each string is either an `ASCII-Value` or a base64-encoded
-binary value. Keys beginning with "connect-" are reserved for use by the
+binary value. Keys beginning with `connect-` are reserved for use by the
 Connect protocol. Semantically, trailing metadata should be treated as HTTP
 headers: keys are case-insensitive, values for the same key can be joined with
 commas, and so on. (In practice, Connect implementations typically deserialize
@@ -719,9 +719,9 @@ trailing metadata into the same data structure used for HTTP headers.)
 }
 ```
 
-Failed RPCs must provide an `Error` in the "error" property, and successful
+Failed RPCs must provide an `Error` in the `error` property, and successful
 RPCs must omit the property. `{"error": null}`, `{"error": {}}`, and
-`{"error": {"code": null}}` are invalid. The "metadata" property is optional.
+`{"error": {"code": null}}` are invalid. The `metadata` property is optional.
 After a successful RPC, `EndStreamResponse` can be as simple as `{}`.
 
 ## Protocol Buffers {#protobuf}
@@ -734,7 +734,7 @@ Procedure-Name = [<proto package name> "."]
 Message-Codec  = "proto" / "json"
 ```
 
-Choose the "proto" content types for binary serialization and the "json" types
+Choose the `proto` content types for binary serialization and the `json` types
 to use the canonical JSON mapping.
 
 Protocol Buffers support unary RPCs and all three types of streaming.
