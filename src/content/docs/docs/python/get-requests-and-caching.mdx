@@ -60,7 +60,7 @@ To ensure that requests are allowed to be cached, a handler should also set the 
 For example, you may wish to set the `Cache-Control` header with a `max-age` directive:
 
 ```python
-ctx.response_headers()["cache-control"] = "max-age=604800"
+ctx.response_headers["cache-control"] = "max-age=604800"
 return SayResponse()
 ```
 
@@ -76,7 +76,7 @@ In some cases, you might want to introduce behavior that only occurs when handli
 This can be accomplished with `RequestContext.http_method`:
 
 ```python
-if ctx.http_method() == "GET":
-    ctx.response_headers()["cache-control"] = "max-age=604800"
+if ctx.http_method == "GET":
+    ctx.response_headers["cache-control"] = "max-age=604800"
 return SayResponse()
 ```

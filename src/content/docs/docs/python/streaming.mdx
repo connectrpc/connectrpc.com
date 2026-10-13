@@ -109,12 +109,12 @@ After running `buf generate` to update our generated code, we can amend our serv
 
     class Greeter(GreetService):
         async def greet(self, request, ctx):
-            print("Request headers: ", ctx.request_headers())
+            print("Request headers: ", ctx.request_headers)
             greeting = ""
             async for message in request:
                 greeting += f"Hello, {message.name}!\n"
             response = GreetResponse(greeting=greeting)
-            ctx.response_headers()["greet-version"] = "v1"
+            ctx.response_headers["greet-version"] = "v1"
             return response
 
     app = GreetServiceASGIApplication(Greeter())
@@ -129,12 +129,12 @@ After running `buf generate` to update our generated code, we can amend our serv
 
     class Greeter(GreetServiceSync):
         def greet(self, request, ctx):
-            print("Request headers: ", ctx.request_headers())
+            print("Request headers: ", ctx.request_headers)
             greeting = ""
             for message in request:
                 greeting += f"Hello, {message.name}!\n"
             response = GreetResponse(greeting=greeting)
-            ctx.response_headers()["greet-version"] = "v1"
+            ctx.response_headers["greet-version"] = "v1"
             return response
 
     app = GreetServiceWSGIApplication(Greeter())

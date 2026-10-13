@@ -28,8 +28,8 @@ In services, headers are available on the `RequestContext`:
     ```python
     class GreetService:
         async def greet(self, request, ctx):
-            print(ctx.request_headers().get("acme-tenant-id"))
-            ctx.response_headers()["greet-version"] = "v1"
+            print(ctx.request_headers.get("acme-tenant-id"))
+            ctx.response_headers["greet-version"] = "v1"
             return GreetResponse()
     ```
 
@@ -39,8 +39,8 @@ In services, headers are available on the `RequestContext`:
     ```python
     class GreetService:
         def greet(self, request, ctx):
-            print(ctx.request_headers().get("acme-tenant-id"))
-            ctx.response_headers()["greet-version"] = "v1"
+            print(ctx.request_headers.get("acme-tenant-id"))
+            ctx.response_headers["greet-version"] = "v1"
             return GreetResponse()
     ```
 
@@ -60,7 +60,7 @@ messages, headers are accessible through a separate context manager, `client.Res
     client = GreetServiceClient("https://api.acme.com")
     with ResponseMetadata() as meta:
         res = await client.greet(GreetRequest(), headers={"acme-tenant-id": "1234"})
-    print(meta.headers().get("greet-version"))
+    print(meta.headers.get("greet-version"))
     ```
 
   </TabItem>
@@ -72,7 +72,7 @@ messages, headers are accessible through a separate context manager, `client.Res
     client = GreetServiceClientSync("https://api.acme.com")
     with ResponseMetadata() as meta:
         res = client.greet(GreetRequest(), headers={"acme-tenant-id": "1234"})
-    print(meta.headers().get("greet-version"))
+    print(meta.headers.get("greet-version"))
     ```
 
   </TabItem>
@@ -97,13 +97,13 @@ If you find yourself needing trailers, handlers and clients can access them much
     ```python
     class GreetService:
         async def greet(self, request, ctx):
-            ctx.response_trailers()["greet-version"] = "v1"
+            ctx.response_trailers["greet-version"] = "v1"
             return GreetResponse()
 
     client = GreetServiceClient("https://api.acme.com")
     with ResponseMetadata() as meta:
         res = await client.greet(GreetRequest(), headers={"acme-tenant-id": "1234"})
-    print(meta.trailers().get("greet-version"))
+    print(meta.trailers.get("greet-version"))
     ```
 
   </TabItem>
@@ -112,13 +112,13 @@ If you find yourself needing trailers, handlers and clients can access them much
     ```python
     class GreetService:
         def greet(self, request, ctx):
-            ctx.response_trailers()["greet-version"] = "v1"
+            ctx.response_trailers["greet-version"] = "v1"
             return GreetResponse()
 
     client = GreetServiceClientSync("https://api.acme.com")
     with ResponseMetadata() as meta:
         res = client.greet(GreetRequest(), headers={"acme-tenant-id": "1234"})
-    print(meta.trailers().get("greet-version"))
+    print(meta.trailers.get("greet-version"))
     ```
 
   </TabItem>

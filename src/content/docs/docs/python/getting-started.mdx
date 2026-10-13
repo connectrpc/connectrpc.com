@@ -178,9 +178,9 @@ in one Python file. `touch server.py` and add:
 
     class Greeter(GreetService):
         async def greet(self, request: GreetRequest, ctx: RequestContext[GreetRequest, GreetResponse]) -> GreetResponse:
-            print("Request headers: ", ctx.request_headers())
+            print("Request headers: ", ctx.request_headers)
             response = GreetResponse(greeting=f"Hello, {request.name}!")
-            ctx.response_headers()["greet-version"] = "v1"
+            ctx.response_headers["greet-version"] = "v1"
             return response
 
     app = GreetServiceASGIApplication(Greeter())
@@ -195,9 +195,9 @@ in one Python file. `touch server.py` and add:
 
     class Greeter(GreetServiceSync):
         def greet(self, request, ctx):
-            print("Request headers: ", ctx.request_headers())
+            print("Request headers: ", ctx.request_headers)
             response = GreetResponse(greeting=f"Hello, {request.name}!")
-            ctx.response_headers()["greet-version"] = "v1"
+            ctx.response_headers["greet-version"] = "v1"
             return response
 
     app = GreetServiceWSGIApplication(Greeter())
