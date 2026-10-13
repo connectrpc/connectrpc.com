@@ -21,7 +21,7 @@ The recommended approach is **in-memory testing** using pyqwest's ASGI/WSGI tran
 Here's a minimal example without any test framework:
 
 <Tabs syncKey="python-type">
-  <TabItem label="ASGI">
+  <TabItem label="Async">
 
     ```python
     from pyqwest import Client
@@ -45,7 +45,7 @@ Here's a minimal example without any test framework:
     ```
 
   </TabItem>
-  <TabItem label="WSGI">
+  <TabItem label="Sync">
 
     ```python
     from pyqwest import SyncClient
@@ -79,7 +79,7 @@ This pattern works with any test framework (pytest, unittest) or none at all. Th
 Testing the service we created in the [Getting Started](/docs/python/getting-started/) guide looks like this:
 
 <Tabs syncKey="python-type">
-  <TabItem label="ASGI">
+  <TabItem label="Async">
 
     ```python
     import pytest
@@ -104,7 +104,7 @@ Testing the service we created in the [Getting Started](/docs/python/getting-sta
     ```
 
   </TabItem>
-  <TabItem label="WSGI">
+  <TabItem label="Sync">
 
     ```python
     from pyqwest import SyncClient
@@ -135,7 +135,7 @@ Testing the service we created in the [Getting Started](/docs/python/getting-sta
 The same in-memory testing approach works with unittest:
 
 <Tabs syncKey="python-type">
-  <TabItem label="ASGI">
+  <TabItem label="Async">
 
     ```python
     import asyncio
@@ -161,7 +161,7 @@ The same in-memory testing approach works with unittest:
     ```
 
   </TabItem>
-  <TabItem label="WSGI">
+  <TabItem label="Sync">
 
     ```python
     import unittest
@@ -199,7 +199,7 @@ For integration tests with actual servers over TCP/HTTP, see standard pytest pat
 For cleaner tests, use pytest fixtures to set up clients and services:
 
 <Tabs syncKey="python-type">
-  <TabItem label="ASGI">
+  <TabItem label="Async">
 
     ```python
     from pyqwest import Client
@@ -230,7 +230,7 @@ For cleaner tests, use pytest fixtures to set up clients and services:
     ```
 
   </TabItem>
-  <TabItem label="WSGI">
+  <TabItem label="Sync">
 
     ```python
     from pyqwest import SyncClient
@@ -384,7 +384,7 @@ For testing client code that calls Connect services, use the same in-memory test
 Test interceptors as part of your full application stack. For example, testing the `GoodbyeInterceptor` from the [Interceptors](/docs/python/interceptors/#an-example) guide:
 
 <Tabs syncKey="python-type">
-  <TabItem label="ASGI">
+  <TabItem label="Async">
 
     ```python
     import pytest
@@ -417,7 +417,7 @@ Test interceptors as part of your full application stack. For example, testing t
     ```
 
   </TabItem>
-  <TabItem label="WSGI">
+  <TabItem label="Sync">
 
     ```python
     from pyqwest import SyncClient

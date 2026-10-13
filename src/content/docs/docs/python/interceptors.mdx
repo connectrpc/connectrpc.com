@@ -25,7 +25,7 @@ Connect supports unary RPC and three stream types - because each has a different
 provide protocols corresponding to each.
 
 <Tabs syncKey="python-type">
-  <TabItem label="ASGI">
+  <TabItem label="Async">
 
     ```python
     class UnaryInterceptor(Protocol):
@@ -70,7 +70,7 @@ provide protocols corresponding to each.
     ```
 
   </TabItem>
-  <TabItem label="WSGI">
+  <TabItem label="Sync">
 
     ```python
     class UnaryInterceptorSync(Protocol):
@@ -126,7 +126,7 @@ service from the [getting started documentation](/docs/python/getting-started/) 
 "Hello" to certain callers.
 
 <Tabs syncKey="python-type">
-  <TabItem label="ASGI">
+  <TabItem label="Async">
 
     ```python
     from collections.abc import Awaitable, Callable
@@ -147,7 +147,7 @@ service from the [getting started documentation](/docs/python/getting-started/) 
     ```
 
   </TabItem>
-  <TabItem label="WSGI">
+  <TabItem label="Sync">
 
     ```python
     from collections.abc import Callable
@@ -173,14 +173,14 @@ service from the [getting started documentation](/docs/python/getting-started/) 
 To apply our new interceptor to handlers, we can pass it to the application with `interceptors=`.
 
 <Tabs syncKey="python-type">
-  <TabItem label="ASGI">
+  <TabItem label="Async">
 
     ```python
     app = GreetServiceASGIApplication(Greeter(), interceptors=[GoodbyeInterceptor(["user1", "user2"])])
     ```
 
   </TabItem>
-  <TabItem label="WSGI">
+  <TabItem label="Sync">
 
     ```python
     app = GreetServiceWSGIApplication(Greeter(), interceptors=[GoodbyeInterceptor(["user1", "user2"])])
@@ -218,7 +218,7 @@ protocol that can be implemented to work with any RPC type.
 An interceptor timing each RPC and logging its duration may look like this:
 
 <Tabs syncKey="python-type">
-  <TabItem label="ASGI">
+  <TabItem label="Async">
 
     ```python
     import logging
@@ -236,7 +236,7 @@ An interceptor timing each RPC and logging its duration may look like this:
     ```
 
   </TabItem>
-  <TabItem label="WSGI">
+  <TabItem label="Sync">
 
     ```python
     import logging

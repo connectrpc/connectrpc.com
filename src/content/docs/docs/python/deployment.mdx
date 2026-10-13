@@ -51,7 +51,7 @@ buffer an arbitrarily large message in memory. To change the limit, pass `read_m
 to the application constructor:
 
 <Tabs syncKey="python-type">
-  <TabItem label="ASGI">
+  <TabItem label="Async">
 
     ```python
     app = GreetServiceASGIApplication(
@@ -61,7 +61,7 @@ to the application constructor:
     ```
 
   </TabItem>
-  <TabItem label="WSGI">
+  <TabItem label="Sync">
 
     ```python
     app = GreetServiceWSGIApplication(
