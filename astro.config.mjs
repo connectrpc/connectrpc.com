@@ -125,6 +125,7 @@ export default defineConfig({
       ],
       expressiveCode: {
         themes: ["github-light", "github-dark"],
+        shiki: { langAlias: { abnf: "txt" } },
       },
       customCss: [
         "@fontsource-variable/jetbrains-mono/wght.css",
