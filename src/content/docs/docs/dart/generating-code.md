@@ -169,7 +169,6 @@ the `buf.gen.yaml` file.
 [buf.gen.yaml]: https://buf.build/docs/configuration/v2/buf-gen-yaml
 [buf.yaml]: https://buf.build/docs/configuration/v2/buf-yaml
 [buf-cli]: https://buf.build/docs/installation
-[connect-dart]: https://github.com/connectrpc/connect-dart
 [connect-dart-plugin]: https://buf.build/connectrpc/dart
 [dart-protobuf-plugin]: https://buf.build/protocolbuffers/dart
 [protobuf]: https://developers.google.com/protocol-buffers

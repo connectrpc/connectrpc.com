@@ -53,7 +53,6 @@ provide more detail, clarify, or amend your proposal. If merged, your proposal
 will become part of the Connect project's official documentation and any
 required work in other repositories can begin.
 
-[fork]: https://github.com/connectrpc/connectrpc.com/fork
 [open-issue]: https://github.com/connectrpc/connectrpc.com/issues/new
 [dco]: https://developercertificate.org
 [astro]: https://docs.astro.build
