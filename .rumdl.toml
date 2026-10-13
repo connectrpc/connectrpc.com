@@ -32,10 +32,6 @@ disable = [
   "MD041",
   # MD053: Unused link/image reference definitions — cleanup tracked separately from formatting.
   "MD053",
-  # MD057: Relative link path does not exist — link validity checking is handled separately
-  # on the built site (see src/plugins/remark-link-checker.ts). Duplicating this in source
-  # is noisy.
-  "MD057",
   # MD059: Link text should be descriptive — some pages intentionally use contextual link text
   # (e.g., "[here](url)") that reads naturally in prose. This is a content style decision.
   "MD059",
