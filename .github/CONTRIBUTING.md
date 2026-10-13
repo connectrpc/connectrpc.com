@@ -20,7 +20,7 @@ you to sign your commits when you open your pull request, and provide helpful ti
 
 ## Documentation changes
 
-Most documentation changes only require updating or adding Markdown. Fork, then
+Most documentation changes only require updating or adding Markdown. [Fork][fork], then
 clone the repository, and make your changes locally. If you have Node.js
 installed locally (you'll need Node.js in the version specified in `.nvmrc`),
 you can preview your changes with `npm install && npm run start`. More complex
@@ -53,6 +53,7 @@ provide more detail, clarify, or amend your proposal. If merged, your proposal
 will become part of the Connect project's official documentation and any
 required work in other repositories can begin.
 
+[fork]: https://github.com/connectrpc/connectrpc.com/fork
 [open-issue]: https://github.com/connectrpc/connectrpc.com/issues/new
 [dco]: https://developercertificate.org
 [astro]: https://docs.astro.build

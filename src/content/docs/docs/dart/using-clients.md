@@ -147,7 +147,7 @@ elizaClient.say(
 
 ### Timeouts and Cancellation
 
-The methods on the generated client accept an optional `signal` parameter that can be used to configure
+The methods on the generated client accept an optional [`signal`][signal] parameter that can be used to configure
 timeouts:
 
 ```dart mark={3}
@@ -179,3 +179,4 @@ signal.cancel();
 [envoy-grpc-bridge]: https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_filters/connect_grpc_bridge_filter
 [grpc]: https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md
 [grpc-web]: https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-WEB.md
+[signal]: https://github.com/connectrpc/connect-dart/blob/main/packages/connect/lib/src/abort.dart
