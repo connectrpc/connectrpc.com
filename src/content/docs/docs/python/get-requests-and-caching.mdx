@@ -48,9 +48,10 @@ It is still necessary to opt-in to HTTP GET on your client, as well. Generated c
 
 For other clients, see their respective documentation pages:
 
-- [Connect Node](https://connectrpc.com/docs/node/get-requests-and-caching)
-- [Connect Web](https://connectrpc.com/docs/web/get-requests-and-caching)
-- [Connect Kotlin](https://connectrpc.com/docs/kotlin/get-requests-and-caching)
+- [Connect Go](/docs/go/get-requests-and-caching/)
+- [Connect Node](/docs/node/get-requests-and-caching/)
+- [Connect Web](/docs/web/get-requests-and-caching/)
+- [Connect Kotlin](/docs/kotlin/get-requests-and-caching/)
 
 ## Caching
 
@@ -60,7 +61,7 @@ To ensure that requests are allowed to be cached, a handler should also set the 
 For example, you may wish to set the `Cache-Control` header with a `max-age` directive:
 
 ```python
-ctx.response_headers()["cache-control"] = "max-age=604800"
+ctx.response_headers["cache-control"] = "max-age=604800"
 return SayResponse()
 ```
 
@@ -76,7 +77,7 @@ In some cases, you might want to introduce behavior that only occurs when handli
 This can be accomplished with `RequestContext.http_method`:
 
 ```python
-if ctx.http_method() == "GET":
-    ctx.response_headers()["cache-control"] = "max-age=604800"
+if ctx.http_method == "GET":
+    ctx.response_headers["cache-control"] = "max-age=604800"
 return SayResponse()
 ```
