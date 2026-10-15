@@ -1,0 +1,171 @@
+---
+title: Deployment
+---
+
+import VersionWarning from './_version-warning.mdx';
+
+<VersionWarning />
+
+After building a Connect API, you still need to deploy it to production. This
+guide covers how to choose a server, configure timeouts, message size limits,
+HTTP/2 without TLS and CORS.
+
+## Servers
+
+Connect for Rust can serve your API in two ways:
+
+- The built-in `Server`, enabled by the `server` feature of `connectrpc`, is a
+  [hyper]-based server that handles HTTP/1.1, HTTP/2, TLS (with the
+  `server-tls` feature), and graceful shutdown. It's the simplest option when
+  your server only serves RPCs.
+- A `Router` can be mounted in [axum], enabled by the `axum` feature of
+  `connectrpc`. This lets you serve your API alongside other HTTP routes, and
+  use the Tower middleware ecosystem for concerns like CORS and authentication:
+
+  ```rust
+  let app = axum::Router::new()
+      .fallback_service(router.into_axum_service());
+  let listener = tokio::net::TcpListener::bind("127.0.0.1:8080").await?;
+  axum::serve(listener, app).await?;
+  ```
+
+Because the `Router` is converted into a standard `tower::Service`, it also
+works with other Tower-compatible frameworks.
+
+## Timeouts
+
+Connect clients can send a timeout with each request, and the server cancels
+the handler if the timeout passes before it finishes. By default, the server
+trusts the client's timeout, and a request without one can run indefinitely.
+Before exposing a server to untrusted clients, set a `DeadlinePolicy`:
+
+```rust
+use std::time::Duration;
+
+use connectrpc::{DeadlinePolicy, Server};
+
+let policy = DeadlinePolicy::new()
+    // Applied when the client doesn't send a timeout.
+    .with_default_timeout(Duration::from_secs(10))
+    // Caps the timeout a client can ask for.
+    .with_max(Duration::from_secs(30));
+let server = Server::new(router).with_deadline_policy(policy);
+```
+
+On the client side, set a timeout for every call with `with_default_timeout`
+on the client's `ClientConfig`, or for a single call with `with_timeout` on
+`CallOptions`:
+
+```rust
+use std::time::Duration;
+
+use connectrpc::client::ClientConfig;
+
+let config = ClientConfig::new("http://localhost:8080".parse()?)
+    .with_default_timeout(Duration::from_secs(5));
+```
+
+By default, a deadline only bounds the time until a streaming handler returns
+its response stream. To also bound the time spent streaming messages, call
+`with_enforce_on_streams(true)` on the `DeadlinePolicy`. Servers must strike a
+balance between keeping timeouts reasonable for unary RPCs while still leaving
+enough time for streaming RPCs.
+
+## Message size limits
+
+By default, Connect limits the size of each message to 4 MiB, so a client can't
+make your server buffer an arbitrarily large message in memory. To change the
+limit, pass `Limits` to your server:
+
+```rust
+use connectrpc::{Limits, Server};
+
+let limits = Limits::default()
+    .with_max_message_size(16 * 1024 * 1024) // 16 MiB per message
+    .with_max_request_body_size(16 * 1024 * 1024); // 16 MiB per unary request
+let server = Server::new(router).with_limits(limits);
+```
+
+The message limit applies to each message after decompression. The request
+body limit, which also defaults to 4 MiB, applies to the whole request body as
+read from the network, for unary and server streaming RPCs. Messages over the
+limit fail with `resource_exhausted`. Clients have equivalent options to
+protect against oversized responses, such as `with_default_max_message_size` on
+`ClientConfig`.
+
+The request body limit doesn't apply to client and bidi streaming RPCs. To
+bound the total number of bytes read from the network for these RPCs, use Tower
+middleware such as [`RequestBodyLimitLayer`][body-limit] from `tower-http`:
+
+```rust
+use tower_http::limit::RequestBodyLimitLayer;
+
+let app = axum::Router::new()
+    .fallback_service(router.into_axum_service())
+    .layer(RequestBodyLimitLayer::new(32 * 1024 * 1024)); // 32 MiB per request
+```
+
+## HTTP/2 without TLS {#h2c}
+
+In many environments, you'll need to use the HTTP/2 protocol _without_ TLS,
+usually called h2c. For example, GCP's Cloud Run service only supports
+end-to-end HTTP/2 if your server supports h2c. Similarly, you may want to
+interoperate with other gRPC servers and clients using h2c.
+
+Both the built-in `Server` and `axum::serve` support h2c by default, so no
+configuration is necessary on the server.
+
+On the client, `HttpClient::plaintext()` uses HTTP/1.1 for `http://` URLs. To
+use h2c instead, create your client with `HttpClient::plaintext_http2_only()`:
+
+```rust
+use connectrpc::client::{ClientConfig, HttpClient};
+
+let client = GreetServiceClient::new(
+    // This client will not work for HTTP/1-only servers.
+    HttpClient::plaintext_http2_only(),
+    ClientConfig::new("http://localhost:8080".parse()?),
+);
+```
+
+## CORS
+
+Cross-origin resource sharing (CORS) is needed to support web clients
+on origins other than the server's own. In Rust, servers mounted in axum may
+configure CORS with the [`CorsLayer`][cors-layer] from `tower-http`:
+
+```rust
+use http::{HeaderName, HeaderValue, Method};
+use tower_http::cors::CorsLayer;
+
+let cors = CorsLayer::new()
+    .allow_origin(HeaderValue::from_static("https://acme.com"))
+    // POST is used for all APIs except for idempotent unary RPCs that may support GET
+    .allow_methods([Method::GET, Method::POST])
+    .allow_headers([
+        HeaderName::from_static("content-type"),
+        HeaderName::from_static("connect-protocol-version"),
+        HeaderName::from_static("connect-timeout-ms"),
+        HeaderName::from_static("x-user-agent"),
+        HeaderName::from_static("x-grpc-web"),
+        HeaderName::from_static("grpc-timeout"),
+    ])
+    .expose_headers([
+        HeaderName::from_static("grpc-status"),
+        HeaderName::from_static("grpc-message"),
+        HeaderName::from_static("grpc-status-details-bin"),
+    ]);
+let app = axum::Router::new()
+    .fallback_service(router.into_axum_service())
+    .layer(cors);
+```
+
+Make sure to include application-specific request headers in the allowed headers,
+and response headers in the exposed headers. If your application uses trailers,
+they will be sent as header fields with a `Trailer-` prefix for unary Connect
+RPCs.
+
+[axum]: https://docs.rs/axum
+[body-limit]: https://docs.rs/tower-http/latest/tower_http/limit/
+[cors-layer]: https://docs.rs/tower-http/latest/tower_http/cors/
+[hyper]: https://hyper.rs
