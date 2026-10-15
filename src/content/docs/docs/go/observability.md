@@ -4,12 +4,12 @@ title: Observability
 
 Connect stays close to `net/http`, which means any logging, tracing, or metrics that work with an `http.Handler` or `http.Client` will also work with Connect. In particular, the [otelhttp](https://pkg.go.dev/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp) OpenTelemetry package integrates seamlessly with Connect servers and clients.
 
-For more detailed, RPC-focused metrics, use the [otelconnect] package. [otelconnect] works with your [OpenTelemetry] metrics and tracing setup to capture information such as:
+For more detailed, RPC-focused metrics, use the [otelconnect] package. [otelconnect] works with your [OpenTelemetry] metrics and tracing setup to record:
 
-- `rpc.system.name`: Did this call use the Connect protocol (`connectrpc`) or gRPC or gRPC-Web (`grpc`)?
-- `rpc.method`: What procedure was called, such as `connectrpc.greet.v1.GreetService/Greet`?
-- `rpc.response.status_code`: What status code was returned, such as `OK` or `DEADLINE_EXCEEDED`?
-- `rpc.server.call.duration` and `rpc.client.call.duration`: How long did the call take?
+- `rpc.system.name`: the protocol, either `connectrpc` for Connect or `grpc` for gRPC and gRPC-Web.
+- `rpc.method`: the full procedure name, such as `connectrpc.greet.v1.GreetService/Greet`.
+- `rpc.response.status_code`: the status code, such as `OK` or `DEADLINE_EXCEEDED`.
+- `rpc.server.call.duration` and `rpc.client.call.duration`: how long each call took.
 
 OpenTelemetry can be quite complex, so this guide assumes that readers are familiar with:
 
