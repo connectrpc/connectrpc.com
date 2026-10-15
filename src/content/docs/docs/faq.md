@@ -480,7 +480,7 @@ HTTP2 target group. Route anything else to the gRPC target group.
 
 ### How do I send metrics to Prometheus in Connect-Go?
 
-Connect has support package for OpenTelemetry: https://pkg.go.dev/connectrpc.com/otelconnect/v2.
+Connect has support package for OpenTelemetry: https://pkg.go.dev/connectrpc.com/otelconnect.
 Prometheus can be configured as an exporter.
 
 [cors-es]: https://connectrpc.com/docs/node/server-plugins/#cors
