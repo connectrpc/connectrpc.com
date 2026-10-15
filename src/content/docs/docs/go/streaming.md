@@ -313,7 +313,7 @@ import (
 
 	"connectrpc.com/connect/v2"
 	"connectrpc.com/connect/v2/connecthttp"
-	"connectrpc.com/validate/v2"
+	"connectrpc.com/validate"
 
 	greetv1 "example/gen/greet/v1"
 	"example/gen/greet/v1/greetv1connect"

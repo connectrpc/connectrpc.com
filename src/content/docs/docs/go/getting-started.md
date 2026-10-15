@@ -172,7 +172,7 @@ import (
 
 	"connectrpc.com/connect/v2"
 	"connectrpc.com/connect/v2/connecthttp"
-	"connectrpc.com/validate/v2"
+	"connectrpc.com/validate"
 )
 
 type GreetServer struct{}
@@ -214,7 +214,7 @@ server:
 
 ```shellsession
 $ go get connectrpc.com/connect/v2
-$ go get connectrpc.com/validate/v2
+$ go get connectrpc.com/validate
 $ go get buf.build/go/protovalidate
 $ go run ./cmd/server/main.go
 ```
@@ -332,8 +332,8 @@ Congratulations &mdash; you've built your first Connect service! 🎉
 `connect-go` supports three protocols:
 
 - The new [Connect protocol](/docs/protocol/), a simple, HTTP-based protocol that
-  works over HTTP/1.1 or HTTP/2. It takes the best portions of gRPC and gRPC-Web,
-  including streaming, and packages them into a protocol that works
+  works over HTTP/1.1, HTTP/2, or HTTP/3. It takes the best portions of gRPC
+  and gRPC-Web, including streaming, and packages them into a protocol that works
   equally well in browsers, monoliths, and microservices. The Connect protocol
   is what we think the gRPC protocol should be. By default, JSON- and
   binary-encoded Protobuf is supported.
