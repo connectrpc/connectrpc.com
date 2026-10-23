@@ -193,6 +193,12 @@ protocol accommodates timeouts of more than 100 days. Client implementations
 may set a default timeout for all RPCs, and server implementations may clamp
 timeouts to an appropriate maximum.
 
+When **Timeout** is present, it must be a positive integer greater than zero.
+No + or - should be used as a leading character and there should not be a
+decimal point (.). If a **Timeout** is anything other than a string consisting
+of one to ten decimal digits, the request should be rejected with an HTTP 
+status code of 400.
+
 HTTP doesn't allow header values to be arbitrary binary blobs, so Connect
 differentiates between **ASCII-Metadata** and **Binary-Metadata**. Binary
 headers must use keys ending in "-bin", and implementations should emit
@@ -292,6 +298,12 @@ protocol accommodates timeouts of more than 100 days. Client implementations
 may set a default timeout for all RPCs, and server implementations may clamp
 timeouts to an appropriate maximum. Note that timeouts, if specified, remain
 specified using HTTP headers rather than query parameters.
+
+When **Timeout** is present, it must be a positive integer greater than zero.
+No + or - should be used as a leading character and there should not be a
+decimal point (.). If a **Timeout** is anything other than a string consisting
+of one to ten decimal digits, the request should be rejected with an HTTP
+status code of 400.
 
 The **Connect-Version-Query** parameter distinguishes Connect Get requests from
 other HTTP GET requests. (In the future, it may also be used to support
