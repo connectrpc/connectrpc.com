@@ -169,12 +169,12 @@ many headers.
 If the server doesn't support the specified **Message-Codec**, it must respond
 with an HTTP status code of 415 Unsupported Media Type.
 
-The **Message-Codec** may contain parameters. If the **Message-Codec** is   
-`application/json` or `application/connect+json` and the `charset` parameter   
-is specified, the `charset` parameter's value must be `utf-8`. A message   
-received with any other `charset` value combined with `application/json` or 
-`application/connect+json` must respond with an HTTP status code of   
-415 Unsupported Media Type. All other **Message-Codec** parameters must   
+The **Message-Codec** may contain parameters. If the **Message-Codec** is
+`application/json` or `application/connect+json` and the `charset` parameter
+is specified, the `charset` parameter's value must be `utf-8`. A message
+received with any other `charset` value combined with `application/json` or
+`application/connect+json` must respond with an HTTP status code of
+415 Unsupported Media Type. All other **Message-Codec** parameters must
 be ignored.
 
 The **Connect-Protocol-Version** header distinguishes unary Connect RPC traffic
