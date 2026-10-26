@@ -33,7 +33,8 @@ First, we'll need to create a new Rust project and add some dependencies:
 $ cargo new --lib connect-rust-example
 $ cd connect-rust-example
 $ cargo add connectrpc --features server,client
-$ cargo add buffa buffa-types --features buffa/json,buffa-types/json
+$ cargo add buffa buffa-types \
+    --features buffa/json,buffa-types/json
 $ cargo add serde --features derive
 $ cargo add tokio --features full
 ```
@@ -113,7 +114,7 @@ plugins:
   - remote: buf.build/connectrpc/rust
     out: src/gen/connect
     opt:
-      - file_per_package
+      - file_per_package=true
       - buffa_module=crate::proto
 ```
 

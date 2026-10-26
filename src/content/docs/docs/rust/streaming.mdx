@@ -145,6 +145,8 @@ service GreetService {
 }
 ```
 
+### Handler
+
 After running `buf generate` to update our generated code and `cargo add futures`,
 we can amend our handler implementation in `src/bin/server.rs`:
 
@@ -189,17 +191,49 @@ Each message in the stream is a `StreamMessage`, which reads fields without
 copying through accessor methods like `name()`. The stream yields an error if
 the client's upload fails partway, and `?` passes it on as the RPC's error.
 
-The client passes a `Stream` of requests to the generated method. To send a
-fixed list of messages, use `stream_iter` to turn it into a `Stream`:
+### Client
+
+On the client, the generated `greet` method takes a `Stream` of requests and
+returns the response after the stream ends. To send requests as they become
+available, pass the receiving end of a channel to `greet`, and send requests
+into the channel while the call runs. Update `src/bin/client.rs`:
 
 ```rust
-let requests = ["Jane", "John"].map(|name| GreetRequest {
-    name: name.into(),
-    ..Default::default()
-});
-let res = client.greet(connectrpc::stream_iter(requests)).await?;
-print!("{}", res.view().greeting);
+use connect_rust_example::proto::greet::v1::{GreetRequest, GreetServiceClient};
+use connectrpc::client::{ClientConfig, HttpClient};
+use futures::SinkExt;
+use futures::channel::mpsc;
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    let client = GreetServiceClient::new(
+        HttpClient::plaintext(),
+        ClientConfig::new("http://localhost:8080".parse()?),
+    );
+    let (mut requests, rx) = mpsc::channel(1);
+    let send = async move {
+        for name in ["Jane", "John"] {
+            let request = GreetRequest {
+                name: name.into(),
+                ..Default::default()
+            };
+            if requests.send(request).await.is_err() {
+                // The call ended early; its result has the error.
+                break;
+            }
+        }
+        // Dropping the sender ends the request stream.
+    };
+    let (res, ()) = futures::join!(client.greet(rx), send);
+    print!("{}", res?.view().greeting);
+    Ok(())
+}
 ```
+
+`futures::join!` runs the call and the sending loop concurrently, without
+spawning a task.
+
+### Interceptor
 
 Now that we've implemented our new client streaming RPC, we'll also need to
 update our [logging interceptor](/docs/rust/interceptors/). To log streaming

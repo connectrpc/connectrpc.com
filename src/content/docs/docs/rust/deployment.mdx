@@ -67,7 +67,8 @@ let config = ClientConfig::new("http://localhost:8080".parse()?)
 
 By default, a deadline only bounds the time until a streaming handler returns
 its response stream. To also bound the time spent streaming messages, call
-`with_enforce_on_streams(true)` on the `DeadlinePolicy`. Servers must strike a
+`with_enforce_on_streams` on the `DeadlinePolicy` for the whole request
+or `with_inter_message_timeout` for a per-message timeout. Servers must strike a
 balance between keeping timeouts reasonable for unary RPCs while still leaving
 enough time for streaming RPCs.
 
