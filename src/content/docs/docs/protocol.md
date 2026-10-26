@@ -169,13 +169,14 @@ many headers.
 If the server doesn't support the specified **Message-Codec**, it must respond
 with an HTTP status code of 415 Unsupported Media Type.
 
-The **Message-Codec** may contain parameters. If the **Message-Codec** is
-`application/json` or `application/connect+json` and the `charset` parameter
+The **Unary-Content-Type** may have parameters appended to it, as
+described in [Section 8.3 of RFC 9110]https://www.rfc-editor.org/rfc/rfc9110.html#section-8.3.
+If the **Unary-Content-Type** is `application/json` and the `charset` parameter
 is specified, the `charset` parameter's value must be `utf-8`. A message
-received with any other `charset` value combined with `application/json` or
-`application/connect+json` must respond with an HTTP status code of
-415 Unsupported Media Type. All other **Message-Codec** parameters must
-be ignored.
+received with any other `charset` value combined with `application/json`
+must respond with an HTTP status code of 415 Unsupported Media Type. The
+`charset` parameter is ignored when the **Message-Codec** is not `json`.
+All other **Unary-Content-Type** parameters must be ignored.
 
 The **Connect-Protocol-Version** header distinguishes unary Connect RPC traffic
 from other requests that may use the same Content-Type. (In the future, it may
@@ -434,7 +435,7 @@ RPC types may be unavailable.
 * **Streaming-Request** &rarr; Streaming-Request-Headers \*Enveloped-Message
 * **Streaming-Request-Headers** &rarr; Streaming-Call-Specification \*Leading-Metadata
 * **Streaming-Call-Specification** &rarr; Method-Post Path Streaming-Content-Type \[Connect-Protocol-Version\] \[Timeout\] \[Streaming-Content-Encoding\] \[Streaming-Accept-Encoding\]
-* **Streaming-Content-Type** &rarr; "content-type" "application/connect+" ("proto" / "json" / \{_custom_\})
+* **Streaming-Content-Type** &rarr; "content-type" "application/connect+" Message-Codec
 * **Streaming-Content-Encoding** &rarr; "connect-content-encoding" Content-Coding
 * **Streaming-Accept-Encoding** &rarr; "connect-accept-encoding" Content-Coding \*("," [" "] Content-Coding)
 * **Enveloped-Message** &rarr; Envelope-Flags Message-Length Message
@@ -446,6 +447,15 @@ If **Streaming-Content-Type** does not begin with "application/connect+",
 servers should respond with an HTTP status of 415 Unsupported Media Type. This
 prevents HTTP clients unaware of Connect's semantics from interpreting a
 streaming error response, which uses an HTTP Status of 200 OK, as successful.
+
+The **Streaming-Content-Type** may have parameters appended to it, as
+described in [Section 8.3 of RFC 9110]https://www.rfc-editor.org/rfc/rfc9110.html#section-8.3.
+If the **Streaming-Content-Type** is `application/connect+json` and the `charset` parameter
+is specified, the `charset` parameter's value must be `utf-8`. A message
+received with any other `charset` value combined with `application/connect+json`
+must respond with an HTTP status code of 415 Unsupported Media Type. The `charset` parameter
+is ignored when the **Message-Codec** is not `json`. All other **Streaming-Content-Type**
+parameters must be ignored.
 
 Servers must interpret **Streaming-Content-Encoding** and
 **Streaming-Accept-Encoding** using the same inference and error-reporting
