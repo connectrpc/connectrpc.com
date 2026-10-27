@@ -1,0 +1,150 @@
+---
+title: Interceptors
+---
+
+import VersionWarning from './_version-warning.mdx';
+
+<VersionWarning />
+
+Interceptors are similar to the middleware or decorators you may be familiar
+with from other frameworks: they're the primary way of extending Connect and are
+often used to add logging, metrics, tracing, retries, and other
+functionality.
+
+On this page you'll learn how to build unary interceptors &mdash; more complex use
+cases are covered in the [streaming documentation](/docs/rust/streaming/).
+
+Take care when writing interceptors! They're powerful, but overly complex
+interceptors can make debugging difficult.
+
+## Interceptors are traits
+
+Interceptors implement the `Interceptor` trait, which has a method for unary
+RPCs and a method for streaming RPCs. Each method receives the request and a
+`Next` continuation that calls the rest of the chain, ending with your handler:
+
+```rust
+#[async_trait]
+pub trait Interceptor: Send + Sync + 'static {
+    async fn intercept_unary(
+        &self,
+        req: UnaryRequest,
+        next: Next<'_>,
+    ) -> Result<UnaryResponse, ConnectError> {
+        next.run(req).await
+    }
+
+    async fn intercept_streaming(
+        &self,
+        req: StreamRequest,
+        inbound: PayloadStream,
+        next: NextStream<'_>,
+    ) -> Result<StreamResponse, ConnectError> {
+        next.run(req, inbound).await
+    }
+}
+```
+
+Both methods default to calling `next`, so you can omit implementations for
+request types you don't use.
+
+## An example
+
+That's a little abstract, so let's consider an example: we'd like to log every
+RPC. We could add logging to each method on our server, but it's less
+error-prone to write an interceptor instead.
+
+```rust
+use connectrpc::interceptor::{UnaryRequest, UnaryResponse};
+use connectrpc::{ConnectError, Interceptor, Next};
+
+pub struct LoggingInterceptor;
+
+#[connectrpc::async_trait]
+impl Interceptor for LoggingInterceptor {
+    async fn intercept_unary(
+        &self,
+        req: UnaryRequest,
+        next: Next<'_>,
+    ) -> Result<UnaryResponse, ConnectError> {
+        let procedure = req.ctx.path().unwrap_or_default().to_owned();
+        let res = next.run(req).await;
+        tracing::info!(procedure, ok = res.is_ok(), "rpc");
+        res
+    }
+}
+```
+
+To apply our new interceptor to handlers, we can use `with_interceptor` on the
+server. When registering several interceptors, the first one registered runs
+first:
+
+```rust
+use std::sync::Arc;
+
+use connectrpc::{Router, Server};
+
+let router = Router::new().add_service(Arc::new(GreetServer));
+Server::new(router)
+    .with_interceptor(LoggingInterceptor)
+    .serve("127.0.0.1:8080".parse()?)
+    .await?;
+```
+
+If you host your service in axum or another framework, call `with_interceptor`
+on a `ConnectRpcService` instead.
+
+## Clients
+
+Connect for Rust currently only supports server interceptors. For clients,
+it is possible to write HTTP middleware by implementing `ClientTransport`
+to directly modify the HTTP request or response.
+
+```rust
+use connectrpc::client::{ClientBody, ClientTransport};
+use futures::future::BoxFuture;
+use http::{HeaderValue, Request, Response};
+
+#[derive(Clone)]
+pub struct WithToken<T> {
+    pub inner: T,
+}
+
+impl<T: ClientTransport> ClientTransport for WithToken<T> {
+    type ResponseBody = T::ResponseBody;
+    type Error = T::Error;
+
+    fn send(
+        &self,
+        mut request: Request<ClientBody>,
+    ) -> BoxFuture<'static, Result<Response<Self::ResponseBody>, Self::Error>> {
+        request
+            .headers_mut()
+            .insert("acme-token", HeaderValue::from_static("sample"));
+        self.inner.send(request)
+    }
+}
+```
+
+```rust
+use connectrpc::client::{ClientConfig, HttpClient};
+
+let client = GreetServiceClient::new(
+    WithToken {
+        inner: HttpClient::plaintext(),
+    },
+    ClientConfig::new("http://localhost:8080".parse()?),
+);
+```
+
+## Authentication
+
+Don't use interceptors to authenticate requests on the server. Handlers run
+interceptors _after_ the request body has been read and decompressed. An
+interceptor-based check lets unauthenticated clients consume memory and CPU
+on your server. Instead, authenticate at the HTTP layer with Tower middleware,
+which runs before Connect reads the request body. The [middleware
+example][middleware-example] shows how to authenticate requests with axum
+middleware and pass the caller's identity to handlers.
+
+[middleware-example]: https://github.com/connectrpc/connect-rust/tree/main/examples/middleware
