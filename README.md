@@ -37,6 +37,7 @@ Offered under the [Apache 2 license][license].
 [connect-kotlin]: https://github.com/connectrpc/connect-kotlin
 [connect-dart]: https://github.com/connectrpc/connect-dart
 [connect-py]: https://github.com/connectrpc/connect-py
+[connect-rust]: https://github.com/connectrpc/connect-rust
 [examples-go]: https://github.com/connectrpc/examples-go
 [license]: LICENSE
 [protocol]: https://connectrpc.com/docs/protocol

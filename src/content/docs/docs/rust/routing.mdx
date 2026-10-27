@@ -1,0 +1,61 @@
+---
+title: Routing
+---
+
+import VersionWarning from './_version-warning.mdx';
+
+<VersionWarning />
+
+For the most part, Connect handles HTTP routes for you &mdash; everything should
+just work. For debugging or more advanced configuration, this guide explains
+how Connect builds routes.
+
+## Constructing routes
+
+Routing follows the [Connect](/docs/protocol/) and gRPC HTTP/2 protocols,
+both of which use:
+
+```http
+:method post
+:path /<Package>.<Service>/<Method>
+```
+
+For example, method `Greet` of `GreetService` in Protobuf package `greet.v1`
+has path `/greet.v1.GreetService/Greet`. Package, service, and method names are
+case-sensitive and used exactly as they are in the Protobuf schema, and
+handlers only support the GET and POST verbs. (Remember that routing is based on
+Protobuf package names, not Rust module paths.)
+
+A `Router` holds the routes for any number of services. Each call to
+`add_service` registers every method of a generated service:
+
+```rust
+let router = Router::new()
+    .add_service(Arc::new(GreetServer))
+    .add_service(Arc::new(BillingServer));
+```
+
+## Prefixing routes
+
+Especially if you're serving your Connect API alongside other HTTP handlers, you
+may want to prefix your RPC routes with `/api/`, `/connect/`, or something similar.
+You can do this by mounting your router in [axum], which requires enabling the
+`axum` feature of `connectrpc`:
+
+```rust mark={7}
+use connectrpc::Router;
+
+let api = Router::new().add_service(Arc::new(GreetServer));
+
+let app = axum::Router::new()
+    .merge(new_html_router())
+    .nest_service("/api", api.into_axum_service());
+```
+
+Most Tower-compatible routers work similarly. If you configure a prefix, be sure to
+include it in the base URL you pass to your Connect clients (for example,
+`https://acme.com/api/`). Unfortunately, many gRPC clients, such as `grpc-go`,
+don't support prefixes: if you need to support gRPC clients, don't prefix your
+routes!
+
+[axum]: https://docs.rs/axum

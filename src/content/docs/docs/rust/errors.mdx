@@ -1,0 +1,218 @@
+---
+title: Errors
+---
+
+import VersionWarning from './_version-warning.mdx';
+
+<VersionWarning />
+
+Similar to the familiar "404 Not Found" and "500 Internal Server Error" status
+codes you may have seen in HTTP, Connect uses a set of [16 error
+codes](/docs/protocol/#error-codes). The Rust APIs for creating and inspecting
+errors work identically for all three supported protocols: gRPC, gRPC-Web, and
+the Connect protocol.
+
+## Working with errors
+
+At their simplest, `connect-rust` errors are a `ConnectError` holding an [error
+code](/docs/protocol/#error-codes) and a message. The error code and message are
+sent over the network to the client, which may handle different codes with
+different retry or fallback logic. If you're familiar with gRPC status codes,
+Connect's error codes use the same names and have the same semantics.
+
+Connect handlers attach status codes to errors using `ConnectError::new` or
+one of its per-code constructors, like `ConnectError::invalid_argument`.
+Handlers should return coded errors; if they return a `std::io::Error` with
+`?`, Connect will use the `internal` code. If the client's deadline passes
+before the handler finishes, Connect will use the `deadline_exceeded` code.
+For example:
+
+```rust
+use connectrpc::{ConnectError, RequestContext, Response, ServiceRequest, ServiceResult};
+
+impl GreetService for GreetServer {
+    async fn greet(
+        &self,
+        _ctx: RequestContext,
+        request: ServiceRequest<'_, GreetRequest>,
+    ) -> ServiceResult<GreetResponse> {
+        if request.name.is_empty() {
+            return Err(ConnectError::invalid_argument("name is required"));
+        }
+        let greeting = do_greet_work(request.name)
+            .await
+            .map_err(|err| ConnectError::unknown(err.to_string()))?;
+        Response::ok(GreetResponse {
+            greeting,
+            ..Default::default()
+        })
+    }
+}
+```
+
+Regardless of the protocol in use, Connect clients automatically parse
+response data into a `ConnectError`. Read its public fields to inspect it:
+
+```rust
+use connectrpc::client::{ClientConfig, HttpClient};
+
+let client = GreetServiceClient::new(
+    HttpClient::plaintext(),
+    ClientConfig::new("http://localhost:8080".parse()?),
+);
+let result = client
+    .greet(GreetRequest {
+        name: "Jane".into(),
+        ..Default::default()
+    })
+    .await;
+if let Err(err) = result {
+    println!("{}", err.code.as_str());
+    println!("{:?}", err.message);
+    println!("{:?}", err.details);
+}
+```
+
+These APIs work for all three supported protocols, even if the server isn't
+built with Connect.
+
+## Error Details
+
+Like other gRPC implementations, `connect-rust` allows servers to enrich errors
+with more than just a code and a string. Since Connect focuses on schema-first
+APIs, this additional data &mdash; called error details &mdash; is a list of
+Protobuf messages wrapped in the `ErrorDetail` type. Details are commonly used
+to send backoff parameters for transient failures, localized error messages,
+or other structured data. The `google/rpc/error_details.proto` file in the
+[`buf.build/googleapis/googleapis`][googleapis] module contains a variety of
+Protobuf messages often used as error details. To generate Rust code for it,
+add it as an input in your `buf.gen.yaml`:
+
+```yaml
+version: v2
+inputs:
+  - directory: .
+  - module: buf.build/googleapis/googleapis
+    paths:
+      - google/rpc/error_details.proto
+plugins:
+  # Same plugins as before.
+```
+
+Then mount the generated `google.rpc` package in `src/lib.rs`, alongside
+`greet.v1`:
+
+```rust
+pub mod proto {
+    // ...
+    pub mod google {
+        pub mod rpc {
+            include!("gen/buffa/google.rpc.rs");
+        }
+    }
+}
+```
+
+Regardless of the RPC protocol in use, servers can add details to any
+`ConnectError`:
+
+```rust
+use std::time::Duration;
+
+use connectrpc::{ConnectError, ErrorDetail};
+
+use crate::proto::google::rpc::RetryInfo;
+
+fn new_transient_error() -> ConnectError {
+    let retry_info = RetryInfo {
+        retry_delay: buffa::MessageField::some(Duration::from_secs(10).into()),
+        ..Default::default()
+    };
+    ConnectError::unavailable("overloaded: back off and retry")
+        .with_detail(ErrorDetail::from_message("google.rpc.RetryInfo", &retry_info))
+}
+```
+
+Clients receive error details as a list of `ErrorDetail`, which they must
+inspect to find any details of interest. Each detail's value is a
+base64-encoded Protobuf message, which this example decodes with the
+[`base64`][base64] crate:
+
+```rust
+use base64::Engine;
+use base64::engine::general_purpose::STANDARD_NO_PAD;
+use buffa::Message;
+use connectrpc::ConnectError;
+
+use crate::proto::google::rpc::RetryInfo;
+
+fn extract_retry_info(err: &ConnectError) -> Option<RetryInfo> {
+    for detail in &err.details {
+        // gRPC and gRPC-Web prefix the type name with type.googleapis.com/.
+        let type_name = detail.type_url.trim_start_matches("type.googleapis.com/");
+        if type_name != "google.rpc.RetryInfo" {
+            continue;
+        }
+        // Details are base64-encoded Protobuf messages.
+        let Some(value) = &detail.value else {
+            continue;
+        };
+        let Ok(bytes) = STANDARD_NO_PAD.decode(value.trim_end_matches('=')) else {
+            continue;
+        };
+        if let Ok(retry_info) = RetryInfo::decode_from_slice(&bytes) {
+            return Some(retry_info);
+        }
+    }
+    None
+}
+```
+
+Error details work best if they're limited to a small set of stable types used
+by all APIs within your organization. Used sparingly, they're safer, more
+extensible, and more efficient than ad-hoc HTTP header microformats.
+
+## HTTP representation
+
+While the Rust APIs for working with errors are protocol-agnostic, each protocol
+produces a differently-shaped HTTP response. You can consult the [gRPC HTTP/2
+protocol][grpc-protocol], the [gRPC-Web protocol][grpcweb-protocol], and the
+[Connect protocol](/docs/protocol/) for details, but it's helpful to understand
+the broad strokes of each protocol's approach.
+
+gRPC responses nearly always have an HTTP status of 200 OK, even when the
+server returns an error. The error's code and message are sent as separate HTTP
+trailers. The code, message, and error details are also serialized with
+Protobuf, base64-encoded, and put into a third HTTP trailer. This approach is
+the same for unary and streaming RPCs, and because trailers are part of the
+HTTP standard, it's theoretically possible for any HTTP library to work with
+the error code and message. Unfortunately, trailer support is spotty &mdash;
+even web browsers don't support them.
+
+gRPC-Web responses use nearly the same approach, but encode all the trailers
+into the last portion of the response body. This works even when clients don't
+support HTTP trailers, but still leaves failed responses with an HTTP 200
+status code.
+
+For unary (request-response) RPCs, the Connect protocol puts error codes,
+messages, and details in the response body as human-readable JSON. The
+response's HTTP status code is inferred from the Connect code, and is always in
+the 4xx or 5xx range if the RPC fails. The response body for a unary Connect
+error might look like this:
+
+```json
+{
+  "code": "invalid_argument",
+  "message": "data cannot be empty"
+}
+```
+
+For streaming RPCs, the Connect protocol handles errors similarly to gRPC-Web.
+This two-pronged approach sacrifices consistency between streaming and unary
+RPCs, but it stays as close as possible to standard HTTP semantics and works
+with the broadest array of HTTP libraries and tools.
+
+[base64]: https://docs.rs/base64
+[googleapis]: https://buf.build/googleapis/googleapis
+[grpc-protocol]: https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md
+[grpcweb-protocol]: https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-WEB.md
