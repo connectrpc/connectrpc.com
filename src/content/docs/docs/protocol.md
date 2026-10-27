@@ -170,7 +170,7 @@ If the server doesn't support the specified **Message-Codec**, it must respond
 with an HTTP status code of 415 Unsupported Media Type.
 
 The **Unary-Content-Type** may have parameters appended to it, as
-described in [Section 8.3 of RFC 9110]https://www.rfc-editor.org/rfc/rfc9110.html#section-8.3.
+described in [Section 8.3 of RFC 9110][].
 If the **Unary-Content-Type** is `application/json` and the `charset` parameter
 is specified, the `charset` parameter's value must be `utf-8`. A message
 received with any other `charset` value combined with `application/json`
@@ -333,11 +333,13 @@ must either respond with an error or use a **Content-Encoding** supported by
 the client.
 
 Successful responses have an **HTTP-Status** of 200. In those cases,
-**Unary-Content-Type** is the same as the request's **Unary-Content-Type**.
-**Bare-Message** is the RPC response payload, serialized using the codec indicated
-by **Unary-Content-Type** and possibly compressed using **Content-Encoding**.
-It's sent on the wire as the HTTP response content (often called the body).
-Clients must not attempt to decompress zero-length HTTP response content.
+**Unary-Content-Type** is the same as the request's **Unary-Content-Type**. Any parameters
+appended to the request's **Unary-Content-Type** _may_ be included in the response, 
+but are not required to be included in the response.  **Bare-Message** is the 
+RPC response payload, serialized using the codec indicated by **Unary-Content-Type** 
+and possibly compressed using **Content-Encoding**. It's sent on the wire as the 
+HTTP response content (often called the body). Clients must not attempt to decompress 
+zero-length HTTP response content.
 
 Errors are sent with a non-200 **HTTP-Status**. In those cases,
 **Unary-Content-Type** _must_ be "application/json". **Bare-Message** is either
@@ -449,7 +451,7 @@ prevents HTTP clients unaware of Connect's semantics from interpreting a
 streaming error response, which uses an HTTP Status of 200 OK, as successful.
 
 The **Streaming-Content-Type** may have parameters appended to it, as
-described in [Section 8.3 of RFC 9110]https://www.rfc-editor.org/rfc/rfc9110.html#section-8.3.
+described in [Section 8.3 of RFC 9110][].
 If the **Streaming-Content-Type** is `application/connect+json` and the `charset` parameter
 is specified, the `charset` parameter's value must be `utf-8`. A message
 received with any other `charset` value combined with `application/connect+json`
@@ -485,7 +487,9 @@ The first byte is **Envelope-Flags**, a set of 8 bitwise flags.
 Streaming responses always have an HTTP status of 200 OK. As noted above,
 server implementations must send an [EndStreamResponse](#error-end-stream)
 as the final message in the stream, and must not send an EndStreamResponse
-earlier in the stream.
+earlier in the stream. Any parameters appended to the request's 
+**Streaming-Content-Type** _may_ be included in the response, but are not 
+required to be included in the response.
 
 ### Examples {#streaming-examples}
 
@@ -676,3 +680,4 @@ Protocol Buffers support unary RPCs and all three types of streaming.
 [gRPC's HTTP/2 protocol]: https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md
 [rfc-http-semantics]: https://www.rfc-editor.org/rfc/rfc9110.html
 [anypb-json]: https://github.com/protocolbuffers/protobuf/blob/main/src/google/protobuf/any.proto#L97
+[Section 8.3 of RFC 9110]: https://www.rfc-editor.org/rfc/rfc9110.html#section-8.3
