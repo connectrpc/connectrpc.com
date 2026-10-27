@@ -1,0 +1,101 @@
+---
+title: Testing
+---
+
+import VersionWarning from './_version-warning.mdx';
+
+<VersionWarning />
+
+This guide covers testing Connect services and clients. The examples assume
+that the `GreetServer` from the [Getting Started](/docs/rust/getting-started/)
+guide is public and defined in your library crate, for example in
+`src/server.rs`, so that tests can use it.
+
+## Testing handlers
+
+Handlers are plain async methods, so unit tests can call them directly, without
+a server or network. Build the request the same way Connect does: encode the
+message, and decode a view of it. This example also uses the [`http`][http]
+crate, which you can add with `cargo add --dev http`:
+
+```rust
+use buffa::Message;
+use buffa::bytes::Bytes;
+use buffa::view::HasMessageView;
+use connect_rust_example::proto::greet::v1::{GreetRequest, GreetService};
+use connect_rust_example::server::GreetServer;
+use connectrpc::{RequestContext, ServiceRequest};
+use http::HeaderMap;
+
+#[tokio::test]
+async fn greet_says_hello() {
+    let body = Bytes::from(
+        GreetRequest {
+            name: "Jane".into(),
+            ..Default::default()
+        }
+        .encode_to_vec(),
+    );
+    let view = GreetRequest::decode_view(&body).unwrap();
+    let request = ServiceRequest::<GreetRequest>::from_parts(&view, &body);
+
+    let res = GreetServer
+        .greet(RequestContext::new(HeaderMap::new()), request)
+        .await
+        .unwrap();
+
+    assert_eq!(res.body.greeting, "Hello, Jane!");
+}
+```
+
+`RequestContext::new` takes the request headers, so tests can also cover
+handlers that read headers.
+
+## Testing with a server
+
+To test your full application stack, including routing, serialization, error
+handling, and interceptors, start a server and call it with a generated client.
+Binding to port 0 lets the operating system pick a free port, so tests can run
+in parallel:
+
+```rust
+use std::sync::Arc;
+
+use connect_rust_example::proto::greet::v1::{GreetRequest, GreetServiceClient};
+use connect_rust_example::server::GreetServer;
+use connectrpc::client::{ClientConfig, HttpClient};
+use connectrpc::{Router, Server};
+
+#[tokio::test]
+async fn greet_over_http() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    // Bind to port 0 so the OS picks a free port.
+    let server = Server::bind("127.0.0.1:0").await?;
+    let addr = server.local_addr()?;
+    let router = Router::new().add_service(Arc::new(GreetServer));
+    tokio::spawn(server.serve(router));
+
+    let client = GreetServiceClient::new(
+        HttpClient::plaintext(),
+        ClientConfig::new(format!("http://{addr}").parse()?),
+    );
+    let res = client
+        .greet(GreetRequest {
+            name: "Jane".into(),
+            ..Default::default()
+        })
+        .await?;
+
+    assert_eq!(res.view().greeting, "Hello, Jane!");
+    Ok(())
+}
+```
+
+## Testing clients
+
+Generated clients accept any type that implements `ClientTransport`, so code
+that uses a client can be tested against a fake transport. In most cases,
+though, it's simpler to test against a real server as shown above, with a test
+implementation of the service trait that returns the responses or errors you
+want to exercise.
+
+[http]: https://docs.rs/http
