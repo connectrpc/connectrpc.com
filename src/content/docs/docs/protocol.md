@@ -150,7 +150,7 @@ general-purpose HTTP tools.
 * **Unary-Content-Type** &rarr; "content-type" "application/" Message-Codec
 * **Connect-Protocol-Version** &rarr; "connect-protocol-version" "1"
 * **Timeout** &rarr; "connect-timeout-ms" Timeout-Milliseconds
-* **Timeout-Milliseconds** &rarr; \{_positive integer as ASCII string of at most 10 digits_\}
+* **Timeout-Milliseconds** &rarr; \{_unsigned integer as ASCII string of at most 10 digits_\}
 * **Content-Encoding** &rarr; "content-encoding" Content-Coding
 * **Content-Coding** &rarr; "identity" / "gzip" / "br" / "zstd" / \{_custom_\}
 * **Accept-Encoding** &rarr; "accept-encoding" Content-Coding \*("," [" "] Content-Coding) ; subset of HTTP quality value syntax
@@ -193,7 +193,7 @@ protocol accommodates timeouts of more than 100 days. Client implementations
 may set a default timeout for all RPCs, and server implementations may clamp
 timeouts to an appropriate maximum.
 
-When **Timeout** is present, it must be a positive integer greater than zero.
+When **Timeout** is present, it must be a positive integer or zero.
 No + or - should be used as a leading character and there should not be a
 decimal point (.).
 
@@ -297,7 +297,7 @@ may set a default timeout for all RPCs, and server implementations may clamp
 timeouts to an appropriate maximum. Note that timeouts, if specified, remain
 specified using HTTP headers rather than query parameters.
 
-When **Timeout** is present, it must be a positive integer greater than zero.
+When **Timeout** is present, it must be a positive integer or zero.
 No + or - should be used as a leading character and there should not be a
 decimal point (.).
 
