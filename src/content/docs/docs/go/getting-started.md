@@ -390,8 +390,6 @@ client without *any* extra work on your part.
 [buf.yaml]: https://buf.build/docs/configuration/v2/buf-yaml
 [buf-cli]: https://github.com/bufbuild/buf
 [cURL]: https://curl.se/
-[godoc]: https://pkg.go.dev/connectrpc.com/connect/v2
 [go-releases]: https://golang.org/doc/devel/release
 [grpc-web]: https://github.com/grpc/grpc-web
 [install-go]: https://golang.org/doc/install
-[protobuf]: https://developers.google.com/protocol-buffers

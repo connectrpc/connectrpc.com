@@ -385,4 +385,3 @@ your users got an idiomatic, type-safe client without any extra work on your par
 [buf]: https://www.npmjs.com/package/@bufbuild/buf
 [buf.gen.yaml]: https://buf.build/docs/configuration/v2/buf-gen-yaml
 [buf.yaml]: https://buf.build/docs/configuration/v2/buf-yaml
-[eliza-proto]: https://buf.build/connectrpc/eliza/file/main:connectrpc/eliza/v1/eliza.proto
