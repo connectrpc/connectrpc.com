@@ -148,7 +148,6 @@ either as a pull request to this document, or as an RFC.
 [governance-repo]: https://github.com/connectrpc/connectrpc.com
 [rfc-maintainers]: https://github.com/connectrpc/connectrpc.com/blob/main/MAINTAINERS.md
 [governance-contrib]: https://github.com/connectrpc/connectrpc.com/blob/main/.github/CONTRIBUTING.md
-[validate-go]: https://github.com/connectrpc/validate-go
 [connect-swift]: https://github.com/connectrpc/connect-swift
 [connect-go]: https://github.com/connectrpc/connect-go
 [protocol]: https://connectrpc.com/docs/protocol

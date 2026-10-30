@@ -30,8 +30,6 @@ disable = [
   # frontmatter, and partials (files prefixed with `_`) are embedded into other pages so
   # neither has a leading h1.
   "MD041",
-  # MD053: Unused link/image reference definitions — cleanup tracked separately from formatting.
-  "MD053",
   # MD057: Relative link path does not exist — link validity checking is handled separately
   # on the built site (see src/plugins/remark-link-checker.ts). Duplicating this in source
   # is noisy.
