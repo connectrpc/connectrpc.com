@@ -679,5 +679,4 @@ Protocol Buffers support unary RPCs and all three types of streaming.
 
 [gRPC's HTTP/2 protocol]: https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md
 [rfc-http-semantics]: https://www.rfc-editor.org/rfc/rfc9110.html
-[anypb-json]: https://github.com/protocolbuffers/protobuf/blob/main/src/google/protobuf/any.proto#L97
 [Section 8.3 of RFC 9110]: https://www.rfc-editor.org/rfc/rfc9110.html#section-8.3
