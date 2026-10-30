@@ -334,11 +334,11 @@ the client.
 
 Successful responses have an **HTTP-Status** of 200. In those cases,
 **Unary-Content-Type** is the same as the request's **Unary-Content-Type**. Any parameters
-appended to the request's **Unary-Content-Type** _may_ be included in the response, 
-but are not required to be included in the response.  **Bare-Message** is the 
-RPC response payload, serialized using the codec indicated by **Unary-Content-Type** 
-and possibly compressed using **Content-Encoding**. It's sent on the wire as the 
-HTTP response content (often called the body). Clients must not attempt to decompress 
+appended to the request's **Unary-Content-Type** _may_ be included in the response,
+but are not required to be included in the response. **Bare-Message** is the
+RPC response payload, serialized using the codec indicated by **Unary-Content-Type**
+and possibly compressed using **Content-Encoding**. It's sent on the wire as the
+HTTP response content (often called the body). Clients must not attempt to decompress
 zero-length HTTP response content.
 
 Errors are sent with a non-200 **HTTP-Status**. In those cases,
@@ -487,8 +487,8 @@ The first byte is **Envelope-Flags**, a set of 8 bitwise flags.
 Streaming responses always have an HTTP status of 200 OK. As noted above,
 server implementations must send an [EndStreamResponse](#error-end-stream)
 as the final message in the stream, and must not send an EndStreamResponse
-earlier in the stream. Any parameters appended to the request's 
-**Streaming-Content-Type** _may_ be included in the response, but are not 
+earlier in the stream. Any parameters appended to the request's
+**Streaming-Content-Type** _may_ be included in the response, but are not
 required to be included in the response.
 
 ### Examples {#streaming-examples}
