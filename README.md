@@ -21,6 +21,7 @@ specification][protocol].
 * [connect-kotlin]: Kotlin clients
 * [connect-dart]: Dart clients
 * [connect-py]: Python servers and clients
+* [connect-rust]: Rust servers and clients
 * [conformance]: Connect, gRPC, and gRPC-Web interoperability tests
 * [examples-go]: Go server powering demo.connectrpc.com
 * and [much more][github-org].
