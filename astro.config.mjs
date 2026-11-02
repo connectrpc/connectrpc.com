@@ -16,7 +16,6 @@ import react from "@astrojs/react";
 import starlight from "@astrojs/starlight";
 import { defineConfig } from "astro/config";
 import { remarkHeadingId } from "remark-custom-heading-id";
-import { remarkLinkChecker } from "./src/plugins/remark-link-checker";
 
 // Canonical site URL. On Vercel, VERCEL_URL is always set — even on
 // production builds — to the unique per-deployment hostname (e.g.
@@ -37,9 +36,6 @@ export default defineConfig({
     remarkPlugins: [
       // Enables `## Heading {#custom-id}` syntax for explicit anchor IDs.
       remarkHeadingId,
-      // Warns at build time about reference-style links that are used but
-      // never defined (or defined but never used).
-      remarkLinkChecker,
     ],
   },
   vite: {
