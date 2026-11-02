@@ -29,11 +29,31 @@ are usually larger than requests, this approach compresses most of the data on
 the network without requiring the client to make any assumptions about the
 server.
 
-By default, Connect handlers support gzip compression using the standard
-library's `gzip` at the default compression level. Connect clients default to
-sending uncompressed requests and asking for gzipped responses. If you know
-that the server supports gzip, you can also compress requests by passing
-`send_compression="gzip"` during client construction.
+By default, Connect handlers and clients support gzip compression using the
+standard library's `gzip` at compression level 6, and clients send
+gzip-compressed requests. To send uncompressed requests, pass
+`send_compression=None` during client construction.
+
+Connect also provides brotli and zstd compression in
+`connectrpc.compression.brotli` and `connectrpc.compression.zstd`, which need
+the `brotli` and `zstandard` packages installed. Pass them to handlers with
+`compressions=`, and to clients with `accept_compression=` and
+`send_compression=`:
+
+```python
+from connectrpc.compression.gzip import GzipCompression
+from connectrpc.compression.zstd import ZstdCompression
+
+app = GreetServiceASGIApplication(
+    Greeter(),
+    compressions=[ZstdCompression(), GzipCompression()],
+)
+client = GreetServiceClient(
+    "http://localhost:8000",
+    accept_compression=[ZstdCompression(), GzipCompression()],
+    send_compression=ZstdCompression(),
+)
+```
 
 It's worth noting that clients using the Connect protocol for unary
 RPCs ask for compressed responses using the `Accept-Encoding` HTTP header. This
@@ -43,4 +63,3 @@ inspector tab automatically decompresses the data if necessary. Connect's
 `Accept-Encoding` support also works well with cURL's `--compressed` flag.
 
 [protojson]: https://developers.google.com/protocol-buffers/docs/proto3#json
-[iana-compression]: https://www.iana.org/assignments/http-parameters/http-parameters.xml#content-coding

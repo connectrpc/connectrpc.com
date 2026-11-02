@@ -51,7 +51,7 @@ buffer an arbitrarily large message in memory. To change the limit, pass `read_m
 to the application constructor:
 
 <Tabs syncKey="python-type">
-  <TabItem label="ASGI">
+  <TabItem label="Async">
 
     ```python
     app = GreetServiceASGIApplication(
@@ -61,7 +61,7 @@ to the application constructor:
     ```
 
   </TabItem>
-  <TabItem label="WSGI">
+  <TabItem label="Sync">
 
     ```python
     app = GreetServiceWSGIApplication(
@@ -79,7 +79,7 @@ Messages over the limit fail with `Code.RESOURCE_EXHAUSTED`.
 Because streaming RPCs exchange many messages, `read_max_bytes` bounds each message but not
 the stream as a whole. To also bound the total number of bytes read from the network, wrap
 the application with ASGI or WSGI middleware such as Starlette's
-[`RequestBodyLimitMiddleware`](https://www.starlette.io/middleware/#requestbodylimitmiddleware):
+[`RequestBodyLimitMiddleware`](https://starlette.dev/middleware/#requestbodylimitmiddleware):
 
 ```python
 from starlette.middleware.body_limit import RequestBodyLimitMiddleware
@@ -93,8 +93,8 @@ Cross-origin resource sharing (CORS) is needed to support web clients on origins
 Connect services are standard ASGI and WSGI applications, so any CORS middleware can be used to
 enable CORS.
 
-For example, with an ASGI application using [Starlette's](https://www.starlette.io/)
-[`CORSMiddleware`](https://www.starlette.io/middleware/#corsmiddleware):
+For example, with an ASGI application using [Starlette's](https://starlette.dev/)
+[`CORSMiddleware`](https://starlette.dev/middleware/#corsmiddleware):
 
 ```python
 from starlette.middleware.cors import CORSMiddleware

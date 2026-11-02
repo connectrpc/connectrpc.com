@@ -80,6 +80,11 @@ guide][kotlin-getting-started].
 [Connect for Python][connect-py] is available in beta.
 You can get started with our [Python guide][python-getting-started].
 
+## Rust
+
+[Connect for Rust][connect-rust] is available as a pre-1.0 release.
+You can get started with our [Rust guide][rust-getting-started].
+
 ## What's next?
 
 In addition to improving our current Connect implementations, we'd eventually
@@ -89,11 +94,11 @@ and we gauge interest in new languages with [GitHub polls][poll-discussions].
 
 [connect-py]: https://github.com/connectrpc/connect-py
 [python-getting-started]: /docs/python/getting-started
+[connect-rust]: https://github.com/connectrpc/connect-rust
+[rust-getting-started]: /docs/rust/getting-started
 [connect-conformance]: https://github.com/connectrpc/conformance
-[connect-go]: https://github.com/connectrpc/connect-go
 [connect-kotlin]: https://github.com/connectrpc/connect-kotlin
 [connect-swift]: https://github.com/connectrpc/connect-swift
-[swift-launch-blog-post]: https://buf.build/blog/announcing-connect-swift
 [connect-protocol]: /docs/protocol
 [demo]: https://github.com/connectrpc/examples-go
 [go-getting-started]: /docs/go/getting-started
@@ -104,9 +109,6 @@ and we gauge interest in new languages with [GitHub polls][poll-discussions].
 [grpcweb]: https://github.com/grpc/grpc-web
 [grpcweb-protocol]: https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-WEB.md
 [grpc-protocol]: https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md
-[launch-blog-post]: https://buf.build/blog/connect-a-better-grpc
-[web-launch-blog-post]: https://buf.build/blog/connect-web-protobuf-grpc-in-the-browser
-[node-launch-blog-post]: https://buf.build/blog/connect-node-preview
 [protobuf]: https://developers.google.com/protocol-buffers
 [announcement-discussions]: https://github.com/orgs/connectrpc/discussions/categories/announcements
 [poll-discussions]: https://github.com/orgs/connectrpc/discussions/categories/polls

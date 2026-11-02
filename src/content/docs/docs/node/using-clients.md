@@ -27,7 +27,7 @@ void main();
 ```
 
 For details on clients (including error handling, interceptors, and accessing
-headers and trailers), please refer to the documentation for [Web](../web/using-clients).
+headers and trailers), please refer to the documentation for [Web](/docs/web/using-clients/).
 
 Under the hood, the transports from [@connectrpc/connect-node](https://www.npmjs.com/package/@connectrpc/connect-node)
 use the built-in Node modules `http`, `https`, and `http2` instead of the fetch

@@ -140,7 +140,7 @@ methods, and headers—you also have to expose response headers. See the [CORS d
 ### Why does the network explorer in the browser show strange characters in payload?
 
 The Protobuf binary format is efficient, but can't be rendered as text by the browser. If you use a Connect-ES client,
-you can switch to JSON with the [transport option](./web/choosing-a-protocol) `useBinaryFormat: false` to make
+you can switch to JSON with the [transport option](/docs/web/choosing-a-protocol/) `useBinaryFormat: false` to make
 troubleshooting easier. Unary RPCs use pure JSON payloads with the Connect protocol.
 
 ## Serialization & compression
@@ -480,7 +480,7 @@ HTTP2 target group. Route anything else to the gRPC target group.
 
 ### How do I send metrics to Prometheus in Connect-Go?
 
-Connect has support package for OpenTelemetry: https://pkg.go.dev/connectrpc.com/otelconnect/v2.
+Connect has support package for OpenTelemetry: https://pkg.go.dev/connectrpc.com/otelconnect.
 Prometheus can be configured as an exporter.
 
 [cors-es]: https://connectrpc.com/docs/node/server-plugins/#cors

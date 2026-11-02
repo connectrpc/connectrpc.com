@@ -30,8 +30,6 @@ disable = [
   # frontmatter, and partials (files prefixed with `_`) are embedded into other pages so
   # neither has a leading h1.
   "MD041",
-  # MD053: Unused link/image reference definitions — cleanup tracked separately from formatting.
-  "MD053",
   # MD059: Link text should be descriptive — some pages intentionally use contextual link text
   # (e.g., "[here](url)") that reads naturally in prose. This is a content style decision.
   "MD059",
