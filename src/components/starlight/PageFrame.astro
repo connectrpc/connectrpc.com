@@ -82,31 +82,30 @@ const { hasSidebar } = Astro.locals.starlightRoute;
 <style>
   @layer starlight.core {
     /* Grid layout: header full-width, sidebar+main side-by-side, footer
-     * full-width below. The sidebar nav fills its grid cell vertically,
-     * giving its sticky child a natural container to terminate against.
+     * below. The sidebar nav fills its grid cell vertically, giving its
+     * sticky child a natural container to terminate against.
      *
-     * `.page` is constrained to a centered max-width so on wide viewports
-     * the sidebar/content/TOC stay within a readable column rather than
-     * stretching edge-to-edge. The header keeps a full-viewport background
-     * via the negative-margin breakout pattern below. Splash pages opt out
-     * via the `.page:not(:has(> .sidebar))` rule further down. */
+     * The sidebar and main columns together are at most 90rem wide and
+     * centered between two flexible gutters, so on wide viewports the
+     * sidebar/content/TOC stay within a readable column rather than
+     * stretching edge-to-edge. The header spans the gutters too, so its
+     * background reaches the viewport edges. Splash pages collapse the
+     * columns via the `.page:not(:has(> .sidebar))` rule further down. */
     .page {
       display: grid;
-      grid-template-columns: var(--sl-sidebar-width) 1fr;
+      grid-template-columns:
+        [full-start] minmax(0, 1fr)
+        [content-start] var(--sl-sidebar-width)
+        minmax(0, calc(90rem - var(--sl-sidebar-width)))
+        [content-end] minmax(0, 1fr) [full-end];
       grid-template-rows: auto 1fr auto;
       min-height: 100vh;
-      max-width: 90rem;
-      margin-inline: auto;
     }
 
-    /* Header: sticky inside the centered grid, but its box spans the full
-     * viewport so logo/nav/search align edge-to-edge consistently across
-     * splash and docs pages. The negative-margin breakout pulls the box
-     * edges out to 100vw; inner padding stays at the standard nav pad.
-     * When the page is narrower than 100vw, `50vw - 50%` evaluates to 0,
-     * so the rule is a no-op and matches the un-centered layout. */
+    /* Header: sticky, spanning the full grid width so logo/nav/search align
+     * edge-to-edge consistently across splash and docs pages. */
     .header {
-      grid-column: 1 / -1;
+      grid-column: full;
       z-index: var(--sl-z-index-navbar);
       position: sticky;
       top: 0;
@@ -114,17 +113,15 @@ const { hasSidebar } = Astro.locals.starlightRoute;
       border-bottom: 1px solid var(--sl-color-hairline-shade);
       background-color: var(--sl-color-bg-nav);
       padding: var(--sl-nav-pad-y) var(--sl-nav-pad-x);
-      width: 100vw;
-      margin-inline: calc(-50vw + 50%);
     }
 
     .sidebar {
-      grid-column: 1;
+      grid-column: 2;
       grid-row: 2;
     }
 
     .main-frame {
-      grid-column: 2;
+      grid-column: 3;
       grid-row: 2;
       /* Allow the grid column to shrink below its content min-width
        * (default `auto` aka min-content) so long URLs or code blocks
@@ -137,9 +134,9 @@ const { hasSidebar } = Astro.locals.starlightRoute;
       padding-top: var(--sl-mobile-toc-height);
     }
 
-    /* SiteFooter spans both columns in row 3 below the sidebar / content. */
+    /* SiteFooter spans the sidebar and main columns in row 3. */
     .page > :global(.site-footer) {
-      grid-column: 1 / -1;
+      grid-column: content;
       grid-row: 3;
     }
 
@@ -178,10 +175,10 @@ const { hasSidebar } = Astro.locals.starlightRoute;
       }
       .sidebar,
       .main-frame {
-        grid-column: 1 / -1;
+        grid-column: content;
       }
       .page {
-        grid-template-columns: 1fr;
+        grid-template-columns: [full-start content-start] minmax(0, 1fr) [content-end full-end];
       }
     }
 
@@ -206,16 +203,15 @@ const { hasSidebar } = Astro.locals.starlightRoute;
       }
     }
 
-    /* On layouts without a sidebar, main spans both columns. Splash pages
-     * also opt out of the centered max-width so their full-bleed sections
-     * (see custom.css `html:not([data-has-sidebar]) .sl-container`) can
-     * extend to the viewport edges. */
+    /* On layouts without a sidebar, main fills a single full-width column, so
+     * splash pages' full-bleed sections (see custom.css
+     * `html:not([data-has-sidebar]) .sl-container`) extend to the viewport
+     * edges. */
     .page:not(:has(> .sidebar)) {
-      grid-template-columns: 1fr;
-      max-width: none;
+      grid-template-columns: [full-start content-start] minmax(0, 1fr) [content-end full-end];
     }
     .page:not(:has(> .sidebar)) .main-frame {
-      grid-column: 1 / -1;
+      grid-column: content;
     }
   }
 
