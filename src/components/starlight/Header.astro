@@ -303,10 +303,11 @@ const { hasSidebar } = Astro.locals.starlightRoute;
 
   /* On docs pages, Starlight renders its own sidebar-toggle hamburger as
    * `position: fixed` at the right edge of the viewport. Reserve space on
-   * the header-actions group so it doesn't cover the search/theme icons. */
+   * the header-actions group so it doesn't cover the search/theme icons,
+   * leaving the same 1rem gap that separates the other header icons. */
   @media (max-width: 49.99rem) {
     :global(:root[data-has-sidebar]) .header-actions {
-      margin-inline-end: calc(var(--sl-menu-button-size) + 0.5rem);
+      margin-inline-end: calc(var(--sl-menu-button-size) + 1rem);
     }
   }
   /* Full-screen mobile drawer for splash pages (home / demo / 404), which
