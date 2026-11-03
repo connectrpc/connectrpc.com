@@ -17,19 +17,17 @@ import { Code } from "astro-expressive-code/components";
 import { ElizaDemo } from "../eliza-demo";
 import styles from "./Examples.module.css";
 
+const responseSnippet = `{"sentence": "Feeling happy? Tell me more."}`;
+
 const curlSnippet = `$ curl \\
     --header 'Content-Type: application/json' \\
     --data '{"sentence": "I feel happy."}' \\
-    https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say
----
-{"sentence": "Feeling happy? Tell me more."}`;
+    https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say`;
 
 const grpcSnippet = `$ grpcurl \\
     -d '{"sentence": "I feel happy."}' \\
     demo.connectrpc.com:443 \\
-    connectrpc.eliza.v1.ElizaService/Say
----
-{"sentence": "Feeling happy? Tell me more."}`;
+    connectrpc.eliza.v1.ElizaService/Say`;
 ---
 
 <div class={styles.container}>
@@ -40,6 +38,7 @@ const grpcSnippet = `$ grpcurl \\
     </div>
     <div class={styles.codeBlockWrapper}>
       <Code code={curlSnippet} lang="bash" frame="terminal" meta='title="Plain HTTP"' />
+      <Code code={responseSnippet} lang="json" frame="none" />
     </div>
   </div>
 
@@ -50,6 +49,7 @@ const grpcSnippet = `$ grpcurl \\
     </div>
     <div class={styles.codeBlockWrapper}>
       <Code code={grpcSnippet} lang="bash" frame="terminal" meta='title="gRPC protocol"' />
+      <Code code={responseSnippet} lang="json" frame="none" />
     </div>
   </div>
 

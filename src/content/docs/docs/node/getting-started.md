@@ -225,7 +225,11 @@ $ curl \
   --header 'Content-Type: application/json' \
   --data '{"sentence": "I feel happy."}' \
    http://localhost:8080/connectrpc.eliza.v1.ElizaService/Say
----
+```
+
+The response is:
+
+```json
 {"sentence":"You said: I feel happy."}
 ```
 
@@ -237,7 +241,11 @@ $ curl \
   --header 'Content-Type: application/json' \
   --data '{"sentence": ""}' \
    http://localhost:8080/connectrpc.eliza.v1.ElizaService/Say
----
+```
+
+The response is:
+
+```json
 {"code":"invalid_argument","message":"sentence: value length must be at least 1 characters [string.min_len]..."
 ```
 
@@ -266,7 +274,11 @@ With your server still running in a separate terminal window, you can now run yo
 
 ```shellsession
 $ npx tsx client.ts
----
+```
+
+It prints:
+
+```text
 SayResponse { sentence: 'You said: I feel happy.' }
 ```
 
