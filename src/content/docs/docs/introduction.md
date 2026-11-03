@@ -46,9 +46,9 @@ Connect's own protocol.
 
   ```bash
   curl \
-      --header "Content-Type: application/json" \
-      --data '{"sentence": "I feel happy."}' \
-      https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say
+    --header "Content-Type: application/json" \
+    --data '{"sentence": "I feel happy."}' \
+    https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say
   ```
 
 By default, Connect servers support ingress from all three protocols. Clients

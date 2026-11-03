@@ -379,7 +379,7 @@ using `buf curl`:
 
 ```shell
 npx buf curl --protocol grpc --schema . -d '{"sentence": "I feel happy."}' \
-   https://localhost:8443/connectrpc.eliza.v1.ElizaService/Say
+  https://localhost:8443/connectrpc.eliza.v1.ElizaService/Say
 ```
 
 In your `client.ts`, update the URL and use HTTP version `2` and you're set. It

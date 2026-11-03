@@ -45,6 +45,7 @@ typescript = { format = ["biome-ts"], on-error = "warn" }
 tsx = { format = ["biome-tsx"], on-error = "warn" }
 protobuf = { format = ["buf-format"] }
 python = { format = ["dprint-ruff"] }
+shell = { format = ["dprint-shfmt"] }
 
 [code-block-tools.binary-preferences]
 biome = "only-project"
@@ -66,6 +67,10 @@ command = ["biome", "format", "--stdin-file-path=block.tsx"]
 [code-block-tools.tools.buf-format]
 command = ["buf", "format", "--stdin-filepath=block.proto"]
 
-# ruff has no CLI on npm; dprint runs its formatter as a plugin (see dprint.json).
+# dprint runs ruff and shfmt as plugins (see dprint.json); ruff has no CLI
+# on npm.
 [code-block-tools.tools.dprint-ruff]
 command = ["dprint", "fmt", "--stdin", "block.py"]
+
+[code-block-tools.tools.dprint-shfmt]
+command = ["dprint", "fmt", "--stdin", "block.sh"]

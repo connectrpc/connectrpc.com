@@ -1,3 +1,10 @@
 {
-  "plugins": ["./node_modules/@dprint/ruff/plugin.wasm"]
+  "plugins": [
+    "./node_modules/@dprint/ruff/plugin.wasm",
+    "./node_modules/@dprint/shfmt/plugin.wasm"
+  ],
+  "shfmt": {
+    "indentWidth": 2,
+    "useTabs": false
+  }
 }
