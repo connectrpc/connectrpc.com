@@ -62,8 +62,9 @@ const legalLinks = [
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 2.5rem;
-    padding-bottom: 5rem;
+    /* Inline padding matches the header's, so the legal links and the
+     * copyright line up with its logo and buttons. */
+    padding: 2.5rem var(--sl-nav-pad-x);
     border-top: 1px solid var(--sl-color-hairline);
     width: 100%;
     position: relative;
