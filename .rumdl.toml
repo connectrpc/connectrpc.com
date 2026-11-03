@@ -47,6 +47,7 @@ protobuf = { format = ["buf-format"] }
 
 [code-block-tools.binary-preferences]
 biome = "only-project"
+buf = "only-project"
 
 # rumdl has no built-in Biome tool. The file name tells Biome which syntax to
 # parse; Biome reads its options from biome.jsonc.

@@ -12,6 +12,10 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
+      - uses: actions/setup-go@v7
+        with:
+          go-version: stable
+          cache: false
       - run: npm clean-install
       - run: npm run ci
       - name: Check Diff

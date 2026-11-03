@@ -27,6 +27,7 @@ updates:
       format:
         patterns:
           - "@biomejs/biome"
+          - "@bufbuild/buf"
           - "@bufbuild/license-header"
           - "rumdl"
       fonts:
