@@ -43,6 +43,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
+    "@astrojs/markdown-remark": "^7.3.5",
     "@biomejs/biome": "2.6.4",
     "@bufbuild/license-header": "^0.0.4",
     "@types/react": "^19.3.0",

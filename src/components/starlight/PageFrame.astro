@@ -32,11 +32,34 @@ const { hasSidebar } = Astro.locals.starlightRoute;
         aria-label={Astro.locals.t("sidebarNav.accessibleLabel")}
       >
         <MobileMenuToggle />
-        <div id="starlight__sidebar" class="sidebar-pane">
+        <script>
+          // The mobile menu opens and closes through the popover API. This
+          // element drops the popover attribute on desktop viewports and traps
+          // focus while the menu is open.
+          class StarlightSidebarPane extends HTMLElement {
+            constructor() {
+              super();
+              const desktop = matchMedia("(min-width: 50em)");
+              const reset = () => {
+                this.popover = desktop.matches ? null : "auto";
+              };
+              reset();
+              desktop.addEventListener("change", reset);
+              this.addEventListener("toggle", (e) => {
+                const open = (e as ToggleEvent).newState === "open";
+                document
+                  .querySelectorAll(".main-frame, .sl-skip-link")
+                  .forEach((el) => el.toggleAttribute("inert", open));
+              });
+            }
+          }
+          customElements.define("sl-sidebar-pane", StarlightSidebarPane);
+        </script>
+        <sl-sidebar-pane popover="" id="starlight__sidebar" class="sidebar-pane">
           <div class="sidebar-content sl-flex">
             <slot name="sidebar" />
           </div>
-        </div>
+        </sl-sidebar-pane>
       </nav>
     )
   }
@@ -151,7 +174,12 @@ const { hasSidebar } = Astro.locals.starlightRoute;
      * dark→light theme switch that StarlightThemeProvider performs after
      * paint. The inline-end hairline marks the column boundary. */
     .sidebar-pane {
-      visibility: var(--sl-sidebar-visibility, hidden);
+      /* Undo the user agent's popover styles. */
+      border: unset;
+      padding: unset;
+      margin: unset;
+      color: unset;
+      display: block;
       position: sticky;
       top: var(--sl-nav-height);
       width: 100%;
@@ -161,10 +189,9 @@ const { hasSidebar } = Astro.locals.starlightRoute;
       overflow-y: auto;
     }
 
-    /* Mobile sidebar drawer: positioned absolutely for off-canvas behaviour. */
+    /* Mobile sidebar drawer: a fixed popover, hidden until opened. */
     @media (max-width: 50rem) {
       .sidebar-pane {
-        visibility: var(--sl-sidebar-visibility, hidden);
         position: fixed;
         z-index: var(--sl-z-index-menu);
         inset-block: var(--sl-nav-height) 0;
@@ -173,8 +200,8 @@ const { hasSidebar } = Astro.locals.starlightRoute;
         background-color: var(--sl-color-black);
         border-inline-end: none;
       }
-      :global([aria-expanded="true"]) ~ .sidebar-pane {
-        --sl-sidebar-visibility: visible;
+      .sidebar-pane:not(:popover-open) {
+        display: none;
       }
       .sidebar,
       .main-frame {
@@ -182,12 +209,6 @@ const { hasSidebar } = Astro.locals.starlightRoute;
       }
       .page {
         grid-template-columns: 1fr;
-      }
-    }
-
-    @media (min-width: 50rem) {
-      .sidebar-pane {
-        --sl-sidebar-visibility: visible;
       }
     }
 
