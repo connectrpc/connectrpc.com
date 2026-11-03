@@ -47,8 +47,10 @@
     "@biomejs/biome": "2.6.4",
     "@bufbuild/buf": "1.75.0",
     "@bufbuild/license-header": "^0.0.4",
+    "@dprint/ruff": "0.11.3",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "dprint": "0.64.3",
     "rumdl": "^0.3.2",
     "typescript": "^6.0.3"
   },

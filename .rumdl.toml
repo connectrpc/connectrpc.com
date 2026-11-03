@@ -44,10 +44,12 @@ javascript = { format = ["biome-js"], on-error = "warn" }
 typescript = { format = ["biome-ts"], on-error = "warn" }
 tsx = { format = ["biome-tsx"], on-error = "warn" }
 protobuf = { format = ["buf-format"] }
+python = { format = ["dprint-ruff"] }
 
 [code-block-tools.binary-preferences]
 biome = "only-project"
 buf = "only-project"
+dprint = "only-project"
 
 # rumdl has no built-in Biome tool. The file name tells Biome which syntax to
 # parse; Biome reads its options from biome.jsonc.
@@ -63,3 +65,7 @@ command = ["biome", "format", "--stdin-file-path=block.tsx"]
 # buf formats stdin only when given --stdin-filepath.
 [code-block-tools.tools.buf-format]
 command = ["buf", "format", "--stdin-filepath=block.proto"]
+
+# ruff has no CLI on npm; dprint runs its formatter as a plugin (see dprint.json).
+[code-block-tools.tools.dprint-ruff]
+command = ["dprint", "fmt", "--stdin", "block.py"]
