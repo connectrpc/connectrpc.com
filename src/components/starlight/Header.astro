@@ -158,6 +158,9 @@ const { hasSidebar } = Astro.locals.starlightRoute;
       display: grid;
       grid-template-columns: auto 1fr auto;
       align-items: center;
+      /* The row can be taller than the header's content box (the search
+       * button is 2.5rem), so center it rather than let it overflow down. */
+      align-content: center;
       gap: var(--sl-nav-gap);
       height: 100%;
     }
@@ -216,20 +219,6 @@ const { hasSidebar } = Astro.locals.starlightRoute;
     }
     .mobile-extras {
       gap: 0.5rem;
-    }
-
-
-    @media (min-width: 50rem) {
-      /* Use the same `auto 1fr auto` template on both splash and docs
-       * pages so the header layout is consistent everywhere. Earlier
-       * versions reserved the sidebar width in the title column on docs
-       * pages so the "Connect" wordmark visually aligned with the sidebar
-       * — but that left the right group with too little space for the
-       * "Created by Buf" pill at md-to-lg widths, truncating it. The
-       * unified layout matches the home / demo headers exactly. */
-      .header {
-        align-content: center;
-      }
     }
   }
 
