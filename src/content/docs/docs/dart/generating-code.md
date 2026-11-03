@@ -11,15 +11,15 @@ syntax = "proto3";
 package connectrpc.eliza.v1;
 
 message SayRequest {
-    string sentence = 1;
+  string sentence = 1;
 }
 
 message SayResponse {
-    string sentence = 1;
+  string sentence = 1;
 }
 
 service ElizaService {
-    rpc Say(SayRequest) returns (SayResponse) {}
+  rpc Say(SayRequest) returns (SayResponse) {}
 }
 ```
 
