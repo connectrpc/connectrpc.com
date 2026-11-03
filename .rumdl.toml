@@ -40,3 +40,20 @@ enabled = true
 
 [code-block-tools.languages]
 go = { format = ["gofmt"] }
+javascript = { format = ["biome-js"], on-error = "warn" }
+typescript = { format = ["biome-ts"], on-error = "warn" }
+tsx = { format = ["biome-tsx"], on-error = "warn" }
+
+[code-block-tools.binary-preferences]
+biome = "only-project"
+
+# rumdl has no built-in Biome tool. The file name tells Biome which syntax to
+# parse; Biome reads its options from biome.jsonc.
+[code-block-tools.tools.biome-js]
+command = ["biome", "format", "--stdin-file-path=block.js"]
+
+[code-block-tools.tools.biome-ts]
+command = ["biome", "format", "--stdin-file-path=block.ts"]
+
+[code-block-tools.tools.biome-tsx]
+command = ["biome", "format", "--stdin-file-path=block.tsx"]

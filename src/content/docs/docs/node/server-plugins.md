@@ -19,14 +19,16 @@ import routes from "./connect";
 import { connectNodeAdapter } from "@connectrpc/connect-node";
 import { createValidateInterceptor } from "@connectrpc/validate";
 
-http.createServer(
-  connectNodeAdapter({
-    // Validation via Protovalidate is almost always recommended
-    interceptors: [createValidateInterceptor()],
-    // The connectNodeAdapter responds with 404 to requests that don't match a route
-    routes
-  })
-).listen(8080);
+http
+  .createServer(
+    connectNodeAdapter({
+      // Validation via Protovalidate is almost always recommended
+      interceptors: [createValidateInterceptor()],
+      // The connectNodeAdapter responds with 404 to requests that don't match a route
+      routes,
+    })
+  )
+  .listen(8080);
 ```
 
 The function accepts all [common options](#common-options) as well as:
@@ -117,12 +119,12 @@ import { nextJsApiRouter } from "@connectrpc/connect-next";
 import { createValidateInterceptor } from "@connectrpc/validate";
 import routes from "./connect";
 
-const {handler, config} = nextJsApiRouter({
+const { handler, config } = nextJsApiRouter({
   // Validation via Protovalidate is almost always recommended
   interceptors: [createValidateInterceptor()],
-  routes
+  routes,
 });
-export {handler as default, config};
+export { handler as default, config };
 ```
 
 This file is a Next.js [catch-all API route](https://nextjs.org/docs/pages/building-your-application/routing/dynamic-routes#catch-all-segments). It will
@@ -165,11 +167,13 @@ import { createValidateInterceptor } from "@connectrpc/validate";
 
 const app = express();
 
-app.use(expressConnectMiddleware({
-  // Validation via Protovalidate is almost always recommended
-  interceptors: [createValidateInterceptor()],
-  routes
-}));
+app.use(
+  expressConnectMiddleware({
+    // Validation via Protovalidate is almost always recommended
+    interceptors: [createValidateInterceptor()],
+    routes,
+  })
+);
 
 http.createServer(app).listen(8080);
 ```
@@ -204,7 +208,7 @@ If your service uses `google.protobuf.Any`, provide a `registry` with the allowe
 connectNodeAdapter({
   routes,
   readMaxBytes: 1024 * 1024 * 4, // 4 MiB per incoming message
-})
+});
 ```
 
 **Interceptors and the request gate:** `interceptors` is an array of [Interceptors](/docs/node/interceptors/) to apply to all requests. `requestGate` is a function that runs after the request headers are available. Throwing a `ConnectError` in the gate rejects a request before messages are read, decompressed, or parsed. See the section on [authentication in Interceptors](/docs/node/interceptors/#authentication) for more information.
@@ -261,10 +265,7 @@ import { cors } from "@connectrpc/connect";
 await server.register(fastifyCors, {
   origin: "https://demo.connectrpc.com",
   methods: cors.allowedMethods,
-  allowedHeaders: [
-    ...cors.allowedHeaders,
-    "Custom-Request-Header"
-  ],
+  allowedHeaders: [...cors.allowedHeaders, "Custom-Request-Header"],
   exposedHeaders: [
     ...cors.exposedHeaders,
     "Custom-Response-Header",
@@ -272,7 +273,7 @@ await server.register(fastifyCors, {
   ],
   // Let browsers cache CORS information to reduce the number of
   // preflight requests. Modern Chrome caps the value at 2h.
-  maxAge: 2 * 60 * 60
+  maxAge: 2 * 60 * 60,
 });
 ```
 

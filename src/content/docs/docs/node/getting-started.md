@@ -162,8 +162,8 @@ export default (router: ConnectRouter) =>
     // implements rpc Say
     async say(req: SayRequest, context: HandlerContext) {
       return {
-        sentence: `You said: ${req.sentence}`
-      }
+        sentence: `You said: ${req.sentence}`,
+      };
     },
   });
 ```
@@ -254,12 +254,12 @@ with the following contents:
 
 ```ts
 import { createClient } from "@connectrpc/connect";
-import { ElizaService } from "./gen/connectrpc/eliza/v1/eliza_pb"
+import { ElizaService } from "./gen/connectrpc/eliza/v1/eliza_pb";
 import { createConnectTransport } from "@connectrpc/connect-node";
 
 const transport = createConnectTransport({
   baseUrl: "http://localhost:8080",
-  httpVersion: "1.1"
+  httpVersion: "1.1",
 });
 
 async function main() {
@@ -291,7 +291,7 @@ Transport:
 
 ```ts mark={3,7-8}
 import { createClient } from "@connectrpc/connect";
-import { ElizaService } from "./gen/connectrpc/eliza/v1/eliza_pb"
+import { ElizaService } from "./gen/connectrpc/eliza/v1/eliza_pb";
 import { createConnectTransport } from "@connectrpc/connect-web";
 
 const transport = createConnectTransport({
@@ -360,7 +360,7 @@ async function main() {
     https: {
       key: readFileSync("localhost+2-key.pem", "utf8"),
       cert: readFileSync("localhost+2.pem", "utf8"),
-    }
+    },
   });
   await server.register(fastifyConnectPlugin, {
     interceptors: [createValidateInterceptor()],

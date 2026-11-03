@@ -36,9 +36,9 @@ function App() {
 
 With configuration completed, you can now use the `useQuery` hook to make a request:
 
-```ts
-import { useQuery } from '@connectrpc/connect-query';
-import { example } from 'your-generated-code/example-ExampleService_connectquery';
+```tsx
+import { useQuery } from "@connectrpc/connect-query";
+import { example } from "your-generated-code/example-ExampleService_connectquery";
 
 export const Example: FC = () => {
   const { data } = useQuery(example);

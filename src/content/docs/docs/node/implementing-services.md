@@ -11,7 +11,7 @@ creating a `connect.ts` file with a registration function in your project:
 ```ts
 import { ConnectRouter } from "@connectrpc/connect";
 
-export default (router: ConnectRouter) => {}
+export default (router: ConnectRouter) => {};
 ```
 
 ## Register a service
@@ -46,7 +46,7 @@ export default (router: ConnectRouter) =>
       return {
         sentence: `You said ${req.sentence}`,
       };
-    }
+    },
   });
 ```
 
@@ -86,8 +86,8 @@ import { create } from "@bufbuild/protobuf";
 import { SayRequest } from "./gen/connectrpc/eliza/v1/eliza_pb";
 
 function say(req: SayRequest, context: HandlerContext) {
-  console.log("Handling", context.service.typeName, context.method.name)
-  console.log("Foo:", context.requestHeader.get("Foo"))
+  console.log("Handling", context.service.typeName, context.method.name);
+  console.log("Foo:", context.requestHeader.get("Foo"));
   context.responseHeader.set("Foo", "Bar");
   return { sentence: `You said ${req.sentence}` };
 }
@@ -134,18 +134,18 @@ function say() {
       value: {
         locale: "fr-CH",
         message: "Je n'ai plus de mots.",
-      }
+      },
     },
     {
       desc: LocalizedMessageSchema,
       value: {
         locale: "ja-JP",
         message: "もう言葉がありません。",
-      }
+      },
     },
   ];
   const metadata = new Headers({
-    "words-left": "none"
+    "words-left": "none",
   });
   throw new ConnectError(
     "I have no more words.",
@@ -200,7 +200,7 @@ asynchronous iterable of response messages, typically with a
 [generator function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*).
 
 ```ts
-async function *introduce(req: IntroduceRequest) {
+async function* introduce(req: IntroduceRequest) {
   yield { sentence: `Hi ${req.name}, I'm Eliza` };
   yield { sentence: `How are you feeling today?` };
 }
@@ -252,17 +252,14 @@ export default (router: ConnectRouter) => {
   router.service(ElizaService, { say });
 
   // alternative for using const say
-  router.rpc(
-    ElizaService.method.say,
-    say
-  );
+  router.rpc(ElizaService.method.say, say);
 
   // using const eliza
   router.service(ElizaService, eliza);
 
   // using class Eliza
   router.service(ElizaService, new Eliza());
-}
+};
 ```
 
 Note that `ConnectRouter.service` allows you to omit methods. The router will automatically add a method that responds
