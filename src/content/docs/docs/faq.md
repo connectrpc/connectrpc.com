@@ -211,15 +211,26 @@ and the architecture has some fundamental limitations that may be surprising.
 We encourage you to give it a try and report any issues you find to Go or
 Connect-Go to help bring WASM in Go forward.
 
-### Why am I seeing a "stream error: stream ID 5; INTERNAL_ERROR; received from peer" error message after X seconds? {#stream-error}
+### Why do my streaming calls fail with "stream error" or "incomplete envelope" after X seconds? {#stream-error}
 
 It means that your [http.Server](https://pkg.go.dev/net/http#Server) has a
 `ReadTimeout` or `WriteTimeout` field configured. These fields apply
 to the entire operation duration, even for streaming calls. If an operation
-takes longer than the value specified, the server closes the stream and
-clients can see the above error message. The other timeout fields won't cause
-this error, and we
-encourage you to set `ReadHeaderTimeout` in particular.
+takes longer than the value specified, the server closes the stream. Over
+HTTP/2, clients see an error like:
+
+```
+stream error: stream ID 5; INTERNAL_ERROR; received from peer
+```
+
+Over HTTP/1.1, `connect-go` clients see an error like:
+
+```
+protocol error: incomplete envelope: unexpected EOF
+```
+
+The other timeout fields won't cause this error, and we encourage you to set
+`ReadHeaderTimeout` in particular.
 
 ### How do I close a client response stream in Connect-Go?
 
