@@ -223,7 +223,7 @@ HTTP/2, clients see an error like:
 stream error: stream ID 5; INTERNAL_ERROR; received from peer
 ```
 
-Over HTTP/1.1, Connect clients see an error like:
+Over HTTP/1.1, `connect-go` clients see an error like:
 
 ```
 protocol error: incomplete envelope: unexpected EOF
