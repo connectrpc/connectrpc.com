@@ -72,7 +72,7 @@ const mockTransport = createRouterTransport(({ service }) => {
       if (sentences.length > 3) {
         throw new ConnectError(
           "I have no words anymore.",
-          Code.ResourceExhausted,
+          Code.ResourceExhausted
         );
       }
       return new SayResponse({

@@ -25,7 +25,7 @@ http
     connectNodeAdapter({
       routes,
       interceptors: [logger],
-    }),
+    })
   )
   .listen(8080);
 ```
@@ -106,7 +106,7 @@ connectNodeAdapter({
       throw new ConnectError("HTTP 1.0 is not supported", Code.Unimplemented);
     }
   },
-})
+});
 ```
 
 Interceptors have full access to context values:
@@ -154,7 +154,7 @@ http
     connectNodeAdapter({
       routes,
       requestGate: authGate,
-    }),
+    })
   )
   .listen(8080);
 ```

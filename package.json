@@ -21,7 +21,7 @@
     "check": "biome check .",
     "check:fix": "biome check --write .",
     "license-header": "license-header",
-    "ci": "npm run build && npm run check:fix && npm run lint:md && npm run check:types && npm run license-header",
+    "ci": "npm run build && npm run check:fix && rumdl fmt . --deny-config-warnings && npm run lint:md && npm run check:types && npm run license-header",
     "publish": "npm install && npm run lint && npm run check:types && npm run build"
   },
   "dependencies": {
@@ -45,9 +45,13 @@
     "@astrojs/check": "^0.9.12",
     "@astrojs/markdown-remark": "^7.3.5",
     "@biomejs/biome": "2.6.4",
+    "@bufbuild/buf": "1.75.0",
     "@bufbuild/license-header": "^0.0.4",
+    "@dprint/ruff": "0.11.3",
+    "@dprint/shfmt": "0.1.2",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "dprint": "0.64.3",
     "rumdl": "^0.3.2",
     "typescript": "^6.0.3"
   },

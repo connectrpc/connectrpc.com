@@ -84,7 +84,8 @@ the application with ASGI or WSGI middleware such as Starlette's
 ```python
 from starlette.middleware.body_limit import RequestBodyLimitMiddleware
 
-app = RequestBodyLimitMiddleware(app, max_body_size=1024 * 1024 * 32)  # 32MB per request
+# 32MB per request
+app = RequestBodyLimitMiddleware(app, max_body_size=1024 * 1024 * 32)
 ```
 
 ## CORS

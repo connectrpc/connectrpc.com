@@ -26,7 +26,7 @@ import { ElizaService } from "@buf/connectrpc_eliza.bufbuild_es/connectrpc/eliza
 
 const mockTransport = createRouterTransport(({ service }) => {
   service(ElizaService, {
-    say: () => { sentence: "I feel happy." },
+    say: () => ({ sentence: "I feel happy." }),
   });
 });
 ```
@@ -46,7 +46,7 @@ const mockTransport = createRouterTransport(({ service }) => {
       if (sentences.length > 3) {
         throw new ConnectError(
           "I have no words anymore.",
-          Code.ResourceExhausted,
+          Code.ResourceExhausted
         );
       }
       return {
@@ -146,7 +146,7 @@ test.describe("mocking Eliza", () => {
   });
   test("mock RPCs at service level", async ({ page }) => {
     await mock.service(ElizaService, {
-      say: () => { sentence: "I feel happy." },
+      say: () => ({ sentence: "I feel happy." }),
     });
     // Any calls to Eliza.Say in test code below will be intercepted and invoke
     // the implementation above.
