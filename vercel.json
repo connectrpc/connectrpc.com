@@ -78,6 +78,11 @@
       "permanent": true
     },
     {
+      "source": "/protoc-gen-connect-openapi/",
+      "destination": "/protoc-gen-connect-openapi.html",
+      "permanent": true
+    },
+    {
       "source": "/validate/",
       "destination": "/validate.html",
       "permanent": true
