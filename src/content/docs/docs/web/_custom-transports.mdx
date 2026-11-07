@@ -34,7 +34,7 @@ const response = await transport.unary(
   abortSignal,
   timeoutMs,
   new Headers(),
-  new SayRequest({ sentence: "I feel happy." }),
+  new SayRequest({ sentence: "I feel happy." })
 );
 console.log(response.message.sentence);
 ```
@@ -77,8 +77,18 @@ response stubs:
 
 ```ts
 // stub-transport.ts
-import type { UnaryRequest, UnaryResponse, StreamResponse } from "@connectrpc/connect";
-import type { AnyMessage, Message, MethodInfo, ServiceType, PartialMessage } from "@bufbuild/protobuf";
+import type {
+  UnaryRequest,
+  UnaryResponse,
+  StreamResponse,
+} from "@connectrpc/connect";
+import type {
+  AnyMessage,
+  Message,
+  MethodInfo,
+  ServiceType,
+  PartialMessage,
+} from "@bufbuild/protobuf";
 
 /**
  * Create a request with a single message.
@@ -147,7 +157,11 @@ simple:
 
 ```ts
 // stub-transport.ts
-import type { Interceptor, runUnary, runServerStream } from "@connectrpc/connect-web";
+import type {
+  Interceptor,
+  runUnary,
+  runServerStream,
+} from "@connectrpc/connect-web";
 
 /**
  * Create a stub transport that only returns default response messages.
@@ -184,7 +198,7 @@ import { ElizaService } from "@buf/connectrpc_eliza.connectrpc_es/connectrpc/eli
 
 const transport = createStubTransport();
 const client = createPromiseClient(ElizaService, transport);
-const res = await client.say({sentence: "I feel happy."});
+const res = await client.say({ sentence: "I feel happy." });
 console.log(res.sentence); // Will print an empty string
 ```
 

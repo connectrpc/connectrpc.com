@@ -420,7 +420,7 @@ Every service method on the server receives the `HandlerContext` as the second a
 response headers. You can set cookies with the `Set-Cookie` response header—for example:
 
 ```typescript
-ctx.responseHeader.append("Set-Cookie", "foo=bar; Max=Age=120")
+ctx.responseHeader.append("Set-Cookie", "foo=bar; Max=Age=120");
 ```
 
 ### Parcel fails to resolve imports
