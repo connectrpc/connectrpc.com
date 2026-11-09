@@ -63,8 +63,8 @@ import "buf/validate/validate.proto";
 
 message GreetRequest {
   string name = 1 [(buf.validate.field).string = {
-    min_len: 1,
-    max_len: 50,
+    min_len: 1
+    max_len: 50
   }];
 }
 

@@ -18,10 +18,7 @@ pass it in the second argument of the client method, the call options:
 const headers = new Headers();
 headers.set("Authorization", "Bearer AbCdEf123456");
 
-await client.say(
-  {sentence: "Hello"},
-  {headers: headers}
-);
+await client.say({ sentence: "Hello" }, { headers: headers });
 ```
 
 Note that you do not need to create a `Headers` object. The `headers` property
@@ -30,8 +27,8 @@ you can also provide simple object literal with string values:
 
 ```ts
 await client.say(
-  {sentence: "Hello"},
-  {headers: {"Authorization": "Bearer AbCdEf123456"}}
+  { sentence: "Hello" },
+  { headers: { Authorization: "Bearer AbCdEf123456" } }
 );
 ```
 
@@ -39,8 +36,8 @@ To receive response headers, you can provide a callback:
 
 ```ts
 await client.say(
-  {sentence: "Hello"},
-  {onHeader: (headers) => console.log(headers)}
+  { sentence: "Hello" },
+  { onHeader: (headers) => console.log(headers) }
 );
 ```
 
@@ -55,10 +52,7 @@ import { encodeBinaryHeader } from "@connectrpc/connect";
 
 const data = new Uint8Array([0xde, 0xad, 0xbe, 0xef]);
 const headers = new Headers();
-headers.set(
-  "Data-Bin",
-  encodeBinaryHeader(data),
-);
+headers.set("Data-Bin", encodeBinaryHeader(data));
 ```
 
 For convenience, the function also accepts a Protobuf message or UTF-8 text:
@@ -68,14 +62,8 @@ import { MyMessageSchema } from "./my_message_pb";
 
 const message = create(MyMessageSchema);
 
-headers.set(
-  "My-Message-Bin",
-  encodeBinaryHeader(message, MyMessageSchema),
-);
-headers.set(
-  "Greet-Emoji-Bin",
-  encodeBinaryHeader("👋"),
-);
+headers.set("My-Message-Bin", encodeBinaryHeader(message, MyMessageSchema));
+headers.set("Greet-Emoji-Bin", encodeBinaryHeader("👋"));
 ```
 
 To decode response headers, use the function `decodeBinaryHeader()`:
@@ -98,8 +86,8 @@ trailers, you can provide a callback:
 
 ```ts
 await client.say(
-  {sentence: "Hello"},
-  {onTrailer: (trailers) => console.log(trailers)}
+  { sentence: "Hello" },
+  { onTrailer: (trailers) => console.log(trailers) }
 );
 ```
 

@@ -12,5 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// <reference types="@astrojs/starlight/virtual" />
-/// <reference path="../node_modules/@astrojs/starlight/virtual-internal.d.ts" />
+// Starlight resolves these virtual modules at build time but does not
+// publish declarations for them.
+declare module "virtual:starlight/user-config" {
+  const config: import("@astrojs/starlight/types").StarlightConfig;
+  export default config;
+}
+
+declare module "virtual:starlight/components/*" {
+  const Component: import("astro/runtime/server/index.js").AstroComponentFactory;
+  export default Component;
+}

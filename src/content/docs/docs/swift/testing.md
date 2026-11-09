@@ -51,24 +51,24 @@ syntax = "proto3";
 package connectrpc.eliza.v1;
 
 service ElizaService {
-    rpc Say(SayRequest) returns (SayResponse) {}
-    rpc Converse(stream ConverseRequest) returns (stream ConverseResponse) {}
+  rpc Say(SayRequest) returns (SayResponse) {}
+  rpc Converse(stream ConverseRequest) returns (stream ConverseResponse) {}
 }
 
 message SayRequest {
-    string sentence = 1;
+  string sentence = 1;
 }
 
 message SayResponse {
-    string sentence = 1;
+  string sentence = 1;
 }
 
 message ConverseRequest {
-    string sentence = 1;
+  string sentence = 1;
 }
 
 message ConverseResponse {
-    string sentence = 1;
+  string sentence = 1;
 }
 ```
 

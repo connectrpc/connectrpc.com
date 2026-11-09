@@ -162,8 +162,8 @@ export default (router: ConnectRouter) =>
     // implements rpc Say
     async say(req: SayRequest, context: HandlerContext) {
       return {
-        sentence: `You said: ${req.sentence}`
-      }
+        sentence: `You said: ${req.sentence}`,
+      };
     },
   });
 ```
@@ -224,8 +224,12 @@ If you have a recent version of cURL installed, it's a one-liner:
 $ curl \
   --header 'Content-Type: application/json' \
   --data '{"sentence": "I feel happy."}' \
-   http://localhost:8080/connectrpc.eliza.v1.ElizaService/Say
----
+  http://localhost:8080/connectrpc.eliza.v1.ElizaService/Say
+```
+
+The response is:
+
+```json
 {"sentence":"You said: I feel happy."}
 ```
 
@@ -236,9 +240,13 @@ It's rejected because you've included Protovalidate rules in your schema.
 $ curl \
   --header 'Content-Type: application/json' \
   --data '{"sentence": ""}' \
-   http://localhost:8080/connectrpc.eliza.v1.ElizaService/Say
----
-{"code":"invalid_argument","message":"sentence: value length must be at least 1 characters [string.min_len]..."
+  http://localhost:8080/connectrpc.eliza.v1.ElizaService/Say
+```
+
+The response is:
+
+```json
+{"code":"invalid_argument","message":"sentence: value length must be at least 1 characters [string.min_len]..."}
 ```
 
 You can also make requests using a Connect client. Create a new file `client.ts`
@@ -246,12 +254,12 @@ with the following contents:
 
 ```ts
 import { createClient } from "@connectrpc/connect";
-import { ElizaService } from "./gen/connectrpc/eliza/v1/eliza_pb"
+import { ElizaService } from "./gen/connectrpc/eliza/v1/eliza_pb";
 import { createConnectTransport } from "@connectrpc/connect-node";
 
 const transport = createConnectTransport({
   baseUrl: "http://localhost:8080",
-  httpVersion: "1.1"
+  httpVersion: "1.1",
 });
 
 async function main() {
@@ -266,7 +274,11 @@ With your server still running in a separate terminal window, you can now run yo
 
 ```shellsession
 $ npx tsx client.ts
----
+```
+
+It prints:
+
+```text
 SayResponse { sentence: 'You said: I feel happy.' }
 ```
 
@@ -279,7 +291,7 @@ Transport:
 
 ```ts mark={3,7-8}
 import { createClient } from "@connectrpc/connect";
-import { ElizaService } from "./gen/connectrpc/eliza/v1/eliza_pb"
+import { ElizaService } from "./gen/connectrpc/eliza/v1/eliza_pb";
 import { createConnectTransport } from "@connectrpc/connect-web";
 
 const transport = createConnectTransport({
@@ -348,7 +360,7 @@ async function main() {
     https: {
       key: readFileSync("localhost+2-key.pem", "utf8"),
       cert: readFileSync("localhost+2.pem", "utf8"),
-    }
+    },
   });
   await server.register(fastifyConnectPlugin, {
     interceptors: [createValidateInterceptor()],
@@ -367,7 +379,7 @@ using `buf curl`:
 
 ```shell
 npx buf curl --protocol grpc --schema . -d '{"sentence": "I feel happy."}' \
-   https://localhost:8443/connectrpc.eliza.v1.ElizaService/Say
+  https://localhost:8443/connectrpc.eliza.v1.ElizaService/Say
 ```
 
 In your `client.ts`, update the URL and use HTTP version `2` and you're set. It

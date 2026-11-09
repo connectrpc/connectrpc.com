@@ -88,7 +88,7 @@ import { createConnectTransport } from "@connectrpc/connect-web";
 createConnectTransport({
   baseUrl: "https://demo.connectrpc.com",
   // Include cookies in cross-origin requests:
-  fetch: (input, init) => fetch(input, {...init, credentials: "include"}),
+  fetch: (input, init) => fetch(input, { ...init, credentials: "include" }),
 });
 ```
 
