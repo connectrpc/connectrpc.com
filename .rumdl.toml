@@ -30,10 +30,6 @@ disable = [
   # frontmatter, and partials (files prefixed with `_`) are embedded into other pages so
   # neither has a leading h1.
   "MD041",
-  # MD057: Relative link path does not exist — link validity checking is handled separately
-  # on the built site (see src/plugins/remark-link-checker.ts). Duplicating this in source
-  # is noisy.
-  "MD057",
   # MD059: Link text should be descriptive — some pages intentionally use contextual link text
   # (e.g., "[here](url)") that reads naturally in prose. This is a content style decision.
   "MD059",
@@ -44,3 +40,37 @@ enabled = true
 
 [code-block-tools.languages]
 go = { format = ["gofmt"] }
+javascript = { format = ["biome-js"], on-error = "warn" }
+typescript = { format = ["biome-ts"], on-error = "warn" }
+tsx = { format = ["biome-tsx"], on-error = "warn" }
+protobuf = { format = ["buf-format"] }
+python = { format = ["dprint-ruff"] }
+shell = { format = ["dprint-shfmt"] }
+
+[code-block-tools.binary-preferences]
+biome = "only-project"
+buf = "only-project"
+dprint = "only-project"
+
+# rumdl has no built-in Biome tool. The file name tells Biome which syntax to
+# parse; Biome reads its options from biome.jsonc.
+[code-block-tools.tools.biome-js]
+command = ["biome", "format", "--stdin-file-path=block.js"]
+
+[code-block-tools.tools.biome-ts]
+command = ["biome", "format", "--stdin-file-path=block.ts"]
+
+[code-block-tools.tools.biome-tsx]
+command = ["biome", "format", "--stdin-file-path=block.tsx"]
+
+# buf formats stdin only when given --stdin-filepath.
+[code-block-tools.tools.buf-format]
+command = ["buf", "format", "--stdin-filepath=block.proto"]
+
+# dprint runs ruff and shfmt as plugins (see dprint.json); ruff has no CLI
+# on npm.
+[code-block-tools.tools.dprint-ruff]
+command = ["dprint", "fmt", "--stdin", "block.py"]
+
+[code-block-tools.tools.dprint-shfmt]
+command = ["dprint", "fmt", "--stdin", "block.sh"]

@@ -51,16 +51,16 @@ component in props. `getServiceSideProps` must return JSON.
 In the following example, we use the proto3 message `SayResponse`, which is JSON serializable:
 
 ```tsx
-import type { InferGetServerSidePropsType } from 'next'
-import { create } from '@bufbuild/protobuf';
+import type { InferGetServerSidePropsType } from "next";
+import { create } from "@bufbuild/protobuf";
 import { SayRequestSchema } from "@buf/connectrpc_eliza.bufbuild_es/connectrpc/eliza/v1/eliza_pb";
 
-export const getServerSideProps = (async () => {
+export const getServerSideProps = async () => {
   const sayRequest = create(SayRequestSchema, {
     sentence: "hi",
   });
-  return { props: { sayRequest } }
-});
+  return { props: { sayRequest } };
+};
 
 export default function Page({
   sayRequest,
@@ -69,26 +69,28 @@ export default function Page({
     <main>
       <p>{sayRequest.sentence}</p>
     </main>
-  )
+  );
 }
 ```
 
 The following example uses the message `Payload`, which is not JSON serializable. We convert it to JSON to cross the
 boundary:
 
-```tsx mark={10,17}
-import type { InferGetServerSidePropsType } from 'next'
-import { create, toJson, fromJson } from '@bufbuild/protobuf';
+```tsx mark={11,19}
+import type { InferGetServerSidePropsType } from "next";
+import { create, toJson, fromJson } from "@bufbuild/protobuf";
 import { PayloadSchema } from "./gen/payload_pb";
 
-export const getServerSideProps = (async () => {
+export const getServerSideProps = async () => {
   const payload = create(PayloadSchema, {
     largeNumber: 123n,
   });
-  return { props: {
-    payloadJson: toJson(payload, PayloadSchema)
-  }}
-});
+  return {
+    props: {
+      payloadJson: toJson(payload, PayloadSchema),
+    },
+  };
+};
 
 export default function Page({
   payloadJson,
@@ -98,7 +100,7 @@ export default function Page({
     <main>
       <p>{payload.largeNumber.toString()}</p>
     </main>
-  )
+  );
 }
 ```
 
@@ -124,7 +126,7 @@ export default function Page() {
     <main>
       <p>{payload.largeNumber.toString()}</p>
     </main>
-  )
+  );
 }
 ```
 

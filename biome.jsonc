@@ -19,6 +19,8 @@
       "!**/.rumdl_cache",
       // Biome lacks .astro support; the toolchain handles formatting via Astro itself.
       "!**/*.astro",
+      // rumdl formats Markdown.
+      "!**/*.md",
       // Skip Go vanity URL HTML files.
       "!public/*.html"
     ]

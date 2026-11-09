@@ -183,6 +183,20 @@ html:not([data-has-sidebar]) .content-panel {
   padding-inline: 0;
 }
 
+/* Starlight's sidebar toggle on docs pages defaults to a filled circle.
+ * Match the outlined square of the header's splash-page menu toggle
+ * (`.mobile-menu-toggle` in Header.astro) and the theme select beside it. */
+:root {
+  --sl-menu-button-size: 2.25rem;
+}
+.sl-menu-button {
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 4px;
+  background-color: transparent;
+  color: var(--sl-color-white);
+  box-shadow: none;
+}
+
 :root[data-theme="dark"] {
   --sl-color-accent-low: #16213e;
   --sl-color-accent: #77e1ff;

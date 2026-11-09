@@ -25,17 +25,16 @@ RPC returns. Using `signal` works for any operation you might want to call as lo
 import type { HandlerContext } from "@connectrpc/connect";
 
 const say = async (req: SayRequest, ctx: HandlerContext) => {
+  ctx.signal.aborted; // true if timed out
+  ctx.signal.reason; // an error with code deadline_exceeded if timed out
 
-    ctx.signal.aborted; // true if timed out
-    ctx.signal.reason; // an error with code deadline_exceeded if timed out
+  // raises an error with code deadline_exceeded if timed out
+  ctx.signal.throwIfAborted();
 
-    // raises an error with code deadline_exceeded if timed out
-    ctx.signal.throwIfAborted();
+  // the AbortSignal can be passed to other functions
+  await longRunning(ctx.signal);
 
-    // the AbortSignal can be passed to other functions
-    await longRunning(ctx.signal);
-
-    return {sentence: `You said: ${req.sentence}`};
+  return { sentence: `You said: ${req.sentence}` };
 };
 ```
 
@@ -52,14 +51,13 @@ known as [deadline propagation](https://grpc.io/docs/guides/deadlines/#deadline-
 import type { HandlerContext } from "@connectrpc/connect";
 
 const say = async (req: SayRequest, ctx: HandlerContext) => {
+  // If a timeout was set on the call to this service, the timeoutMs() method
+  // returns the remaining time in milliseconds.
 
-    // If a timeout was set on the call to this service, the timeoutMs() method 
-    // returns the remaining time in milliseconds. 
+  // Passing the value to an upstream client call propagates the timeout.
+  await upstreamClient.someCall({}, { timeoutMs: ctx.timeoutMs() });
 
-    // Passing the value to an upstream client call propagates the timeout.
-    await upstreamClient.someCall({}, { timeoutMs: ctx.timeoutMs() });
-
-    return {sentence: `You said: ${req.sentence}`};
+  return { sentence: `You said: ${req.sentence}` };
 };
 ```
 
@@ -72,7 +70,7 @@ becomes unresponsive, the client call will still abort at the configured timeout
 ```ts
 try {
   // If this call takes more than 200 milliseconds, it is canceled
-  await client.say({sentence: "Hello"}, { timeoutMs: 200 });
+  await client.say({ sentence: "Hello" }, { timeoutMs: 200 });
 } catch (err) {
   if (err instanceof ConnectError && err.code === Code.DeadlineExceeded) {
     // handle the timeout error

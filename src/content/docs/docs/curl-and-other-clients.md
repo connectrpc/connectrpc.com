@@ -55,23 +55,33 @@ API. Right in your developer tools, try this:
 
 ```javascript
 fetch("https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say", {
-  "method": "POST",
-  "headers": {"Content-Type": "application/json"},
-  "body": JSON.stringify({"sentence": "I feel happy."})
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ sentence: "I feel happy." }),
 })
-  .then(response => { return response.json() })
-  .then(data => { console.log(data) })
+  .then((response) => {
+    return response.json();
+  })
+  .then((data) => {
+    console.log(data);
+  });
 ```
 
 The same call with HTTP GET:
 
 ```javascript
-const url = new URL("https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say");
+const url = new URL(
+  "https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say"
+);
 url.searchParams.set("encoding", "json");
-url.searchParams.set("message", JSON.stringify({"sentence": "I feel happy."}));
+url.searchParams.set("message", JSON.stringify({ sentence: "I feel happy." }));
 fetch(url)
-  .then(response => { return response.json() })
-  .then(data => { console.log(data) })
+  .then((response) => {
+    return response.json();
+  })
+  .then((data) => {
+    console.log(data);
+  });
 ```
 
 ## Buf Studio
