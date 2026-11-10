@@ -58,6 +58,10 @@ export default defineConfig({
     "/docs/web": "/docs/web/getting-started/",
     "/rust": "/docs/rust/getting-started/",
     "/docs/rust": "/docs/rust/getting-started/",
+    "/python": "/docs/python/getting-started/",
+    "/docs/python": "/docs/python/getting-started/",
+    "/dart": "/docs/dart/getting-started/",
+    "/docs/dart": "/docs/dart/getting-started/",
     "/web/query": "/docs/web/query/",
     "/docs/query/getting-started":
       "https://github.com/connectrpc/connect-query-es#quickstart",
