@@ -451,6 +451,15 @@ Servers must interpret **Streaming-Content-Encoding** and
 **Streaming-Accept-Encoding** using the same inference and error-reporting
 rules as **Content-Encoding** and **Accept-Encoding**.
 
+If **Timeout** is omitted, the server should assume an infinite timeout. The
+protocol accommodates timeouts of more than 100 days. Client implementations
+may set a default timeout for all RPCs, and server implementations may clamp
+timeouts to an appropriate maximum.
+
+When **Timeout** is present, it must be a positive integer or zero.
+No + or - should be used as a leading character and there should not be a
+decimal point (.).
+
 The HTTP request content is a sequence of zero or more **Enveloped-Message**.
 The first byte is **Envelope-Flags**, a set of 8 bitwise flags.
 
