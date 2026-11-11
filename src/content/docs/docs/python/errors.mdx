@@ -117,18 +117,15 @@ Errors can include strongly-typed details using Protobuf messages:
 from connectrpc.code import Code
 from connectrpc.errors import ConnectError
 from connectrpc.request import RequestContext
-from protobuf.wkt import Struct, Value
+from protobuf.wkt import Struct
 
 
 async def create_user(
     self, request: CreateUserRequest, ctx: RequestContext
 ) -> CreateUserResponse:
     if not request.email:
-        error_detail = Struct(
-            fields={
-                "field": Value(string_value="email"),
-                "issue": Value(string_value="Email is required"),
-            }
+        error_detail = Struct.from_python(
+            {"field": "email", "issue": "Email is required"}
         )
 
         raise ConnectError(
