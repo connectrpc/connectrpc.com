@@ -195,7 +195,9 @@ timeouts to an appropriate maximum.
 
 When **Timeout** is present, it must be a positive integer or zero.
 No + or - should be used as a leading character and there should not be a
-decimal point (.).
+decimal point (.). If a timeout of zero is supplied, the handler is not run
+and a `deadline_exceeded` error code is returned with an HTTP status code
+of `504 Gateway Timeout`.
 
 HTTP doesn't allow header values to be arbitrary binary blobs, so Connect
 differentiates between **ASCII-Metadata** and **Binary-Metadata**. Binary
@@ -299,7 +301,9 @@ specified using HTTP headers rather than query parameters.
 
 When **Timeout** is present, it must be a positive integer or zero.
 No + or - should be used as a leading character and there should not be a
-decimal point (.).
+decimal point (.). If a timeout of zero is supplied, the handler is not run
+and a `deadline_exceeded` error code is returned with an HTTP status code
+of `504 Gateway Timeout`.
 
 The **Connect-Version-Query** parameter distinguishes Connect Get requests from
 other HTTP GET requests. (In the future, it may also be used to support
@@ -458,7 +462,8 @@ timeouts to an appropriate maximum.
 
 When **Timeout** is present, it must be a positive integer or zero.
 No + or - should be used as a leading character and there should not be a
-decimal point (.).
+decimal point (.). If a timeout of zero is supplied, the handler is not run
+and a `deadline_exceeded` error code is returned.
 
 The HTTP request content is a sequence of zero or more **Enveloped-Message**.
 The first byte is **Envelope-Flags**, a set of 8 bitwise flags.
