@@ -113,6 +113,8 @@ version: v2
 plugins:
   - remote: buf.build/bufbuild/py
     out: .
+    # Skip __init__.py files, which would make the project root a package.
+    opt: init_files=false
   - remote: buf.build/connectrpc/py
     out: .
 ```
