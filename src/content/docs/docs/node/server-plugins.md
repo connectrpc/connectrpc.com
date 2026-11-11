@@ -211,9 +211,21 @@ connectNodeAdapter({
 });
 ```
 
+Use `writeMaxBytes` to limit the size of messages the server sends, so responses cannot exceed what your clients can handle.
+
 **Interceptors and the request gate:** `interceptors` is an array of [Interceptors](/docs/node/interceptors/) to apply to all requests. `requestGate` is a function that runs after the request headers are available. Throwing a `ConnectError` in the gate rejects a request before messages are read, decompressed, or parsed. See the section on [authentication in Interceptors](/docs/node/interceptors/#authentication) for more information.
 
 **Compression:** by default, servers support gzip and brotli for requests and responses. Use the `acceptCompression` option to set your own compression algorithms. `compressMinBytes` sets a minimum size threshold for compression — messages below this threshold will not be compressed.
+
+**Graceful shutdown:** `shutdownSignal` takes an `AbortSignal`. When it is aborted, the signals of all running handler contexts are aborted as well, which gives handlers a chance to wrap up before the server process is killed. If you abort with a `ConnectError`, its code and message are sent to clients. The Fastify plugin also supports `shutdownTimeoutMs`, see [above](#fastify).
+
+```ts
+const shutdown = new AbortController();
+connectNodeAdapter({ routes, shutdownSignal: shutdown.signal });
+
+// Later, for example when the process receives SIGTERM:
+shutdown.abort(new ConnectError("shutting down", Code.Unavailable));
+```
 
 **Supported protocols:** by default, servers accept all three protocols. Use the options `grpc`, `grpcWeb`, and `connect` to disable protocols individually.
 
