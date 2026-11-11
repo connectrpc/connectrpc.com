@@ -264,8 +264,112 @@ return the start time to compute the RPC's duration.
 Don't use interceptors to authenticate requests on the server. Handlers run
 unary interceptors _after_ the request message has been read, decompressed, and
 deserialized. An interceptor-based check lets unauthenticated clients consume
-memory and CPU on your server. Instead, authenticate with standard ASGI or WSGI middleware,
-which runs before Connect reads the request body. Starlette's
-[`AuthenticationMiddleware`](https://starlette.dev/authentication/) provides
-authentication middleware that works with any ASGI application, including
-Connect servers.
+memory and CPU on your server. Instead, authenticate with ASGI or WSGI middleware,
+which runs before Connect reads the request body.
+
+The middleware below checks the `Authorization` header and rejects failures with HTTP 401, which
+clients report as `unauthenticated` for all three protocols. It passes the caller's identity to
+handlers in a [`ContextVar`](https://docs.python.org/3/library/contextvars.html), since Connect
+handlers don't see the ASGI scope or WSGI environ.
+
+<Tabs syncKey="python-type">
+  <TabItem label="Async">
+
+    ```python
+    import hmac
+    from contextvars import ContextVar
+
+    current_user: ContextVar[str] = ContextVar("current_user")
+
+
+    def authenticate(authorization: str) -> str | None:
+        # Look the credentials up in your user store. This example accepts one token.
+        if hmac.compare_digest(authorization.encode(), b"Bearer open-sesame"):
+            return "alice"
+        return None
+
+
+    class AuthMiddleware:
+        def __init__(self, app) -> None:
+            self.app = app
+
+        async def __call__(self, scope, receive, send) -> None:
+            if scope["type"] != "http":
+                await self.app(scope, receive, send)
+                return
+            headers = dict(scope["headers"])
+            user = authenticate(headers.get(b"authorization", b"").decode("latin-1"))
+            if user is None:
+                await send({"type": "http.response.start", "status": 401, "headers": []})
+                await send({"type": "http.response.body", "body": b""})
+                return
+            token = current_user.set(user)
+            try:
+                await self.app(scope, receive, send)
+            finally:
+                current_user.reset(token)
+    ```
+
+  </TabItem>
+  <TabItem label="Sync">
+
+    ```python
+    import hmac
+    from contextvars import ContextVar
+
+    current_user: ContextVar[str] = ContextVar("current_user")
+
+
+    def authenticate(authorization: str) -> str | None:
+        # Look the credentials up in your user store. This example accepts one token.
+        if hmac.compare_digest(authorization.encode(), b"Bearer open-sesame"):
+            return "alice"
+        return None
+
+
+    class AuthMiddleware:
+        def __init__(self, app) -> None:
+            self.app = app
+
+        def __call__(self, environ, start_response):
+            user = authenticate(environ.get("HTTP_AUTHORIZATION", ""))
+            if user is None:
+                start_response("401 Unauthorized", [])
+                return []
+            current_user.set(user)
+            return self.app(environ, start_response)
+    ```
+
+    The WSGI server iterates streaming responses after `__call__` returns, so the middleware
+    leaves `current_user` set rather than resetting it. Every request that reaches the application
+    sets it first.
+
+  </TabItem>
+</Tabs>
+
+Wrap your application with the middleware, and read `current_user` in handlers:
+
+<Tabs syncKey="python-type">
+  <TabItem label="Async">
+
+    ```python
+    class Greeter:
+        async def greet(self, request: GreetRequest, ctx: RequestContext) -> GreetResponse:
+            return GreetResponse(greeting=f"Hello, {request.name}! You are {current_user.get()}.")
+
+    app = AuthMiddleware(GreetServiceASGIApplication(Greeter()))
+    ```
+
+  </TabItem>
+  <TabItem label="Sync">
+
+    ```python
+    class Greeter:
+        def greet(self, request: GreetRequest, ctx: RequestContext) -> GreetResponse:
+            return GreetResponse(greeting=f"Hello, {request.name}! You are {current_user.get()}.")
+
+    app = AuthMiddleware(GreetServiceWSGIApplication(Greeter()))
+    ```
+
+  </TabItem>
+</Tabs>
