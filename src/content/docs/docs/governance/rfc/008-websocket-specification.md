@@ -233,8 +233,7 @@ Any marker defined in a future revision of this specification SHOULD be printabl
 
 ## 6. Message framing
 
-Each WebSocket message MUST contain exactly one marker and its payload. A
-receiver MUST NOT carry decoding state from one message into the next.
+Each WebSocket message MUST contain exactly one marker and its payload.
 
 The unit is a WebSocket *message*, not a frame. A sender MAY fragment one
 across continuation frames ([RFC 6455 §5.4](https://datatracker.ietf.org/doc/html/rfc6455#section-5.4)) and a receiver MUST
