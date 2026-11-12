@@ -1,3 +1,7 @@
+---
+title: "008: Connect-over-WebSocket Protocol"
+---
+
 # Connect-over-WebSocket Protocol
 
 Status: **Proposal**, unratified.
