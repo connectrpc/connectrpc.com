@@ -123,7 +123,7 @@ The codec is selected by the WebSocket subprotocol.
 A client MUST offer exactly one of these tokens in `Sec-WebSocket-Protocol`.
 A client MUST encode with the codec specified.
 
-A server MUST support JSON and SHOULD support protobuf. If a server recognizes and supports the specified codec, it MUST echo exactly that token in its response. 
+A server MUST support JSON and SHOULD support protobuf. If a server recognizes and supports the specified codec, it MUST echo exactly that token in its response.
 
 A server MUST fail the handshake when it cannot serve the offered token. If the offered token is not one of the two above, the status should be `400 Bad Request`.
 
@@ -175,7 +175,7 @@ A server MUST NOT complete a cross-origin upgrade only to report the error. The 
 
 ### 4.6 PING/PONG frames
 
-A server SHOULD send periodic PING frames to the client, which MUST respond with the appropriate PONG frame, as specified in [RFC 6455 §5.5.2](https://datatracker.ietf.org/doc/html/rfc6455#section-5.5.2) and [§5.5.3](https://datatracker.ietf.org/doc/html/rfc6455#section-5.5.3). While the WebSocket specification allows for application data to be included in a PING frame, Connect-over-WebSocket MUST NOT use PING frames for application data. 
+A server SHOULD send periodic PING frames to the client, which MUST respond with the appropriate PONG frame, as specified in [RFC 6455 §5.5.2](https://datatracker.ietf.org/doc/html/rfc6455#section-5.5.2) and [§5.5.3](https://datatracker.ietf.org/doc/html/rfc6455#section-5.5.3). While the WebSocket specification allows for application data to be included in a PING frame, Connect-over-WebSocket MUST NOT use PING frames for application data.
 
 A server that sends PING frames MUST continue to periodically send them until the server closes the connection; if a server receives a `C` message from a client, PING messages MUST continue to be sent until the server sends an `S` message and a close frame. A client MUST send PONG frames in response to an incoming PING frame, even after sending a `C` message.
 
@@ -256,10 +256,10 @@ JSON objects, and the empty object is `{}`. See [§7.3] and [§9].
 
 A connection therefore mixes frame types when the codec is Protobuf: bodies arrive binary while metadata and end-of-stream arrive text. That is intended. The frame type is a type tag the transport supplies for free, and a receiver knows how to parse a payload before it has looked at anything but the frame.
 
-A text message MUST contain valid UTF-8, which [RFC 6455](https://datatracker.ietf.org/doc/html/rfc6455) §8.1 requires of every text message and which a browser enforces. A marker is a byte below`0x80` [§5.1] and JSON is UTF-8, so a conforming message satisfies this by construction. 
+A text message MUST contain valid UTF-8, which [RFC 6455](https://datatracker.ietf.org/doc/html/rfc6455) §8.1 requires of every text message and which a browser enforces. A marker is a byte below`0x80` [§5.1] and JSON is UTF-8, so a conforming message satisfies this by construction.
 
 An implementation MUST validate the UTF-8 encoding of every text message. A peer that emits
-invalid UTF-8 in a text frame has its connection closed by a browser, and a library that does not validate will not reproduce encoding errors in its own tests. 
+invalid UTF-8 in a text frame has its connection closed by a browser, and a library that does not validate will not reproduce encoding errors in its own tests.
 
 A browser client detects invalid UTF-8 automatically and closes the connection with a 1007 code (some browsers MAY send a 1002 code instead). A non-browser client MUST treat it as a protocol error (3102). A server MUST accept either code. A server MUST close the connection with a 1007 code.
 
@@ -454,7 +454,7 @@ To detect the end of the connection after `C`, a server implementation MUST cont
 ## 9. End of Server Stream
 
 A server MUST terminate its response stream with exactly one `S` message. It
-MUST NOT send more than one. The payload for an `S` message is a JSON `EndStreamResponse`, which is identical to the message described in [The Connect RPC Protocol Document section on Error and EndStreamResponse](https://connectrpc.com/docs/protocol/#error-end-stream) . This is always a text frame. 
+MUST NOT send more than one. The payload for an `S` message is a JSON `EndStreamResponse`, which is identical to the message described in [The Connect RPC Protocol Document section on Error and EndStreamResponse](https://connectrpc.com/docs/protocol/#error-end-stream) . This is always a text frame.
 
 An `S` with no payload at all is a protocol error. This mirrors the behavior of Connect-over-HTTP.
 
@@ -478,7 +478,7 @@ negotiates `permessage-deflate` without `client_no_context_takeover` and
 `server_no_context_takeover` both present, a client MUST fail the RPC and close
 the connection with a 3102 code.
 
-There is no message-level compression and no marker for it. 
+There is no message-level compression and no marker for it.
 
 A proxy can negotiate its own compression with the browser. If it uses context takeover, any attempt to establish a Connect-over-WebSockets connection will fail.
 
@@ -578,6 +578,6 @@ A server MUST NOT require `C` after it has sent `S` to complete an RPC, and MUST
 
 ## 14. IANA Considerations
 
-Browser clients are unable to set codes other than 1000 and values in the range 3000-4999 ([https://websockets.spec.whatwg.org/#dom-websocket-close](https://websockets.spec.whatwg.org/#dom-websocket-close)).  A browser can set values itself, but calling `close()` with an out of range value produces an `InvalidAccessError` .
+Browser clients are unable to set codes other than 1000 and values in the range 3000-4999 ([https://websockets.spec.whatwg.org/#dom-websocket-close](https://websockets.spec.whatwg.org/#dom-websocket-close)). A browser can set values itself, but calling `close()` with an out of range value produces an `InvalidAccessError` .
 
 Values in the range 3000-3999 MUST be registered with IANA. The code `3102` is referenced in this RFC. If this RFC is adopted, this value MUST be registered with IANA. See [https://www.iana.org/assignments/websocket](https://www.iana.org/assignments/websocket) for registration information. If the values cannot be registered, this RFC will move to the code `4102` since the 4000-4999 range does not require registration.
