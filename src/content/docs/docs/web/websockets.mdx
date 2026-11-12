@@ -1,0 +1,210 @@
+---
+title: WebSockets
+description: "Use client streaming and bidirectional streaming RPCs from the browser with the Connect WebSocket transport in connect-web."
+---
+
+The fetch API can't stream a request body in most browsers, so the Connect and gRPC-web transports are limited to unary and server-streaming RPCs.
+The WebSocket transport exists to remove that limitation.
+It carries every RPC type over a [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket), including client streaming and bidirectional streaming, using the same generated code and the same clients.
+
+It is recommended to use the WebSocket transport only for RPCs that stream from the client and for long-running server-streaming RPCs.
+For unary and short-lived server-streaming RPCs, use the [Connect](/docs/web/choosing-a-protocol/#connect) or [gRPC-web](/docs/web/choosing-a-protocol/#grpc-web) transport.
+
+## Creating a transport
+
+The function `createWebSocketTransport()` from [@connectrpc/connect-web](https://www.npmjs.com/package/@connectrpc/connect-web) creates the transport.
+You create a client with it the same way as with `createConnectTransport()`:
+
+```ts
+import { createClient } from "@connectrpc/connect";
+import { createWebSocketTransport } from "@connectrpc/connect-web";
+import { ElizaService } from "./gen/eliza_pb";
+
+const transport = createWebSocketTransport({
+  baseUrl: "https://example.com",
+});
+
+const client = createClient(ElizaService, transport);
+```
+
+The transport only works with a server that accepts WebSocket RPCs.
+
+An `http` or `https` scheme in the base URL is rewritten to `ws` or `wss`.
+A relative base URL such as `"/"` resolves against the location of the page.
+
+## Streaming from the client
+
+For client-streaming and bidirectional-streaming RPCs, the method on the client takes an async iterable of request messages.
+An async generator is the simplest way to provide one:
+
+```ts
+async function* sentences() {
+  yield { sentence: "Hello" };
+  yield { sentence: "I feel happy." };
+}
+
+for await (const res of client.converse(sentences())) {
+  console.log(res.sentence);
+}
+```
+
+When the iterable is done, the client tells the server that it has finished sending, and the server can still send responses.
+If the server ends the RPC first, the client stops reading from the iterable.
+
+In an interactive application, requests usually come from user input rather than a fixed sequence.
+`createWritableIterable()` gives you an iterable that you can write to from event handlers:
+
+```ts
+import { createWritableIterable } from "@connectrpc/connect/protocol";
+
+const requests = createWritableIterable<{ sentence: string }>();
+
+sendButton.onclick = () => {
+  void requests.write({ sentence: input.value });
+};
+doneButton.onclick = () => requests.close();
+
+for await (const res of client.converse(requests)) {
+  console.log(res.sentence);
+}
+```
+
+## One WebSocket connection per RPC
+
+Every RPC opens its own WebSocket connection and closes it when the RPC ends, and this includes unary RPCs. RPCs aren't multiplexed over a shared connection.
+
+Each WebSocket creation has to perform a full handshake, which involves two round trips. That overhead is negligible for a long-running stream, but it adds latency to every unary or short-lived RPC.
+
+The Connect and gRPC-web transports can reuse HTTP/2 connections, and the Connect transport can [cache GET requests](/docs/web/get-requests-and-caching/). To use both, create two transports and choose per client:
+
+```ts
+import {
+  createConnectTransport,
+  createWebSocketTransport,
+} from "@connectrpc/connect-web";
+
+const baseUrl = "https://example.com";
+
+// For unary RPCs and short-lived server-streaming RPCs
+const connectTransport = createConnectTransport({ baseUrl });
+
+// For RPCs that stream from the client, and long-running
+// server-streaming RPCs
+const webSocketTransport = createWebSocketTransport({ baseUrl });
+```
+
+## Transport options
+
+The WebSocket transport accepts the following options. Only `baseUrl` is required, and the other values shown are the defaults:
+
+```ts
+import { createWebSocketTransport } from "@connectrpc/connect-web";
+
+const transport = createWebSocketTransport({
+  // WebSockets will connect to <baseUrl>/<pathPrefix>/<package>.<service>/method
+  baseUrl: "https://example.com",
+
+  // Path prefix for WebSocket RPCs. It must match the server's.
+  pathPrefix: "",
+
+  // By default, this transport uses the JSON format.
+  // Set this option to true to use the binary format.
+  useBinaryFormat: false,
+
+  // Interceptors apply to all calls running through this transport.
+  interceptors: [],
+
+  // The timeout in milliseconds to apply to all RPCs. It can be
+  // overridden for an individual call with the timeoutMs option.
+  defaultTimeoutMs: undefined,
+
+  // Optional override of the WebSocket constructor used by the transport.
+  webSocket: (url, protocol) => new WebSocket(url, protocol),
+
+  // Options for Protobuf JSON serialization.
+  jsonOptions: {},
+
+  // Options for Protobuf binary serialization.
+  binaryOptions: {},
+
+  // The maximum size in bytes of a message received from the server.
+  // The default is the largest supported value, about 4 GiB.
+  readMaxBytes: 0xffffffff,
+
+  // The maximum size in bytes of a message sent to the server.
+  // The default is the largest supported value, about 4 GiB.
+  writeMaxBytes: 0xffffffff,
+});
+```
+
+## Headers and trailers
+
+[Headers and trailers](/docs/web/headers-and-trailers/) work the same as with the other transports.
+You set request headers in the call options, and read response headers and trailers with `onHeader` and `onTrailer`:
+
+```ts
+const res = client.converse(sentences(), {
+  headers: { Authorization: "Bearer AbCdEf123456" },
+  onHeader: (headers) => console.log(headers),
+  onTrailer: (trailers) => console.log(trailers),
+});
+```
+
+A browser doesn't allow setting of headers on a WebSocket handshake, so the transport sends your request headers in the first message on the WebSocket.
+Your service sees them like any other header, but a proxy or gateway in front of the server won't.
+The browser still attaches the user's cookies to the handshake.
+
+## Cancellation and timeouts
+
+You cancel calls and set timeouts as described in [Cancellation and timeouts](/docs/web/cancellation-and-timeouts/).
+If the `AbortSignal` in the call options triggers, the transport closes the WebSocket, and the call fails with a `ConnectError` with code `Canceled`.
+
+A timeout is sent to the server in the query parameter `connect-timeout-ms` of the handshake URL, because the transport can't set a header there.
+Both the client and the server enforce it.
+
+:::note
+A server can limit how long a WebSocket RPC may run, whether or not the client sets a timeout.
+Typically, servers will default to ending long-lived WebSocket connections after one hour.
+If you keep streams open for longer, the limit has to be raised on the server, and your application should be prepared to reconnect.
+:::
+
+## Errors
+
+As with all Connect client calls, errors will appear as a [ConnectError](/docs/web/errors/), with the code, message, and details the server sent.
+Problems with the connection itself are reported with these codes:
+
+| Situation | Code |
+|---|---|
+| The WebSocket couldn't be opened | `Unavailable` |
+| The connection was lost before the RPC finished | `Unavailable` |
+| The server rejected a message as too large | `ResourceExhausted` |
+| A response message exceeded `readMaxBytes` | `ResourceExhausted` |
+
+## Cross-origin requests
+
+[CORS](/docs/cors/) doesn't apply to WebSockets.
+Connect servers reject handshakes from other origins by default.
+If your web application and your API are served from different origins, the server has to be configured to allow the application's origin.
+
+## Inspecting traffic
+
+With the JSON format, the messages on the WebSocket are fully readable in the browser's network inspector.
+Every message starts with a one-letter marker, cooresponding to the type of message:
+
+| Marker | Meaning |
+|---|---|
+| `M` | Request/response headers |
+| `B` | Request/response message |
+| `C` | The client is done sending |
+| `S` | The end of the RPC, containing trailers and the error, if any |
+
+As an example, a conversation with ELIZA looks like this, with messages from the client marked with ↑ and messages from the server marked with ↓:
+
+```text
+↑ M{}
+↓ M{}
+↑ B{"sentence":"Hello"}
+↓ B{"sentence":"You said Hello"}
+↑ C
+↓ S{}
+```

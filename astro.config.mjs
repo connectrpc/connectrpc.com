@@ -232,6 +232,7 @@ export default defineConfig({
               label: "Get Requests and Caching",
               slug: "docs/web/get-requests-and-caching",
             },
+            { label: "WebSockets", slug: "docs/web/websockets" },
             { label: "Server-Side Rendering (SSR)", slug: "docs/web/ssr" },
             { label: "Connect for TanStack Query", slug: "docs/web/query" },
           ],
