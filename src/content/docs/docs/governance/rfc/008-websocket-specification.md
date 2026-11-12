@@ -96,11 +96,15 @@ same service would be reached at over Connect-over-HTTP.
 One connection carries exactly one RPC. A peer MUST NOT begin a second RPC on a
 connection.
 
-By default, any registered ConnectRPC endpoint can accept either Connect-over-HTTP or Connect-over-WebSocket. If the `Connection: Upgrade`, `Upgrade: websocket` headers are present on the HTTP request, along with a `Sec-WebSocket-Protocol` header that specifies a valid Connect-over-WebSocket subprotocol, Connect-over-WebSocket MUST be used. Otherwise, Connect-over-HTTP MUST be used.
+A conforming Connect-over-WebSocket server can provide multiple protocols over the same endpoint, use a path prefix to separate Connect-over-WebSocket from Connect-over-HTTP traffic, or support both.
+
+#### 4.2.1 Multiple protocols on the same endpoint
+
+Servers MAY support either Connect-over-HTTP or Connect-over-WebSocket on any registered ConnectRPC endpoint. If the `Connection: Upgrade`, `Upgrade: websocket` headers are present on the HTTP request, along with a `Sec-WebSocket-Protocol` header that specifies a valid Connect-over-WebSocket subprotocol, Connect-over-WebSocket MUST be used. Otherwise, Connect-over-HTTP MUST be used.
 
 If a server is configured to only accept WebSocket traffic on a specified path prefix, the behavior is changed. With a path prefix configured, the `Connection: Upgrade` and `Upgrade: websocket` headers MUST be present on any HTTP request to an endpoint with the path prefix and Connect-over-WebSocket MUST be used. For any HTTP request to an endpoint without a path prefix, Connect-over-HTTP MUST be used. It is an error to send the `Connection: Upgrade` and `Upgrade: websocket` headers to those endpoints.
 
-#### 4.2.1 Path prefix
+#### 4.2.2 Path prefix
 
 A deployment MAY place every WebSocket path under a common
 prefix, so that an upgrade is distinguishable from an ordinary RPC by URL
@@ -165,10 +169,10 @@ A browser client whose connection fails before it opens MUST report the RPC as f
 **Connection failures use HTTP status codes.** A server MUST reject the handshake with an HTTP status, and MUST NOT complete the upgrade, when the failure concerns the connection:
 
 - the offered subprotocol token is not a Connect-over-WebSocket token (`400`, §4.3);
-- an upgrade arrives at a bare procedure path while a prefix is configured (`400`, §4.2.1);
+- an upgrade arrives at a bare procedure path while a prefix is configured (`400`, §4.2.2);
 - the handshake is cross-origin (`403`, §4.4).
 
-A server MUST NOT complete a cross-origin upgrade only to report the error. The WebSocket API does not apply CORS, so a page from any origin could read the error message.
+The reason for not completing the cross-origin upgrade, even to send an error, is that the WebSocket API does not apply CORS, so a page from any origin could read the error message.
 
 **RPC failures are reported in-band.** When a server recognizes the offered token, but rejects the RPC, it SHOULD complete the upgrade, send `M{}`, send an `S` message with the error, and close with `1000`. It MUST NOT dispatch the RPC. This applies to:
 
@@ -236,7 +240,7 @@ The unit is a WebSocket *message*, not a frame. A sender MAY fragment one
 across continuation frames ([RFC 6455 §5.4](https://datatracker.ietf.org/doc/html/rfc6455#section-5.4)) and a receiver MUST
 reassemble before interpreting the marker: a marker is not a per-frame tag, and
 a fragment is not a message. Fragmentation is otherwise invisible to this
-binding, which never requires or forbids it.
+binding, which neither requires nor forbids it.
 
 ### 6.1 Text and binary
 
