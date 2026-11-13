@@ -273,7 +273,13 @@ A browser client detects invalid UTF-8 automatically and closes the connection w
 
 Because the frame type names the encoding, a body can arrive in a frame type whose codec does not match the encoding negotiated during the original WebSocket upgrade handshake. In this case, the receiver MUST reject such a message as a protocol error, naming the incorrect encoding. It MUST NOT fail in any way that is indistinguishable from a transport fault and MUST report the reason for failure was an invalid encoding.
 
-### 6.2 A worked exchange
+### 6.2 Message ordering
+
+If the WebSocket upgrade is successful, the first message sent by a client or server MUST be an `M`. Exactly one `M` message MUST be sent by the client and the server. After sending an `M` message, the client MUST send zero or more `B` messages. The client signals the end of its communication with the server by sending a `C` message.
+
+After sending an `M` message, the server MUST send zero or more `B` messages. The server signals the end of its communication with the client by sending an `S` message.
+
+### 6.3 A worked exchange
 
 A unary `Ping` under `connectrpc.1+json`, every message a text frame:
 
