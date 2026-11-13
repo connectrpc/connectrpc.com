@@ -174,7 +174,7 @@ A browser client whose connection fails before it opens MUST report the RPC as f
 
 The reason for not completing the cross-origin upgrade, even to send an error, is that the WebSocket API does not apply CORS, so a page from any origin could read the error message.
 
-**RPC failures are reported in-band.** When a server recognizes the offered token, but rejects the RPC, it SHOULD complete the upgrade, send `M{}`, send an `S` message with the error, and close with `1000`. It MUST NOT dispatch the RPC. This applies to:
+**RPC failures are reported in-band.** When a server recognizes the offered token, but rejects the RPC, it SHOULD complete the upgrade, send `M[]`, send an `S` message with the error, and close with `1000`. It MUST NOT dispatch the RPC. This applies to:
 
 - a token whose codec the server does not support (§4.3);
 - an invalid `connect-timeout-ms` value (§11).
@@ -258,8 +258,9 @@ A message MUST be sent as a binary frame if and only if its payload is Protobuf 
 - `B` alone — the marker with no payload — is the empty Protobuf message and
 MUST be binary. In JSON an empty message is `{}`, never zero bytes, so a text
 frame containing only `B` is a protocol error.
-- `M` and `S` alone are protocol errors for the same reason. Their payloads are
-JSON objects, and the empty object is `{}`. See [§7.3] and [§9].
+- `M` and `S` alone are protocol errors for the same reason. An `M` payload is a
+JSON array, and empty metadata is `[]` [§7.3]. An `S` payload is a JSON object,
+and the empty object is `{}` [§9].
 
 A connection therefore mixes frame types when the codec is Protobuf: bodies arrive binary while metadata and end-of-stream arrive text. That is intended. The frame type is a type tag the transport supplies for free, and a receiver knows how to parse a payload before it has looked at anything but the frame.
 
@@ -277,10 +278,10 @@ Because the frame type names the encoding, a body can arrive in a frame type who
 A unary `Ping` under `connectrpc.1+json`, every message a text frame:
 
 ```
-client →  text    M{}
+client →  text    M[]
 client →  text    B{"number":"7"}
 client →  text    C
-server →  text    M{}
+server →  text    M[]
 server →  text    B{"number":"7"}
 server →  text    S{}
 server →  close 1000
@@ -289,10 +290,10 @@ server →  close 1000
 The same call under `connectrpc.1+proto`, mixing frame types:
 
 ```
-client →  text    M{}
+client →  text    M[]
 client →  binary  B<protobuf>
 client →  binary  C
-server →  text    M{}
+server →  text    M[]
 server →  binary  B<protobuf>
 server →  text    S{}
 server →  close 1000
@@ -325,7 +326,7 @@ A single query parameter, `connect-timeout-ms`. This allows a browser or standal
 
 ### 7.3 Leading-Metadata Message
 
-The message marker for a Leading-Metadata message is `M`. The body of an `M` message is a JSON object whose values are arrays of strings. As a JSON message, it MUST be sent as text. It is an error for either the client or the server to send more than one Leading-Metadata message, to send it after sending a `B`, `S`, or `C` message, or to send a `B`, `S`, or `C` message before sending an `M` message. A peer with no metadata sends `{}`; the payload is never absent, since a bare `M` is not a JSON object [§6.1].
+The message marker for a Leading-Metadata message is `M`. The body of an `M` message is a JSON array where each entry is an array of strings. Each inner array has a key for the first element. The values for the key are stored in the following elements [§7.3.1]. As a JSON message, it MUST be sent as text. It is an error for either the client or the server to send more than one Leading-Metadata message, to send it after sending a `B`, `S`, or `C` message, or to send a `B`, `S`, or `C` message before sending an `M` message. A peer with no metadata sends `[]`; the payload is never absent, since a bare `M` is not a JSON array [§6.1].
 
 A key in a Leading-Metadata message **replaces** any value the upgrade request
 carried for that key, unless the key is reserved. As explained in
@@ -336,31 +337,34 @@ authentication and authorization MUST be based on.
 
 #### 7.3.1 Rules for Keys and values in a Leading-Metadata Message
 
-**The payload of an `M` message.** The body is a JSON object mapping header names to arrays of strings. It is always a text
-frame:
+**The payload of an `M` message.** The body is a JSON array of entries. Each entry is a JSON array of strings: the first string is the key, and the strings after it are that key's values, in order. It is always a text frame:
 
 ```json
-{"acme-tenant": ["tenant-42"], "authorization": ["Bearer ..."]}
+[["acme-tenant", "tenant-42"], ["authorization", "Bearer ..."], ["accept-language", "en", "fr"]]
 ```
 
-Values MUST be arrays of strings, never bare strings. If there is no metadata, `{}` MUST be sent; an empty body is invalid.
+The payload MUST be an array, and every entry MUST be an array of strings with at least one element, the key. A JSON object, `null`, an entry that is not an array, an empty entry, or an element that is not a string is a protocol error. If there is no metadata, `[]` MUST be sent; an empty body is invalid.
+
+The order of entries carries no meaning. The order of the values within an entry MUST be preserved.
+
+An array is used rather than a JSON object because JSON parsers disagree about a repeated object key: some keep the first, some keep the last, and many cannot report the repetition at all. In an array every entry survives parsing, so a receiver can always detect a repeated key and reject it.
 
 **Keys MUST be valid HTTP field names**. Metadata keys are meant to be a replacement for HTTP headers and might be passed on to other services as HTTP headers.
 
 **Values MUST be valid HTTP field values**. The values for keys whose names do not end in `-bin` MUST be valid field values without `CR`, `LF`, or `NUL`.
 
-**Values MAY be empty.** A receiver MUST accept a key whose value is an empty array (`[]`).
+**Values MAY be empty.** A receiver MUST accept an entry that holds only a key, such as `["acme-tenant"]`, as a key with no values.
 
 **Keys are case-insensitive.** The canonical form is lower-case, matching
 HTTP/2 and HTTP/3, where field names are lower-case on the wire. A sender
 SHOULD emit lower-case keys; a receiver MUST compare and look up keys
 case-insensitively, so that `acme-tenant` and `Acme-Tenant` are one key and not
-two. JSON object keys are case-sensitive, so a receiver that skipped this step
+two. JSON string comparison is case-sensitive, so a receiver that skipped this step
 would split one logical key in a way no HTTP implementation does.
 
-**No duplicate keys.** A JSON object MUST NOT contain two keys that fold to the same canonical form; a key's multiple values belong in its array. While HTTP allows a field to be repeated and treats the repetitions as one comma-joined value, Connect-over-WebSocket does not allow a key to appear multiple times. Comma-joined values MUST be used to assign multiple values to a key. There is also no `Set-Cookie` exception.
+**No duplicate keys.** An `M` message MUST NOT contain two entries whose keys fold to the same canonical form; all of a key's values belong in its one entry. While HTTP allows a field to be repeated and treats the repetitions as one comma-joined value, Connect-over-WebSocket does not allow a key to appear in more than one entry. There is also no `Set-Cookie` exception.
 
-A receiver MUST treat an object that contains two keys that fold to the same canonical form, but are not identical, as a protocol error. A server MUST also treat two identical keys as a protocol error. A client SHOULD do so.
+A receiver MUST treat two entries whose keys fold to the same canonical form, whether spelled identically or differing only in case, as a protocol error.
 
 **Binary values are base64.** A key whose canonical form ends in `-bin` carries
 arbitrary bytes. Its values MUST be base64-encoded with the standard
