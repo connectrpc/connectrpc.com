@@ -134,7 +134,12 @@ const metrics: Interceptor = (next) => async (req) => {
     throw e;
   } finally {
     // recordRpc is your metrics sink (OpenTelemetry, statsd, ...)
-    recordRpc(req.service.typeName, req.method.name, code, performance.now() - started);
+    recordRpc(
+      req.service.typeName,
+      req.method.name,
+      code,
+      performance.now() - started
+    );
   }
 };
 ```
