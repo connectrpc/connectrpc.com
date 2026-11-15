@@ -381,10 +381,10 @@ zero-length HTTP response content.
 
 Errors are sent with a non-200 `HTTP-Status`. In those cases,
 `Unary-Content-Type` _must_ be `application/json`. `Bare-Message` is either
-omitted or a JSON-serialized [Error](#error-end-stream), possibly compressed
+omitted or a JSON-serialized [`Error`](#error-end-stream), possibly compressed
 using `Content-Encoding` and sent on the wire as the HTTP response content.
 Clients must not attempt to decompress zero-length HTTP response content. If
-`Bare-Message` is an Error, `HTTP-Status` should match Error.code as specified
+`Bare-Message` is an `Error`, `HTTP-Status` should match `Error.code` as specified
 in [the table below](#error-codes). When reading data from the wire, client
 implementations must use the [HTTP-to-Connect mapping](#http-to-error-code) to infer a Connect
 error code if `Bare-Message` is missing or malformed.
@@ -527,7 +527,7 @@ The first byte is `Envelope-Flags`, a set of 8 bitwise flags.
   `Streaming-Content-Encoding` is omitted or `identity`, this bit must be 0.
   Compression contexts are not maintained over message boundaries.
 * If the next least significant bit is 1, the `Message` is an
-  [EndStreamResponse](#error-end-stream) rather than the response type
+  [`EndStreamResponse`](#error-end-stream) rather than the response type
   defined in the service's IDL. Response streams must set this bit on the final
   `Enveloped-Message` in the stream, and must leave this bit unset on all
   other messages in the stream. Request streams must always leave this bit
@@ -545,8 +545,8 @@ Streaming-Response-Headers = ":status" "200" Streaming-Content-Type
 ```
 
 Streaming responses always have an HTTP status of 200 OK. As noted above,
-server implementations must send an [EndStreamResponse](#error-end-stream)
-as the final message in the stream, and must not send an EndStreamResponse
+server implementations must send an [`EndStreamResponse`](#error-end-stream)
+as the final message in the stream, and must not send an `EndStreamResponse`
 earlier in the stream. Any parameters appended to the request's
 `Streaming-Content-Type` _may_ be included in the response, but are not
 required to be included in the response.
@@ -698,7 +698,7 @@ resulting value under the `debug` key. Clients must not depend on data in the
 }
 ```
 
-An `EndStreamMessage` is the final message in streaming response. It conveys
+An `EndStreamResponse` is the final message in a streaming response. It conveys
 whether or not the RPC succeeded and any trailing metadata. Trailing metadata
 is modeled as an object: keys follow `Header-Name`, and values are arrays of
 UTF-8 strings. Each string is either an `ASCII-Value` or a base64-encoded
