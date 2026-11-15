@@ -250,13 +250,14 @@ Unary-Get-Request-Headers    = Unary-Get-Call-Specification *Leading-Metadata
 Unary-Get-Call-Specification = Method-Get Path "?" Query-Get [Timeout]
                                [Accept-Encoding]
 Method-Get                   = ":method" %s"GET"
-Query-Get                    = [Connect-Version-Query] [Base64-Query]
-                               [Compression-Query] Encoding-Query Message-Query
+Query-Get                    = [Connect-Version-Query "&"] [Base64-Query "&"]
+                               [Compression-Query "&"] Encoding-Query "&"
+                               Message-Query
 Message-Query                = %s"message=" *<percent-encoded octet>
-Base64-Query                 = %s"&base64=1"
-Encoding-Query               = %s"&encoding=" Message-Codec
-Compression-Query            = %s"&compression=" Content-Coding
-Connect-Version-Query        = %s"&connect=v1"
+Base64-Query                 = %s"base64=1"
+Encoding-Query               = %s"encoding=" Message-Codec
+Compression-Query            = %s"compression=" Content-Coding
+Connect-Version-Query        = %s"connect=v1"
 ```
 
 `Unary-Get-Request` is a special variant of the unary request designed to
