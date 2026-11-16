@@ -271,6 +271,7 @@ export default defineConfig({
               slug: "docs/python/headers-and-trailers",
             },
             { label: "Interceptors", slug: "docs/python/interceptors" },
+            { label: "Routing", slug: "docs/python/routing" },
             { label: "Streaming", slug: "docs/python/streaming" },
             { label: "Deployment", slug: "docs/python/deployment" },
             {
