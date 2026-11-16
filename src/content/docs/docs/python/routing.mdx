@@ -1,0 +1,98 @@
+---
+title: Routing
+description: "Mount a Connect service under a URL prefix in ASGI and WSGI applications, including FastAPI, Starlette, and Flask."
+---
+
+import VersionWarning from './_version-warning.mdx';
+
+<VersionWarning />
+
+For the most part, Connect handles HTTP routes for you &mdash; everything should
+just work. For debugging or more advanced configuration, this guide explains
+how Connect builds routes and how to mount a service under a prefix in ASGI and
+WSGI applications.
+
+## Constructing routes
+
+Routing follows the [Connect](/docs/protocol/) and gRPC HTTP/2 protocols,
+both of which use:
+
+```http
+:method post
+:path /<Package>.<Service>/<Method>
+```
+
+For example, method `Greet` of `GreetService` in Protobuf package `greet.v1`
+has path `/greet.v1.GreetService/Greet`. Package, service, and method names are
+case-sensitive and used exactly as they are in the Protobuf schema, and
+handlers only support the GET and POST verbs. (Remember that routing is based on
+Protobuf package names, not Python module paths.)
+
+## Prefixing routes
+
+Especially if you're serving your Connect API alongside other HTTP handlers, you
+may want to prefix your RPC routes with `/api/`, `/connect/`, or something similar.
+The generated `GreetServiceASGIApplication` and `GreetServiceWSGIApplication` are
+standard ASGI and WSGI applications, so you can mount them in the framework you
+already use.
+
+### FastAPI (ASGI)
+
+`FastAPI.mount` accepts any ASGI application:
+
+```python
+from fastapi import FastAPI
+
+from greet.v1.greet_connect import GreetServiceASGIApplication
+
+connect_app = GreetServiceASGIApplication(Greeter())
+app = FastAPI()
+app.mount("/api", connect_app)
+```
+
+### Starlette (ASGI)
+
+A Starlette `Mount` strips the prefix before the request reaches the Connect
+application:
+
+```python
+from starlette.applications import Starlette
+from starlette.routing import Mount
+
+from greet.v1.greet_connect import GreetServiceASGIApplication
+
+connect_app = GreetServiceASGIApplication(Greeter())
+app = Starlette(
+    routes=[
+        Mount("/api", app=connect_app),
+        # ... your other routes
+    ],
+)
+```
+
+### Flask (WSGI)
+
+Flask is a WSGI framework. Use Werkzeug's `DispatcherMiddleware` to send `/api`
+to the Connect application and everything else to Flask:
+
+```python
+from flask import Flask
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
+
+from greet.v1.greet_connect import GreetServiceWSGIApplication
+
+flask_app = Flask(__name__)
+connect_app = GreetServiceWSGIApplication(Greeter())
+app = DispatcherMiddleware(flask_app, {"/api": connect_app})
+```
+
+Run `app` with a WSGI server such as gunicorn. If you use an ASGI server with a
+WSGI Connect application, wrap it with
+[`starlette.middleware.wsgi.WSGIMiddleware`](https://starlette.dev/wsgi/) before
+mounting it.
+
+Most ASGI and WSGI routers work similarly. If you configure a prefix, be sure to
+include it in the base URL you pass to your Connect clients (for example,
+`https://acme.com/api/`). Unfortunately, many gRPC clients, such as `grpc-go`,
+don't support prefixes: if you need to support gRPC clients, don't prefix your
+routes!

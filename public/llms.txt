@@ -1,0 +1,35 @@
+# Connect
+
+> Connect is a family of libraries for building browser and gRPC-compatible HTTP APIs from a single Protocol Buffer schema.
+
+## Start
+
+- [Introduction](https://connectrpc.com/docs/introduction/): what Connect is and why it exists.
+- [Protocol](https://connectrpc.com/docs/protocol/): the Connect protocol, including routes and content types.
+- [Multi-protocol support](https://connectrpc.com/docs/multi-protocol/): Connect, gRPC, and gRPC-Web on one server.
+- [cURL and other clients](https://connectrpc.com/docs/curl-and-other-clients/): call a Connect API without generated code.
+
+## Languages
+
+- [Go](https://connectrpc.com/docs/go/getting-started/): build a Connect service and client in Go.
+- [TypeScript and JavaScript](https://connectrpc.com/docs/node/getting-started/): build a Connect service in Node.js.
+- [Web](https://connectrpc.com/docs/web/getting-started/): call a Connect API from the browser.
+- [Python](https://connectrpc.com/docs/python/getting-started/): build a Connect service with ASGI or WSGI.
+- [Rust](https://connectrpc.com/docs/rust/getting-started/): build a Connect service in Rust.
+- [Swift](https://connectrpc.com/docs/swift/getting-started/): build a Connect service in Swift.
+- [Kotlin](https://connectrpc.com/docs/kotlin/getting-started/): build a Connect service in Kotlin.
+- [Dart and Flutter](https://connectrpc.com/docs/dart/getting-started/): build a Connect service in Dart.
+
+## Python
+
+- [Routing](https://connectrpc.com/docs/python/routing/): mount a Connect application under a prefix in FastAPI, Starlette, or Flask.
+- [Errors](https://connectrpc.com/docs/python/errors/): handle Connect errors.
+- [Interceptors](https://connectrpc.com/docs/python/interceptors/): add cross-cutting behavior.
+- [Streaming](https://connectrpc.com/docs/python/streaming/): stream requests and responses.
+- [Deployment](https://connectrpc.com/docs/python/deployment/): run an ASGI or WSGI application in production.
+- [Testing](https://connectrpc.com/docs/python/testing/): test a service in memory.
+
+## Optional
+
+- [GitHub](https://github.com/connectrpc/connectrpc.com): the documentation source.
+- [Connect on GitHub](https://github.com/connectrpc): the Connect libraries and examples.
