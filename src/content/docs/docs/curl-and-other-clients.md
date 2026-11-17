@@ -17,7 +17,8 @@ also uses standard HTTP headers for unary RPCs, calling your API is a cURL
 one-liner:
 
 ```bash
-curl --header "Content-Type: application/json" \
+curl \
+  --header 'Content-Type: application/json' \
   --data '{"sentence": "I feel happy."}' \
   https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say
 ```
