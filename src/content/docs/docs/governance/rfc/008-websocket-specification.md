@@ -86,6 +86,7 @@ model. It departs from Connect in the following ways:
 | 8  | The handshake requires HTTP/1.1                                | RFC 6455 defines it there; RFC 8441 is not adopted [§4.1]                                                                                             |
 | 9  | Every stream opens with a metadata message, in both directions | The client's is consumed before dispatch, so request metadata is complete for interceptors                                                            |
 | 10 | A server SHOULD impose its own deadline                        | A server waits for the opening message, so an unbounded RPC could park a connection [§11]                                                             |
+| 11 | Metadata values may contain a horizontal tab or be empty       | Values are RFC 9110 field values, which allow both; Connect's ASCII-Value allows neither [§7.3.1]                                                     |
 
 A client that sends an HTTP request with a `Connection: Upgrade` header, an
 `Upgrade: websocket` header, and a `Sec-WebSocket-Protocol` header offering
@@ -139,7 +140,7 @@ The RPC's procedure is the path of the handshake URI. A client MUST form the
 handshake URI by joining the base URL's path with the procedure path:
 
 ```
-wss://api.example.com/connect.ping.v1.PingService/CumSum
+wss://api.example.com/connect.sample.v1.SampleService/Echo
 ```
 
 A trailing `/` on the base path MUST NOT produce a doubled separator. The
@@ -162,9 +163,16 @@ A deployment that wants WebSocket traffic on its own path, for example to
 route it to a different pool of servers, can give WebSocket clients a base URL
 that includes that path. With a base URL of `https://api.example.com/ws`, the
 handshake URI above becomes
-`wss://api.example.com/ws/connect.ping.v1.PingService/CumSum`. Implementations
+`wss://api.example.com/ws/connect.sample.v1.SampleService/Echo`. Implementations
 can offer an option to restrict an endpoint to Connect-over-HTTP or
 Connect-over-WebSocket.
+
+An endpoint restricted to Connect-over-HTTP MUST reject a handshake with a
+`400 Bad Request`. An endpoint restricted to Connect-over-WebSocket MUST reject
+any other request with `426 Upgrade Required` and an `Upgrade: websocket`
+header, as [RFC 9110
+§15.5.22](https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.22)
+defines.
 
 ### 4.3 Subprotocol negotiation
 
@@ -198,17 +206,12 @@ supports none of the offered tokens MUST reject the handshake with
 `connectrpc.1+json` can always connect.
 
 A client MUST encode with the codec of the token the server echoed. A client
-MUST check the echoed token:
-
-1. If the server echoes a token the client did not offer, RFC 6455 §4.1
-   requires the client to fail the connection. A browser does this itself
-   before the socket opens, and the RPC fails as described in [§4.5]. A
-   non-browser client MUST fail the connection without a Close frame and
-   report the RPC as failed with the code `internal`.
-2. If the server echoes no token, the connection opens with no subprotocol (in
-   a browser, `WebSocket.protocol` is empty). The client MUST close the
-   connection with `3102` and report the RPC as failed with the code
-   `internal`.
+MUST check the echoed token. If the server echoes a token the client did not
+offer, or echoes no token, the handshake has failed. In that situation, a
+browser client does not see the socket open. The API fails the connection
+itself, and the RPC fails as described in [§4.5]. Any other client MUST fail the
+connection without a Close frame and report the RPC as failed with the code
+`internal`.
 
 `Connect-Protocol-Version` is implied by the subprotocol and MUST NOT be sent
 as a header.
@@ -221,10 +224,10 @@ is not from a browser and MUST NOT be rejected on origin grounds.
 
 **Same-origin means the same host.** A server MUST compare the host and port of
 the `Origin` header, exactly as written, with the `Host` header,
-case-insensitively. It MUST NOT require the schemes to match. The scheme is
-left out deliberately: a deployment terminating TLS at a proxy sees `https` in
-the `Origin` and its own plaintext `Host`, and a comparison including the
-scheme would reject its own pages.
+case-insensitively. A server MUST NOT include a scheme inferred from the
+connection or from proxy headers in the comparison. A deployment that terminates
+TLS at a proxy receives `https` in the `Origin` on a plaintext connection, and a
+comparison that included the connection's scheme would reject its own pages.
 
 As a result, a page that is served over plain HTTP from the same host passes
 this check. A deployment that serves plain HTTP on that host SHOULD use HSTS,
@@ -262,6 +265,7 @@ handshake with an HTTP status, and MUST NOT complete the upgrade, when the
 failure concerns the connection:
 
 - the handshake offers no token the server supports (`400`, [§4.3]);
+- the endpoint is restricted to Connect-over-HTTP (`400`, [§4.2]);
 - the handshake is cross-origin (`403`, [§4.4]).
 
 The reason for not completing the cross-origin upgrade, even to send an error,
@@ -338,11 +342,9 @@ violation. A receiver MUST NOT skip the offending message and carry on.
 Two conditions end the stream without an `S` message: invalid UTF-8 in a text
 message [§6.1], and a message that exceeds the receiver's size limit [§12.1].
 
-This applies to an unknown marker in particular. A receiver MUST NOT accept
-unknown markers. It could be argued that supporting unknown markers enables
-forward compatibility. However, an unrecognized marker means the peer is using
-a protocol version the receiver does not support. Accepting it would misread
-whatever follows.
+This applies to an unknown marker in particular: a receiver MUST NOT accept one.
+An unknown marker means the peer uses a protocol version that the receiver does
+not support. A receiver that skipped it would misread the messages that follow.
 
 If a server detects a protocol error before it sends its `M` message, it MUST
 send its `M` message before sending the `S` message.
@@ -390,11 +392,10 @@ per marker:
 - `B` follows the codec the subprotocol selected [§4.3].
 - `C` has no payload and is always text. A `C` with a payload is a protocol
   error.
-- `B` without any payload is the empty Protobuf message under the Protobuf
-  binary codec. In Protobuf JSON an empty message is `{}`. A text frame
-  containing only `B` for Protobuf JSON is a protocol error. A custom codec,
-  whether text or binary, defines its own rules for parsing a `B` without a
-  payload.
+- A `B` payload, including an empty one, is decoded by the negotiated codec.
+  Under Protobuf binary, an empty payload is the empty message. Under Protobuf
+  JSON, an empty payload fails to decode, as any other malformed JSON does,
+  because the empty message is `{}`.
 - `M` and `S` without any payload are protocol errors. An `M` payload is
   a JSON array, and empty metadata is `[]` [§7.3]. An `S` payload is a JSON
   object, and the empty object is `{}` [§9].
@@ -423,13 +424,13 @@ first. A client that validates UTF-8 itself reports the RPC as failed with the
 code `internal`.
 
 A client built on the WebSocket API, in a browser or in another runtime that
-implements it, cannot report `internal`. The API validates text messages
-itself and fails the connection on invalid UTF-8. Some implementations close
-with `1002` instead of `1007`, and some drop the connection without a Close
-frame, which RFC 6455 §7.1.7 permits and a server sees as `1006`. Either way,
-the script sees only close code `1006`, exactly as for a dropped connection,
-so such a client reports the RPC as it reports any connection that ends
-without `S`: with the code `unavailable` [§13.1].
+implements it, cannot report `internal`. The API validates text messages itself
+and fails the connection on invalid UTF-8. Some implementations close with
+`1002` instead of `1007`, and some drop the connection without a Close frame,
+which RFC 6455 §7.1.7 permits and a server sees as `1006`. Either way, the close
+code is `1006`, the same as a dropped connection. A client reports the RPC with
+the code `unavailable`, as it does for any connection that ends without `S`
+[§13.1].
 
 ### 6.2 Message ordering
 
@@ -457,10 +458,13 @@ A client tracks the server's messages as follows:
 | -------------------- | ---------------------------------- | ----------------- |
 | Awaiting `M`         | `M`, then Open                     | protocol error    |
 | Open                 | `B`, stay Open; `S`, then Done     | protocol error    |
-| Done (`S` received)  | none                               | protocol error    |
+| Done (`S` received)  | none                               | discarded         |
 
 After a client receives `S`, it MUST NOT send anything more except a Close
 frame. That includes its own `M` or `C` if it has not sent them yet.
+
+A server MUST NOT send any message after `S`. A client that receives one MUST
+discard it rather than treat it as a protocol error.
 
 **Cardinality.** Unary and server-streaming RPCs take exactly one request, and
 unary and client-streaming RPCs return exactly one response.
@@ -474,7 +478,7 @@ unary and client-streaming RPCs return exactly one response.
 
 ### 6.3 A worked exchange
 
-A unary `Ping` under `connectrpc.1+json`, every message a text frame:
+A unary `Echo` under `connectrpc.1+json`, every message a text frame:
 
 ```
 client →  text    M[]
@@ -546,15 +550,8 @@ in [§11].
 
 ### 7.3 Leading-Metadata message
 
-The message marker for a Leading-Metadata message is `M`. The body of an `M`
-message is a JSON array where each entry is an array of strings. Each inner
-array has a key for the first element. The values for the key are stored in the
-following elements [§7.3.1]. As a JSON message, it MUST be sent as text. It is
-a protocol error for either the client or the server to send more than one
-Leading-Metadata message, to send it after sending a `B`, `S`, or `C` message,
-or to send a `B`, `S`, or `C` message before sending an `M` message. A peer
-with no metadata sends `[]`; the payload is never absent, since a bare `M` is
-not a JSON array [§6.1].
+The `M` message carries leading metadata. [§7.3.1] defines its payload, and
+[§6.2] defines when each peer sends it.
 
 A key in a Leading-Metadata message **replaces** any value the upgrade request
 carried for that key. A reserved key MUST NOT appear in a Leading-Metadata
@@ -586,6 +583,14 @@ element that is not a string is a protocol error. If there is no metadata,
 The order of entries carries no meaning. The order of the values within an
 entry MUST be preserved.
 
+As in Connect-over-HTTP, and as [RFC 9110
+§5.3](https://datatracker.ietf.org/doc/html/rfc9110#section-5.3) allows for HTTP
+fields, a key's values are equivalent to one value that joins them with `, `. A
+receiver MAY combine them, so `["accept-language", "en", "fr"]` can reach an
+application as `["accept-language", "en, fr"]`. An application MUST NOT rely on
+the boundary between values, and MUST NOT put a comma inside a value it needs to
+read back as one value.
+
 An array is used rather than a JSON object because JSON parsers disagree about
 a repeated object key: some keep the first, some keep the last, and many cannot
 report the repetition at all. In an array every entry survives parsing, so a
@@ -601,12 +606,32 @@ name that contains an upper-case character makes the message malformed ([RFC
 9113 §8.2.1](https://datatracker.ietf.org/doc/html/rfc9113#section-8.2.1)).
 With lower-case keys, comparing two keys is a plain string comparison.
 
-**Values MUST be valid HTTP field values.** The values for keys whose names do
-not end in `-bin` MUST be valid field values without `CR`, `LF`, or `NUL`.
+**Values MUST be valid HTTP field values.** A value for a key that does not end
+in `-bin` MUST be a field value as [RFC 9110
+§5.5](https://datatracker.ietf.org/doc/html/rfc9110#section-5.5) defines it,
+limited to visible ASCII characters (`0x21`–`0x7E`), space (`0x20`), and
+horizontal tab (`0x09`). RFC 9110 also allows the bytes `0x80`–`0xFF`
+(`obs-text`). This binding does not, because a JSON string cannot represent
+them as bytes. A value that needs any other character MUST be sent
+base64-encoded under a key that ends in `-bin`.
+
+**Leading and trailing whitespace is not part of a value.** As RFC 9110 §5.5
+requires, a receiver MUST remove leading and trailing space and horizontal tab
+from a value before it delivers the value. A sender SHOULD NOT send them.
+Whitespace inside a value is preserved.
+
+**A value MAY be empty.** An empty string is a valid value, so
+`["acme-tenant", ""]` is how a sender says that a key is present but empty. A
+value that holds only spaces and tabs is empty once trimmed.
+
+**Values SHOULD NOT contain commas.** When metadata is passed on as HTTP
+headers, a key's values can be joined into one comma-separated field value, as
+[RFC 9110 §5.3](https://datatracker.ietf.org/doc/html/rfc9110#section-5.3)
+allows and as the Fetch `Headers` object does. A receiver then cannot tell a
+comma inside a value from a comma between values.
 
 **Every key has at least one value.** An entry that holds only a key, such as
-`["acme-tenant"]`, is a protocol error. An empty string is a valid value, so
-`["acme-tenant", ""]` is how a sender says that a key is present but empty.
+`["acme-tenant"]`, is a protocol error.
 
 **No duplicate keys.** An `M` message MUST NOT contain two entries with the
 same key; all of a key's values belong in its one entry. While HTTP allows a
@@ -878,8 +903,8 @@ reassembled across continuation frames, as [§6] requires. A limit applied per
 frame would be ineffective, since a sender could send multiple frames to work
 around it.
 
-The marker byte SHOULD NOT count toward the limit, so that the limit is the
-size of the RPC message itself.
+The marker byte MUST NOT count toward the limit. The limit is the size of the
+RPC message itself.
 
 The rest of this section applies to receivers that control their own framing.
 A browser receives whole, decompressed messages, and cannot bound compressed
@@ -982,9 +1007,6 @@ The other codes are:
 - `internal` when the server closed with `1007` [§6.1];
 - `resource_exhausted` when the server closed with `1009` [§12.1].
 
-There is a difference between ending a WebSocket without an `S` message and
-ending it without a `C` message.
-
 A server closing without sending an `S` message is always an error state. It
 could be caused by:
 
@@ -993,14 +1015,9 @@ could be caused by:
 - a failure in the RPC code caused it to exit without sending a message;
 - the peer had already closed the connection.
 
-A client MAY close without `C` due to:
-
-- an error;
-- receiving an invalid message from the server [§5];
-- the server having ended the stream first.
-
-In the last case the RPC is complete. In the other cases, closing before `S`
-without sending `C` cancels the RPC [§8].
+A client that has received `S` MAY close without sending `C`, and the RPC is
+complete. A client that closes before `S` without sending `C` cancels the RPC
+[§8].
 
 A client MUST specify a valid close code when closing a connection. If this is
 due to an unexpected condition in the client, the close code MUST be 3102.
