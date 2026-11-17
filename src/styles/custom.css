@@ -115,8 +115,8 @@
     "JetBrains Mono Variable", ui-monospace, "SF Mono", Menlo, Consolas,
     "Liberation Mono", monospace;
 
-  /* Match the prior Infima typography scale. */
-  --sl-line-height: 1.65;
+  --sl-line-height: 1.5;
+  /* Heading sizes match the prior Infima typography scale. */
   --sl-text-h1: 2rem;
   --sl-text-h2: 1.5rem;
   --sl-text-h3: 1.25rem;
