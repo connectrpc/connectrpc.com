@@ -33,9 +33,9 @@ at your own pace.
 Most of the mechanical changes can be applied automatically with the
 `connect-go-v2-migrate` tool:
 
-```shellsession
-$ go install connectrpc.com/connect/v2/cmd/connect-go-v2-migrate@latest
-$ connect-go-v2-migrate -w .
+```bash
+go install connectrpc.com/connect/v2/cmd/connect-go-v2-migrate@latest
+connect-go-v2-migrate -w .
 ```
 
 Without `-w`, the tool is a dry run that prints diffs. It unwraps the
