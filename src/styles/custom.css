@@ -71,16 +71,6 @@
   --buf-marine-blue-01: #eff9fc;
   --buf-marine-blue-05: #648b99;
 
-  /* Mono font with a monospace fallback chain. Sans-serif fallbacks (the
-   * previous default) measured ~10% wider for the same uppercase text,
-   * producing a visible reflow when DM Mono finished loading. */
-  --buf-mono-font:
-    "DM Mono", ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono",
-    monospace;
-  --buf-sans-font:
-    "Work Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
-
   /* Map Buf brand colors into Starlight light-mode variables. */
   --sl-color-accent-low: #e6e6fc;
   --sl-color-accent: #161ede;
@@ -100,12 +90,10 @@
   --ec-frm-edTabBarBrdCol: #e1e4e8;
   --ec-frm-frameBoxShdCssVal: 0.1rem 0.1rem 0.2rem #0000005b;
   --ec-codeFg: #24292e;
-  --ec-codeFontFml:
-    ui-monospace, "SFMono-Regular", Monaco, Consolas, "Liberation Mono",
-    "Courier New", monospace;
+  --ec-codeFontFml: var(--sl-font-mono);
   --ec-codeFontSize: 0.875rem;
   --ec-codeLineHt: 1.75;
-  --ec-uiFontFml: var(--buf-mono-font);
+  --ec-uiFontFml: var(--sl-font-mono);
   --ec-uiFontSize: 0.9rem;
   --ec-uiLineHt: 1.65;
   --ec-brdRad: 0px;
@@ -123,9 +111,11 @@
   --sl-font:
     "Inter Variable", "Inter Fallback Helvetica Neue",
     "Inter Fallback Segoe UI", "Inter Fallback Roboto";
+  /* Monospace fallbacks are close to JetBrains Mono's width, so the
+   * uppercase nav labels don't reflow when it loads. */
   --sl-font-mono:
-    ui-monospace, "SFMono-Regular", Monaco, Consolas, "Liberation Mono",
-    "Courier New", monospace;
+    "JetBrains Mono Variable", ui-monospace, "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
 
   /* Match the prior Infima typography scale. */
   --sl-line-height: 1.65;

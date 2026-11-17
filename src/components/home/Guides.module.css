@@ -72,7 +72,7 @@
 
 .goto {
   text-transform: uppercase;
-  font-family: var(--buf-mono-font);
+  font-family: var(--sl-font-mono);
   font-style: normal;
   font-weight: 400;
   font-size: 14px;

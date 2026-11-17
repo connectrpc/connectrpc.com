@@ -33,7 +33,7 @@
 
 .button {
   background-color: var(--ifm-color-primary);
-  font-family: var(--buf-mono-font);
+  font-family: var(--sl-font-mono);
   font-style: normal;
   font-weight: 400;
   font-size: 16px;

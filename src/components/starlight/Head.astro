@@ -17,7 +17,7 @@ import Default from "@astrojs/starlight/components/Head.astro";
 
 // Preload the woff2 subsets used above the fold. The `?url` suffix tells
 // Vite to emit the file and return its hashed URL.
-import dmMonoLatinHref from "@fontsource/dm-mono/files/dm-mono-latin-400-normal.woff2?url";
+import monoLatinHref from "@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2?url";
 import interLatinHref from "@fontsource-variable/inter/files/inter-latin-opsz-normal.woff2?url";
 
 const publicUrl =
@@ -39,7 +39,7 @@ const jsonLd = {
   rel="preload"
   as="font"
   type="font/woff2"
-  href={dmMonoLatinHref}
+  href={monoLatinHref}
   crossorigin
 />
 <link
