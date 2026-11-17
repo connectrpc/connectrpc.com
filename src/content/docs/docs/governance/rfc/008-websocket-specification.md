@@ -2,9 +2,47 @@
 title: "008: Connect-over-WebSocket Protocol"
 ---
 
-# Connect-over-WebSocket Protocol
+This RFC proposes Connect-over-WebSocket, a binding that carries the Connect
+protocol over a WebSocket connection. It lets browser clients make
+client-streaming and bidirectional-streaming RPCs, which browser clients cannot
+do over Connect-over-HTTP.
 
 Status: **Proposal**, unratified.
+
+## Why
+
+Connect-over-HTTP provides unary and server-streaming RPCs to browsers, but
+client streaming and bidirectional streaming need a request body that is still
+being written while the response is read. Browsers do not provide that over
+`fetch`: request streaming is half-duplex where it exists at all, and it is not
+available in every major browser.
+
+WebSocket is the full-duplex transport that every major browser supports. Most
+proxies and load balancers already pass it through. Carrying Connect over it
+gives browser clients all four RPC types with the same service definitions,
+codecs, and error model they already use. Non-browser clients gain a
+bidirectional transport that works over HTTP/1.1 infrastructure.
+
+## Anticipated complications
+
+- **New protocol surface.** Every implementation that adopts this binding needs
+  new client and server code, and needs to meet the Connect-over-WebSocket
+  conformance suite.
+- **Browser limits.** The browser WebSocket API cannot set handshake headers,
+  so request metadata travels in-band [§7]. A browser cannot see why a
+  handshake failed [§4.5].
+- **Security.** A browser attaches ambient credentials to a handshake and
+  applies no CORS, so servers must check `Origin` [§4.4]. Shared compression
+  contexts leak secrets, so compression is restricted [§10].
+- **Close code registration.** The close code `3102` must be registered with
+  IANA [§14].
+
+## Alternatives
+
+- **WebTransport.** Full duplex over HTTP/3, but support across browsers and
+  proxies is still incomplete, and it requires HTTP/3 from end to end.
+- **Do nothing.** Browser clients stay limited to unary and server streaming,
+  and users who need more keep building their own WebSocket protocols.
 
 ## 1. Conventions
 
@@ -19,10 +57,11 @@ Byte values are written in hexadecimal, and Unicode scalar values in the usual
 
 ## 2. Scope
 
-This document specifies how the [Connect protocol](https://connectrpc.com/docs/protocol/) is carried over a
-WebSocket connection ([RFC 6455](https://datatracker.ietf.org/doc/html/rfc6455)). It covers connection
-establishment, message framing, metadata, deadlines, compression, and
-termination.
+This document specifies how the [Connect
+protocol](https://connectrpc.com/docs/protocol/) is carried over a WebSocket
+connection ([RFC 6455](https://datatracker.ietf.org/doc/html/rfc6455)). It
+covers connection establishment, message framing, metadata, deadlines,
+compression, and termination.
 
 It does not specify service definitions, codec behavior, or error semantics
 beyond their wire encoding; those are unchanged from Connect.
@@ -48,45 +87,59 @@ model. It departs from Connect in the following ways:
 | 9  | Every stream opens with a metadata message, in both directions | The client's is consumed before dispatch, so request metadata is complete for interceptors                                                            |
 | 10 | A server SHOULD impose its own deadline                        | A server waits for the opening message, so an unbounded RPC could park a connection [§11]                                                             |
 
-Sending an HTTP request with a `Connection: Upgrade` header, an `Upgrade: websocket` header, and a `Sec-WebSocket-Protocol` header that specifies one of `connectrpc.1+proto`or `connectrpc.1+json` [§4.3] indicates that a peer is agreeing to use Connect-over-WebSocket instead of standard ConnectRPC streaming.
+A client that sends an HTTP request with a `Connection: Upgrade` header, an
+`Upgrade: websocket` header, and a `Sec-WebSocket-Protocol` header offering
+`connectrpc.1+proto`, `connectrpc.1+json`, or both [§4.3] is asking to use
+Connect-over-WebSocket instead of Connect-over-HTTP.
 
 ### 3.2 What this binding does not borrow
 
-The envelope header used for ConnectRPC streaming (header byte plus length) is not used for Connect-over-WebSocket. There are no changes to the existing ConnectRPC streaming protocol to support Connect-over-Websocket.
+The envelope header used for Connect streaming (a flags byte plus a length) is
+not used for Connect-over-WebSocket. Connect-over-WebSocket makes no changes to
+the existing Connect streaming protocol.
 
 ### 3.3 What this binding does borrow
 
-The `EndStreamResponse` schema [§9] and the error model are both identical on the wire to Connect-over-HTTP. That sharing is deliberate: an implementation of one can decode the other’s terminal message unchanged, and the two should not drift.
+The `EndStreamResponse` schema [§9] and the error model are both identical on
+the wire to Connect-over-HTTP. That sharing is deliberate: an implementation of
+one can decode the other's terminal message unchanged, and the two should not
+drift.
 
 ## 4. Connection establishment
 
 ### 4.1 HTTP version
 
-The handshake MUST be an HTTP/1.1 request. [RFC 6455](https://datatracker.ietf.org/doc/html/rfc6455) defines it over
-HTTP/1.1, and this document does not adopt [RFC 8441](https://datatracker.ietf.org/doc/html/rfc8441)'s Extended
-CONNECT, which carries WebSocket over HTTP/2.
+The handshake MUST be an HTTP/1.1 request. [RFC
+6455](https://datatracker.ietf.org/doc/html/rfc6455) defines it over HTTP/1.1,
+and this document does not adopt [RFC
+8441](https://datatracker.ietf.org/doc/html/rfc8441)'s Extended CONNECT, which
+carries WebSocket over HTTP/2.
 
 A **client** whose HTTP stack uses HTTP/2 MUST ensure the handshake goes over
-HTTP/1.1. This is usually automatic: a client library that
-recognizes `Connection: Upgrade` with `Upgrade: websocket` routes that request
-to an HTTP/1.1 connection. The request MUST be a GET request. Other tokens MAY appear in the `Connection` header alongside `Upgrade` and the upgrade is still recognized. All token and header matches MUST be case-insensitive.
+HTTP/1.1. This is usually automatic: a client library that recognizes
+`Connection: Upgrade` with `Upgrade: websocket` routes that request to an
+HTTP/1.1 connection. The request MUST be a GET request. Other tokens MAY appear
+in the `Connection` header alongside `Upgrade` and the upgrade is still
+recognized. All token and header matches MUST be case-insensitive.
 
 A **server** MUST offer HTTP/1.1 on the listener that accepts handshakes. It
-MAY offer HTTP/2 as well. Only the handshake requires HTTP/1.1, so RPCs that a client routes over plain HTTP still negotiate HTTP/2 on the same connection pool. Other RPCs can still use HTTP/2 connections.
+MAY offer HTTP/2 as well. Only the handshake requires HTTP/1.1, so RPCs that a
+client routes over plain HTTP can still use HTTP/2 connections.
 
-A server that offers only HTTP/2 — including h2c — cannot accept a handshake,
+A server that offers only HTTP/2 (including h2c) cannot accept a handshake,
 because there is no HTTP/1.1 connection to take over. An implementation SHOULD
 report that as a server configuration fault rather than a client error.
 
-A server MUST refuse an Extended CONNECT request for a Connect procedure rather than answer it as an HTTP RPC.
+A server MUST refuse an Extended CONNECT request for a Connect procedure rather
+than answer it as an HTTP RPC.
 
 ### 4.2 Handshake URI
 
-The RPC's procedure is the path of the handshake URI with an optional WebSocket path prefix. A client MUST form it by joining the base URL's path with the optional path prefix and the procedure path:
+The RPC's procedure is the path of the handshake URI. A client MUST form the
+handshake URI by joining the base URL's path with the procedure path:
 
 ```
-wss://api.example.com/connect.ping.v1.PingService/CumSum     # no path prefix
-wss://api.example.com/ws/connect.ping.v1.PingService/CumSum  # path prefix
+wss://api.example.com/connect.ping.v1.PingService/CumSum
 ```
 
 A trailing `/` on the base path MUST NOT produce a doubled separator. The
@@ -96,28 +149,22 @@ same service would be reached at over Connect-over-HTTP.
 One connection carries exactly one RPC. A peer MUST NOT begin a second RPC on a
 connection.
 
-A conforming Connect-over-WebSocket server can provide multiple protocols over the same endpoint, use a path prefix to separate Connect-over-WebSocket from Connect-over-HTTP traffic, or support both.
+A server MAY serve both Connect-over-HTTP and Connect-over-WebSocket on any
+registered Connect endpoint.
 
-#### 4.2.1 Multiple protocols on the same endpoint
+The initial HTTP request for Connect-over-WebSocket MUST contain the
+`Connection: Upgrade` and `Upgrade: websocket` headers. A request without those
+headers is a Connect-over-HTTP RPC. The `Sec-WebSocket-Protocol` header holds
+the requested supported protocols [§4.3]. The protocol negotiation decides
+whether the handshake is accepted.
 
-Servers MAY support either Connect-over-HTTP or Connect-over-WebSocket on any registered ConnectRPC endpoint. If the `Connection: Upgrade`, `Upgrade: websocket` headers are present on the HTTP request, along with a `Sec-WebSocket-Protocol` header that specifies a valid Connect-over-WebSocket subprotocol, Connect-over-WebSocket MUST be used. Otherwise, Connect-over-HTTP MUST be used.
-
-If a server is configured to only accept WebSocket traffic on a specified path prefix, the behavior is changed. With a path prefix configured, the `Connection: Upgrade` and `Upgrade: websocket` headers MUST be present on any HTTP request to an endpoint with the path prefix and Connect-over-WebSocket MUST be used. For any HTTP request to an endpoint without a path prefix, Connect-over-HTTP MUST be used. It is an error to send the `Connection: Upgrade` and `Upgrade: websocket` headers to those endpoints.
-
-#### 4.2.2 Path prefix
-
-A deployment MAY place every WebSocket path under a common
-prefix, so that an upgrade is distinguishable from an ordinary RPC by URL
-alone. Some load balancers need that to route WebSocket traffic differently: upgrade support, longer idle timeouts, a connection-based balancing algorithm such as least connections, and connection draining during deployments.
-
-Both peers MUST agree on the value. A client forms the handshake URI as
-base + prefix + procedure, and plain HTTP RPCs keep the bare procedure paths.
-
-When a prefix is configured:
-
-- A server MUST answer a non-upgrade request under the prefix with
-`426 Upgrade Required` and an `Upgrade: websocket` header.
-- A server MUST NOT accept an upgrade at the bare procedure paths and SHOULD return `400 Bad Request`.
+A deployment that wants WebSocket traffic on its own path, for example to
+route it to a different pool of servers, can give WebSocket clients a base URL
+that includes that path. With a base URL of `https://api.example.com/ws`, the
+handshake URI above becomes
+`wss://api.example.com/ws/connect.ping.v1.PingService/CumSum`. Implementations
+can offer an option to restrict an endpoint to Connect-over-HTTP or
+Connect-over-WebSocket.
 
 ### 4.3 Subprotocol negotiation
 
@@ -128,18 +175,40 @@ The codec is selected by the WebSocket subprotocol.
 | `connectrpc.1+proto` | Protobuf binary |
 | `connectrpc.1+json`  | Protobuf JSON   |
 
-A client MUST offer exactly one of these tokens in `Sec-WebSocket-Protocol`.
-A client MUST encode with the codec specified.
+This specification defines these two codecs. A client or server MAY also
+support other codecs. The token for another codec is `connectrpc.1+<codec>`,
+where `<codec>` is the name Connect-over-HTTP uses for the same codec in the
+`application/connect+<codec>` content type. A codec name MUST be lower-case,
+MUST be a valid HTTP token, and MUST NOT be `proto` or `json`.
 
-A server MUST support JSON and SHOULD support protobuf. If a server recognizes and supports the specified codec, it MUST echo exactly that token in its response.
+The definition of another codec MUST state whether it encodes messages as text
+or as binary [§6.1]. A peer that does not recognize a token ignores it, so a
+client that also offers `connectrpc.1+json` can always connect.
 
-A server MUST fail the handshake when it cannot serve the offered token. If the offered token is not one of the two above, the status should be `400 Bad Request`.
+A client MUST offer one or more of these tokens in `Sec-WebSocket-Protocol`,
+most preferred first, using the standard negotiation of [RFC 6455
+§4.1](https://datatracker.ietf.org/doc/html/rfc6455#section-4.1). A client
+MUST NOT offer the same token twice.
 
-If the server recognizes the token, but does not support its codec, it MUST echo the token and report the error in-band (§4.5) with the code `unimplemented`. The error message SHOULD name the codecs that the server supports.
+A server MUST support JSON and SHOULD support Protobuf. A server MUST ignore
+offered tokens it does not recognize, select the first offered token whose
+codec it supports, and echo exactly that token in its response. A server that
+supports none of the offered tokens MUST reject the handshake with
+`400 Bad Request`. Since every server supports JSON, a client that offers
+`connectrpc.1+json` can always connect.
 
-The distinction between the two failures is worth keeping, because the remedies differ. A `400` says that the client is not speaking this protocol. The in-band error says that it is, and that it must offer another codec. The in-band error keeps this distinction visible to browser clients, which cannot read a status code.
+A client MUST encode with the codec of the token the server echoed. A client
+MUST check the echoed token:
 
-A client MUST verify that the echoed token is the one it offered. If it is not, it MUST fail the connection **without a Close frame**, because the WebSocket is not established yet.
+1. If the server echoes a token the client did not offer, RFC 6455 §4.1
+   requires the client to fail the connection. A browser does this itself
+   before the socket opens, and the RPC fails as described in [§4.5]. A
+   non-browser client MUST fail the connection without a Close frame and
+   report the RPC as failed with the code `internal`.
+2. If the server echoes no token, the connection opens with no subprotocol (in
+   a browser, `WebSocket.protocol` is empty). The client MUST close the
+   connection with `3102` and report the RPC as failed with the code
+   `internal`.
 
 `Connect-Protocol-Version` is implied by the subprotocol and MUST NOT be sent
 as a header.
@@ -150,48 +219,98 @@ A server MUST reject a cross-origin handshake with HTTP `403 Forbidden` unless
 it has been configured to permit one. A handshake carrying no `Origin` header
 is not from a browser and MUST NOT be rejected on origin grounds.
 
-**Same-origin means the same host.** A server MUST compare the host and port of the `Origin` header, exactly as written, with the `Host` header, case-insensitively. It MUST NOT require the schemes to match. The scheme is left out deliberately: a deployment terminating TLS at a proxy sees `https` in the `Origin` and its own plaintext `Host`, and a comparison including the scheme would reject its own pages.
+**Same-origin means the same host.** A server MUST compare the host and port of
+the `Origin` header, exactly as written, with the `Host` header,
+case-insensitively. It MUST NOT require the schemes to match. The scheme is
+left out deliberately: a deployment terminating TLS at a proxy sees `https` in
+the `Origin` and its own plaintext `Host`, and a comparison including the
+scheme would reject its own pages.
 
-As a result, a page that is served over plain HTTP from the same host passes this check. A deployment that serves plain HTTP on that host SHOULD use HSTS, or SHOULD configure the server to accept only `https` origins.
+As a result, a page that is served over plain HTTP from the same host passes
+this check. A deployment that serves plain HTTP on that host SHOULD use HSTS,
+or SHOULD configure the server to accept only `https` origins.
 
-The comparison does not remove default ports. If a proxy adds an explicit default port to `Host` (for example, `:443`), the comparison fails, and the deployment MUST configure its permitted origins explicitly.
+The comparison does not remove default ports. If a proxy adds an explicit
+default port to `Host` (for example, `:443`), the comparison fails, and the
+deployment MUST configure its permitted origins explicitly.
 
 A browser attaches the user's ambient credentials to a WebSocket handshake and
 performs no CORS preflight, so an accept-all default would let any origin open
 an authenticated stream.
 
-### 4.5 Handshake failures and browser clients
+### 4.5 Handshake failures
 
-A browser does not tell a script why a handshake failed. The WHATWG WebSockets Standard requires that a script cannot distinguish a rejected handshake from an unreachable host, a refused connection, or a failed TLS handshake. In all of these cases, the close code is `1006`. Thus, a browser client cannot read the status code, the headers, or the body of a rejected handshake. Browser developer tools and non-browser clients can read them.
+A browser does not tell a script why a handshake failed. The WHATWG WebSockets
+Standard requires that a script cannot distinguish a rejected handshake from an
+unreachable host, a refused connection, or a failed TLS handshake. In all of
+these cases, the close code is `1006`. Thus, a browser client cannot read the
+status code, the headers, or the body of a rejected handshake. Browser
+developer tools and non-browser clients can read them.
 
-A browser client whose connection fails before it opens MUST report the RPC as failed with the code `unavailable`. The error message SHOULD say that the reason is not available to the client.
+A browser client whose connection fails before it opens MUST report the RPC as
+failed with the code `unavailable`. The error message SHOULD say that the
+reason is not available to the client.
 
-**Connection failures use HTTP status codes.** A server MUST reject the handshake with an HTTP status, and MUST NOT complete the upgrade, when the failure concerns the connection:
+A non-browser client that receives a response other than `101 Switching
+Protocols` MUST report the RPC as failed. If the response body is a Connect
+error, the client MUST report its code and message. Otherwise, the client MUST
+infer the code from the HTTP status, using Connect-over-HTTP's [HTTP to error
+code](https://connectrpc.com/docs/protocol/#http-to-error-code) mapping.
 
-- the offered subprotocol token is not a Connect-over-WebSocket token (`400`, §4.3);
-- an upgrade arrives at a bare procedure path while a prefix is configured (`400`, §4.2.2);
-- the handshake is cross-origin (`403`, §4.4).
+**Connection failures use HTTP status codes.** A server MUST reject the
+handshake with an HTTP status, and MUST NOT complete the upgrade, when the
+failure concerns the connection:
 
-The reason for not completing the cross-origin upgrade, even to send an error, is that the WebSocket API does not apply CORS, so a page from any origin could read the error message.
+- the handshake offers no token the server supports (`400`, [§4.3]);
+- the handshake is cross-origin (`403`, [§4.4]).
 
-**RPC failures are reported in-band.** When a server recognizes the offered token, but rejects the RPC, it SHOULD complete the upgrade, send `M[]`, send an `S` message with the error, and close with `1000`. It MUST NOT dispatch the RPC. This applies to:
+The reason for not completing the cross-origin upgrade, even to send an error,
+is that the WebSocket API does not apply CORS, so a page from any origin could
+read the error message.
 
-- a token whose codec the server does not support (§4.3);
-- an invalid `connect-timeout-ms` value (§11).
+**RPC failures are reported in-band.** When a server accepts the handshake but
+rejects the RPC, it MUST complete the upgrade, send `M[]`, send an `S` message
+with the error, and close with `1000`. It MUST NOT dispatch the RPC. This
+applies to:
 
-`M` and `S` are JSON text messages under both subprotocols (§6.1). Thus, a server can send them for a codec that it does not support.
+- an invalid `connect-timeout-ms` value, reported as `invalid_argument` [§11];
+- a `connect-timeout-ms` value of `0`, reported as `deadline_exceeded` [§11].
+
+**An unknown procedure is reported either way.** A server MUST either refuse a
+handshake whose URI names a procedure it does not serve with `404`, or complete
+the upgrade and report `unimplemented` in-band, as above. A server SHOULD report
+it in-band when its routing reaches the Connect handler, because a browser
+client can read an `S` message but not a refused handshake. A router in front
+of Connect that does not know the path answers `404` before Connect runs, and a
+non-browser client infers `unimplemented` from that status, using the mapping
+above.
+
+`M` and `S` are always JSON text messages [§6.1], so a server can send those
+messages knowing the client will always be able to parse them.
 
 ### 4.6 PING/PONG frames
 
-A server SHOULD send periodic PING frames to the client, which MUST respond with the appropriate PONG frame, as specified in [RFC 6455 §5.5.2](https://datatracker.ietf.org/doc/html/rfc6455#section-5.5.2) and [§5.5.3](https://datatracker.ietf.org/doc/html/rfc6455#section-5.5.3). While the WebSocket specification allows for application data to be included in a PING frame, Connect-over-WebSocket MUST NOT use PING frames for application data.
+Either peer MAY send PING frames. A server SHOULD send them at a configurable
+interval, so that intermediaries which close idle connections keep the
+connection open. [RFC 6455
+§5.5.2](https://datatracker.ietf.org/doc/html/rfc6455#section-5.5.2) already
+requires the receiver to answer each PING with a PONG, including after a client
+has sent `C`. Connect-over-WebSocket MUST NOT put application data in PING
+frames.
 
-A server that sends PING frames MUST continue to periodically send them until the server closes the connection; if a server receives a `C` message from a client, PING messages MUST continue to be sent until the server sends an `S` message and a close frame. A client MUST send PONG frames in response to an incoming PING frame, even after sending a `C` message.
+A peer MAY configure an idle timeout. A peer that receives no frame of any kind
+(a Connect-over-WebSocket message, PING, or PONG) for that period MUST treat the
+connection as ended. A server cancels the RPC and closes with `1011`. A client
+fails the RPC with the code `unavailable` and closes with `3102`.
+
+A PONG counts as a received frame, so a stream that is silent at the RPC level
+but answers pings stays open. The idle timeout checks that the transport is
+alive; it is not the deadline, which [§11.1] does not let messages extend.
 
 ## 5. Message markers
 
-Every message begins with one marker: a single byte whose high bit is `0`.
-This marker specifies the type of the message. The payload follows it immediately,
-with nothing in between.
+Every message begins with one marker: a single byte that specifies the type of
+the message. The payload follows it immediately, with nothing in between.
 
 The valid markers and message types are:
 
@@ -200,84 +319,158 @@ The valid markers and message types are:
 | `B`    | Body              | either          | an RPC message                |
 | `M`    | Leading-Metadata  | either          | JSON metadata [§7.3]          |
 | `S`    | Server-End-Stream | server → client | `EndStreamResponse` JSON [§9] |
-| `C`    | Client-End-Stream | client → server | a final body, or nothing [§8] |
+| `C`    | Client-End-Stream | client → server | none [§8]                     |
 
 A receiver MUST treat a message whose marker it does not recognize as a
 protocol error, and MUST NOT guess at the payload. A receiver MUST treat a
 marker valid only in the opposite direction as a protocol error: `S` from a
 client, `C` from a server.
 
-A message that is empty — no marker at all — is a protocol error.
+An empty message or a message without a marker is a protocol error.
 
-**A protocol error ends the stream.** Wherever this document says a receiver MUST treat something as a protocol error, that receiver MUST end the stream: a server by sending an `S` message carrying the error and then closing with a 1002 code [§9], a client by failing the RPC and closing with a 3102 code. A receiver MUST NOT skip the offending message and carry on.
+**A protocol error ends the stream.** Wherever this document says that
+something is a protocol error, the receiver MUST end the stream. A server does
+so by sending an `S` message whose error has the code `internal`, and then
+closing with `1002` [§13]. A client does so by failing the RPC with the code
+`internal` and closing with `3102`. The error message SHOULD describe the
+violation. A receiver MUST NOT skip the offending message and carry on.
 
-This applies to an unknown marker in particular, which [§5.1] might otherwise seem to invite a receiver to ignore for forward compatibility. It does not: a marker is defined before it is used, so one that arrives unrecognized means the peer believes it is speaking a dialect this receiver
-does not have, and continuing would silently misread whatever follows.
+Two conditions end the stream without an `S` message: invalid UTF-8 in a text
+message [§6.1], and a message that exceeds the receiver's size limit [§12.1].
 
-If a server detects a protocol error before the server sends its `M` message, it MUST send its `M` message before sending the `S` message.
+This applies to an unknown marker in particular. A receiver MUST NOT accept
+unknown markers. It could be argued that supporting unknown markers enables
+forward compatibility. However, an unrecognized marker means the peer is using
+a protocol version the receiver does not support. Accepting it would misread
+whatever follows.
+
+If a server detects a protocol error before it sends its `M` message, it MUST
+send its `M` message before sending the `S` message.
 
 ### 5.1 The marker space
 
-A marker is one byte in the range `0x00`–`0x7F`. The four markers listed above are the only
-valid values in this revision; the other 124 are unassigned, and a receiver
-MUST treat any of them as an unknown marker.
+The four markers listed above are the only valid values in this revision. Any
+other first byte is an unknown marker.
 
-**The high bit is reserved and MUST be `0`.** A receiver MUST reject a first
-byte of `0x80` or greater as a protocol error, without interpreting the rest of
-the message. Nothing in this revision sets that bit, so holding it back leaves
-a later one a signal it can define — a longer marker, or a different framing
-entirely — that no conforming implementation of this revision can already be
-emitting.
-
-Any marker defined in a future revision of this specification SHOULD be printable ASCII whose value is less than `0x80`, for the same reason the first four are: it provides a mnemonic name for the message which is easily viewable in a browser client's developer tools. In addition, most messages are sent as text messages, so a printable character is advantageous. Keeping the marker inside `0x00`–`0x7F` makes it a valid one byte UTF-8 code sequence, required for inclusion in a text message.
+Any marker defined in a future revision of this specification SHOULD be
+printable ASCII, for the same reason the first four are: it provides a
+mnemonic name for the message which is easily viewable in a browser client's
+developer tools. In addition, most messages are sent as text messages, and a
+byte in the range `0x00`–`0x7F` is a valid one-byte UTF-8 sequence, as a text
+message requires.
 
 ## 6. Message framing
 
 Each WebSocket message MUST contain exactly one marker and its payload.
 
 The unit is a WebSocket *message*, not a frame. A sender MAY fragment one
-across continuation frames ([RFC 6455 §5.4](https://datatracker.ietf.org/doc/html/rfc6455#section-5.4)) and a receiver MUST
-reassemble before interpreting the marker: a marker is not a per-frame tag, and
-a fragment is not a message. Fragmentation is otherwise invisible to this
-binding, which neither requires nor forbids it.
+across continuation frames ([RFC 6455
+§5.4](https://datatracker.ietf.org/doc/html/rfc6455#section-5.4)) and a
+receiver MUST reassemble before interpreting the marker: a marker is not a
+per-frame tag, and a fragment is not a message. Fragmentation is otherwise
+invisible to this binding, which neither requires nor forbids it.
 
 ### 6.1 Text and binary
 
-The WebSocket frame type says how the payload is encoded:
+The WebSocket frame type says how the payload is encoded. `M`, `S`, and `C`
+are always text. A `B` uses the frame type of the codec the subprotocol
+selected [§4.3]:
 
-| Frame type | Payload encoding |
-| ---------- | ---------------- |
-| text       | JSON             |
-| binary     | Protobuf binary  |
+| Codec                                  | `B` frame type           |
+| -------------------------------------- | ------------------------ |
+| Protobuf binary (`connectrpc.1+proto`) | binary                   |
+| Protobuf JSON (`connectrpc.1+json`)    | text                     |
+| Another codec                          | as its definition states |
 
-A message MUST be sent as a binary frame if and only if its payload is Protobuf binary; every other message MUST be a text frame. Stated per marker:
+A message MUST be sent as a binary frame if and only if it is a `B` and the
+negotiated codec is binary; every other message MUST be a text frame. Stated
+per marker:
 
 - `M` and `S` are always JSON, so always text.
-- `B` follows the codec the subprotocol selected [§4.3]: binary for Protobuf, text for JSON.
-- `C` with a final body follows the codec as `B` does. `C` alone carries no payload and specifies the frame type that was negotiated during the initial handshake.
-- `B` alone — the marker with no payload — is the empty Protobuf message and
-MUST be binary. In JSON an empty message is `{}`, never zero bytes, so a text
-frame containing only `B` is a protocol error.
-- `M` and `S` alone are protocol errors for the same reason. An `M` payload is a
-JSON array, and empty metadata is `[]` [§7.3]. An `S` payload is a JSON object,
-and the empty object is `{}` [§9].
+- `B` follows the codec the subprotocol selected [§4.3].
+- `C` has no payload and is always text. A `C` with a payload is a protocol
+  error.
+- `B` without any payload is the empty Protobuf message under the Protobuf
+  binary codec. In Protobuf JSON an empty message is `{}`. A text frame
+  containing only `B` for Protobuf JSON is a protocol error. A custom codec,
+  whether text or binary, defines its own rules for parsing a `B` without a
+  payload.
+- `M` and `S` without any payload are protocol errors. An `M` payload is
+  a JSON array, and empty metadata is `[]` [§7.3]. An `S` payload is a JSON
+  object, and the empty object is `{}` [§9].
 
-A connection therefore mixes frame types when the codec is Protobuf: bodies arrive binary while metadata and end-of-stream arrive text. That is intended. The frame type is a type tag the transport supplies for free, and a receiver knows how to parse a payload before it has looked at anything but the frame.
+A connection therefore mixes frame types when the codec is Protobuf: bodies
+arrive binary while metadata and end-of-stream messages arrive text. That is
+intended. The frame type is a type tag the transport supplies for free, and a
+receiver knows how to parse a payload before it has looked at anything but the
+frame.
 
-A text message MUST contain valid UTF-8, which [RFC 6455](https://datatracker.ietf.org/doc/html/rfc6455) §8.1 requires of every text message and which a browser enforces. A marker is a byte below`0x80` [§5.1] and JSON is UTF-8, so a conforming message satisfies this by construction.
+A message in a frame type that does not match its marker and the negotiated
+codec is a protocol error: a `B` in a frame type its codec does not use, or an
+`M`, `S`, or `C` in a binary frame. The error message MUST name the frame type
+that was expected.
 
-An implementation MUST validate the UTF-8 encoding of every text message. A peer that emits
-invalid UTF-8 in a text frame has its connection closed by a browser, and a library that does not validate will not reproduce encoding errors in its own tests.
+A text message MUST contain valid UTF-8, which [RFC
+6455](https://datatracker.ietf.org/doc/html/rfc6455) §8.1 requires of every
+text message and which a browser enforces. The four markers are ASCII and JSON
+is UTF-8, so a conforming message satisfies this by construction. A text codec
+MUST produce valid UTF-8.
 
-A browser client detects invalid UTF-8 automatically and closes the connection with a 1007 code (some browsers MAY send a 1002 code instead). A non-browser client MUST treat it as a protocol error (3102). A server MUST accept either code. A server MUST close the connection with a 1007 code.
+A receiver MUST validate the UTF-8 encoding of every text message before it
+reads the marker. A receiver that finds invalid UTF-8 MUST fail the connection
+with the close code `1007`, as RFC 6455 §8.1 requires, without sending `S`
+first. A client that validates UTF-8 itself reports the RPC as failed with the
+code `internal`.
 
-Because the frame type names the encoding, a body can arrive in a frame type whose codec does not match the encoding negotiated during the original WebSocket upgrade handshake. In this case, the receiver MUST reject such a message as a protocol error, naming the incorrect encoding. It MUST NOT fail in any way that is indistinguishable from a transport fault and MUST report the reason for failure was an invalid encoding.
+A client built on the WebSocket API, in a browser or in another runtime that
+implements it, cannot report `internal`. The API validates text messages
+itself and fails the connection on invalid UTF-8. Some implementations close
+with `1002` instead of `1007`, and some drop the connection without a Close
+frame, which RFC 6455 §7.1.7 permits and a server sees as `1006`. Either way,
+the script sees only close code `1006`, exactly as for a dropped connection,
+so such a client reports the RPC as it reports any connection that ends
+without `S`: with the code `unavailable` [§13.1].
 
 ### 6.2 Message ordering
 
-If the WebSocket upgrade is successful, the first message sent by a client or server MUST be an `M`. Exactly one `M` message MUST be sent by the client and the server. After sending an `M` message, the client MUST send zero or more `B` messages. The client signals the end of its communication with the server by sending a `C` message.
+The client MUST send exactly one `M`, then zero or more `B`, then exactly one
+`C`, unless it has already received `S` [§8]. The server MUST send exactly one
+`M`, then zero or more `B`, then exactly one `S`. Each side sends its `M` first,
+even when it has no metadata.
 
-After sending an `M` message, the server MUST send zero or more `B` messages. The server signals the end of its communication with the client by sending an `S` message.
+A server tracks the client's messages as follows:
+
+| Server state          | Valid next message from the client | Any other message |
+| --------------------- | ---------------------------------- | ----------------- |
+| Awaiting `M`          | `M`, then Open                     | protocol error    |
+| Open                  | `B`, stay Open; `C`, then Closed   | protocol error    |
+| Closed (`C` received) | none                               | protocol error    |
+| Done (`S` sent)       | none                               | discarded         |
+
+After a server sends `S`, client messages that were already in flight can still
+arrive. The server MUST discard them rather than treat them as a protocol
+error.
+
+A client tracks the server's messages as follows:
+
+| Client state         | Valid next message from the server | Any other message |
+| -------------------- | ---------------------------------- | ----------------- |
+| Awaiting `M`         | `M`, then Open                     | protocol error    |
+| Open                 | `B`, stay Open; `S`, then Done     | protocol error    |
+| Done (`S` received)  | none                               | protocol error    |
+
+After a client receives `S`, it MUST NOT send anything more except a Close
+frame. That includes its own `M` or `C` if it has not sent them yet.
+
+**Cardinality.** Unary and server-streaming RPCs take exactly one request, and
+unary and client-streaming RPCs return exactly one response.
+
+- For a unary or server-streaming RPC, a server that receives zero `B`
+  messages or more than one `B` message before `C` MUST end the RPC with an
+  `S` carrying an error, and SHOULD use the code `unimplemented`.
+- For a unary or client-streaming RPC, a client that receives zero `B`
+  messages or more than one `B` message before an `S` without an error MUST
+  fail the RPC, and SHOULD use the code `unimplemented`.
 
 ### 6.3 A worked exchange
 
@@ -298,132 +491,197 @@ The same call under `connectrpc.1+proto`, mixing frame types:
 ```
 client →  text    M[]
 client →  binary  B<protobuf>
-client →  binary  C
+client →  text    C
 server →  text    M[]
 server →  binary  B<protobuf>
 server →  text    S{}
 server →  close 1000
 ```
 
-The `M`and `S` messages are identical in both: metadata and end-of-stream are JSON regardless of the codec. A bare `C` has no payload to encode, but the frame type reflects the negotiated codec. Each side opens with its own `M` even though neither has metadata here
-[§7.3].
+The `M`, `C`, and `S` messages are identical in both: metadata and
+end-of-stream messages are text regardless of the codec. Each side opens with
+its own `M` even though neither has metadata here [§7.3].
 
 ## 7. Metadata
 
 Metadata reaches an application through the call-scoped object its
-implementation exposes. Populating that object is part of receiving a message.
-An application MUST NOT read it concurrently with a receive on the same stream.
-This is a property of the Connect implementation. Connect-over-HTTP
-populates the same object from inside its own receive. It is stated here
-because metadata can arrive as the initial WebSocket message.
+implementation exposes. Because metadata arrives as the first WebSocket
+message, an implementation can populate that object as part of a receive. If
+it does, reading the object concurrently with a receive on the same stream is
+not safe.
 
 There are three mechanisms for sending metadata in Connect-over-WebSocket:
 HTTP headers, query parameters, and the Leading-Metadata message.
 
-### 7.1 Request HTTP Headers
+### 7.1 Request HTTP headers
 
-The initial upgrade request can include headers with metadata. For browser-initiated connections, the client application is unable to add additional headers. Only headers set by the browser or proxies between the client and the server will be populated. While it is possible for standalone client applications to add their own HTTP headers to the initial upgrade request, HTTP headers SHOULD be limited to those generated by infrastructure, whether the client is a browser or a standalone application. All request headers MUST be made available to the business logic as metadata. If a non-browser client sends `Connect-Protocol-Version` or `connect-timeout-ms` as an HTTP header, the server MUST remove them from the effective headers.
+The initial upgrade request can include headers with metadata. For
+browser-initiated connections, the client application is unable to add
+additional headers. Only headers set by the browser or by proxies between the
+client and the server will be populated. While it is possible for standalone
+client applications to add their own HTTP headers to the initial upgrade
+request, HTTP headers SHOULD be limited to those generated by infrastructure,
+whether the client is a browser or a standalone application.
 
-The first message sent by both the client and the server MUST be a Leading-Metadata message. This message provides a way for the client and server business logic to exchange request and response headers. Browser WebSocket clients are unable to specify additional HTTP headers and WebSocket servers can add additional headers to their response, but browser client cannot read them and server handler and any interceptors have not run yet to add additional response headers.
+The RPC's effective headers [§7.3] start from the handshake request headers,
+minus `Connection`, `Upgrade`, every header whose name begins with
+`Sec-WebSocket-`, and every header whose name begins with `Connect-`. Handshake
+header names are case-insensitive, so a server lower-cases them when it builds
+the effective headers.
 
-### 7.2 Request Query Parameters
+The first message sent by both the client and the server MUST be a
+Leading-Metadata message. This message provides a way for the client and server
+business logic to exchange request and response headers. Browser WebSocket
+clients are unable to specify additional HTTP headers. A WebSocket server can
+add headers to its handshake response, but a browser client cannot read them,
+and the server's handler and interceptors have not yet run to add response
+headers.
 
-A single query parameter, `connect-timeout-ms`. This allows a browser or standalone client to specify a shorter deadline than the server provides. Details on the valid values and treatment of this query parameter are in [§11].
+### 7.2 Request query parameters
 
-### 7.3 Leading-Metadata Message
+The handshake URI carries one query parameter, `connect-timeout-ms`. It allows
+a browser or standalone client to specify a shorter deadline than the server
+provides. Details on the valid values and treatment of this query parameter are
+in [§11].
 
-The message marker for a Leading-Metadata message is `M`. The body of an `M` message is a JSON array where each entry is an array of strings. Each inner array has a key for the first element. The values for the key are stored in the following elements [§7.3.1]. As a JSON message, it MUST be sent as text. It is an error for either the client or the server to send more than one Leading-Metadata message, to send it after sending a `B`, `S`, or `C` message, or to send a `B`, `S`, or `C` message before sending an `M` message. A peer with no metadata sends `[]`; the payload is never absent, since a bare `M` is not a JSON array [§6.1].
+### 7.3 Leading-Metadata message
+
+The message marker for a Leading-Metadata message is `M`. The body of an `M`
+message is a JSON array where each entry is an array of strings. Each inner
+array has a key for the first element. The values for the key are stored in the
+following elements [§7.3.1]. As a JSON message, it MUST be sent as text. It is
+a protocol error for either the client or the server to send more than one
+Leading-Metadata message, to send it after sending a `B`, `S`, or `C` message,
+or to send a `B`, `S`, or `C` message before sending an `M` message. A peer
+with no metadata sends `[]`; the payload is never absent, since a bare `M` is
+not a JSON array [§6.1].
 
 A key in a Leading-Metadata message **replaces** any value the upgrade request
-carried for that key, unless the key is reserved. As explained in
-[§7.3.2], sending a reserved key is an error that ends the stream.
+carried for that key. A reserved key MUST NOT appear in a Leading-Metadata
+message [§7.3.2].
 
-The result is the RPC's *effective headers*: what the business logic and its interceptors see, and what
-authentication and authorization MUST be based on.
+The result is the RPC's *effective headers*: what the business logic and its
+interceptors see, and what authentication and authorization MUST be based on.
 
-#### 7.3.1 Rules for Keys and values in a Leading-Metadata Message
+#### 7.3.1 Rules for keys and values in a Leading-Metadata message
 
-**The payload of an `M` message.** The body is a JSON array of entries. Each entry is a JSON array of strings: the first string is the key, and the strings after it are that key's values, in order. It is always a text frame:
+**The payload of an `M` message.** The body is a JSON array of entries. Each
+entry is a JSON array of strings: the first string is the key, and the strings
+after it are that key's values, in order. It is always a text frame:
 
 ```json
-[["acme-tenant", "tenant-42"], ["authorization", "Bearer ..."], ["accept-language", "en", "fr"]]
+[
+  ["acme-tenant", "tenant-42"],
+  ["authorization", "Bearer ..."],
+  ["accept-language", "en", "fr"]
+]
 ```
 
-The payload MUST be an array, and every entry MUST be an array of strings with at least one element, the key. A JSON object, `null`, an entry that is not an array, an empty entry, or an element that is not a string is a protocol error. If there is no metadata, `[]` MUST be sent; an empty body is invalid.
+The payload MUST be an array, and every entry MUST be an array of strings with
+at least two elements: the key and at least one value. A JSON object, `null`,
+an entry that is not an array, an entry with fewer than two elements, or an
+element that is not a string is a protocol error. If there is no metadata,
+`[]` MUST be sent; an empty body is invalid.
 
-The order of entries carries no meaning. The order of the values within an entry MUST be preserved.
+The order of entries carries no meaning. The order of the values within an
+entry MUST be preserved.
 
-An array is used rather than a JSON object because JSON parsers disagree about a repeated object key: some keep the first, some keep the last, and many cannot report the repetition at all. In an array every entry survives parsing, so a receiver can always detect a repeated key and reject it.
+An array is used rather than a JSON object because JSON parsers disagree about
+a repeated object key: some keep the first, some keep the last, and many cannot
+report the repetition at all. In an array every entry survives parsing, so a
+receiver can always detect a repeated key and reject it.
 
-**Keys MUST be valid HTTP field names**. Metadata keys are meant to be a replacement for HTTP headers and might be passed on to other services as HTTP headers.
+**Keys MUST be valid HTTP field names.** Metadata keys are meant to be a
+replacement for HTTP headers and might be passed on to other services as HTTP
+headers.
 
-**Values MUST be valid HTTP field values**. The values for keys whose names do not end in `-bin` MUST be valid field values without `CR`, `LF`, or `NUL`.
+**Keys MUST be lower-case.** A key that contains an upper-case character
+(`A`–`Z`) is a protocol error. This matches HTTP/2 and HTTP/3, where a field
+name that contains an upper-case character makes the message malformed ([RFC
+9113 §8.2.1](https://datatracker.ietf.org/doc/html/rfc9113#section-8.2.1)).
+With lower-case keys, comparing two keys is a plain string comparison.
 
-**Values MAY be empty.** A receiver MUST accept an entry that holds only a key, such as `["acme-tenant"]`, as a key with no values.
+**Values MUST be valid HTTP field values.** The values for keys whose names do
+not end in `-bin` MUST be valid field values without `CR`, `LF`, or `NUL`.
 
-**Keys are case-insensitive.** The canonical form is lower-case, matching
-HTTP/2 and HTTP/3, where field names are lower-case on the wire. A sender
-SHOULD emit lower-case keys; a receiver MUST compare and look up keys
-case-insensitively, so that `acme-tenant` and `Acme-Tenant` are one key and not
-two. JSON string comparison is case-sensitive, so a receiver that skipped this step
-would split one logical key in a way no HTTP implementation does.
+**Every key has at least one value.** An entry that holds only a key, such as
+`["acme-tenant"]`, is a protocol error. An empty string is a valid value, so
+`["acme-tenant", ""]` is how a sender says that a key is present but empty.
 
-**No duplicate keys.** An `M` message MUST NOT contain two entries whose keys fold to the same canonical form; all of a key's values belong in its one entry. While HTTP allows a field to be repeated and treats the repetitions as one comma-joined value, Connect-over-WebSocket does not allow a key to appear in more than one entry. There is also no `Set-Cookie` exception.
+**No duplicate keys.** An `M` message MUST NOT contain two entries with the
+same key; all of a key's values belong in its one entry. While HTTP allows a
+field to be repeated and treats the repetitions as one comma-joined value,
+Connect-over-WebSocket does not allow a key to appear in more than one entry.
+There is also no `Set-Cookie` exception. Two entries with the same key are a
+protocol error.
 
-A receiver MUST treat two entries whose keys fold to the same canonical form, whether spelled identically or differing only in case, as a protocol error.
-
-**Binary values are base64.** A key whose canonical form ends in `-bin` carries
-arbitrary bytes. Its values MUST be base64-encoded with the standard
-alphabet and no padding — the same encoding [§9] specifies
-for an error detail's `value`. A receiver MUST validate that the value for any key whose canonical form end in `-bin` is valid base64 and MUST treat a value that is not valid base64 as a protocol error. While a sender MUST NOT pad base64-encoded values, a receiver MUST accept both padded and unpadded base64.
+**Binary values are base64.** A key that ends in `-bin` carries arbitrary
+bytes. Its values MUST be base64-encoded with the standard alphabet. A sender
+MUST NOT pad base64-encoded values, and a receiver MUST accept both padded and
+unpadded values. A receiver SHOULD NOT treat a value that is not valid base64
+as a protocol error when it parses the `M` message, and SHOULD instead report
+it when the application decodes the value.
 
 The encoding is required because the carrier is JSON, whose strings are
 Unicode: a byte sequence that is not valid UTF-8 cannot be represented, so an
-unencoded `-bin` value is corrupted in transit rather than rejected. Connect-over-HTTP uses the same technique to address this issue.
+unencoded `-bin` value is corrupted in transit rather than rejected.
+Connect-over-HTTP uses the same technique to address this issue.
 
-If any of these rules are violated, the connection MUST be closed with a protocol error code.
+Apart from invalid base64, as described above, a message that breaks any of
+these rules is a protocol error [§5].
 
 #### 7.3.2 Reserved header names
 
-A key in a Leading-Metadata message sent by a client MUST NOT be any of:
+A key in a Leading-Metadata message sent by a client MUST NOT be any of the
+following names.
 
 1. A **forbidden request-header name** as defined by the [Fetch
-standard](https://fetch.spec.whatwg.org/#forbidden-request-header): `Accept-Charset`, `Accept-Encoding`,
-`Access-Control-Request-Headers`, `Access-Control-Request-Method`,
-`Connection`, `Content-Length`, `Cookie`, `Cookie2`, `Date`, `DNT`,
-`Expect`, `Host`, `Keep-Alive`, `Origin`, `Referer`, `Set-Cookie`, `TE`,
-`Trailer`, `Transfer-Encoding`, `Upgrade`, `Via`, any name beginning
-`Proxy-` or `Sec-`, and `X-HTTP-Method`, `X-HTTP-Method-Override` and
-`X-Method-Override`. Fetch forbids the last three only for certain values;
-this binding forbids them outright, since the method they would override has
-no meaning here.
-2. A name on the **server's infrastructure deny list**. This MUST default to
-`Forwarded`, any `X-Forwarded-*`, and `X-Real-IP` — what a proxy in front of
-the server sets, and what a client must not be able to forge. A deployment
-MAY configure a different list, because which names its own infrastructure
-controls is a property of that deployment.
-3. A name **this protocol controls**: `Connect-Protocol-Version`
-[§4.3], as well as `connect-timeout-ms`, `Content-Type`, `Content-Encoding`, `Connect-Content-Encoding`, and `Connect-Accept-Encoding`. The `Sec-` prefix in (1) already
-covers the WebSocket handshake's own headers.
+   standard](https://fetch.spec.whatwg.org/#forbidden-request-header):
+   `accept-charset`, `accept-encoding`, `access-control-request-headers`,
+   `access-control-request-method`, `connection`, `content-length`, `cookie`,
+   `cookie2`, `date`, `dnt`, `expect`, `host`, `keep-alive`, `origin`,
+   `referer`, `set-cookie`, `te`, `trailer`, `transfer-encoding`, `upgrade`,
+   `via`, any name beginning `proxy-` or `sec-`, and `x-http-method`,
+   `x-http-method-override` and `x-method-override`. Fetch forbids the last
+   three only for certain values; this binding forbids them outright, since the
+   method they would override has no meaning here.
+2. A name on the **server's infrastructure deny list**. This SHOULD include
+   `forwarded`, any `x-forwarded-*`, and `x-real-ip`, and any other headers
+   that are set by proxies and infrastructure. Clients must not be able to
+   forge these headers. A deployment SHOULD configure the deny list to match
+   the headers that are set by an organization's infrastructure.
+3. A name **this protocol controls**: any name beginning `connect-`, which
+   includes `connect-protocol-version` [§4.3] and `connect-timeout-ms` [§11],
+   as well as `content-type` and `content-encoding`. The `sec-` prefix in (1)
+   already covers the WebSocket handshake's own headers.
 
-A server MUST NOT allow any case-insensitive match to any of these keys.
+A server MUST NOT send a key beginning `connect-` in its `M` message.
 
-A server MUST end the RPC with an error when a Leading-Metadata message carries
-a reserved name, and MUST NOT ignore the key and continue. Ignoring it would
-leave the two ends disagreeing about the effective headers with nothing on the
-wire to show it: the client believes it set a value the server does not have.
+A Leading-Metadata message from a client that carries a reserved name is a
+protocol error [§5]. A server MUST NOT ignore the key and continue. Ignoring it
+would leave the two ends disagreeing about the effective headers with nothing
+on the wire to show it: the client believes it set a value the server does not
+have.
+
+**Identity headers set by infrastructure.** Because a key in a
+Leading-Metadata message replaces the handshake header of the same name, a
+client can overwrite any handshake header that is not reserved. Any header that
+a deployment's infrastructure sets to convey identity MUST be on its deny list.
+Examples are the user headers an authenticating proxy adds and the
+client-certificate headers a TLS-terminating proxy adds. The default list
+covers only the headers that nearly every proxy sets.
 
 **Ambient credentials and `Origin`.** The upgrade request can carry ambient
-credentials — cookies, HTTP authentication, TLS client certificates — when a
-page from a different origin starts the connection. A server MUST validate the upgrade request's `Origin`
-[§4.4].
+credentials when a page from a different origin starts the connection, such
+as cookies, HTTP authentication, and TLS client certificates. A server MUST
+validate the upgrade request's `Origin` [§4.4].
 
 **Middleware sees only the upgrade.** HTTP middleware in front of the server
 runs once, on the handshake, and never sees a Leading-Metadata message.
 Authentication and authorization for an RPC MUST therefore be performed against
-the effective headers — in a Connect interceptor or in the business logic — and
-not in HTTP middleware. Middleware can authorize the connection; only the RPC
-layer can authorize the RPC.
+the effective headers, either in a Connect interceptor or in the business
+logic, and not in HTTP middleware. Middleware can authorize the connection;
+only the RPC layer can authorize the RPC.
 
 ### 7.4 Response metadata
 
@@ -433,53 +691,97 @@ WebSocket has no response header block after the handshake: the 101 response is
 written before the RPC handler runs, so a server cannot know at that point what
 the handler will set.
 
-Leading response metadata is therefore carried in `M` messages,
-and trailing response metadata in the `metadata` field of the `EndStreamResponse`
-[§9].
+Leading response metadata is therefore carried in `M` messages, and trailing
+response metadata in the `metadata` field of the `EndStreamResponse` [§9].
 
-The Leading-Metadata message and the End of Server Stream message are separate namespaces. A key MAY appear in both, and carry unrelated values in each; neither shadows the other, and a receiver MUST surface both. This mirrors Connect-over-HTTP, where a header and a trailer of the same name are likewise distinct.
+The Leading-Metadata message and the End of Server Stream message are separate
+namespaces. A key MAY appear in both, and carry unrelated values in each;
+neither shadows the other, and a receiver MUST surface both. This mirrors
+Connect-over-HTTP, where a header and a trailer of the same name are likewise
+distinct.
 
 A receiver MUST surface Leading-Metadata as response *headers* and
 `EndStreamResponse.metadata` as response *trailers*, preserving the distinction
 its Connect-over-HTTP counterpart would.
 
-**Late metadata.** The server sends `M` when the handler first sends `B` or `S` or on an explicit flush before the first `B` message or the `S` message are sent. Any headers set after `M` are considered late. Any response headers set on a server after its first `B` or `S` has already been
-sent MUST be dropped by the server rather than sent. Connect-over-HTTP loses it
-for the same reason: the header block has been flushed.
+**Late metadata.** The server sends `M` when the handler first sends `B` or `S`,
+or on an explicit flush before the first `B` message or the `S` message is
+sent. Any headers set after `M` are considered late. Any response headers set
+on a server after its first `B` or `S` has already been sent MUST be dropped by
+the server rather than sent.
 
-## 8. End of Client Stream
+## 8. End of client stream
 
-A client MUST terminate its request stream with exactly one `C` message unless it has already received an `S` message. It MAY carry a final body as its payload, or MAY be empty; see
-[§6.1] for which frame type each form takes.
+A client MUST end its request stream with exactly one `C` message, unless it
+has already received an `S` message. `C` has no payload and is always a text
+frame [§6.1].
 
-A server MUST treat `C` as end-of-stream and MUST process its message if non-empty.
+A server MUST treat `C` as end-of-stream.
 
-Anything the client sends afterwards MUST NOT be delivered. A message after `C` is a protocol error.
+A client MUST NOT send a message after `C`. A server MUST NOT deliver one that
+arrives anyway, and MUST treat it as a protocol error. A client API SHOULD
+report an attempt to send after `C` as an error rather than accept a message
+that will not be delivered.
 
-A client MUST NOT send a `B` after sending a `C`. A client API SHOULD report an attempt to do so as an error rather than accepting it, because the message will not be delivered.
+A client that closes the connection before it receives `S`, without having
+sent `C`, cancels the RPC. A server whose connection ends before it sends `S`
+MUST treat the RPC as canceled by the client, whether or not it received `C`.
+The client can no longer receive a response, so the server MUST NOT attempt to
+send `S`. A server that has already sent its `S` MUST NOT treat the end of the
+connection as a cancellation.
 
-A server whose connection ends before it sends `S` MUST treat the RPC as canceled by the client, whether or not it received `C`. The client can no longer receive a response, so the server MUST NOT attempt to send `S`. A server that has already sent its `S` MUST NOT treat the end of the connection as a cancellation. A `C` is not required to end a connection.
+When a browser is navigated away from a page with a WebSocket connection, the
+browser sends a 1001 close code. This code MUST be treated by a server as a
+cancellation by the client.
 
-When a browser is navigated away from a page with a WebSocket connection, the browser sends a 1001 close code. This code MUST be treated by a server as a cancellation by the client.
+### 8.1 Distinguishing between end of client stream and a dropped connection
 
-### 8.1 Distinguishing between End of Client Stream and a dropped connection
+A `C` and a connection that simply ended are different outcomes, and an
+implementation MUST provide a way for an RPC endpoint to distinguish between
+the two cases. One says the client finished sending and is waiting for an
+answer; the other says there could be no one left to answer.
 
-A `C` and a connection that simply ended are different outcomes, and an implementation MUST provide a way for an RPC endpoint to distinguish between the two cases. One says the client finished sending and is waiting for an answer; the other says there could be no one left to answer.
+To detect the end of the connection after `C`, a server implementation MUST
+continue to read from the connection until it sends `S`. After `C`, the only
+frames that it can receive are Close, Ping, and Pong frames; any message is a
+protocol error [§6.2]. Reads of the request stream after `C` return
+end-of-stream, and the end of the connection appears to the handler as a
+cancellation.
 
-To detect the end of the connection after `C`, a server implementation MUST continue to read from the connection until it sends `S`. After `C`, the only messages that it can receive are Close, Ping, and Pong frames; any other message is a protocol error (§8). Reads of the request stream after `C` return end-of-stream, and the end of the connection appears to the handler as a cancellation.
+## 9. End of server stream
 
-## 9. End of Server Stream
+A server MUST end its response stream with exactly one `S` message. It MUST NOT
+send more than one. The payload for an `S` message is a JSON
+`EndStreamResponse`, which is identical to the message described in [the
+Connect protocol's section on Error and
+EndStreamResponse](https://connectrpc.com/docs/protocol/#error-end-stream). It
+is always a text frame.
 
-A server MUST terminate its response stream with exactly one `S` message. It
-MUST NOT send more than one. The payload for an `S` message is a JSON `EndStreamResponse`, which is identical to the message described in [The Connect RPC Protocol Document section on Error and EndStreamResponse](https://connectrpc.com/docs/protocol/#error-end-stream) . This is always a text frame.
+The `metadata` field of `EndStreamResponse` stays a JSON object that maps each
+key to an array of values, as in Connect-over-HTTP. It does not use the array
+form of an `M` message [§7.3.1]: `S` reuses Connect's schema unchanged so that
+one decoder serves both bindings [§3.3], and it therefore carries the same
+ambiguity about repeated keys that Connect-over-HTTP has. A server MUST NOT
+send a key beginning `connect-` in that metadata. Its keys SHOULD be
+lower-case, as in an `M` message; Connect's grammar for these keys allows only
+lower-case letters. A receiver MUST compare them case-insensitively, since
+Connect specifies that they are case-insensitive.
 
-An `S` with no payload at all is a protocol error. This mirrors the behavior of Connect-over-HTTP.
+An `S` with no payload at all is a protocol error. An `EndStreamResponse` is
+JSON, and the smallest valid one is `{}`.
 
-A client that sees the connection close without an `S` message MUST treat the RPC as failed.
+A client that sees the connection close without an `S` message MUST treat the
+RPC as failed [§13.1].
+
+### 9.1 Closing after `S`
+
+After a server sends the `S` message, it SHOULD send a Close frame with the
+code that [§13] assigns, and then close the connection as [§13.2] describes.
 
 ## 10. Compression
 
-Compression is performed by the WebSocket layer, using the`permessage-deflate` extension ([RFC 7692](https://datatracker.ietf.org/doc/html/rfc7692)).
+Compression is performed by the WebSocket layer, using the `permessage-deflate`
+extension ([RFC 7692](https://datatracker.ietf.org/doc/html/rfc7692)).
 
 A server MUST require `no_context_takeover` in both directions, imposing the
 parameter unilaterally under RFC 7692 §7.1.1 if the client did not offer it. A
@@ -490,111 +792,262 @@ data travel on one connection.
 A server that cannot negotiate `permessage-deflate` with `no_context_takeover`
 MUST leave compression disabled rather than fall back to a shared context.
 
-A client MUST verify compression status. If the handshake response
-negotiates `permessage-deflate` without `client_no_context_takeover` and
-`server_no_context_takeover` both present, a client MUST fail the RPC and close
-the connection with a 3102 code.
+A client SHOULD verify the negotiated compression parameters. A browser exposes
+them as `WebSocket.extensions`. If the handshake response negotiates
+`permessage-deflate` without both `client_no_context_takeover` and
+`server_no_context_takeover`, the client SHOULD fail the RPC with the code
+`internal` and close the connection with `3102`, with a reason that names the
+compression parameters. A client that skips this check cannot detect a
+misconfigured server or proxy, and data on such a connection leaks through the
+shared compression context.
 
 There is no message-level compression and no marker for it.
 
-A proxy can negotiate its own compression with the browser. If it uses context takeover, any attempt to establish a Connect-over-WebSockets connection will fail.
+A proxy can negotiate its own compression with the browser. If it uses context
+takeover, a client that checks the parameters fails the RPC with the code
+`internal` and closes with `3102` as soon as the socket opens. The client's
+error message is the only explanation; the browser itself reports nothing. A
+client that does not check leaks data as described above.
 
 ## 11. Deadlines
 
-A client expresses a deadline as metadata passed using a `connect-timeout-ms` query parameter on the handshake URI. The value MUST be a positive integer or zero of at most ten digits, in milliseconds.
+A client expresses a deadline with a `connect-timeout-ms` query parameter on
+the handshake URI. The value is in milliseconds and MUST be zero or a positive
+integer of at most ten digits.
 
-It is OPTIONAL for a client to send a deadline. An RPC without a deadline is bounded by the server's own server timeout, which every server SHOULD have.
+It is OPTIONAL for a client to send a deadline. An RPC without a deadline is
+bounded by the server's own timeout, which every server SHOULD have.
 
-The Connect-over-HTTP spec specifies that a receiver MUST reject a value that is not a base-10 integer, or that is longer than ten digits, with `invalid_argument`. As a note, the connect-go implementation rejects negative values. A value of `0` results in a deadline that passes instantly.
+A server MUST treat each of these forms as invalid, and report
+`invalid_argument` in-band [§4.5]:
 
-A server that receives an invalid `connect-timeout-ms` value reports `invalid_argument` in-band (§4.5).
+- an empty value;
+- any character that is not a digit, including a sign or a decimal point;
+- more than ten digits;
+- the parameter appearing more than once.
 
-There are two reasons why the deadline is specified via query string rather than using HTTP request headers Leading-Metadata. First, a browser cannot set request headers on a handshake, so the URI is its only channel. Second, a deadline carried in an `M` message cannot be applied to that initial message.
+As in Connect-over-HTTP, a timeout of `0` means the RPC is not dispatched. The
+server reports `deadline_exceeded` in-band [§4.5].
+
+There are two reasons why the deadline is specified in the query string rather
+than in HTTP request headers or Leading-Metadata. First, a browser cannot set
+request headers on a handshake, so the URI is its only channel. Second, a
+deadline carried in an `M` message cannot be applied to that initial message.
 
 ### 11.1 What the deadline bounds
 
-The deadline bounds the **whole RPC**, not the gap between messages. It starts when the server accepts the handshake and expires once. A stream exchanging a message every second ends at the same instant as one that has been silent since it opened.
+The deadline bounds the **whole RPC**, not the gap between messages. It starts
+when the server accepts the handshake and expires once. A stream exchanging a
+message every second ends at the same instant as one that has been silent since
+it opened.
 
-This is the same behavior as Connect-over-HTTP, but the Connect Protocol specification does not make this explicit.
+This is the same behavior as Connect-over-HTTP, but the Connect protocol
+specification does not make this explicit.
 
-A receiver MUST NOT extend or reset the deadline when a message
-arrives. A receiver MUST NOT treat it as an inactivity timeout.
+A receiver MUST NOT extend or reset the deadline when a message arrives. A
+receiver MUST NOT treat it as an inactivity timeout.
 
-### 11.2 Server Timeout
+**Expiry at the server.** When the deadline expires, the server MUST send `M`
+if it has not yet sent it, then an `S` with the code `deadline_exceeded`, and
+then close with `1000`. This applies whether or not the client's `M` has
+arrived.
 
-A server SHOULD impose a deadline of its own. The effective deadline is the **shorter** of the two. A client MAY ask for less time than the server allows, never more.
+**Expiry at the client.** A client's timer starts when it sends the handshake
+request. If the timer expires before `S` arrives, the client reports the RPC as
+failed with the code `deadline_exceeded` and closes with `1000`. The server
+treats this as a cancellation [§8].
 
-Specifying a server timeout protects the server against a client that stops participating. A server waits for the `M` message that opens a stream [§7.3] before it dispatches the RPC; without a deadline, a peer that upgrades and then goes silent would hold that connection indefinitely.
+### 11.2 Server timeout
 
-Implementations SHOULD make the maximum configurable and SHOULD default it generously. Connect-over-WebSocket is intended for long-lived streams.
+A server SHOULD impose a deadline of its own. The effective deadline is the
+**shorter** of the two.
+
+Specifying a server timeout protects the server against a client that stops
+participating. A server waits for the `M` message that opens a stream [§7.3]
+before it dispatches the RPC; without a deadline, a peer that upgrades and then
+goes silent would hold that connection indefinitely.
+
+Implementations SHOULD make the maximum configurable and SHOULD default it
+generously. Connect-over-WebSocket is intended for long-lived streams.
 
 ## 12. Size limits
 
-A receiver (both client and server) MAY impose a maximum message size, and MUST apply it to the decompressed size of a whole WebSocket message, reassembled across continuation frames, as [§6] requires. (A limit applied per frame would be ineffective, since a sender could send multiple frames to work around it.)
+A receiver (both client and server) MAY impose a maximum message size. It MUST
+apply the limit to the decompressed size of a whole WebSocket message,
+reassembled across continuation frames, as [§6] requires. A limit applied per
+frame would be ineffective, since a sender could send multiple frames to work
+around it.
 
-A receiver with a maximum message size MUST bound both the initially compressed bytes received as well as the uncompressed data.
+The marker byte SHOULD NOT count toward the limit, so that the limit is the
+size of the RPC message itself.
 
-A receiver that rejects a message for exceeding its limit MUST stop reading that message rather than consume it, and SHOULD NOT read more of it than the limit plus a bounded margin. Usually, one byte past the limit is enough to know the message overran. The abandoned bytes are discarded with the connection. A receiver MUST NOT attempt to resume the stream after rejecting a message.
+The rest of this section applies to receivers that control their own framing.
+A browser receives whole, decompressed messages, and cannot bound compressed
+bytes or stop reading part-way through a message.
+
+A receiver with a maximum message size MUST bound both the compressed bytes it
+receives and the decompressed data.
+
+A receiver that rejects a message for exceeding its limit MUST stop reading
+that message rather than consume it, and SHOULD NOT read more of it than the
+limit plus a bounded margin. Usually, one byte past the limit is enough to know
+the message overran. The abandoned bytes are discarded with the connection. A
+receiver MUST NOT attempt to resume the stream after rejecting a message.
 
 ### 12.1 Reporting an oversized message
 
-A **server** that rejects an oversized client message SHOULD send an `S` message specifying the limit before it closes, exactly as it would for any other protocol error [§9]:
+A **server** that rejects an oversized client message closes with `1009`. It
+MAY first send an `S` message that specifies the limit:
 
 ```json
-{"error": {"code": "resource_exhausted", "message": "message exceeds the 4194304 byte limit"}}
+{
+  "error": {
+    "code": "resource_exhausted",
+    "message": "message exceeds the 4194304 byte limit"
+  }
+}
 ```
 
-A client that rejects an oversized server message has no equivalent. `S` is server-only and this binding defines no client error marker [§5], so a client's only channel is the close frame. It SHOULD close with status 3102, whose reason SHOULD specify the limit. The reason MUST be no more than 123 UTF-8 bytes.
+It MAY instead close with `1009` immediately, without `S`, which is what most
+WebSocket libraries do when a read limit is exceeded. This is one of the two
+exceptions to the protocol-error rule in [§5].
 
-After a server sends the `S` message, it SHOULD send a Close frame and then stop interpreting incoming data. It MAY then close the write side of the transport. It SHOULD continue to read and discard incoming bytes, without parsing them, until the peer closes the connection or a byte limit or a time limit is reached. Only then does it close the connection. A server MUST NOT close the connection while unread data can remain before a limit is reached, because a TCP reset can destroy the `S` message and the Close frame before the peer reads them.
+A client that sees a `1009` close before `S` MUST report the RPC as failed
+with the code `resource_exhausted`.
+
+A **client** that rejects an oversized server message has no message to send:
+`S` is server-only and this binding defines no client error marker [§5], so a
+client's only channel is the close frame. A non-browser client SHOULD close
+with `1009`. Browser-based applications cannot send `1009`, because
+`close(1009)` throws an `InvalidAccessError` [§14], so a browser client that
+enforces its own limit closes with `3102`. (Firefox sends `1009` itself when
+a message exceeds its internal limit.) Either way, the client reports the RPC
+as failed with the code `resource_exhausted`. The close reason SHOULD specify
+the limit and MUST be no more than 123 UTF-8 bytes.
 
 ## 13. Connection closure
 
-| Condition                                   | Server sends     | Client sends                        | Section |
-| ------------------------------------------- | ---------------- | ----------------------------------- | ------- |
-| Normal completion                           | 1000             | 1000                                | §9      |
-| Page navigates away                         | —                | 1001 (sent by the browser)          | §8      |
-| Protocol error                              | 1002 (after `S`) | 3102                                | §5      |
-| Body in the wrong frame type                | 1003 (after `S`) | 3102                                | §6.1    |
-| Incorrect encoding                          | 1007 (after `S`) | 3102 (1007 or 1002 sent by browser) | §6.1    |
-| Message exceeded read limit                 | 1009 (after `S`) | 3102                                | §12.1   |
-| Compression parameters not acceptable       | —                | 3102                                | §10     |
-| Server could not marshal its `S` message    | 1011             | —                                   | §13     |
-| Internal Client error                       | -                | 3102                                | §13     |
-| Peer terminated without a closing handshake | (none)           | (none)                              | §12     |
+| Condition                                   | Server sends                                | Client sends                          | Section |
+| ------------------------------------------- | ------------------------------------------- | ------------------------------------- | ------- |
+| Normal completion                           | 1000                                        | 1000                                  | §9      |
+| Client cancels before `S`                   | —                                           | 1000                                  | §8      |
+| Page navigates away                         | —                                           | 1001 (sent by the browser)            | §8      |
+| Client deadline expires                     | —                                           | 1000                                  | §11.1   |
+| Server deadline expires                     | 1000 (after `S` with `deadline_exceeded`)   | —                                     | §11.1   |
+| Server shuts down                           | 1001 (after `S` with `unavailable`)         | —                                     | §13     |
+| Protocol error                              | 1002 (after `S`)                            | 3102                                  | §5      |
+| Message in the wrong frame type             | 1002, or 1003 (after `S`)                   | 3102                                  | §6.1    |
+| Invalid UTF-8                               | 1007 (no `S`)                               | 1007 (browsers: 1002, or no Close)    | §6.1    |
+| Message exceeded size limit                 | 1009 (`S` optional)                         | 1009, or 3102 from browser script     | §12.1   |
+| Compression parameters not acceptable       | —                                           | 3102                                  | §10     |
+| Idle timeout                                | 1011                                        | 3102                                  | §4.6    |
+| Server could not marshal its `S` message    | 1011                                        | —                                     | §13     |
+| Internal client error                       | —                                           | 3102                                  | §13     |
+| Peer terminated without a closing handshake | (none)                                      | (none)                                | §13.1   |
 
-Browsers do not allow application-level code to send close codes in the 1000-2999 range. For any abnormal completion, the browser sends a `3102` protocol error code and a reason in a string.
+Browsers do not allow application-level code to send close codes in the
+1001–2999 range. For any abnormal completion, a browser client sends a `3102`
+protocol error code and a reason in a string.
 
-A browser surfaces an absent close message as code `1006`. A client MUST NOT report `1006` as a transport failure without first checking whether an `S` message arrived.
+A browser surfaces an absent close message as code `1006`. A client MUST NOT
+report `1006` as a transport failure without first checking whether an `S`
+message arrived.
 
-If there is a more specific code that applies (such as using a 1009 instead of a 1002), the more specific code MUST be sent.
+After a protocol error, a server closes with `1002`, and MAY use `1003` when
+the cause is a message in the wrong frame type. A client MUST take the RPC's
+outcome from `S`, or from its absence [§13.1], and MUST NOT derive it from the
+close code. The exceptions are the two cases that close without `S`: `1007`
+(invalid UTF-8, reported as `internal`) and `1009` (size limit, reported as
+`resource_exhausted`).
+
+A server that shuts down while an RPC is in progress SHOULD send `M` if it has
+not yet sent it, then an `S` with the code `unavailable`, and then close with
+`1001`, which [RFC 6455
+§7.4.1](https://datatracker.ietf.org/doc/html/rfc6455#section-7.4.1) defines
+for an endpoint that is going away.
 
 ### 13.1 Closing without a terminal message
 
-A client MUST treat a connection that closes without `S` as a failed RPC, and MUST NOT infer success from close code `1000` [§9]. The RPC did not complete, irrespective of the close code.
+A client MUST treat a connection that closes without `S` as a failed RPC, and
+MUST NOT infer success from close code `1000` [§9]. The RPC did not complete,
+irrespective of the close code.
 
-There is a difference between ending a WebSocket without an `S` message and ending it without a `C` message.
+A client MUST report such an RPC as failed with the code `unavailable`, unless
+this document assigns another code. This includes close code `1006`, whether
+the network dropped the connection or the client's WebSocket API failed it.
+The other codes are:
 
-A server closing without sending an `S` message is always an error state. It could be caused by:
+- `canceled` when the client canceled the RPC [§8];
+- `deadline_exceeded` when the client's deadline expired [§11.1];
+- `internal` when the server closed with `1007` [§6.1];
+- `resource_exhausted` when the server closed with `1009` [§12.1].
 
-- the upgrade never completed, so there is no WebSocket and the failure is an HTTP status [§4], which a browser client cannot read (§4.5).
-- A failure in the RPC code caused it to exit without sending a message
-- the peer had already closed the connection
+There is a difference between ending a WebSocket without an `S` message and
+ending it without a `C` message.
+
+A server closing without sending an `S` message is always an error state. It
+could be caused by:
+
+- the upgrade never completed, so there is no WebSocket and the failure is an
+  HTTP status [§4], which a browser client cannot read [§4.5];
+- a failure in the RPC code caused it to exit without sending a message;
+- the peer had already closed the connection.
 
 A client MAY close without `C` due to:
 
-- an error
-- receiving an invalid message from the server [§12.1]
-- or, most frequently, when the server has ended the stream first
+- an error;
+- receiving an invalid message from the server [§5];
+- the server having ended the stream first.
 
-The last case is ordinary rather than exceptional. The purpose of a `C` message is to inform the server that the client is done sending information. If the business logic implemented by server does not need an end-of-stream indicator, a `C` is not required.
+In the last case the RPC is complete. In the other cases, closing before `S`
+without sending `C` cancels the RPC [§8].
 
-A client MUST specify a valid close code when closing a connection. If this is due to an unexpected condition in the client, the close code MUST be 3102.
+A client MUST specify a valid close code when closing a connection. If this is
+due to an unexpected condition in the client, the close code MUST be 3102.
 
-A server MUST NOT require `C` after it has sent `S` to complete an RPC, and MUST NOT report its absence as an error once it has sent `S`.
+A server MUST NOT require `C` after it has sent `S` to complete an RPC, and
+MUST NOT report its absence as an error once it has sent `S`.
 
-## 14. IANA Considerations
+### 13.2 Draining before closing
 
-Browser clients are unable to set codes other than 1000 and values in the range 3000-4999 ([https://websockets.spec.whatwg.org/#dom-websocket-close](https://websockets.spec.whatwg.org/#dom-websocket-close)). A browser can set values itself, but calling `close()` with an out of range value produces an `InvalidAccessError` .
+Whenever a server sends a Close frame, whether after `S` or without it
+[§6.1, §12.1], it SHOULD stop interpreting incoming messages. It MAY then
+close the write side of the transport. It SHOULD continue to read incoming
+frames, discarding any data frames, until it receives the client's Close frame
+or a byte limit or a time limit is reached. Only then does it close the
+connection. A server SHOULD NOT close the connection while unread data can
+remain and neither limit has been reached, because a TCP reset can destroy the
+`S` message, if one was sent, and the Close frame before the peer reads them.
 
-Values in the range 3000-3999 MUST be registered with IANA. The code `3102` is referenced in this RFC. If this RFC is adopted, this value MUST be registered with IANA. See [https://www.iana.org/assignments/websocket](https://www.iana.org/assignments/websocket) for registration information. If the values cannot be registered, this RFC will move to the code `4102` since the 4000-4999 range does not require registration.
+The server closes the TCP connection first, as [RFC 6455
+§7.1.1](https://datatracker.ietf.org/doc/html/rfc6455#section-7.1.1)
+recommends. It does not wait for the client to close it: a client following
+RFC 6455 waits for the server.
+
+After a message that exceeded the size limit, the byte limit is what keeps the
+drain within the bounded margin that [§12] allows.
+
+## 14. IANA considerations
+
+Browser clients are unable to set codes other than 1000 and values in the range
+3000–4999 ([WHATWG WebSockets
+Standard](https://websockets.spec.whatwg.org/#dom-websocket-close)). A browser
+can set other values itself, but calling `close()` with an out-of-range value
+produces an `InvalidAccessError`.
+
+Values in the range 3000–3999 MUST be registered with IANA. The code `3102` is
+referenced in this RFC. If this RFC is adopted, this value MUST be registered
+with IANA. See the [IANA WebSocket
+registry](https://www.iana.org/assignments/websocket) for registration
+information. If the value cannot be registered, this RFC will move to the code
+`4102`, since the 4000–4999 range does not require registration.
+
+## References
+
+- [The Connect protocol](https://connectrpc.com/docs/protocol/)
+- [RFC 6455: The WebSocket Protocol](https://datatracker.ietf.org/doc/html/rfc6455)
+- [RFC 7692: Compression Extensions for WebSocket](https://datatracker.ietf.org/doc/html/rfc7692)
+- [RFC 8441: Bootstrapping WebSockets with HTTP/2](https://datatracker.ietf.org/doc/html/rfc8441)
+- [RFC 9113: HTTP/2](https://datatracker.ietf.org/doc/html/rfc9113)
+- [WHATWG WebSockets Standard](https://websockets.spec.whatwg.org/)
+- [WHATWG Fetch Standard](https://fetch.spec.whatwg.org/)

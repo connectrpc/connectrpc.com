@@ -164,6 +164,10 @@ export default defineConfig({
                   label: "007: Rust Implementation",
                   slug: "docs/governance/rfc/007-rust-implementation",
                 },
+                {
+                  label: "008: Connect-over-WebSocket Protocol",
+                  slug: "docs/governance/rfc/008-websocket-specification",
+                },
               ],
             },
           ],
