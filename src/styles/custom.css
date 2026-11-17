@@ -134,7 +134,15 @@
   }
 }
 
-/* Match the prior terminal title treatment: uppercase mono with wider tracking. */
+:where(h1, h2, h3, h4, h5, h6) {
+  text-wrap: balance;
+}
+
+:where(p, li) {
+  text-wrap: pretty;
+}
+
+/* Match the prior terminal title treatment: uppercase with wider tracking. */
 .expressive-code .frame.is-terminal .header .title {
   text-transform: uppercase;
   letter-spacing: 0.08em;
