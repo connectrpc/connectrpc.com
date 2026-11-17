@@ -13,6 +13,36 @@
  * limitations under the License.
  */
 
+/* Each platform's UI sans, scaled to Inter's metrics (from
+ * @capsizecss/metrics) so swapping in Inter Variable does not reflow the
+ * page. A face whose local font is missing is skipped. */
+@font-face {
+  font-family: "Inter Fallback Helvetica Neue";
+  src: local("Helvetica Neue"), local("HelveticaNeue");
+  size-adjust: 106.12%;
+  ascent-override: 91.29%;
+  descent-override: 22.73%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Inter Fallback Segoe UI";
+  src: local("Segoe UI"), local("SegoeUI");
+  size-adjust: 107.71%;
+  ascent-override: 89.94%;
+  descent-override: 22.39%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Inter Fallback Roboto";
+  src: local("Roboto"), local("Roboto-Regular");
+  size-adjust: 107.35%;
+  ascent-override: 90.24%;
+  descent-override: 22.47%;
+  line-gap-override: 0%;
+}
+
 :root {
   /* Aliases preserving legacy Docusaurus/Infima variables consumed by ported
      home-page module CSS. Centralized here so .module.css files stay portable. */
@@ -91,8 +121,8 @@
     var(--ec-uiLineHt)
   );
   --sl-font:
-    "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Helvetica, Arial, sans-serif;
+    "Inter Variable", "Inter Fallback Helvetica Neue",
+    "Inter Fallback Segoe UI", "Inter Fallback Roboto";
   --sl-font-mono:
     ui-monospace, "SFMono-Regular", Monaco, Consolas, "Liberation Mono",
     "Courier New", monospace;
