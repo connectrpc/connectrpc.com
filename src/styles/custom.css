@@ -93,7 +93,7 @@
   --ec-codeFontFml: var(--sl-font-mono);
   --ec-codeFontSize: 0.875rem;
   --ec-codeLineHt: 1.75;
-  --ec-uiFontFml: var(--sl-font-mono);
+  --ec-uiFontFml: var(--sl-font);
   --ec-uiFontSize: 0.9rem;
   --ec-uiLineHt: 1.65;
   --ec-brdRad: 0px;
@@ -111,8 +111,6 @@
   --sl-font:
     "Inter Variable", "Inter Fallback Helvetica Neue",
     "Inter Fallback Segoe UI", "Inter Fallback Roboto";
-  /* Monospace fallbacks are close to JetBrains Mono's width, so the
-   * uppercase nav labels don't reflow when it loads. */
   --sl-font-mono:
     "JetBrains Mono Variable", ui-monospace, "SF Mono", Menlo, Consolas,
     "Liberation Mono", monospace;
