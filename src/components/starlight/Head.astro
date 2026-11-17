@@ -33,8 +33,8 @@ const jsonLd = {
 
 <Default {...Astro.props}><slot /></Default>
 {/* Preload only the upright latin Inter used for body text. */}
-<Font cssVariable="--font-inter" preload={[{ subset: "latin", style: "normal" }]} />
-<Font cssVariable="--font-mono" />
+<Font cssVariable="--sl-font" preload={[{ subset: "latin", style: "normal" }]} />
+<Font cssVariable="--sl-font-mono" />
 <meta property="og:site_name" content="Protobuf RPC that works" />
 <meta property="og:type" content="website" />
 <meta property="og:image" content={ogImage} />

@@ -35,10 +35,8 @@ export default defineConfig({
     {
       provider: fontProviders.fontsource(),
       name: "Inter",
-      cssVariable: "--font-inter",
+      cssVariable: "--sl-font",
       weights: ["100 900"],
-      styles: ["normal", "italic"],
-      subsets: ["latin", "latin-ext"],
       // Astro scales each platform UI font in this generic family to
       // Inter's metrics, so the swap to Inter doesn't reflow the page.
       fallbacks: ["system-ui"],
@@ -46,12 +44,11 @@ export default defineConfig({
     {
       provider: fontProviders.fontsource(),
       name: "JetBrains Mono",
-      cssVariable: "--font-mono",
+      cssVariable: "--sl-font-mono",
       weights: ["100 800"],
       styles: ["normal"],
-      subsets: ["latin", "latin-ext"],
-      fallbacks: ["ui-monospace", "SF Mono", "Menlo", "Consolas", "monospace"],
-      optimizedFallbacks: false,
+      // Starlight appends its system monospace stack.
+      fallbacks: [],
     },
   ],
   trailingSlash: "always",

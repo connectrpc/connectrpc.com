@@ -59,7 +59,7 @@
   --ec-frm-edTabBarBrdCol: #e1e4e8;
   --ec-frm-frameBoxShdCssVal: 0.1rem 0.1rem 0.2rem #0000005b;
   --ec-codeFg: #24292e;
-  --ec-codeFontFml: var(--sl-font-mono);
+  --ec-codeFontFml: var(--sl-font-mono), var(--sl-font-system-mono);
   --ec-codeFontSize: 0.875rem;
   --ec-codeLineHt: 1.75;
   --ec-uiFontFml: var(--sl-font), var(--sl-font-system);
@@ -77,9 +77,6 @@
     var(--ec-uiFontSize) *
     var(--ec-uiLineHt)
   );
-  --sl-font: var(--font-inter);
-  --sl-font-mono: var(--font-mono);
-
   --sl-line-height: 1.5;
   /* Heading sizes match the prior Infima typography scale. */
   --sl-text-h1: 2rem;

@@ -32,9 +32,6 @@ updates:
           - "@dprint/*"
           - "dprint"
           - "rumdl"
-      fonts:
-        patterns:
-          - "@fontsource/*"
       react:
         patterns:
           - "react"
