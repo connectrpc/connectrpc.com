@@ -15,9 +15,7 @@
 
 import Default from "@astrojs/starlight/components/Head.astro";
 
-// Preload the Inter subset used for body text. The `?url` suffix tells
-// Vite to emit the file and return its hashed URL.
-import interLatinHref from "@fontsource-variable/inter/files/inter-latin-opsz-normal.woff2?url";
+import { Font } from "astro:assets";
 
 const publicUrl =
   Astro.site?.toString().replace(/\/$/, "") ?? "https://connectrpc.com";
@@ -34,13 +32,9 @@ const jsonLd = {
 ---
 
 <Default {...Astro.props}><slot /></Default>
-<link
-  rel="preload"
-  as="font"
-  type="font/woff2"
-  href={interLatinHref}
-  crossorigin
-/>
+{/* Preload only the upright latin Inter used for body text. */}
+<Font cssVariable="--font-inter" preload={[{ subset: "latin", style: "normal" }]} />
+<Font cssVariable="--font-mono" />
 <meta property="og:site_name" content="Protobuf RPC that works" />
 <meta property="og:type" content="website" />
 <meta property="og:image" content={ogImage} />

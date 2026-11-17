@@ -14,7 +14,7 @@
 
 import react from "@astrojs/react";
 import starlight from "@astrojs/starlight";
-import { defineConfig } from "astro/config";
+import { defineConfig, fontProviders } from "astro/config";
 import { remarkHeadingId } from "remark-custom-heading-id";
 
 // Canonical site URL. On Vercel, VERCEL_URL is always set — even on
@@ -31,6 +31,29 @@ const publicUrl =
 
 export default defineConfig({
   site: publicUrl,
+  fonts: [
+    {
+      provider: fontProviders.fontsource(),
+      name: "Inter",
+      cssVariable: "--font-inter",
+      weights: ["100 900"],
+      styles: ["normal", "italic"],
+      subsets: ["latin", "latin-ext"],
+      // Astro scales each platform UI font in this generic family to
+      // Inter's metrics, so the swap to Inter doesn't reflow the page.
+      fallbacks: ["system-ui"],
+    },
+    {
+      provider: fontProviders.fontsource(),
+      name: "JetBrains Mono",
+      cssVariable: "--font-mono",
+      weights: ["100 800"],
+      styles: ["normal"],
+      subsets: ["latin", "latin-ext"],
+      fallbacks: ["ui-monospace", "SF Mono", "Menlo", "Consolas", "monospace"],
+      optimizedFallbacks: false,
+    },
+  ],
   trailingSlash: "always",
   markdown: {
     remarkPlugins: [
@@ -122,12 +145,7 @@ export default defineConfig({
       expressiveCode: {
         themes: ["github-light", "github-dark"],
       },
-      customCss: [
-        "@fontsource-variable/jetbrains-mono/wght.css",
-        "@fontsource-variable/inter/opsz.css",
-        "@fontsource-variable/inter/opsz-italic.css",
-        "./src/styles/custom.css",
-      ],
+      customCss: ["./src/styles/custom.css"],
       sidebar: [
         { label: "Introduction", slug: "docs/introduction" },
         {
