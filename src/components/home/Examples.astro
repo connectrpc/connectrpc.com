@@ -19,15 +19,15 @@ import styles from "./Examples.module.css";
 
 const responseSnippet = `{"sentence": "Feeling happy? Tell me more."}`;
 
-const curlSnippet = `$ curl \\
-    --header 'Content-Type: application/json' \\
-    --data '{"sentence": "I feel happy."}' \\
-    https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say`;
+const curlSnippet = `curl \\
+  --header 'Content-Type: application/json' \\
+  --data '{"sentence": "I feel happy."}' \\
+  https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say`;
 
-const grpcSnippet = `$ grpcurl \\
-    -d '{"sentence": "I feel happy."}' \\
-    demo.connectrpc.com:443 \\
-    connectrpc.eliza.v1.ElizaService/Say`;
+const grpcSnippet = `grpcurl \\
+  -d '{"sentence": "I feel happy."}' \\
+  demo.connectrpc.com:443 \\
+  connectrpc.eliza.v1.ElizaService/Say`;
 ---
 
 <div class={styles.container}>

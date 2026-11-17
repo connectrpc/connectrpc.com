@@ -25,21 +25,21 @@ and how to call your new API.
 First, we'll need to create a new Go module and install some code generation
 tools:
 
-```shellsession
-$ mkdir connect-go-example
-$ cd connect-go-example
-$ go mod init example
-$ go install github.com/bufbuild/buf/cmd/buf@latest
-$ go get -tool google.golang.org/protobuf/cmd/protoc-gen-go@latest
-$ go get -tool connectrpc.com/connect/v2/cmd/protoc-gen-connect-go@latest
+```bash
+mkdir connect-go-example
+cd connect-go-example
+go mod init example
+go install github.com/bufbuild/buf/cmd/buf@latest
+go get -tool google.golang.org/protobuf/cmd/protoc-gen-go@latest
+go get -tool connectrpc.com/connect/v2/cmd/protoc-gen-connect-go@latest
 ```
 
 You'll need `buf` on your `PATH`. If `which buf` doesn't succeed, add Go's
 install directories to your path:
 
-```shellsession
-$ [ -n "$(go env GOBIN)" ] && export PATH="$(go env GOBIN):${PATH}"
-$ [ -n "$(go env GOPATH)" ] && export PATH="$(go env GOPATH)/bin:${PATH}"
+```bash
+[ -n "$(go env GOBIN)" ] && export PATH="$(go env GOBIN):${PATH}"
+[ -n "$(go env GOPATH)" ] && export PATH="$(go env GOPATH)/bin:${PATH}"
 ```
 
 ## Define a service
@@ -47,9 +47,9 @@ $ [ -n "$(go env GOPATH)" ] && export PATH="$(go env GOPATH)/bin:${PATH}"
 Now we're ready to write the Protocol Buffer schema that defines our service.
 In your shell,
 
-```shellsession
-$ mkdir -p greet/v1
-$ touch greet/v1/greet.proto
+```bash
+mkdir -p greet/v1
+touch greet/v1/greet.proto
 ```
 
 Open `greet/v1/greet.proto` in your editor and add:
@@ -126,10 +126,10 @@ managed:
 With those configuration files in place, you can lint your schema and generate
 code:
 
-```shellsession
-$ buf dep update
-$ buf lint
-$ buf generate
+```bash
+buf dep update
+buf lint
+buf generate
 ```
 
 In your `gen` directory, you should now see some generated Go:
@@ -212,11 +212,11 @@ func main() {
 In a separate terminal window, you can now update `go.mod` and start your
 server:
 
-```shellsession
-$ go get connectrpc.com/connect/v2
-$ go get connectrpc.com/validate
-$ go get buf.build/go/protovalidate
-$ go run ./cmd/server/main.go
+```bash
+go get connectrpc.com/connect/v2
+go get connectrpc.com/validate
+go get buf.build/go/protovalidate
+go run ./cmd/server/main.go
 ```
 
 ## Make requests
@@ -224,11 +224,11 @@ $ go run ./cmd/server/main.go
 The simplest way to consume your new API is an HTTP/1.1 POST with a JSON
 payload:
 
-```shellsession
-$ curl \
-    --header "Content-Type: application/json" \
-    --data '{"name": "Jane"}' \
-    http://localhost:8080/greet.v1.GreetService/Greet
+```bash
+curl \
+  --header "Content-Type: application/json" \
+  --data '{"name": "Jane"}' \
+  http://localhost:8080/greet.v1.GreetService/Greet
 ```
 
 This responds:
@@ -239,8 +239,8 @@ This responds:
 
 Your new handler automatically supports gRPC requests, too:
 
-```shellsession
-$ buf curl \
+```bash
+buf curl \
   --schema ./greet/v1/greet.proto \
   --protocol grpc \
   --http2-prior-knowledge \
@@ -258,8 +258,8 @@ This responds:
 
 Or, with the Connect protocol:
 
-```shellsession
-$ buf curl \
+```bash
+buf curl \
   --schema . \
   --data '{"name": "Jane"}' \
   http://localhost:8080/greet.v1.GreetService/Greet
@@ -304,14 +304,14 @@ func main() {
 With your server still running in a separate terminal window, you can now run
 your client:
 
-```shellsession
-$ go run ./cmd/client/main.go
+```bash
+go run ./cmd/client/main.go
 ```
 
 Now try sending a request with no data:
 
-```shellsession
-$ buf curl \
+```bash
+buf curl \
   --schema . \
   http://localhost:8080/greet.v1.GreetService/Greet
 ```
@@ -369,8 +369,8 @@ client := greetv1connect.NewGreetServiceClient(
 With your server still running in a separate terminal window, run the client
 one more time:
 
-```shellsession
-$ go run ./cmd/client/main.go
+```bash
+go run ./cmd/client/main.go
 ```
 
 Your output should remain the same, but `connect-go` is now using the gRPC

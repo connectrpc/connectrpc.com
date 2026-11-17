@@ -49,9 +49,9 @@ Add a Protobuf file with the service definition. We'll use a stripped-down
 ELIZA with a single unary RPC. The directory layout must match the Protobuf
 package, so:
 
-```shellsession
-$ mkdir -p proto/connectrpc/eliza/v1
-$ touch proto/connectrpc/eliza/v1/eliza.proto
+```bash
+mkdir -p proto/connectrpc/eliza/v1
+touch proto/connectrpc/eliza/v1/eliza.proto
 ```
 
 Open the new file and add the following:
@@ -118,9 +118,9 @@ plugins:
 See the [Generating code](/docs/kotlin/generating-code/) reference for what
 each plugin emits and the available options. Lint the schema and run codegen:
 
-```shellsession
-$ buf lint
-$ buf generate
+```bash
+buf lint
+buf generate
 ```
 
 The generated code lands under `app/src/main/java/com/connectrpc/eliza/v1/`:
@@ -169,8 +169,8 @@ Create a new file in the `layout` directory called `item.xml` to describe a
 single chat row. The row has a sender label (shown only for Eliza's messages)
 and the message text:
 
-```shellsession
-$ touch app/src/main/res/layout/item.xml
+```bash
+touch app/src/main/res/layout/item.xml
 ```
 
 ```xml title="app/src/main/res/layout/item.xml"
@@ -295,8 +295,8 @@ two `uses-permission` declarations:
 To render the chat list we need a `RecyclerView.Adapter` and `ViewHolder`. Add
 a new file:
 
-```shellsession
-$ touch app/src/main/java/com/example/eliza/ChatRecycler.kt
+```bash
+touch app/src/main/java/com/example/eliza/ChatRecycler.kt
 ```
 
 ```kotlin title="app/src/main/java/com/example/eliza/ChatRecycler.kt"

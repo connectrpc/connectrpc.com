@@ -32,17 +32,17 @@ First, we'll set up the Python environment and dependencies.
 <Tabs syncKey="python-type">
   <TabItem label="Async">
 
-    ```shellsession
-    $ uv init
-    $ uv add connectrpc uvicorn
+    ```bash
+    uv init
+    uv add connectrpc uvicorn
     ```
 
   </TabItem>
   <TabItem label="Sync">
 
-    ```shellsession
-    $ uv init
-    $ uv add connectrpc gunicorn
+    ```bash
+    uv init
+    uv add connectrpc gunicorn
     ```
 
   </TabItem>
@@ -52,9 +52,9 @@ First, we'll set up the Python environment and dependencies.
 
 Now we're ready to write the Protocol Buffer schema that defines our service. In your shell,
 
-```shellsession
-$ mkdir -p proto/greet/v1
-$ touch proto/greet/v1/greet.proto
+```bash
+mkdir -p proto/greet/v1
+touch proto/greet/v1/greet.proto
 ```
 
 Open `proto/greet/v1/greet.proto` in your editor and add:
@@ -104,8 +104,8 @@ We will use [remote plugins](https://buf.build/docs/bsr/remote-plugins/usage), a
 [Buf Schema Registry](https://buf.build/docs/tutorials/getting-started-with-bsr) for generating code.
 Tell Buf how to generate code by creating a `buf.gen.yaml`:
 
-```shellsession
-$ touch buf.gen.yaml
+```bash
+touch buf.gen.yaml
 ```
 
 ```yaml
@@ -121,9 +121,9 @@ plugins:
 
 With those configuration files in place, you can lint your schema and generate code:
 
-```shellsession
-$ buf lint
-$ buf generate
+```bash
+buf lint
+buf generate
 ```
 
 In the `greet` package, you should now see some generated Python:
@@ -214,15 +214,15 @@ In a separate terminal window, you can now start your server:
 <Tabs syncKey="python-type">
   <TabItem label="Async">
 
-    ```shellsession
-    $ uv run uvicorn server:app
+    ```bash
+    uv run uvicorn server:app
     ```
 
   </TabItem>
   <TabItem label="Sync">
 
-    ```shellsession
-    $ uv run gunicorn server:app
+    ```bash
+    uv run gunicorn server:app
     ```
 
   </TabItem>
@@ -233,8 +233,8 @@ In a separate terminal window, you can now start your server:
 The simplest way to consume your new API is an HTTP/1.1 POST with a JSON payload. If you have a recent version of
 cURL installed, it's a one-liner:
 
-```shellsession
-$ curl \
+```bash
+curl \
   --header "Content-Type: application/json" \
   --data '{"name": "Jane"}' \
   http://localhost:8000/greet.v1.GreetService/Greet
@@ -289,8 +289,8 @@ We can also make requests using Connect's generated client. `touch client.py` an
 
 With your server still running in a separate terminal window, you can now run your client:
 
-```shellsession
-$ uv run python client.py
+```bash
+uv run python client.py
 ```
 
 Congratulations — you've built your first Connect service! 🎉

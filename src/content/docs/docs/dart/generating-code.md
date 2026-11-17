@@ -56,8 +56,8 @@ Google's protobuf compiler, along with [remote plugins][remote-plugins].
 
 This requires installing [Buf's CLI][buf-cli]:
 
-```shellsession
-$ brew install bufbuild/buf/buf
+```bash
+brew install bufbuild/buf/buf
 ```
 
 When developing a new project, 2 new files need to be created:
@@ -67,8 +67,8 @@ When developing a new project, 2 new files need to be created:
 
 The first file, `buf.yaml`, can be created by running:
 
-```shellsession
-$ buf config init
+```bash
+buf config init
 ```
 
 The second file, `buf.gen.yaml`, needs to be created manually and specifies
@@ -105,8 +105,8 @@ available remote plugins [here][available-plugins].
 
 With these configuration files in place, you can now generate code:
 
-```shellsession
-$ buf generate
+```bash
+buf generate
 ```
 
 Given the above config and example `eliza.proto` file, you should now see some
@@ -131,9 +131,9 @@ code locally.
 The easiest way to install these plugins is to add `connectrpc` and `protobuf` as a dependency
 and run:
 
-```shellsession
-$ dart pub global activate connectrpc
-$ dart pub global activate protoc_plugin
+```bash
+dart pub global activate connectrpc
+dart pub global activate protoc_plugin
 ```
 
 The [same setup used for remote plugins above](#remote-plugins) applies to

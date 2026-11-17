@@ -37,8 +37,8 @@ This tutorial should take ~10 minutes from start to finish.
 
 First, we need to add a Protobuf file that includes our service definition. For this tutorial, we are going to construct a unary endpoint for a service that is a stripped-down implementation of ELIZA, the famous natural language processing program.
 
-```shellsession
-$ mkdir -p proto && touch proto/eliza.proto
+```bash
+mkdir -p proto && touch proto/eliza.proto
 ```
 
 Open up the above file and add the following service definition:
@@ -110,9 +110,9 @@ plugins:
 
 With those configuration files in place, we can now generate code:
 
-```shellsession
-$ buf lint
-$ buf generate
+```bash
+buf lint
+buf generate
 ```
 
 In your `Generated` directory, you should now see some generated Swift files:

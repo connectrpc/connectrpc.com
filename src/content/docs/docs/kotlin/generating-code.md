@@ -54,8 +54,8 @@ When developing a new project, two files need to be created:
 
 The first file, `buf.yaml`, can be created by running:
 
-```shellsession
-$ buf config init
+```bash
+buf config init
 ```
 
 The second file, `buf.gen.yaml`, needs to be created manually and specifies
@@ -106,8 +106,8 @@ available remote plugins are found [here][available-plugins].
 
 With these configuration files in place, generate code by running:
 
-```shellsession
-$ buf generate
+```bash
+buf generate
 ```
 
 Given the above config and example `eliza.proto` file, there should now be some

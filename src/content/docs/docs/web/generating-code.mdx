@@ -65,9 +65,9 @@ The code we will generate has three runtime dependencies:
 
 First, let's install `buf`, the plugin, and runtime dependencies:
 
-```shellsession
-$ npm install --save-dev @bufbuild/buf @bufbuild/protoc-gen-es
-$ npm install @connectrpc/connect @connectrpc/connect-web @bufbuild/protobuf
+```bash
+npm install --save-dev @bufbuild/buf @bufbuild/protoc-gen-es
+npm install @connectrpc/connect @connectrpc/connect-web @bufbuild/protobuf
 ```
 
 Next, tell Buf to use the plugin with a new configuration file:
@@ -91,8 +91,8 @@ See the [connect-es example](https://buf.build/docs/bsr/remote-plugins/usage/#co
 
 Finally, tell Buf to generate code for the ELIZA schema:
 
-```shellsession
-$ npx buf generate buf.build/connectrpc/eliza
+```bash
+npx buf generate buf.build/connectrpc/eliza
 ```
 
 If you prefer, you can use `protoc` instead of Buf — the plugins behave like

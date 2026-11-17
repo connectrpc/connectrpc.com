@@ -118,8 +118,8 @@ Error details are a powerful feature. Any Protobuf message can be transmitted as
 an error detail. Let's use [`google.rpc.LocalizedMessage`](https://buf.build/googleapis/googleapis/docs/main:google.rpc#google.rpc.LocalizedMessage)
 to localize our error message:
 
-```shellsession
-$ npx buf generate buf.build/googleapis/googleapis
+```bash
+npx buf generate buf.build/googleapis/googleapis
 ```
 
 ```ts

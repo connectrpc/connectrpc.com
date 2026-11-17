@@ -41,23 +41,23 @@ Some platforms might need [additional configuration][network-permissions] to mak
 
 Create a Flutter app called `eliza` by running:
 
-```shellsession
-$ flutter create eliza
-$ cd eliza
+```bash
+flutter create eliza
+cd eliza
 ```
 
 Next add a dependency on the `connectrpc` package by running the following:
 
-```shellsession
-$ flutter pub add connectrpc
+```bash
+flutter pub add connectrpc
 ```
 
 ## Define a service
 
 First, we need to add a Protobuf file that includes our service definition. For this tutorial, we are going to construct a unary endpoint for a service that is a stripped-down implementation of ELIZA, the famous natural language processing program.
 
-```shellsession
-$ mkdir -p proto && touch proto/eliza.proto
+```bash
+mkdir -p proto && touch proto/eliza.proto
 ```
 
 Open up the above file and add the following service definition:
@@ -124,8 +124,8 @@ plugins:
 
 With those configuration files in place, we can now generate code:
 
-```shellsession
-$ buf generate
+```bash
+buf generate
 ```
 
 In your `lib/gen` directory, you should now see some generated Dart files:

@@ -26,13 +26,13 @@ We'll set up a project from scratch and then augment it to serve a new endpoint.
 Let's initialize a project with TypeScript, and install some code generation
 tools:
 
-```shellsession
-$ mkdir connect-example
-$ cd connect-example
-$ npm init -y
-$ npm install typescript tsx
-$ npx tsc --init
-$ npm install @bufbuild/buf @bufbuild/protobuf @bufbuild/protoc-gen-es @connectrpc/connect @connectrpc/validate
+```bash
+mkdir connect-example
+cd connect-example
+npm init -y
+npm install typescript tsx
+npx tsc --init
+npm install @bufbuild/buf @bufbuild/protobuf @bufbuild/protoc-gen-es @connectrpc/connect @connectrpc/validate
 ```
 
 ## Define a service
@@ -78,8 +78,8 @@ behaves like any other plugin.)
 
 First, scaffold a basic [`buf.yaml`][buf.yaml] at the root of your repository:
 
-```shellsession
-$ npx buf config init
+```bash
+npx buf config init
 ```
 
 Then, edit `buf.yaml` to depend on [Protovalidate](https://protovalidate.com) and use our `proto` directory:
@@ -114,10 +114,10 @@ plugins:
 With those configuration files in place, you can lint your schema and generate
 code:
 
-```shellsession
-$ npx buf dep update
-$ npx buf lint
-$ npx buf generate
+```bash
+npx buf dep update
+npx buf lint
+npx buf generate
 ```
 
 You should now see generated TypeScript files:
@@ -178,8 +178,8 @@ Connect services can be plugged into vanilla Node.js servers, [Next.js](https://
 or [Fastify](https://www.fastify.io/). We are going to use Fastify here.
 Let's install it, along with our plugin for Fastify:
 
-```shellsession
-$ npm install fastify @connectrpc/connect-node @connectrpc/connect-fastify
+```bash
+npm install fastify @connectrpc/connect-node @connectrpc/connect-fastify
 ```
 
 Create a new file `server.ts` with the following contents:
@@ -211,8 +211,8 @@ void main();
 
 Congratulations. Your endpoint is ready to go! You can start your server with:
 
-```shellsession
-$ npx tsx server.ts
+```bash
+npx tsx server.ts
 ```
 
 ## Make requests
@@ -220,8 +220,8 @@ $ npx tsx server.ts
 The simplest way to consume your new API is an HTTP/1.1 POST with a JSON payload.
 If you have a recent version of cURL installed, it's a one-liner:
 
-```shellsession
-$ curl \
+```bash
+curl \
   --header 'Content-Type: application/json' \
   --data '{"sentence": "I feel happy."}' \
   http://localhost:8080/connectrpc.eliza.v1.ElizaService/Say
@@ -236,8 +236,8 @@ The response is:
 Now try sending a request with an empty `sentence`.
 It's rejected because you've included Protovalidate rules in your schema.
 
-```shellsession
-$ curl \
+```bash
+curl \
   --header 'Content-Type: application/json' \
   --data '{"sentence": ""}' \
   http://localhost:8080/connectrpc.eliza.v1.ElizaService/Say
@@ -272,8 +272,8 @@ void main();
 
 With your server still running in a separate terminal window, you can now run your client:
 
-```shellsession
-$ npx tsx client.ts
+```bash
+npx tsx client.ts
 ```
 
 It prints:
