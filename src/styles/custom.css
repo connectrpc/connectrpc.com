@@ -48,7 +48,6 @@
      home-page module CSS. Centralized here so .module.css files stay portable. */
   --ifm-color-primary: #161ede;
   --ifm-color-primary-light: #77e1ff;
-  --ifm-font-family-base: var(--sl-font);
   --ifm-font-color-base: var(--sl-color-text);
   --ifm-heading-color: var(--sl-color-text-accent);
   --ifm-background-color: var(--sl-color-bg);
@@ -93,7 +92,7 @@
   --ec-codeFontFml: var(--sl-font-mono);
   --ec-codeFontSize: 0.875rem;
   --ec-codeLineHt: 1.75;
-  --ec-uiFontFml: var(--sl-font);
+  --ec-uiFontFml: var(--sl-font), var(--sl-font-system);
   --ec-uiFontSize: 0.9rem;
   --ec-uiLineHt: 1.65;
   --ec-brdRad: 0px;

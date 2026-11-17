@@ -47,7 +47,6 @@
 
 .title {
   font-size: var(--card-title-font-size);
-  font-family: var(--ifm-font-family-base);
   line-height: 100%;
   margin: 0;
 }
@@ -72,7 +71,6 @@
 
 .goto {
   text-transform: uppercase;
-  font-family: var(--sl-font);
   font-style: normal;
   font-weight: 400;
   font-size: 14px;

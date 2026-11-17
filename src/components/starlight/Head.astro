@@ -15,9 +15,8 @@
 
 import Default from "@astrojs/starlight/components/Head.astro";
 
-// Preload the woff2 subsets used above the fold. The `?url` suffix tells
+// Preload the Inter subset used for body text. The `?url` suffix tells
 // Vite to emit the file and return its hashed URL.
-import monoLatinHref from "@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2?url";
 import interLatinHref from "@fontsource-variable/inter/files/inter-latin-opsz-normal.woff2?url";
 
 const publicUrl =
@@ -35,13 +34,6 @@ const jsonLd = {
 ---
 
 <Default {...Astro.props}><slot /></Default>
-<link
-  rel="preload"
-  as="font"
-  type="font/woff2"
-  href={monoLatinHref}
-  crossorigin
-/>
 <link
   rel="preload"
   as="font"

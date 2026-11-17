@@ -21,7 +21,6 @@
 }
 
 .featureTitle {
-  font-family: var(--ifm-font-family-base);
   color: var(--buf-ink-blue-02);
   font-size: 18px;
   font-style: normal;
@@ -48,7 +47,6 @@
 }
 
 .featureDescription {
-  font-family: var(--ifm-font-family-base);
   font-style: normal;
   font-weight: 400;
   font-size: 16px;
