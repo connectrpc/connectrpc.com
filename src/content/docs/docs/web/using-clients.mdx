@@ -105,6 +105,39 @@ Usage:
 await useClient(ElizaService).say({ sentence: "I feel happy." });
 ```
 
+## Debugging RPCs in the browser
+
+Calls made with `@connectrpc/connect-web` are ordinary `fetch` requests, so the
+browser's network panel shows them. Open the panel, keep "Preserve log" on, and
+filter by the method name, for example `ElizaService/Say`.
+
+A unary call is a single POST to `/<package>.<Service>/<Method>`, the same path
+used by gRPC and Connect clients. The `content-type` tells you which protocol
+is on the wire:
+
+| `content-type` | Meaning |
+| --- | --- |
+| `application/json` | Connect protocol with JSON encoding; request and response bodies are readable |
+| `application/proto` | Connect protocol with binary Protobuf encoding |
+| `application/grpc-web+proto` | gRPC-Web; bodies are binary frames |
+
+For unary calls the response body is visible in the panel, and a failed call
+shows a non-2xx status. The Connect error code and message are easier to read
+through a logging interceptor than through the raw entry, because the
+interceptor sees the parsed `ConnectError`.
+
+Streaming calls are harder to inspect. Server-streaming responses arrive as a
+streamed body, and client-streaming or bidirectional calls use
+`application/connect+proto` with length-prefixed binary frames, so the panel
+shows an opaque request body. In those cases:
+
+- Add a logging interceptor to see request and response messages (see
+  [Interceptors](/docs/web/interceptors)).
+- Remember that metadata at the end of a stream is not shown in the Headers
+  panel; log `res.header` in the interceptor instead.
+- If a stream seems stuck, check the request's `AbortSignal` in the interceptor:
+  canceling the caller's signal cancels the HTTP request.
+
 ## Roll your own client
 
 If you find that neither client suits your needs perfectly, it might be an

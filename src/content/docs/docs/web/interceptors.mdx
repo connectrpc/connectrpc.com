@@ -70,6 +70,100 @@ async function* logEach(stream: AsyncIterable<any>) {
 }
 ```
 
+## Common use cases
+
+Interceptors are the right place for behaviour that applies to every call, or
+to a whole client, without repeating it at each call site.
+
+### Send an authentication token
+
+The request header is mutable. Read the token at call time so a refreshed
+token is picked up without rebuilding the transport:
+
+```ts
+const auth: Interceptor = (next) => async (req) => {
+  const token = await getAccessToken();
+  req.header.set("Authorization", `Bearer ${token}`);
+  return await next(req);
+};
+```
+
+### Retry transient failures
+
+Retries belong in an interceptor because every call gets them, and because the
+request message is still available. Stop when the call was canceled, and only
+retry codes that can succeed on a second attempt:
+
+```ts
+import { Code, ConnectError, type Interceptor } from "@connectrpc/connect";
+
+const retryable = new Set([Code.Unavailable, Code.DeadlineExceeded]);
+
+const retry: Interceptor = (next) => async (req) => {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await next(req);
+    } catch (e) {
+      const err = ConnectError.from(e);
+      if (req.signal.aborted || !retryable.has(err.code) || attempt === 3) {
+        throw err;
+      }
+      await new Promise((r) => setTimeout(r, 100 * 2 ** attempt));
+    }
+  }
+};
+```
+
+Streaming calls need more care: retrying a stream means starting the call
+again, and any messages already consumed are not replayed. Retry unary calls
+this way; for streams, prefer letting the caller decide.
+
+### Measure duration and outcome
+
+A timing interceptor gives one place for metrics, and it sees failures as well
+as successes:
+
+```ts
+const metrics: Interceptor = (next) => async (req) => {
+  const started = performance.now();
+  let code = "ok";
+  try {
+    return await next(req);
+  } catch (e) {
+    code = Code[ConnectError.from(e).code];
+    throw e;
+  } finally {
+    // recordRpc is your metrics sink (OpenTelemetry, statsd, ...)
+    recordRpc(
+      req.service.typeName,
+      req.method.name,
+      code,
+      performance.now() - started
+    );
+  }
+};
+```
+
+### Map errors to application state
+
+If the UI only cares about a few outcomes, translate once here instead of in
+every component. Wrapping the error keeps the original as `cause`:
+
+```ts
+const errors: Interceptor = (next) => async (req) => {
+  try {
+    return await next(req);
+  } catch (e) {
+    const err = ConnectError.from(e);
+    if (err.code === Code.Unauthenticated) {
+      // SessionExpiredError is an application-level error class
+      throw new SessionExpiredError(err.message, { cause: err });
+    }
+    throw err;
+  }
+};
+```
+
 ## Context values
 
 Context values are a type safe way to attach arbitrary values to a call, and share them with interceptors through the full request/response cycle. They can be used to modify interceptor behavior from the call site.
