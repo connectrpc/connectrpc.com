@@ -85,7 +85,7 @@ server's verdict from errors created locally, replacing v1's `IsWireError`.
 A handler that returns a remote error unchanged sends the client a bare
 `internal` code, so translate downstream failures into explicit local errors.
 
-## Error Details
+## Error details
 
 Like `grpc-go`, `connect-go` allows servers to enrich errors with more than
 just a code and a string. Since Connect focuses on schema-first APIs, this

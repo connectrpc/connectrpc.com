@@ -1,5 +1,5 @@
 ---
-title: Get Requests and Caching
+title: GET requests & caching
 ---
 
 Connect supports performing idempotent, side-effect free requests using an HTTP

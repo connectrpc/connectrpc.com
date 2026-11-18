@@ -1,8 +1,8 @@
 ---
-title: Connect Protocol Reference
+title: Connect protocol reference
 description: "The Connect protocol specification: unary and streaming RPCs over HTTP, with full examples and error codes."
 sidebar:
-  label: Connect Protocol
+  label: Connect protocol
 ---
 
 This document specifies the Connect protocol for making RPCs over HTTP. The
@@ -14,7 +14,7 @@ but the design goals and summary are approachable for casual readers. There
 are also examples of [unary](#unary-examples) and [streaming](#streaming-examples)
 RPCs.
 
-## Design Goals
+## Design goals
 
 This protocol aims to:
 
@@ -256,7 +256,7 @@ alongside the Connect query parameters. Servers may respond with an error if the
 query parameter is too long to fit in a header or results in a path or URL that
 is too long.
 
-Message payloads in Get requests should be encoded in a deterministic fashion.
+Message payloads in GET requests should be encoded in a deterministic fashion.
 Not all codecs can provide a single "canonical" encoding for any given
 semantically-identical message; however, when a codec is used for an HTTP GET
 request, it should at least use deterministic encoding such that a given domain
@@ -314,7 +314,7 @@ decimal point (.). If a timeout of zero is supplied, the handler is not run
 and a `deadline_exceeded` error code is returned with an HTTP status code
 of `504 Gateway Timeout`.
 
-The **Connect-Version-Query** parameter distinguishes Connect Get requests from
+The **Connect-Version-Query** parameter distinguishes Connect GET requests from
 other HTTP GET requests. (In the future, it may also be used to support
 revisions to this protocol.) Clients, especially generated clients, should send
 this header. Servers and proxies may reject traffic without this parameter with
@@ -548,7 +548,7 @@ A failed server streaming RPC:
 < <flags: 2><length: 58>{"error": {"code": "unavailable", "message": "overloaded"}}
 ```
 
-## Error Codes {#error-codes}
+## Error codes {#error-codes}
 
 Connect represents categories of errors as codes, and each code maps to a
 specific HTTP status code. The codes and their semantics were chosen to match

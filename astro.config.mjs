@@ -197,7 +197,7 @@ export default defineConfig({
             },
             { label: "Deployment & h2c", slug: "docs/go/deployment" },
             {
-              label: "Get Requests and Caching",
+              label: "GET requests & caching",
               slug: "docs/go/get-requests-and-caching",
             },
             { label: "gRPC compatibility", slug: "docs/go/grpc-compatibility" },
@@ -219,7 +219,7 @@ export default defineConfig({
               slug: "docs/web/headers-and-trailers",
             },
             {
-              label: "Cancellation & Timeouts",
+              label: "Cancellation & timeouts",
               slug: "docs/web/cancellation-and-timeouts",
             },
             { label: "Interceptors", slug: "docs/web/interceptors" },
@@ -233,10 +233,10 @@ export default defineConfig({
             },
             { label: "Testing", slug: "docs/web/testing" },
             {
-              label: "Get Requests and Caching",
+              label: "GET requests & caching",
               slug: "docs/web/get-requests-and-caching",
             },
-            { label: "Server-Side Rendering (SSR)", slug: "docs/web/ssr" },
+            { label: "Server-side rendering (SSR)", slug: "docs/web/ssr" },
             { label: "Connect for TanStack Query", slug: "docs/web/query" },
           ],
         },
@@ -253,7 +253,7 @@ export default defineConfig({
             { label: "Interceptors", slug: "docs/node/interceptors" },
             { label: "Using clients", slug: "docs/node/using-clients" },
             {
-              label: "Get Requests and Caching",
+              label: "GET requests & caching",
               slug: "docs/node/get-requests-and-caching",
             },
             { label: "Testing", slug: "docs/node/testing" },
@@ -278,11 +278,11 @@ export default defineConfig({
             { label: "Streaming", slug: "docs/python/streaming" },
             { label: "Deployment", slug: "docs/python/deployment" },
             {
-              label: "Get Requests and Caching",
+              label: "GET requests & caching",
               slug: "docs/python/get-requests-and-caching",
             },
             {
-              label: "gRPC Compatibility",
+              label: "gRPC compatibility",
               slug: "docs/python/grpc-compatibility",
             },
             { label: "Observability", slug: "docs/python/observability" },
@@ -308,7 +308,7 @@ export default defineConfig({
             { label: "Streaming", slug: "docs/rust/streaming" },
             { label: "Deployment", slug: "docs/rust/deployment" },
             {
-              label: "Get Requests and Caching",
+              label: "GET requests & caching",
               slug: "docs/rust/get-requests-and-caching",
             },
             {
@@ -328,7 +328,7 @@ export default defineConfig({
             { label: "Generating code", slug: "docs/kotlin/generating-code" },
             { label: "Using clients", slug: "docs/kotlin/using-clients" },
             {
-              label: "Get Requests and Caching",
+              label: "GET requests & caching",
               slug: "docs/kotlin/get-requests-and-caching",
             },
             { label: "Errors", slug: "docs/kotlin/errors" },
@@ -360,9 +360,9 @@ export default defineConfig({
           ],
         },
         { label: "cURL & other clients", slug: "docs/curl-and-other-clients" },
-        { label: "Multi-Protocol Support", slug: "docs/multi-protocol" },
+        { label: "Multi-protocol support", slug: "docs/multi-protocol" },
         { label: "CORS", slug: "docs/cors" },
-        { label: "Connect Protocol", slug: "docs/protocol" },
+        { label: "Connect protocol", slug: "docs/protocol" },
         { label: "FAQs", slug: "docs/faq" },
       ],
     }),

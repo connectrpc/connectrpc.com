@@ -7,12 +7,12 @@ and performance. When it comes to mobile/web applications, spinning up a full se
 to test against may not always be the best option. In the following sections, we
 will go through a couple of alternatives.
 
-## Widget Testing
+## Widget testing
 
 For widgets that interface with Connect, it will generally be preferable to mock your RPCs since a backend may not be
 available or desirable to access in a unit test. The easiest way to do this is via Connect's `FakeTransportBuilder`
 
-### Mocking Transports
+### Mocking transports
 
 `FakeTransportBuilder` from `package:connectrpc/test.dart` creates an in-memory
 server with your own RPC implementations. It allows you to mock a backend to cover different behaviors in your widget.

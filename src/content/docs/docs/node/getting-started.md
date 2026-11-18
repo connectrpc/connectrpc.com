@@ -4,7 +4,7 @@ description: "Build a Connect service for Node.js — works with Fastify, Expres
 ---
 
 Connect-Node is a library for serving Connect, gRPC, and gRPC-Web compatible HTTP APIs using Node.js.
-It brings the Connect Protocol to Node with full TypeScript compatibility and support for all four types of remote
+It brings the Connect protocol to Node with full TypeScript compatibility and support for all four types of remote
 procedure calls: unary and the three variations of streaming.
 
 This ten-minute walkthrough helps you create a small Connect service in Node.js.

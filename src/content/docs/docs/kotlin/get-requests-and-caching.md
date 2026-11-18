@@ -1,5 +1,5 @@
 ---
-title: Get Requests and Caching
+title: GET requests & caching
 ---
 
 Connect supports HTTP GET for idempotent, side-effect-free RPCs. This makes

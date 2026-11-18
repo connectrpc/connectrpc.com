@@ -1,5 +1,5 @@
 ---
-title: Multi-Protocol Support
+title: Multi-protocol support
 description: "Connect servers and clients speak the Connect, gRPC, and gRPC-Web protocols interchangeably without code changes."
 ---
 
@@ -18,7 +18,7 @@ Again assuming Protobuf schemas, the [Connect protocol](/docs/protocol/) uses th
 `application/proto` and `application/json` Content-Types for unary RPCs. For
 streaming, it uses `application/connect+proto` and `application/connect+json`.
 
-## Compatible Semantics
+## Compatible semantics
 
 This approach relies on all three protocols having compatible semantics:
 they're communicating the same information using different HTTP conventions, so

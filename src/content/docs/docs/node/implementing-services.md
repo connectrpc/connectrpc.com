@@ -212,7 +212,7 @@ the client sends a message, the server responds, the client sends another
 message, and so on. Keep in mind that this always requires end-to-end HTTP/2
 support (regardless of RPC protocol)!
 
-## Helper Types
+## Helper types
 
 Service implementations are type-safe. The `service()` method of the
 `ConnectRouter` accepts a `ServiceImpl<T>`, where `T` is a service type.

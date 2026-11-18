@@ -1,5 +1,5 @@
 ---
-title: Get Requests and Caching
+title: GET requests & caching
 ---
 
 Connect supports performing idempotent, side-effect free requests using an HTTP
@@ -109,7 +109,7 @@ message. On the wire it becomes HTTP's 304 Not Modified status, which caches
 treat as a successful revalidation. Clients detect the signal with
 `connecthttp.IsNotModifiedError` and reuse the cached response.
 
-## Distinguishing GET Requests
+## Distinguishing GET requests
 
 In some cases, you might want to introduce behavior that only occurs when
 handling HTTP GET requests. This can be accomplished using the `HTTPMethod`

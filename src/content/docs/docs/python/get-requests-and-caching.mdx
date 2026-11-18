@@ -1,5 +1,5 @@
 ---
-title: Get Requests and Caching
+title: GET requests & caching
 ---
 
 import { Tabs, TabItem } from '@astrojs/starlight/components';
@@ -71,7 +71,7 @@ that may be useful for your application as well; for example, the `private` dire
 the request should only be cached in private caches, such as the user agent itself, and _not_ CDNs or reverse
 proxies — this would be appropriate, for example, for authenticated requests.
 
-## Distinguishing GET Requests
+## Distinguishing GET requests
 
 In some cases, you might want to introduce behavior that only occurs when handling HTTP GET requests.
 This can be accomplished with `RequestContext.http_method`:

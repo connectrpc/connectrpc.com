@@ -183,7 +183,7 @@ wrappers and moved metadata access to the context. In v2, this style is the
 default and only option: unary RPCs use plain Protobuf messages, streaming
 RPCs use small generated per-RPC stream types, and headers and trailers are
 reached through a `CallInfo` in the context. See the
-[headers & trailers documentation](/docs/go/headers-and-trailers/) for
+[headers and trailers documentation](/docs/go/headers-and-trailers/) for
 details.
 
 ### Why generate Connect-specific packages?

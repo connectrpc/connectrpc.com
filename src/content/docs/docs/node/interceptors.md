@@ -73,7 +73,7 @@ async function* logEach(stream: AsyncIterable<any>) {
 
 Interceptors can be applied to clients via the `interceptors` option in `createConnectTransport()`. Refer to the documentation for [Web](/docs/web/interceptors/) for an example.
 
-## Context Values
+## Context values
 
 Context values are a type safe way to attach arbitrary values to a call, and share them with interceptors, all the way down to the handler.
 

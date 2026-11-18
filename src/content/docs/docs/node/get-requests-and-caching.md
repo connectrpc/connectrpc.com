@@ -1,5 +1,5 @@
 ---
-title: Get Requests and Caching
+title: GET requests & caching
 ---
 
 Connect supports performing idempotent, side-effect free requests using an HTTP
@@ -81,7 +81,7 @@ would specify that the request should only be cached in private caches, such as
 the user agent itself, and *not* CDNs or reverse proxies&mdash;this would be
 appropriate, for example, for authenticated requests.
 
-## Distinguishing GET Requests
+## Distinguishing GET requests
 
 In some cases, you might want to introduce behavior that only occurs when
 handling HTTP GET requests. This can be accomplished using
