@@ -37,8 +37,8 @@ This tutorial should take ~10 minutes from start to finish.
 
 First, we need to add a Protobuf file that includes our service definition. For this tutorial, we are going to construct a unary endpoint for a service that is a stripped-down implementation of ELIZA, the famous natural language processing program.
 
-```shellsession
-$ mkdir -p proto && touch proto/eliza.proto
+```bash
+mkdir -p proto && touch proto/eliza.proto
 ```
 
 Open up the above file and add the following service definition:
@@ -110,9 +110,9 @@ plugins:
 
 With those configuration files in place, we can now generate code:
 
-```shellsession
-$ buf lint
-$ buf generate
+```bash
+buf lint
+buf generate
 ```
 
 In your `Generated` directory, you should now see some generated Swift files:
@@ -160,25 +160,6 @@ If you'd like to use gRPC as the transport protocol, you must also include the
 for gRPC by using [SwiftNIO](https://github.com/apple/swift-nio) for trailers.
 **This dependency is
 not necessary when using the Connect or gRPC-Web protocol.**
-
-:::
-
-### Alternative: Use CocoaPods
-
-CocoaPods is also supported as an alternative to Swift Package Manager.
-To use Connect-Swift with CocoaPods, simply add this line to your `Podfile`:
-
-```ruby
-pod 'Connect-Swift'
-pod 'SwiftProtobuf'
-```
-
-:::note
-
-Although Connect-Swift provides support for both the Connect and
-the gRPC-Web protocols through CocoaPods, gRPC support is only available when
-using Swift Package Manager due to the fact that
-[SwiftNIO does not support CocoaPods](https://github.com/apple/swift-nio/issues/2393).
 
 :::
 
@@ -454,7 +435,6 @@ the Connect-Swift repository on GitHub. These examples demonstrate:
 
 - Using streaming APIs
 - Integrating with Swift Package Manager
-- Integrating with CocoaPods
 - Using the [Connect protocol](/docs/protocol/)
 - Using the [gRPC protocol][grpc]
 - Using the [gRPC-Web protocol][grpc-web]
@@ -501,9 +481,7 @@ enabling you to use Connect-Swift without the SwiftNIO dependency.
 [buf-cli]: https://buf.build/docs/installation
 [buf.gen.yaml]: https://buf.build/docs/configuration/v2/buf-gen-yaml
 [buf.yaml]: https://buf.build/docs/configuration/v2/buf-yaml
-[connect-go]: https://github.com/connectrpc/connect-go
 [connect-swift]: https://github.com/connectrpc/connect-swift
-[eliza-proto]: https://buf.build/connectrpc/eliza/file/main:connectrpc/eliza/v1/eliza.proto
 [envoy-grpc-bridge]: https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_filters/connect_grpc_bridge_filter
 [go-demo]: https://github.com/connectrpc/examples-go
 [grpc]: https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md
@@ -511,5 +489,4 @@ enabling you to use Connect-Swift without the SwiftNIO dependency.
 [grpc-web]: https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-WEB.md
 [more-examples]: https://github.com/connectrpc/connect-swift/tree/main/Examples
 [protobuf]: https://developers.google.com/protocol-buffers
-[remote-plugins]: https://buf.build/docs/bsr/remote-plugins/usage
 [swift-protobuf]: https://github.com/apple/swift-protobuf

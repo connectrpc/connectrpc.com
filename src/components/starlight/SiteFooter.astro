@@ -47,7 +47,7 @@ const legalLinks = [
     <div class="copyright">
       <div set:html={copyright} />
       <span>We are a Cloud Native Computing Foundation sandbox project</span>
-      <CncfSandbox width={200} class="cncf-logo" />
+      <CncfSandbox width={200} class="cncf-logo" aria-hidden="true" />
     </div>
   </div>
 </footer>
@@ -62,8 +62,9 @@ const legalLinks = [
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 2.5rem;
-    padding-bottom: 5rem;
+    /* Inline padding matches the header's, so the legal links and the
+     * copyright line up with its logo and buttons. */
+    padding: 2.5rem var(--sl-nav-pad-x);
     border-top: 1px solid var(--sl-color-hairline);
     width: 100%;
     position: relative;
@@ -85,11 +86,8 @@ const legalLinks = [
     gap: 1.8rem;
   }
   .legal-link {
-    text-transform: uppercase;
     color: #93b4be;
     font-size: 0.8125rem;
-    letter-spacing: 0.08em;
-    font-family: var(--buf-mono-font);
     text-decoration: none;
     padding-bottom: 0.125rem;
     background-image: linear-gradient(0deg, currentColor 1px, transparent 0);
@@ -109,7 +107,6 @@ const legalLinks = [
     align-items: center;
     font-size: 0.875rem;
     color: #acb3b6;
-    font-family: var(--buf-sans-font);
     text-align: center;
   }
   .cncf-logo {

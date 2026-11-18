@@ -20,7 +20,7 @@ you to sign your commits when you open your pull request, and provide helpful ti
 
 ## Documentation changes
 
-Most documentation changes only require updating or adding Markdown. Fork, then
+Most documentation changes only require updating or adding Markdown. [Fork][fork], then
 clone the repository, and make your changes locally. If you have Node.js
 installed locally (you'll need Node.js in the version specified in `.nvmrc`),
 you can preview your changes with `npm install && npm run start`. More complex

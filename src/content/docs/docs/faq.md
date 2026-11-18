@@ -74,10 +74,16 @@ the implications.
 ### How do I proxy the Connect protocol through NGINX?
 
 Request-response (unary) RPCs made with the Connect protocol don't require
-end-to-end HTTP/2, so they can be proxied through NGINX. Streaming RPCs typically
-require end-to-end HTTP/2, which NGINX doesn't support. Rather than NGINX, we
-recommend using Envoy, Apache, or TCP-level load balancers like HAProxy, all of
-which support the full Connect protocol.
+end-to-end HTTP/2, so they can be proxied through NGINX with no special
+configuration. Streaming RPCs typically require end-to-end HTTP/2, which NGINX
+supports &mdash; but it isn't enabled by default. Turn it on for clients with
+[`ngx_http_v2_module`](https://nginx.org/en/docs/http/ngx_http_v2_module.html),
+and for upstream connections with
+[`proxy_http_version 2`](https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_http_version)
+(NGINX 1.29.4 and later).
+
+Envoy, Apache, and TCP-level load balancers like HAProxy also support the full
+Connect protocol.
 
 ### Do half duplex streams have a unary and streaming component?
 
@@ -134,7 +140,7 @@ methods, and headers—you also have to expose response headers. See the [CORS d
 ### Why does the network explorer in the browser show strange characters in payload?
 
 The Protobuf binary format is efficient, but can't be rendered as text by the browser. If you use a Connect-ES client,
-you can switch to JSON with the [transport option](./web/choosing-a-protocol) `useBinaryFormat: false` to make
+you can switch to JSON with the [transport option](/docs/web/choosing-a-protocol/) `useBinaryFormat: false` to make
 troubleshooting easier. Unary RPCs use pure JSON payloads with the Connect protocol.
 
 ## Serialization & compression
@@ -163,22 +169,22 @@ underlying implementation allows us to do so.
 
 ## Go
 
-### Why use generics?
+### Why did Connect-Go v2 remove the generic request and response types?
 
-Generic code is inherently more complex than non-generic code. Still, introducing
-generics to Connect-Go eliminated two significant sources of complexity:
+Connect-Go v1 wrapped every unary message in generic `connect.Request` and
+`connect.Response` types. The wrappers made headers and trailers explicit
+&mdash; metadata flowed through arguments and return values instead of the
+context &mdash; but they added noise to every method signature for a feature
+that most handlers never used, and the pattern was unfamiliar to many Go
+developers.
 
-- Generics let us generate less code, especially for streaming RPCs &mdash; if
-  you're willing to write out some long URLs, it's now just as easy to use
-  Connect without `protoc-gen-connect-go`. The generic stream types, like
-  `BidirectionalStream`, are much clearer than the equivalent code generation
-  templates.
-- We don't need to attach any values to the context, because Connect's generic
-  `Request` and `Response` structs can carry headers and trailers explicitly.
-  This makes data flow obvious and avoids any confusion about inbound and
-  outbound metadata.
-
-On balance, we find Connect-Go simpler with generics.
+Connect-Go v1.19 introduced the `simple` generation flag, which removed the
+wrappers and moved metadata access to the context. In v2, this style is the
+default and only option: unary RPCs use plain Protobuf messages, streaming
+RPCs use small generated per-RPC stream types, and headers and trailers are
+reached through a `CallInfo` in the context. See the
+[headers & trailers documentation](/docs/go/headers-and-trailers/) for
+details.
 
 ### Why generate Connect-specific packages?
 
@@ -205,23 +211,40 @@ and the architecture has some fundamental limitations that may be surprising.
 We encourage you to give it a try and report any issues you find to Go or
 Connect-Go to help bring WASM in Go forward.
 
-### Why am I seeing a "stream error: stream ID 5; INTERNAL_ERROR; received from peer" error message after X seconds? {#stream-error}
+### Why do my streaming calls fail with "stream error" or "incomplete envelope" after X seconds? {#stream-error}
 
 It means that your [http.Server](https://pkg.go.dev/net/http#Server) has a
 `ReadTimeout` or `WriteTimeout` field configured. These fields apply
 to the entire operation duration, even for streaming calls. If an operation
-takes longer than the value specified, the server closes the stream and
-clients can see the above error message. The other timeout fields won't cause
-this error, and we
-encourage you to set `ReadHeaderTimeout` in particular.
+takes longer than the value specified, the server closes the stream. Over
+HTTP/2, clients see an error like:
+
+```
+stream error: stream ID 5; INTERNAL_ERROR; received from peer
+```
+
+Over HTTP/1.1, `connect-go` clients see an error like:
+
+```
+protocol error: incomplete envelope: unexpected EOF
+```
+
+The other timeout fields won't cause this error, and we encourage you to set
+`ReadHeaderTimeout` in particular.
 
 ### How do I close a client response stream in Connect-Go?
 
-On reading the response, a client can call `CloseResponse` on bidirectional
-streams or `Close` on server streams to gracefully close the connection.
-This will discard any remaining messages sent from the server until the
-final status message is received. If the status is an error, the close function
-will return the wire error.
+To gracefully close a client stream, read messages until the end of the
+stream. `Receive` reports clean completion with an error matching `io.EOF`,
+and returns the wire error if the server ended the stream with an error. On
+bidirectional streams, call `CloseSend` first to signal that you're done
+sending messages. Client streams close the send side and read the response
+with `CloseAndReceive`.
+
+`Close` is a cleanup, not a graceful close. Like `http.Response.Body.Close`,
+it immediately tears the stream down, unblocking any pending `Receive`
+without waiting for the final status. It's idempotent, so always close the
+stream when you're done with it, typically with `defer stream.Close()`.
 Alternatively, if you wish to cancel the operation and immediately stop
 the client stream, see [below](#cancel-stream) to cancel the operation.
 
@@ -252,7 +275,7 @@ import { ElizaService } from "@buf/connectrpc_eliza.bufbuild_es/connectrpc/eliza
 
 ### Does Connect-Go provide the equivalent of gRPC's `WithBlock` option when connecting to servers?
 
-No, because under the hood Connect-Go is just using an `*http.Client`, but we are evaluating potentially
+No, because under the hood Connect-Go's HTTP transport is just using an `*http.Client`, but we are evaluating potentially
 adding similar functionality to Connect-Go. In the meantime, you can take a look at [github.com/bufbuild/httplb][httplb].
 It's an `*http.Client` that's not specific to Connect, but solves a lot of the gotchas with using the stdlib
 client/transport for RPC, especially if you're using k8s. Keep in mind that it's still in Alpha so the APIs are
@@ -278,13 +301,33 @@ func grpcOnlyMiddleware(next http.Handler) http.Handler {
 
 ### How do I customize serialization errors returned by the Connect server?
 
-You can customize the error message by providing a different `Codec`. Code
-and details can't be customized.
+You can customize the error message by providing a different `Codec` with
+`connecthttp.WithCodecs`. Code and details can't be customized.
 
 ### How do I use custom JSON options like `EmitUnpopulated` in Connect-Go?
 
-You can use these options by customizing the codec. https://github.com/akshayjshah/connectproto is a handy project that
-makes this easier.
+The JSON codec in `connectrpc.com/connect/v2/connectproto` exposes the
+underlying [protojson](https://pkg.go.dev/google.golang.org/protobuf/encoding/protojson)
+options as exported fields. Configure them before use, then register the codec
+on your server or client transport:
+
+```go
+codec := connectproto.NewJSONCodec()
+codec.MarshalOptions.EmitUnpopulated = true
+
+// Servers:
+connecthttp.Mount(mux, server, connecthttp.WithCodecs(codec))
+
+// Clients:
+transport := connecthttp.NewTransport(
+	httpClient,
+	baseURL,
+	connecthttp.WithCodecs(codec),
+)
+```
+
+The binary Protobuf codec, `connectproto.NewBinaryCodec`, exposes its
+`proto.MarshalOptions` and `proto.UnmarshalOptions` the same way.
 
 ### Should graceful shutdown of streaming endpoints be manually handled in Connect-go?
 
@@ -377,7 +420,7 @@ Every service method on the server receives the `HandlerContext` as the second a
 response headers. You can set cookies with the `Set-Cookie` response header—for example:
 
 ```typescript
-ctx.responseHeader.append("Set-Cookie", "foo=bar; Max=Age=120")
+ctx.responseHeader.append("Set-Cookie", "foo=bar; Max=Age=120");
 ```
 
 ### Parcel fails to resolve imports

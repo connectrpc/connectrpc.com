@@ -11,15 +11,15 @@ syntax = "proto3";
 package connectrpc.eliza.v1;
 
 message SayRequest {
-    string sentence = 1;
+  string sentence = 1;
 }
 
 message SayResponse {
-    string sentence = 1;
+  string sentence = 1;
 }
 
 service ElizaService {
-    rpc Say(SayRequest) returns (SayResponse) {}
+  rpc Say(SayRequest) returns (SayResponse) {}
 }
 ```
 
@@ -191,7 +191,6 @@ the `buf.gen.yaml` file as shown in the example above.
 [buf.gen.yaml]: https://buf.build/docs/configuration/v2/buf-gen-yaml
 [buf.yaml]: https://buf.build/docs/configuration/v2/buf-yaml
 [buf-cli]: https://buf.build/docs/installation
-[connect-swift]: https://github.com/connectrpc/connect-swift
 [connect-swift-mocks-plugin]: https://buf.build/connectrpc/swift-mocks
 [connect-swift-plugin]: https://buf.build/connectrpc/swift
 [connect-swift-releases]: https://github.com/connectrpc/connect-swift/releases

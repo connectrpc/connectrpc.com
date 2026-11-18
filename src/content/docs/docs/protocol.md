@@ -150,7 +150,7 @@ general-purpose HTTP tools.
 * **Unary-Content-Type** &rarr; "content-type" "application/" Message-Codec
 * **Connect-Protocol-Version** &rarr; "connect-protocol-version" "1"
 * **Timeout** &rarr; "connect-timeout-ms" Timeout-Milliseconds
-* **Timeout-Milliseconds** &rarr; \{_positive integer as ASCII string of at most 10 digits_\}
+* **Timeout-Milliseconds** &rarr; \{_unsigned integer as ASCII string of at most 10 digits_\}
 * **Content-Encoding** &rarr; "content-encoding" Content-Coding
 * **Content-Coding** &rarr; "identity" / "gzip" / "br" / "zstd" / \{_custom_\}
 * **Accept-Encoding** &rarr; "accept-encoding" Content-Coding \*("," [" "] Content-Coding) ; subset of HTTP quality value syntax
@@ -168,6 +168,15 @@ many headers.
 
 If the server doesn't support the specified **Message-Codec**, it must respond
 with an HTTP status code of 415 Unsupported Media Type.
+
+The **Unary-Content-Type** may have parameters appended to it, as
+described in [Section 8.3 of RFC 9110][].
+If the **Unary-Content-Type** is `application/json` and the `charset` parameter
+is specified, the `charset` parameter's value must be `utf-8`. A message
+received with any other `charset` value combined with `application/json`
+must respond with an HTTP status code of 415 Unsupported Media Type. The
+`charset` parameter is ignored when the **Message-Codec** is not `json`.
+All other **Unary-Content-Type** parameters must be ignored.
 
 The **Connect-Protocol-Version** header distinguishes unary Connect RPC traffic
 from other requests that may use the same Content-Type. (In the future, it may
@@ -192,6 +201,12 @@ If **Timeout** is omitted, the server should assume an infinite timeout. The
 protocol accommodates timeouts of more than 100 days. Client implementations
 may set a default timeout for all RPCs, and server implementations may clamp
 timeouts to an appropriate maximum.
+
+When **Timeout** is present, it must be a positive integer or zero.
+No + or - should be used as a leading character and there should not be a
+decimal point (.). If a timeout of zero is supplied, the handler is not run
+and a `deadline_exceeded` error code is returned with an HTTP status code
+of `504 Gateway Timeout`.
 
 HTTP doesn't allow header values to be arbitrary binary blobs, so Connect
 differentiates between **ASCII-Metadata** and **Binary-Metadata**. Binary
@@ -293,6 +308,12 @@ may set a default timeout for all RPCs, and server implementations may clamp
 timeouts to an appropriate maximum. Note that timeouts, if specified, remain
 specified using HTTP headers rather than query parameters.
 
+When **Timeout** is present, it must be a positive integer or zero.
+No + or - should be used as a leading character and there should not be a
+decimal point (.). If a timeout of zero is supplied, the handler is not run
+and a `deadline_exceeded` error code is returned with an HTTP status code
+of `504 Gateway Timeout`.
+
 The **Connect-Version-Query** parameter distinguishes Connect Get requests from
 other HTTP GET requests. (In the future, it may also be used to support
 revisions to this protocol.) Clients, especially generated clients, should send
@@ -324,11 +345,13 @@ must either respond with an error or use a **Content-Encoding** supported by
 the client.
 
 Successful responses have an **HTTP-Status** of 200. In those cases,
-**Unary-Content-Type** is the same as the request's **Unary-Content-Type**.
-**Bare-Message** is the RPC response payload, serialized using the codec indicated
-by **Unary-Content-Type** and possibly compressed using **Content-Encoding**.
-It's sent on the wire as the HTTP response content (often called the body).
-Clients must not attempt to decompress zero-length HTTP response content.
+**Unary-Content-Type** is the same as the request's **Unary-Content-Type**. Any parameters
+appended to the request's **Unary-Content-Type** _may_ be included in the response,
+but are not required to be included in the response. **Bare-Message** is the
+RPC response payload, serialized using the codec indicated by **Unary-Content-Type**
+and possibly compressed using **Content-Encoding**. It's sent on the wire as the
+HTTP response content (often called the body). Clients must not attempt to decompress
+zero-length HTTP response content.
 
 Errors are sent with a non-200 **HTTP-Status**. In those cases,
 **Unary-Content-Type** _must_ be "application/json". **Bare-Message** is either
@@ -426,7 +449,7 @@ RPC types may be unavailable.
 * **Streaming-Request** &rarr; Streaming-Request-Headers \*Enveloped-Message
 * **Streaming-Request-Headers** &rarr; Streaming-Call-Specification \*Leading-Metadata
 * **Streaming-Call-Specification** &rarr; Method-Post Path Streaming-Content-Type \[Connect-Protocol-Version\] \[Timeout\] \[Streaming-Content-Encoding\] \[Streaming-Accept-Encoding\]
-* **Streaming-Content-Type** &rarr; "content-type" "application/connect+" ("proto" / "json" / \{_custom_\})
+* **Streaming-Content-Type** &rarr; "content-type" "application/connect+" Message-Codec
 * **Streaming-Content-Encoding** &rarr; "connect-content-encoding" Content-Coding
 * **Streaming-Accept-Encoding** &rarr; "connect-accept-encoding" Content-Coding \*("," [" "] Content-Coding)
 * **Enveloped-Message** &rarr; Envelope-Flags Message-Length Message
@@ -439,9 +462,28 @@ servers should respond with an HTTP status of 415 Unsupported Media Type. This
 prevents HTTP clients unaware of Connect's semantics from interpreting a
 streaming error response, which uses an HTTP Status of 200 OK, as successful.
 
+The **Streaming-Content-Type** may have parameters appended to it, as
+described in [Section 8.3 of RFC 9110][].
+If the **Streaming-Content-Type** is `application/connect+json` and the `charset` parameter
+is specified, the `charset` parameter's value must be `utf-8`. A message
+received with any other `charset` value combined with `application/connect+json`
+must respond with an HTTP status code of 415 Unsupported Media Type. The `charset` parameter
+is ignored when the **Message-Codec** is not `json`. All other **Streaming-Content-Type**
+parameters must be ignored.
+
 Servers must interpret **Streaming-Content-Encoding** and
 **Streaming-Accept-Encoding** using the same inference and error-reporting
 rules as **Content-Encoding** and **Accept-Encoding**.
+
+If **Timeout** is omitted, the server should assume an infinite timeout. The
+protocol accommodates timeouts of more than 100 days. Client implementations
+may set a default timeout for all RPCs, and server implementations may clamp
+timeouts to an appropriate maximum.
+
+When **Timeout** is present, it must be a positive integer or zero.
+No + or - should be used as a leading character and there should not be a
+decimal point (.). If a timeout of zero is supplied, the handler is not run
+and a `deadline_exceeded` error code is returned.
 
 The HTTP request content is a sequence of zero or more **Enveloped-Message**.
 The first byte is **Envelope-Flags**, a set of 8 bitwise flags.
@@ -467,7 +509,9 @@ The first byte is **Envelope-Flags**, a set of 8 bitwise flags.
 Streaming responses always have an HTTP status of 200 OK. As noted above,
 server implementations must send an [EndStreamResponse](#error-end-stream)
 as the final message in the stream, and must not send an EndStreamResponse
-earlier in the stream.
+earlier in the stream. Any parameters appended to the request's
+**Streaming-Content-Type** _may_ be included in the response, but are not
+required to be included in the response.
 
 ### Examples {#streaming-examples}
 
@@ -657,4 +701,4 @@ Protocol Buffers support unary RPCs and all three types of streaming.
 
 [gRPC's HTTP/2 protocol]: https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md
 [rfc-http-semantics]: https://www.rfc-editor.org/rfc/rfc9110.html
-[anypb-json]: https://github.com/protocolbuffers/protobuf/blob/main/src/google/protobuf/any.proto#L97
+[Section 8.3 of RFC 9110]: https://www.rfc-editor.org/rfc/rfc9110.html#section-8.3

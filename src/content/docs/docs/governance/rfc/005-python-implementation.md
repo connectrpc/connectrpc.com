@@ -124,17 +124,25 @@ To make this more concrete, here is a portion of the proposed method set of the 
 
 ```python
 class ElizaServiceClient:
-	def say(self, req: SayRequest) -> SayResponse:
-		...
-	
-	def call_say(self, req: SayRequest, extra_headers: MultiDict[str, str], timeout_seconds: float) -> UnaryOutput[SayResponse]:
-		...
-		
-	def converse(self, reqs: Iterable[ConverseRequest]) -> Iterator[ConverseResponse]:
-		...
-		
-	def call_converse(self, reqs: Iterable[ConverseRequest], extra_headers: MultiDict[str, str], timeout_seconds: float) -> StreamOutput[ConverseResponse]:
-		...
+    def say(self, req: SayRequest) -> SayResponse: ...
+
+    def call_say(
+        self,
+        req: SayRequest,
+        extra_headers: MultiDict[str, str],
+        timeout_seconds: float,
+    ) -> UnaryOutput[SayResponse]: ...
+
+    def converse(
+        self, reqs: Iterable[ConverseRequest]
+    ) -> Iterator[ConverseResponse]: ...
+
+    def call_converse(
+        self,
+        reqs: Iterable[ConverseRequest],
+        extra_headers: MultiDict[str, str],
+        timeout_seconds: float,
+    ) -> StreamOutput[ConverseResponse]: ...
 ```
 
 The `UnaryOutput` and `StreamOutput` generic wrapper types provide access to response headers, trailers, and Connect protocol errors, as well as the wrapped message.

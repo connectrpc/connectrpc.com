@@ -16,12 +16,18 @@ import react from "@astrojs/react";
 import starlight from "@astrojs/starlight";
 import { defineConfig } from "astro/config";
 import { remarkHeadingId } from "remark-custom-heading-id";
-import { remarkLinkChecker } from "./src/plugins/remark-link-checker";
 
+// Canonical site URL. On Vercel, VERCEL_URL is always set — even on
+// production builds — to the unique per-deployment hostname (e.g.
+// connectrpc-com-abc123.vercel.app). Keying off its presence made
+// production pages emit canonical/og/sitemap URLs pointing at the
+// deployment host, which caused Google to treat that vercel.app URL as
+// canonical instead of connectrpc.com. Only fall back to VERCEL_URL for
+// preview deployments so their absolute links still resolve.
 const publicUrl =
-  process.env.VERCEL_URL === undefined
-    ? "https://connectrpc.com"
-    : `https://${process.env.VERCEL_URL}`;
+  process.env.VERCEL_ENV === "preview" && process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : "https://connectrpc.com";
 
 export default defineConfig({
   site: publicUrl,
@@ -30,9 +36,6 @@ export default defineConfig({
     remarkPlugins: [
       // Enables `## Heading {#custom-id}` syntax for explicit anchor IDs.
       remarkHeadingId,
-      // Warns at build time about reference-style links that are used but
-      // never defined (or defined but never used).
-      remarkLinkChecker,
     ],
   },
   vite: {
@@ -53,6 +56,12 @@ export default defineConfig({
     "/docs/swift": "/docs/swift/getting-started/",
     "/web": "/docs/web/getting-started/",
     "/docs/web": "/docs/web/getting-started/",
+    "/rust": "/docs/rust/getting-started/",
+    "/docs/rust": "/docs/rust/getting-started/",
+    "/python": "/docs/python/getting-started/",
+    "/docs/python": "/docs/python/getting-started/",
+    "/dart": "/docs/dart/getting-started/",
+    "/docs/dart": "/docs/dart/getting-started/",
     "/web/query": "/docs/web/query/",
     "/docs/query/getting-started":
       "https://github.com/connectrpc/connect-query-es#quickstart",
@@ -60,6 +69,12 @@ export default defineConfig({
       "/docs/governance/rfc/002-go-cors-authn/",
     "/docs/web/query/getting-started": "/docs/web/query/",
     "/docs/faq/web/choosing-a-protocol": "/docs/web/choosing-a-protocol/",
+    // The Connect-ES v1 to v2 migration pages are retired;
+    // redirect to the migration guide in the connect-es repository.
+    "/docs/web/migrating-to-v2":
+      "https://github.com/connectrpc/connect-es/blob/main/MIGRATING.md",
+    "/docs/node/migrating-to-v2":
+      "https://github.com/connectrpc/connect-es/blob/main/MIGRATING.md",
   },
   integrations: [
     react(),
@@ -112,9 +127,9 @@ export default defineConfig({
         themes: ["github-light", "github-dark"],
       },
       customCss: [
-        "@fontsource/dm-mono/400.css",
-        "@fontsource/dm-mono/500.css",
-        "@fontsource/work-sans/400.css",
+        "@fontsource-variable/jetbrains-mono/wght.css",
+        "@fontsource-variable/inter/opsz.css",
+        "@fontsource-variable/inter/opsz-italic.css",
         "./src/styles/custom.css",
       ],
       sidebar: [
@@ -175,6 +190,11 @@ export default defineConfig({
             { label: "Interceptors", slug: "docs/go/interceptors" },
             { label: "Observability", slug: "docs/go/observability" },
             { label: "Streaming", slug: "docs/go/streaming" },
+            { label: "Testing", slug: "docs/go/testing" },
+            {
+              label: "In-process transport",
+              slug: "docs/go/in-process-transport",
+            },
             { label: "Deployment & h2c", slug: "docs/go/deployment" },
             {
               label: "Get Requests and Caching",
@@ -183,6 +203,7 @@ export default defineConfig({
             { label: "gRPC compatibility", slug: "docs/go/grpc-compatibility" },
             { label: "Common errors", slug: "docs/go/common-errors" },
             { label: "Godoc", slug: "docs/go/godoc" },
+            { label: "Migrating to v2", slug: "docs/go/migrating-to-v2" },
           ],
         },
         {
@@ -217,14 +238,12 @@ export default defineConfig({
             },
             { label: "Server-Side Rendering (SSR)", slug: "docs/web/ssr" },
             { label: "Connect for TanStack Query", slug: "docs/web/query" },
-            { label: "Migrating to v2", slug: "docs/web/migrating-to-v2" },
           ],
         },
         {
           label: "Connect for Node.js",
           collapsed: true,
           items: [
-            { label: "Migrating to v2", slug: "docs/node/migrating-to-v2" },
             { label: "Getting started", slug: "docs/node/getting-started" },
             {
               label: "Implementing services",
@@ -268,6 +287,36 @@ export default defineConfig({
             },
             { label: "Observability", slug: "docs/python/observability" },
             { label: "Testing", slug: "docs/python/testing" },
+          ],
+        },
+        {
+          label: "Connect for Rust",
+          collapsed: true,
+          items: [
+            { label: "Getting started", slug: "docs/rust/getting-started" },
+            { label: "Routing", slug: "docs/rust/routing" },
+            {
+              label: "Serialization & compression",
+              slug: "docs/rust/serialization-and-compression",
+            },
+            { label: "Errors", slug: "docs/rust/errors" },
+            {
+              label: "Headers & trailers",
+              slug: "docs/rust/headers-and-trailers",
+            },
+            { label: "Interceptors", slug: "docs/rust/interceptors" },
+            { label: "Streaming", slug: "docs/rust/streaming" },
+            { label: "Deployment", slug: "docs/rust/deployment" },
+            {
+              label: "Get Requests and Caching",
+              slug: "docs/rust/get-requests-and-caching",
+            },
+            {
+              label: "gRPC compatibility",
+              slug: "docs/rust/grpc-compatibility",
+            },
+            { label: "Testing", slug: "docs/rust/testing" },
+            { label: "docs.rs", slug: "docs/rust/docs-rs" },
           ],
         },
         {

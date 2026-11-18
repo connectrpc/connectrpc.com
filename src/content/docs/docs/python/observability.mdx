@@ -22,8 +22,8 @@ For more detailed, RPC-focused telemetry, use the [connectrpc-otel] package. [co
 OpenTelemetry can be quite complex, so this guide assumes that readers are familiar with:
 
 - What [observability](https://opentelemetry.io/docs/concepts/observability-primer/) is.
-- A basic understanding of [OpenTelemetry metrics and tracing](https://opentelemetry.io/docs/reference/specification/).
-- How [TextMapPropagators](https://opentelemetry.io/docs/reference/specification/context/api-propagators/), [MeterProviders](https://opentelemetry.io/docs/reference/specification/metrics/sdk/), and [TraceProviders](https://opentelemetry.io/docs/concepts/signals/traces/) are initialized and used.
+- A basic understanding of [OpenTelemetry metrics and tracing](https://opentelemetry.io/docs/specs/otel/).
+- How [TextMapPropagators](https://opentelemetry.io/docs/specs/otel/context/api-propagators/#textmap-propagator), [MeterProviders](https://opentelemetry.io/docs/specs/otel/metrics/sdk/#meterprovider), and [TracerProviders](https://opentelemetry.io/docs/concepts/signals/traces/#tracer-provider) are initialized and used.
 
 ## Enabling OpenTelemetry for Connect
 
@@ -34,7 +34,7 @@ servers and clients will be automatically instrumented and generate telemetry.
 To manually instrument your app instead, just register the `OpenTelemetryInterceptor` when initializing a server or client.
 
 <Tabs syncKey="python-type">
-  <TabItem label="ASGI">
+  <TabItem label="Async">
 
     ```python
     from connectrpc_otel import OpenTelemetryInterceptor
@@ -43,22 +43,22 @@ To manually instrument your app instead, just register the `OpenTelemetryInterce
 
     app = GreetServiceASGIApplication(Greeter(), interceptors=[OpenTelemetryInterceptor()])
     client = GreetServiceClient(
-        "http://localhost:8080",
+        "http://localhost:8000",
         interceptors=[OpenTelemetryInterceptor(client=True)],
     )
     ```
 
   </TabItem>
-  <TabItem label="WSGI">
+  <TabItem label="Sync">
 
     ```python
     from connectrpc_otel import OpenTelemetryInterceptor
     from greet.v1.greet_connect import GreetServiceWSGIApplication, GreetServiceClientSync
-    from server import GreeterSync
+    from server import Greeter
 
-    app = GreetServiceWSGIApplication(GreeterSync(), interceptors=[OpenTelemetryInterceptor()])
+    app = GreetServiceWSGIApplication(Greeter(), interceptors=[OpenTelemetryInterceptor()])
     client = GreetServiceClientSync(
-        "http://localhost:8080",
+        "http://localhost:8000",
         interceptors=[OpenTelemetryInterceptor(client=True)],
     )
     ```
@@ -66,8 +66,9 @@ To manually instrument your app instead, just register the `OpenTelemetryInterce
   </TabItem>
 </Tabs>
 
-By default, this will use the global `TextMapPropagator`, `MeterProvider`, and `TraceProvider` from OpenTelemetry.
-To customize them, pass the components you initialized to the `OpenTelemetryInterceptor` constructor.
+By default, this will use the global `TextMapPropagator`, `MeterProvider`, and `TracerProvider` from OpenTelemetry.
+To customize them, pass the components you initialized to the `OpenTelemetryInterceptor` constructor
+as `propagator=`, `meter_provider=`, and `tracer_provider=`.
 
 [connectrpc-otel]: https://pypi.org/project/connectrpc-otel/
 [OpenTelemetry]: https://opentelemetry.io/

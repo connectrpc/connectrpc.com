@@ -11,15 +11,15 @@ syntax = "proto3";
 package connectrpc.eliza.v1;
 
 message SayRequest {
-    string sentence = 1;
+  string sentence = 1;
 }
 
 message SayResponse {
-    string sentence = 1;
+  string sentence = 1;
 }
 
 service ElizaService {
-    rpc Say(SayRequest) returns (SayResponse) {}
+  rpc Say(SayRequest) returns (SayResponse) {}
 }
 ```
 
@@ -30,6 +30,9 @@ A fully documented version of the above definition can be seen
 The `rpc` keyword stands for Remote Procedure Call — an API method that can be
 invoked remotely. The schema is a contract between the server and client, and
 it precisely defines how data is exchanged.
+
+Connect-Dart supports files written in `proto2`, `proto3` and editions 2023 and
+2024.
 
 The schema comes to life by generating code. For the server, an interface
 is generated, and the engineer can focus on filling the methods with business
@@ -53,8 +56,8 @@ Google's protobuf compiler, along with [remote plugins][remote-plugins].
 
 This requires installing [Buf's CLI][buf-cli]:
 
-```shellsession
-$ brew install bufbuild/buf/buf
+```bash
+brew install bufbuild/buf/buf
 ```
 
 When developing a new project, 2 new files need to be created:
@@ -64,8 +67,8 @@ When developing a new project, 2 new files need to be created:
 
 The first file, `buf.yaml`, can be created by running:
 
-```shellsession
-$ buf config init
+```bash
+buf config init
 ```
 
 The second file, `buf.gen.yaml`, needs to be created manually and specifies
@@ -79,8 +82,6 @@ plugins:
     out: lib/gen
   - remote: buf.build/protocolbuffers/dart
     out: lib/gen
-    include_wkt: true
-    include_imports: true
 ```
 
 This file specifies that the [`connect-dart` plugin][connect-dart-plugin]
@@ -104,8 +105,8 @@ available remote plugins [here][available-plugins].
 
 With these configuration files in place, you can now generate code:
 
-```shellsession
-$ buf generate
+```bash
+buf generate
 ```
 
 Given the above config and example `eliza.proto` file, you should now see some
@@ -130,9 +131,9 @@ code locally.
 The easiest way to install these plugins is to add `connectrpc` and `protobuf` as a dependency
 and run:
 
-```shellsession
-$ dart pub global activate connectrpc
-$ dart pub global activate protoc_plugin
+```bash
+dart pub global activate connectrpc
+dart pub global activate protoc_plugin
 ```
 
 The [same setup used for remote plugins above](#remote-plugins) applies to
@@ -146,8 +147,6 @@ plugins:
     out: lib/gen
   - local: protoc-gen-dart # protoc-gen-dart in your PATH
     out: lib/gen
-    include_wkt: true
-    include_imports: true
 ```
 
 ## Using generated code
@@ -170,7 +169,6 @@ the `buf.gen.yaml` file.
 [buf.gen.yaml]: https://buf.build/docs/configuration/v2/buf-gen-yaml
 [buf.yaml]: https://buf.build/docs/configuration/v2/buf-yaml
 [buf-cli]: https://buf.build/docs/installation
-[connect-dart]: https://github.com/connectrpc/connect-dart
 [connect-dart-plugin]: https://buf.build/connectrpc/dart
 [dart-protobuf-plugin]: https://buf.build/protocolbuffers/dart
 [protobuf]: https://developers.google.com/protocol-buffers

@@ -23,9 +23,9 @@ Android Studio walkthrough.
 
 The directory layout must match the Protobuf package, so:
 
-```shellsession
-$ mkdir -p proto/connectrpc/eliza/v1
-$ touch proto/connectrpc/eliza/v1/eliza.proto
+```bash
+mkdir -p proto/connectrpc/eliza/v1
+touch proto/connectrpc/eliza/v1/eliza.proto
 ```
 
 ```protobuf title="proto/connectrpc/eliza/v1/eliza.proto"
@@ -87,9 +87,9 @@ plugins:
 
 Generate the code:
 
-```shellsession
-$ buf lint
-$ buf generate
+```bash
+buf lint
+buf generate
 ```
 
 You should now have generated files under
@@ -184,8 +184,8 @@ fun main() = runBlocking {
 
 ## Run it
 
-```shellsession
-$ gradle run --console=plain -q
+```bash
+gradle run --console=plain -q
 ```
 
 `--console=plain -q` keeps Gradle's progress bars out of the chat output.

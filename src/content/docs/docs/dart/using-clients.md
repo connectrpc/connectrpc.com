@@ -147,7 +147,7 @@ elizaClient.say(
 
 ### Timeouts and Cancellation
 
-The methods on the generated client accept an optional `signal` parameter that can be used to configure
+The methods on the generated client accept an optional [`signal`][signal] parameter that can be used to configure
 timeouts:
 
 ```dart mark={3}

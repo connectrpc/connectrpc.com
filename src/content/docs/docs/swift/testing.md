@@ -51,24 +51,24 @@ syntax = "proto3";
 package connectrpc.eliza.v1;
 
 service ElizaService {
-    rpc Say(SayRequest) returns (SayResponse) {}
-    rpc Converse(stream ConverseRequest) returns (stream ConverseResponse) {}
+  rpc Say(SayRequest) returns (SayResponse) {}
+  rpc Converse(stream ConverseRequest) returns (stream ConverseResponse) {}
 }
 
 message SayRequest {
-    string sentence = 1;
+  string sentence = 1;
 }
 
 message SayResponse {
-    string sentence = 1;
+  string sentence = 1;
 }
 
 message ConverseRequest {
-    string sentence = 1;
+  string sentence = 1;
 }
 
 message ConverseResponse {
-    string sentence = 1;
+  string sentence = 1;
 }
 ```
 
@@ -211,12 +211,10 @@ To use the [generated mocks](#generating-mocks), you will need to include the
 `ConnectMocks` library which is available in the
 [Connect-Swift repo][connect-swift] alongside the `Connect` library.
 
-It can be integrated via either:
-
-- Swift Package Manager, using the same [GitHub URL][connect-swift]
-  and [instructions](./getting-started#add-the-connect-swift-package) as the
-  main `Connect` library.
-- CocoaPods, using the `Connect-Swift-Mocks` CocoaPod.
+It can be integrated via Swift Package Manager, using the same
+[GitHub URL][connect-swift] and
+[instructions](/docs/swift/getting-started/#add-the-connect-swift-package) as the
+main `Connect` library.
 
 You can then write unit tests that inject the mock implementations instead of
 the production implementations, making validating requests and providing mocked

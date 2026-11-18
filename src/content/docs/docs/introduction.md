@@ -13,8 +13,6 @@ type-safe client in any supported language.
 
 Each Connect implementation is _focused_: just the essential features,
 built on top of time-tested HTTP libraries and designed to get out of your way.
-In Go, Connect is just [one package][connect-go] &mdash; short enough to read
-in an afternoon.
 
 Connect is our vision of production-grade RPC. It's simple, reliable, and
 unobtrusive, because nobody has time to debug overcomplicated networking or
@@ -48,9 +46,9 @@ Connect's own protocol.
 
   ```bash
   curl \
-      --header "Content-Type: application/json" \
-      --data '{"sentence": "I feel happy."}' \
-      https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say
+    --header 'Content-Type: application/json' \
+    --data '{"sentence": "I feel happy."}' \
+    https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say
   ```
 
 By default, Connect servers support ingress from all three protocols. Clients
@@ -79,8 +77,19 @@ guide][kotlin-getting-started].
 
 ## Python
 
-[`connect-python`][connect-python] is available in beta.
+[Connect for Python][connect-py] is available in beta.
 You can get started with our [Python guide][python-getting-started].
+
+## Rust
+
+[Connect for Rust][connect-rust] is available as a pre-1.0 release.
+You can get started with our [Rust guide][rust-getting-started].
+
+## Dart
+
+[Connect for Dart][connect-dart] is stable at v2 and supports the Connect, gRPC,
+and gRPC-Web protocols. You can get started with our [Dart and Flutter
+guide][dart-getting-started].
 
 ## What's next?
 
@@ -89,13 +98,15 @@ like to bring Connect to more languages and frameworks. Our current roadmap is
 always pinned to the top of our [GitHub discussions][announcement-discussions],
 and we gauge interest in new languages with [GitHub polls][poll-discussions].
 
-[connect-python]: https://github.com/connectrpc/connect-python
+[connect-py]: https://github.com/connectrpc/connect-py
 [python-getting-started]: /docs/python/getting-started
+[connect-rust]: https://github.com/connectrpc/connect-rust
+[rust-getting-started]: /docs/rust/getting-started
+[connect-dart]: https://github.com/connectrpc/connect-dart
+[dart-getting-started]: /docs/dart/getting-started
 [connect-conformance]: https://github.com/connectrpc/conformance
-[connect-go]: https://github.com/connectrpc/connect-go
 [connect-kotlin]: https://github.com/connectrpc/connect-kotlin
 [connect-swift]: https://github.com/connectrpc/connect-swift
-[swift-launch-blog-post]: https://buf.build/blog/announcing-connect-swift
 [connect-protocol]: /docs/protocol
 [demo]: https://github.com/connectrpc/examples-go
 [go-getting-started]: /docs/go/getting-started
@@ -106,9 +117,6 @@ and we gauge interest in new languages with [GitHub polls][poll-discussions].
 [grpcweb]: https://github.com/grpc/grpc-web
 [grpcweb-protocol]: https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-WEB.md
 [grpc-protocol]: https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md
-[launch-blog-post]: https://buf.build/blog/connect-a-better-grpc
-[web-launch-blog-post]: https://buf.build/blog/connect-web-protobuf-grpc-in-the-browser
-[node-launch-blog-post]: https://buf.build/blog/connect-node-preview
 [protobuf]: https://developers.google.com/protocol-buffers
 [announcement-discussions]: https://github.com/orgs/connectrpc/discussions/categories/announcements
 [poll-discussions]: https://github.com/orgs/connectrpc/discussions/categories/polls

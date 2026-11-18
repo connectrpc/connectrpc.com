@@ -1,0 +1,71 @@
+---
+title: Serialization & compression
+---
+
+import VersionWarning from './_version-warning.mdx';
+
+<VersionWarning />
+
+Connect can work with any schema definition language, but it comes with
+built-in support for Protocol Buffers. Because the Protocol Buffer
+specification includes [mappings to and from JSON][protojson], any Connect API
+defined with a Protobuf schema also supports JSON. This is especially
+convenient for web browsers and ad-hoc debugging with cURL.
+
+Connect handlers automatically accept JSON-encoded requests &mdash; there's no
+special configuration required. Connect clients default to using binary
+Protobuf. To configure your client to use JSON instead, call `json()` on the
+client's `ClientConfig`:
+
+```rust
+let config = ClientConfig::new("http://localhost:8080".parse()?).json();
+```
+
+## Compression
+
+Connect clients and handlers support compression. Usually, compression is
+helpful &mdash; the small increase in CPU usage is more than offset by the
+reduction in network I/O.
+
+In particular, Connect encourages _asymmetric_ compression: clients can send
+uncompressed requests while asking for compressed responses. Because responses
+are usually larger than requests, this approach compresses most of the data on
+the network without requiring the client to make any assumptions about the
+server.
+
+By default, Connect handlers support gzip and Zstandard compression, enabled by
+the `gzip` and `zstd` features of `connectrpc`. Connect clients default to
+sending uncompressed requests and asking for gzipped or Zstandard-compressed
+responses. If you know that the server supports gzip, you can also compress
+requests by calling `compress_requests("gzip")` on the client's `ClientConfig`:
+
+```rust
+let config = ClientConfig::new("http://localhost:8080".parse()?).compress_requests("gzip");
+```
+
+Like most compression schemes, gzip _increases_ the size of very small
+messages. By default, Connect handlers and clients don't compress messages
+smaller than 1 KiB. To change this threshold, pass a `CompressionPolicy` to
+`with_compression_policy` on your server and on the client's `ClientConfig`.
+To change whether a single response is compressed, call `compress` on the
+handler's `Response`.
+
+Finally, it's worth noting that clients using the Connect protocol for unary
+RPCs ask for compressed responses using the `Accept-Encoding` HTTP header. This
+matches standard HTTP semantics, so browsers can easily make efficient Connect
+RPCs: they automatically ask for compressed responses, and the network
+inspector tab automatically decompresses the data if necessary. Connect's
+`Accept-Encoding` support also works well with cURL's `--compressed` flag.
+
+## Custom compression
+
+To support other compression algorithms, like Brotli, first implement the
+`CompressionProvider` trait. Register your provider on a
+`CompressionRegistry`, and pass the registry to `with_compression` on your
+server and on your clients' `ClientConfig`. Where appropriate, take care to use
+the [IANA name for your compression algorithm][iana-compression] (for example,
+`br` for Brotli). To have your client also send compressed requests, use
+`compress_requests`.
+
+[protojson]: https://developers.google.com/protocol-buffers/docs/proto3#json
+[iana-compression]: https://www.iana.org/assignments/http-parameters/http-parameters.xml#content-coding

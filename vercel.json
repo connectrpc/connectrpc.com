@@ -19,9 +19,14 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'none'; base-uri 'self'; frame-ancestors 'none'; connect-src 'self' https://demo.connectrpc.com cdn.usefathom.com *.google-analytics.com *.googletagmanager.com https://vercel.live *.vercel.app wss:; font-src 'self' data:; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' cdn.usefathom.com *.googletagmanager.com www.gstatic.com https://vercel.live *.vercel.app; style-src 'self' 'unsafe-inline'; manifest-src 'self'; worker-src 'self' blob:"
+          "value": "default-src 'none'; base-uri 'self'; frame-ancestors 'none'; connect-src 'self' https://demo.connectrpc.com https://app.rb2b.com cdn.usefathom.com *.google-analytics.com *.googletagmanager.com https://vercel.live *.vercel.app wss:; font-src 'self' data:; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://b2bjsstore.s3.us-west-2.amazonaws.com cdn.usefathom.com *.googletagmanager.com www.gstatic.com https://vercel.live *.vercel.app; style-src 'self' 'unsafe-inline'; manifest-src 'self'; worker-src 'self' blob:"
         }
       ]
+    },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": ".*\\.vercel\\.app" }],
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex" }]
     }
   ],
   "redirects": [
@@ -36,10 +41,25 @@
       "destination": "/connect.html",
       "permanent": true
     },
+    {
+      "source": "/connect/v2/",
+      "destination": "/connect-v2.html",
+      "permanent": true
+    },
+    {
+      "source": "/connect/v2/cmd/connect-go-v2-migrate/",
+      "destination": "/connect-v2-migrate.html",
+      "permanent": true
+    },
     { "source": "/cors/", "destination": "/cors.html", "permanent": true },
     {
       "source": "/grpchealth/",
       "destination": "/grpchealth.html",
+      "permanent": true
+    },
+    {
+      "source": "/grpchealth/v2/",
+      "destination": "/grpchealth-v2.html",
       "permanent": true
     },
     {
@@ -48,8 +68,18 @@
       "permanent": true
     },
     {
+      "source": "/grpcreflect/v2/",
+      "destination": "/grpcreflect-v2.html",
+      "permanent": true
+    },
+    {
       "source": "/otelconnect/",
       "destination": "/otelconnect.html",
+      "permanent": true
+    },
+    {
+      "source": "/protoc-gen-connect-openapi/",
+      "destination": "/protoc-gen-connect-openapi.html",
       "permanent": true
     },
     {

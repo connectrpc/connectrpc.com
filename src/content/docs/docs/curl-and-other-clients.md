@@ -16,10 +16,11 @@ Connect handlers automatically support JSON. Because the Connect protocol
 also uses standard HTTP headers for unary RPCs, calling your API is a cURL
 one-liner:
 
-```shellsession
-$ curl --header "Content-Type: application/json" \
-    --data '{"sentence": "I feel happy."}' \
-    https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say
+```bash
+curl \
+  --header 'Content-Type: application/json' \
+  --data '{"sentence": "I feel happy."}' \
+  https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say
 ```
 
 The response is:
@@ -35,10 +36,10 @@ prevent upgrading to HTTP/2.
 You can make the same call with HTTP GET, where the request message is encoded
 in a query parameter:
 
-```shellsession
-$ curl --get --data-urlencode 'encoding=json' \
-    --data-urlencode 'message={"sentence": "I feel happy."}' \
-    https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say
+```bash
+curl --get --data-urlencode 'encoding=json' \
+  --data-urlencode 'message={"sentence": "I feel happy."}' \
+  https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say
 ```
 
 You can also [visit this URL](https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say?encoding=json&message=%7b%22sentence%22%3a+%22I+feel+happy.%22%7d)
@@ -55,23 +56,33 @@ API. Right in your developer tools, try this:
 
 ```javascript
 fetch("https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say", {
-  "method": "POST",
-  "headers": {"Content-Type": "application/json"},
-  "body": JSON.stringify({"sentence": "I feel happy."})
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ sentence: "I feel happy." }),
 })
-  .then(response => { return response.json() })
-  .then(data => { console.log(data) })
+  .then((response) => {
+    return response.json();
+  })
+  .then((data) => {
+    console.log(data);
+  });
 ```
 
 The same call with HTTP GET:
 
 ```javascript
-const url = new URL("https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say");
+const url = new URL(
+  "https://demo.connectrpc.com/connectrpc.eliza.v1.ElizaService/Say"
+);
 url.searchParams.set("encoding", "json");
-url.searchParams.set("message", JSON.stringify({"sentence": "I feel happy."}));
+url.searchParams.set("message", JSON.stringify({ sentence: "I feel happy." }));
 fetch(url)
-  .then(response => { return response.json() })
-  .then(data => { console.log(data) })
+  .then((response) => {
+    return response.json();
+  })
+  .then((data) => {
+    console.log(data);
+  });
 ```
 
 ## Buf Studio

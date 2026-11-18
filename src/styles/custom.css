@@ -13,12 +13,41 @@
  * limitations under the License.
  */
 
+/* Each platform's UI sans, scaled to Inter's metrics (from
+ * @capsizecss/metrics) so swapping in Inter Variable does not reflow the
+ * page. A face whose local font is missing is skipped. */
+@font-face {
+  font-family: "Inter Fallback Helvetica Neue";
+  src: local("Helvetica Neue"), local("HelveticaNeue");
+  size-adjust: 106.12%;
+  ascent-override: 91.29%;
+  descent-override: 22.73%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Inter Fallback Segoe UI";
+  src: local("Segoe UI"), local("SegoeUI");
+  size-adjust: 107.71%;
+  ascent-override: 89.94%;
+  descent-override: 22.39%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Inter Fallback Roboto";
+  src: local("Roboto"), local("Roboto-Regular");
+  size-adjust: 107.35%;
+  ascent-override: 90.24%;
+  descent-override: 22.47%;
+  line-gap-override: 0%;
+}
+
 :root {
   /* Aliases preserving legacy Docusaurus/Infima variables consumed by ported
      home-page module CSS. Centralized here so .module.css files stay portable. */
   --ifm-color-primary: #161ede;
   --ifm-color-primary-light: #77e1ff;
-  --ifm-font-family-base: var(--sl-font);
   --ifm-font-color-base: var(--sl-color-text);
   --ifm-heading-color: var(--sl-color-text-accent);
   --ifm-background-color: var(--sl-color-bg);
@@ -41,16 +70,6 @@
   --buf-marine-blue-01: #eff9fc;
   --buf-marine-blue-05: #648b99;
 
-  /* Mono font with a monospace fallback chain. Sans-serif fallbacks (the
-   * previous default) measured ~10% wider for the same uppercase text,
-   * producing a visible reflow when DM Mono finished loading. */
-  --buf-mono-font:
-    "DM Mono", ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono",
-    monospace;
-  --buf-sans-font:
-    "Work Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
-
   /* Map Buf brand colors into Starlight light-mode variables. */
   --sl-color-accent-low: #e6e6fc;
   --sl-color-accent: #161ede;
@@ -70,12 +89,10 @@
   --ec-frm-edTabBarBrdCol: #e1e4e8;
   --ec-frm-frameBoxShdCssVal: 0.1rem 0.1rem 0.2rem #0000005b;
   --ec-codeFg: #24292e;
-  --ec-codeFontFml:
-    ui-monospace, "SFMono-Regular", Monaco, Consolas, "Liberation Mono",
-    "Courier New", monospace;
+  --ec-codeFontFml: var(--sl-font-mono);
   --ec-codeFontSize: 0.875rem;
   --ec-codeLineHt: 1.75;
-  --ec-uiFontFml: var(--buf-mono-font);
+  --ec-uiFontFml: var(--sl-font), var(--sl-font-system);
   --ec-uiFontSize: 0.9rem;
   --ec-uiLineHt: 1.65;
   --ec-brdRad: 0px;
@@ -91,14 +108,14 @@
     var(--ec-uiLineHt)
   );
   --sl-font:
-    "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Helvetica, Arial, sans-serif;
+    "Inter Variable", "Inter Fallback Helvetica Neue",
+    "Inter Fallback Segoe UI", "Inter Fallback Roboto";
   --sl-font-mono:
-    ui-monospace, "SFMono-Regular", Monaco, Consolas, "Liberation Mono",
-    "Courier New", monospace;
+    "JetBrains Mono Variable", ui-monospace, "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
 
-  /* Match the prior Infima typography scale. */
-  --sl-line-height: 1.65;
+  --sl-line-height: 1.5;
+  /* Heading sizes match the prior Infima typography scale. */
   --sl-text-h1: 2rem;
   --sl-text-h2: 1.5rem;
   --sl-text-h3: 1.25rem;
@@ -117,12 +134,14 @@
 }
 
 :where(h1, h2, h3, h4, h5, h6) {
-  font-family:
-    system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
-    sans-serif;
+  text-wrap: balance;
 }
 
-/* Match the prior terminal title treatment: uppercase mono with wider tracking. */
+:where(p, li) {
+  text-wrap: pretty;
+}
+
+/* Match the prior terminal title treatment: uppercase with wider tracking. */
 .expressive-code .frame.is-terminal .header .title {
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -181,6 +200,20 @@ html:not([data-has-sidebar]) .sl-container {
 }
 html:not([data-has-sidebar]) .content-panel {
   padding-inline: 0;
+}
+
+/* Starlight's sidebar toggle on docs pages defaults to a filled circle.
+ * Match the outlined square of the header's splash-page menu toggle
+ * (`.mobile-menu-toggle` in Header.astro) and the theme select beside it. */
+:root {
+  --sl-menu-button-size: 2.25rem;
+}
+.sl-menu-button {
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 4px;
+  background-color: transparent;
+  color: var(--sl-color-white);
+  box-shadow: none;
 }
 
 :root[data-theme="dark"] {
