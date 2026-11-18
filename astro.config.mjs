@@ -123,9 +123,9 @@ export default defineConfig({
         themes: ["github-light", "github-dark"],
       },
       customCss: [
-        "@fontsource/dm-mono/400.css",
-        "@fontsource/dm-mono/500.css",
-        "@fontsource/work-sans/400.css",
+        "@fontsource-variable/jetbrains-mono/wght.css",
+        "@fontsource-variable/inter/opsz.css",
+        "@fontsource-variable/inter/opsz-italic.css",
         "./src/styles/custom.css",
       ],
       sidebar: [
