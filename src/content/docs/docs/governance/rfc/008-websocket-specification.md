@@ -207,11 +207,12 @@ that offers `connectrpc.1+json` can always connect.
 
 A client MUST encode with the codec of the token the server echoed. A client
 MUST check the echoed token. If the server echoes a token the client did not
-offer, or echoes no token, the handshake has failed. In that situation, a
-browser client does not see the socket open. The API fails the connection
-itself, and the RPC fails as described in [§4.5]. Any other client MUST fail the
-connection without a Close frame and report the RPC as failed with the code
-`internal`.
+offer, or echoes no token, the handshake has failed. Some browsers fail the
+connection itself in these cases, and the RPC fails as described in [§4.5].
+If the socket opens anyway, a browser client MUST close it with `3102` and
+report the RPC as failed with the code `internal`. Any other client MUST fail
+the connection without a Close frame and report the RPC as failed with the
+code `internal`.
 
 `Connect-Protocol-Version` is implied by the subprotocol and MUST NOT be sent
 as a header.
@@ -549,9 +550,10 @@ in [§11].
 The `M` message carries leading metadata. [§7.3.1] defines its payload, and
 [§6.2] defines when each peer sends it.
 
-A key in a Leading-Metadata message **replaces** any value the upgrade request
-carried for that key. A reserved key MUST NOT appear in a Leading-Metadata
-message [§7.3.2].
+It is a protocol error if a key in a Leading-Metadata message matches a key
+in the upgrade request header.
+
+A reserved key MUST NOT appear in a Leading-Metadata message [§7.3.2].
 
 The result is the RPC's *effective headers*: what the business logic and its
 interceptors see, and what authentication and authorization MUST be based on.
