@@ -690,13 +690,15 @@ would leave the two ends disagreeing about the effective headers with nothing
 on the wire to show it: the client believes it set a value the server does not
 have.
 
-**Identity headers set by infrastructure.** Because a key in a
-Leading-Metadata message replaces the handshake header of the same name, a
-client can overwrite any handshake header that is not reserved. Any header that
-a deployment's infrastructure sets to convey identity MUST be on its deny list.
-Examples are the user headers an authenticating proxy adds and the
-client-certificate headers a TLS-terminating proxy adds. The default list
-covers only the headers that nearly every proxy sets.
+**Identity headers set by infrastructure.** A Leading-Metadata key that matches
+a handshake header is a protocol error [§7.3], but that check covers only the
+headers the handshake carries. Infrastructure often sets an identity header
+only for some requests, for example only once a user has authenticated, and a
+client can send that header in its M message when the handshake lacks it. Any
+header that a deployment's infrastructure sets to convey identity MUST
+therefore be on its deny list. Examples are the user headers an authenticating
+proxy adds and the client-certificate headers a TLS-terminating proxy adds. The
+default list covers only the headers that nearly every proxy sets.
 
 **Ambient credentials and `Origin`.** The upgrade request can carry ambient
 credentials when a page from a different origin starts the connection, such
