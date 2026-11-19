@@ -336,13 +336,12 @@ handlers don't see the ASGI scope or WSGI environ.
             if user is None:
                 start_response("401 Unauthorized", [])
                 return []
-            current_user.set(user)
-            return self.app(environ, start_response)
+            token = current_user.set(user)
+            try:
+                return self.app(environ, start_response)
+            finally:
+                current_user.reset(token)
     ```
-
-    The WSGI server iterates streaming responses after `__call__` returns, so the middleware
-    leaves `current_user` set rather than resetting it. Every request that reaches the application
-    sets it first.
 
   </TabItem>
 </Tabs>
