@@ -408,6 +408,8 @@ codec is a protocol error: a `B` in a frame type its codec does not use, or an
 `M`, `S`, or `C` in a binary frame. The error message MUST name the frame type
 that was expected.
 
+A payload that fails to decode is a protocol error.
+
 A text message MUST contain valid UTF-8, which [RFC
 6455](https://datatracker.ietf.org/doc/html/rfc6455) §8.1 requires of every
 text message and which a browser enforces. The four markers are ASCII and JSON
