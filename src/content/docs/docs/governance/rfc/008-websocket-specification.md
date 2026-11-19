@@ -198,12 +198,12 @@ most preferred first, using the standard negotiation of [RFC 6455
 §4.1](https://datatracker.ietf.org/doc/html/rfc6455#section-4.1). A client
 MUST NOT offer the same token twice.
 
-A server MUST support JSON and SHOULD support Protobuf. A server MUST ignore
-offered tokens it does not recognize, select the first offered token whose
-codec it supports, and echo exactly that token in its response. A server that
-supports none of the offered tokens MUST reject the handshake with
-`400 Bad Request`. Since every server supports JSON, a client that offers
-`connectrpc.1+json` can always connect.
+A server MUST support Protobuf JSON and SHOULD support Protobuf binary. A
+server MUST ignore offered tokens it does not recognize, select the first
+offered token whose codec it supports, and echo exactly that token in its
+response. A server that supports none of the offered tokens MUST reject the
+handshake with `400 Bad Request`. Since every server supports JSON, a client
+that offers `connectrpc.1+json` can always connect.
 
 A client MUST encode with the codec of the token the server echoed. A client
 MUST check the echoed token. If the server echoes a token the client did not
@@ -267,10 +267,6 @@ failure concerns the connection:
 - the handshake offers no token the server supports (`400`, [§4.3]);
 - the endpoint is restricted to Connect-over-HTTP (`400`, [§4.2]);
 - the handshake is cross-origin (`403`, [§4.4]).
-
-The reason for not completing the cross-origin upgrade, even to send an error,
-is that the WebSocket API does not apply CORS, so a page from any origin could
-read the error message.
 
 **RPC failures are reported in-band.** When a server accepts the handshake but
 rejects the RPC, it MUST complete the upgrade, send `M[]`, send an `S` message
@@ -624,11 +620,13 @@ Whitespace inside a value is preserved.
 `["acme-tenant", ""]` is how a sender says that a key is present but empty. A
 value that holds only spaces and tabs is empty once trimmed.
 
-**Values SHOULD NOT contain commas.** When metadata is passed on as HTTP
+**Be careful with commas.** When metadata is passed on as HTTP
 headers, a key's values can be joined into one comma-separated field value, as
 [RFC 9110 §5.3](https://datatracker.ietf.org/doc/html/rfc9110#section-5.3)
 allows and as the Fetch `Headers` object does. A receiver then cannot tell a
-comma inside a value from a comma between values.
+comma inside a value from a comma between values. For metadata values that are
+always interpreted as a single value (such as a date), there is no issue using
+commas.
 
 **Every key has at least one value.** An entry that holds only a key, such as
 `["acme-tenant"]`, is a protocol error.
@@ -961,7 +959,7 @@ the limit and MUST be no more than 123 UTF-8 bytes.
 | Server deadline expires                     | 1000 (after `S` with `deadline_exceeded`)   | —                                     | §11.1   |
 | Server shuts down                           | 1001 (after `S` with `unavailable`)         | —                                     | §13     |
 | Protocol error                              | 1002 (after `S`)                            | 3102                                  | §5      |
-| Message in the wrong frame type             | 1002, or 1003 (after `S`)                   | 3102                                  | §6.1    |
+| Message in the wrong frame type             | 1002 (after `S`)                            | 3102                                  | §6.1    |
 | Invalid UTF-8                               | 1007 (no `S`)                               | 1007 (browsers: 1002, or no Close)    | §6.1    |
 | Message exceeded size limit                 | 1009 (`S` optional)                         | 1009, or 3102 from browser script     | §12.1   |
 | Compression parameters not acceptable       | —                                           | 3102                                  | §10     |
@@ -978,10 +976,9 @@ A browser surfaces an absent close message as code `1006`. A client MUST NOT
 report `1006` as a transport failure without first checking whether an `S`
 message arrived.
 
-After a protocol error, a server closes with `1002`, and MAY use `1003` when
-the cause is a message in the wrong frame type. A client MUST take the RPC's
-outcome from `S`, or from its absence [§13.1], and MUST NOT derive it from the
-close code. The exceptions are the two cases that close without `S`: `1007`
+After a protocol error, a server closes with `1002`. A client MUST take the
+RPC's outcome from `S`, or from its absence [§13.1], and MUST NOT derive it from
+the close code. The exceptions are the two cases that close without `S`: `1007`
 (invalid UTF-8, reported as `internal`) and `1009` (size limit, reported as
 `resource_exhausted`).
 
@@ -1004,6 +1001,7 @@ The other codes are:
 
 - `canceled` when the client canceled the RPC [§8];
 - `deadline_exceeded` when the client's deadline expired [§11.1];
+- `internal` when the client detected a protocol error [§5];
 - `internal` when the server closed with `1007` [§6.1];
 - `resource_exhausted` when the server closed with `1009` [§12.1].
 
