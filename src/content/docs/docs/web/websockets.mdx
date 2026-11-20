@@ -7,7 +7,7 @@ The fetch API can't stream a request body in most browsers, so the Connect and g
 The WebSocket transport exists to remove that limitation.
 It carries every RPC type over a [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket), including client streaming and bidirectional streaming, using the same generated code and the same clients.
 
-It is recommended to use the WebSocket transport only for RPCs that stream from the client and for long-running server-streaming RPCs.
+Use the WebSocket transport only for RPCs that stream from the client and for long-running server-streaming RPCs.
 For unary and short-lived server-streaming RPCs, use the [Connect](/docs/web/choosing-a-protocol/#connect) or [gRPC-web](/docs/web/choosing-a-protocol/#grpc-web) transport.
 
 ## Creating a transport
@@ -29,7 +29,7 @@ const client = createClient(ElizaService, transport);
 
 The transport only works with a server that accepts WebSocket RPCs.
 
-An `http` or `https` scheme in the base URL is rewritten to `ws` or `wss`.
+An `http` or `https` scheme in the base URL is rewritten to `ws` or `wss`, and a `ws` or `wss` URL is used as-is.
 A relative base URL such as `"/"` resolves against the location of the page.
 
 If your deployment routes WebSocket traffic separately, for example to a different pool of servers, include that path in the base URL.
@@ -76,7 +76,7 @@ for await (const res of client.converse(requests)) {
 
 Every RPC opens its own WebSocket connection and closes it when the RPC ends, and this includes unary RPCs. RPCs aren't multiplexed over a shared connection.
 
-Each WebSocket creation has to perform a full handshake, which involves two round trips. That overhead is negligible for a long-running stream, but it adds latency to every unary or short-lived RPC.
+Each WebSocket requires a full connection and upgrade handshake. That overhead is negligible for a long-running stream, but it adds latency to every unary or short-lived RPC.
 
 The Connect and gRPC-web transports can reuse HTTP/2 connections, and the Connect transport can [cache GET requests](/docs/web/get-requests-and-caching/). To use both, create two transports and choose per client:
 
@@ -104,7 +104,7 @@ The WebSocket transport accepts the following options. Only `baseUrl` is require
 import { createWebSocketTransport } from "@connectrpc/connect-web";
 
 const transport = createWebSocketTransport({
-  // WebSockets will connect to <baseUrl>/<package>.<service>/method
+  // WebSockets will connect to <baseUrl>/<package>.<service>/<method>
   baseUrl: "https://example.com",
 
   // By default, this transport uses the JSON format.
@@ -151,13 +151,17 @@ const res = client.converse(sentences(), {
 });
 ```
 
-A browser doesn't allow setting of headers on a WebSocket handshake, so the transport sends your request headers in the first message on the WebSocket.
-Your service sees them like any other header, but a proxy or gateway in front of the server won't.
+Browsers don't allow setting custom headers on a WebSocket handshake, so the transport sends your request headers in the first message on the WebSocket.
 The browser still attaches the user's cookies to the handshake.
 
 Because these headers bypass the browser and any proxies, the server rejects the RPC if they include a header that only the browser, a proxy, or the protocol may set.
 These include headers such as `Cookie`, `Host`, and `Origin`, proxy headers such as `X-Forwarded-For`, and any header that starts with `Connect-`.
 Header values must be ASCII; to send other data, use a header whose name ends in `-bin`, and Connect sends the value base64-encoded.
+
+:::caution
+Your service sees request headers like any other header, but a proxy or gateway in front of the server won't.
+If a gateway checks the `Authorization` header, for example, it will reject WebSocket RPCs.
+:::
 
 ## Cancellation and timeouts
 
@@ -186,6 +190,7 @@ Problems with the connection itself are reported with these codes:
 | The timeout expired | `DeadlineExceeded` |
 | The server rejected a message as too large | `ResourceExhausted` |
 | A response message exceeded `readMaxBytes` | `ResourceExhausted` |
+| A request message exceeded `writeMaxBytes` | `ResourceExhausted` |
 
 ## Cross-origin requests
 
