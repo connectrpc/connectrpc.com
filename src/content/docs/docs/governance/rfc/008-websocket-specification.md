@@ -333,8 +333,10 @@ An empty message or a message without a marker is a protocol error.
 something is a protocol error, the receiver MUST end the stream. A server does
 so by sending an `S` message whose error has the code `internal`, and then
 closing with `1002` [§13]. A client does so by failing the RPC with the code
-`internal` and closing with `3102`. The error message SHOULD describe the
-violation. A receiver MUST NOT skip the offending message and carry on.
+`internal` and closing with `3102`. The one exception to the code is a `B`
+payload that fails to decode, which is reported as `invalid_argument` [§6.1].
+The error message SHOULD describe the violation. A receiver MUST NOT skip the
+offending message and carry on.
 
 Two conditions end the stream without an `S` message: invalid UTF-8 in a text
 message [§6.1], and a message that exceeds the receiver's size limit [§12.1].
@@ -408,7 +410,11 @@ codec is a protocol error: a `B` in a frame type its codec does not use, or an
 `M`, `S`, or `C` in a binary frame. The error message MUST name the frame type
 that was expected.
 
-A payload that fails to decode is a protocol error.
+A `B` payload that the negotiated codec fails to decode is a protocol error
+[§5], but it is reported as `invalid_argument` rather than `internal`, to match
+the behavior of Connect-over-HTTP. A server still closes with `1002` and a
+client with `3102`. An `M` or `S` payload that fails to decode is reported as
+`internal`, like any other protocol error.
 
 A text message MUST contain valid UTF-8, which [RFC
 6455](https://datatracker.ietf.org/doc/html/rfc6455) §8.1 requires of every
@@ -682,8 +688,6 @@ following names.
    as well as `content-type` and `content-encoding`. The `sec-` prefix in (1)
    already covers the WebSocket handshake's own headers.
 
-A server MUST NOT send a key beginning `connect-` in its `M` message.
-
 A Leading-Metadata message from a client that carries a reserved name is a
 protocol error [§5]. A server MUST NOT ignore the key and continue. Ignoring it
 would leave the two ends disagreeing about the effective headers with nothing
@@ -732,6 +736,11 @@ distinct.
 A receiver MUST surface Leading-Metadata as response *headers* and
 `EndStreamResponse.metadata` as response *trailers*, preserving the distinction
 its Connect-over-HTTP counterpart would.
+
+A server MUST NOT send a key beginning with `connect-` in its `M` message. If
+there is an attempt to send a key beginning with `connect-`, the server fails
+the RPC with `internal`, leaves the key out of the `M` and `S` messages it
+sends, and closes with `1000`.
 
 **Late metadata.** The server sends `M` when the handler first sends `B` or `S`,
 or on an explicit flush before the first `B` message or the `S` message is
@@ -799,6 +808,11 @@ Connect specifies that they are case-insensitive.
 An `S` with no payload at all is a protocol error. An `EndStreamResponse` is
 JSON, and the smallest valid one is `{}`.
 
+A server MUST NOT send a key beginning with `connect-` in its `S` message. If
+there is an attempt to send a key beginning with `connect-`, the server fails
+the RPC with `internal`, leaves the key out of the `S` it sends, and closes
+with `1000`.
+
 A client that sees the connection close without an `S` message MUST treat the
 RPC as failed [§13.1].
 
@@ -826,9 +840,11 @@ them as `WebSocket.extensions`. If the handshake response negotiates
 `permessage-deflate` without both `client_no_context_takeover` and
 `server_no_context_takeover`, the client SHOULD fail the RPC with the code
 `internal` and close the connection with `3102`, with a reason that names the
-compression parameters. A client that skips this check cannot detect a
-misconfigured server or proxy, and data on such a connection leaks through the
-shared compression context.
+compression parameters. Some browsers report only the extension name in
+`WebSocket.extensions`. A client running in such a browser cannot verify the
+negotiated parameters, and SHOULD skip this check. Be aware that a client that
+skips this check cannot detect a misconfigured server or proxy, and data on
+such a connection leaks through the shared compression context.
 
 There is no message-level compression and no marker for it.
 
@@ -970,6 +986,7 @@ the limit and MUST be no more than 123 UTF-8 bytes.
 | Message exceeded size limit                 | 1009 (`S` optional)                         | 1009, or 3102 from browser script     | §12.1   |
 | Compression parameters not acceptable       | —                                           | 3102                                  | §10     |
 | Idle timeout                                | 1011                                        | 3102                                  | §4.6    |
+| Server tried to send a `connect-` key       | 1000 (after `S` with `internal`)            | —                                     | §7.4, §9 |
 | Server could not marshal its `S` message    | 1011                                        | —                                     | §13     |
 | Internal client error                       | —                                           | 3102                                  | §13     |
 | Peer terminated without a closing handshake | (none)                                      | (none)                                | §13.1   |
@@ -1007,7 +1024,8 @@ The other codes are:
 
 - `canceled` when the client canceled the RPC [§8];
 - `deadline_exceeded` when the client's deadline expired [§11.1];
-- `internal` when the client detected a protocol error [§5];
+- `invalid_argument` when the client could not decode a `B` payload [§6.1];
+- `internal` when the client detected any other protocol error [§5];
 - `internal` when the server closed with `1007` [§6.1];
 - `resource_exhausted` when the server closed with `1009` [§12.1].
 
