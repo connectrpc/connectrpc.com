@@ -34,12 +34,12 @@ with bidirectional streaming are:
 
 - [pyvoy](https://pyvoy.dev)
 - [granian](https://github.com/emmett-framework/granian)
-- [hypercorn](https://hypercorn.readthedocs.io/en/latest/)
 
-Connect has an extensive test suite to verify compatibility with the Connect protocol.
-Unfortunately, **only pyvoy reliably passes conformance tests**: other servers occasionally
-have hung requests or stream ordering issues. pyvoy was built with Connect in mind, but is
-very new and needs more time with real-world applications to verify stability.
+Connect has an extensive test suite to verify compatibility with the Connect protocol, and
+both servers pass it over HTTP/2. However, **granian doesn't support the gRPC protocol**: it
+lacks the ASGI trailers extension that gRPC requires, so only the Connect and gRPC-Web
+protocols work with it. pyvoy supports all three protocols. It was built with Connect in mind,
+but is very new and needs more time with real-world applications to verify stability.
 
 Keep the above in mind when picking an HTTP/2 server and let us know how it goes if you give any a try.
 When in doubt, if you do not use bidirectional streaming, we recommend one of the HTTP/1.1 servers.
