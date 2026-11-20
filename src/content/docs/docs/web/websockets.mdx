@@ -12,15 +12,15 @@ For unary and short-lived server-streaming RPCs, use the [Connect](/docs/web/cho
 
 ## Creating a transport
 
-The function `createWebSocketTransport()` from [@connectrpc/connect-web](https://www.npmjs.com/package/@connectrpc/connect-web) creates the transport.
+The function `createConnectWebSocketTransport()` from [@connectrpc/connect-web](https://www.npmjs.com/package/@connectrpc/connect-web) creates the transport.
 You create a client with it the same way as with `createConnectTransport()`:
 
 ```ts
 import { createClient } from "@connectrpc/connect";
-import { createWebSocketTransport } from "@connectrpc/connect-web";
+import { createConnectWebSocketTransport } from "@connectrpc/connect-web";
 import { ElizaService } from "./gen/eliza_pb";
 
-const transport = createWebSocketTransport({
+const transport = createConnectWebSocketTransport({
   baseUrl: "https://example.com",
 });
 
@@ -83,7 +83,7 @@ The Connect and gRPC-web transports can reuse HTTP/2 connections, and the Connec
 ```ts
 import {
   createConnectTransport,
-  createWebSocketTransport,
+  createConnectWebSocketTransport,
 } from "@connectrpc/connect-web";
 
 const baseUrl = "https://example.com";
@@ -93,7 +93,7 @@ const connectTransport = createConnectTransport({ baseUrl });
 
 // For RPCs that stream from the client, and long-running
 // server-streaming RPCs
-const webSocketTransport = createWebSocketTransport({ baseUrl });
+const webSocketTransport = createConnectWebSocketTransport({ baseUrl });
 ```
 
 ## Transport options
@@ -101,9 +101,9 @@ const webSocketTransport = createWebSocketTransport({ baseUrl });
 The WebSocket transport accepts the following options. Only `baseUrl` is required, and the other values shown are the defaults:
 
 ```ts
-import { createWebSocketTransport } from "@connectrpc/connect-web";
+import { createConnectWebSocketTransport } from "@connectrpc/connect-web";
 
-const transport = createWebSocketTransport({
+const transport = createConnectWebSocketTransport({
   // WebSockets will connect to <baseUrl>/<package>.<service>/<method>
   baseUrl: "https://example.com",
 
@@ -119,22 +119,14 @@ const transport = createWebSocketTransport({
   // overridden for an individual call with the timeoutMs option.
   defaultTimeoutMs: undefined,
 
-  // Optional override of the WebSocket constructor used by the transport.
-  webSocket: (url, protocol) => new WebSocket(url, protocol),
+  // Optional override of the WebSocket implementation used by the transport.
+  WebSocket: globalThis.WebSocket,
 
   // Options for Protobuf JSON serialization.
   jsonOptions: {},
 
   // Options for Protobuf binary serialization.
   binaryOptions: {},
-
-  // The maximum size in bytes of a message received from the server.
-  // The default is the largest supported value, about 4 GiB.
-  readMaxBytes: 0xffffffff,
-
-  // The maximum size in bytes of a message sent to the server.
-  // The default is the largest supported value, about 4 GiB.
-  writeMaxBytes: 0xffffffff,
 });
 ```
 
@@ -154,9 +146,10 @@ const res = client.converse(sentences(), {
 Browsers don't allow setting custom headers on a WebSocket handshake, so the transport sends your request headers in the first message on the WebSocket.
 The browser still attaches the user's cookies to the handshake.
 
-Because these headers bypass the browser and any proxies, the server rejects the RPC if they include a header that only the browser, a proxy, or the protocol may set.
-These include headers such as `Cookie`, `Host`, and `Origin`, proxy headers such as `X-Forwarded-For`, and any header that starts with `Connect-`.
-Header values must be ASCII; to send other data, use a header whose name ends in `-bin`, and Connect sends the value base64-encoded.
+Because these headers bypass the browser and any proxies, the transport fails the call with code `Internal` before it opens the WebSocket if they include a header that only the browser, a proxy, or the protocol may set.
+These include headers such as `Cookie`, `Host`, `Origin`, and `Content-Type`, proxy headers such as `X-Forwarded-For`, and any header that starts with `Connect-` or `Sec-`.
+Header values must be ASCII.
+To send binary data, use a header whose name ends in `-bin` and encode the value with `encodeBinaryHeader()`, as described in [Headers and trailers](/docs/web/headers-and-trailers/).
 
 :::caution
 Your service sees request headers like any other header, but a proxy or gateway in front of the server won't.
@@ -180,7 +173,7 @@ If you keep streams open for longer, the limit has to be raised on the server, a
 ## Errors
 
 As with all Connect client calls, errors will appear as a [ConnectError](/docs/web/errors/), with the code, message, and details the server sent.
-Problems with the connection itself are reported with these codes:
+Errors that don't come from your service are reported with these codes:
 
 | Situation | Code |
 |---|---|
@@ -189,8 +182,8 @@ Problems with the connection itself are reported with these codes:
 | The server is shutting down | `Unavailable` |
 | The timeout expired | `DeadlineExceeded` |
 | The server rejected a message as too large | `ResourceExhausted` |
-| A response message exceeded `readMaxBytes` | `ResourceExhausted` |
-| A request message exceeded `writeMaxBytes` | `ResourceExhausted` |
+| A request header is reserved or isn't ASCII | `Internal` |
+| The server's response doesn't follow the protocol | `Internal` |
 
 ## Cross-origin requests
 

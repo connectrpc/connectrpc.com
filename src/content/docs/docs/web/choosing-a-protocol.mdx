@@ -79,7 +79,7 @@ const transport = createGrpcWebTransport({
 
 ## WebSocket
 
-The function `createWebSocketTransport()` creates a Transport that carries
+The function `createConnectWebSocketTransport()` creates a Transport that carries
 RPCs over a WebSocket instead of the fetch API. It supports client streaming
 and bidirectional streaming, which the other two transports can't offer in a
 web browser. It only works with a server that accepts WebSocket RPCs. It is recommended
@@ -88,9 +88,9 @@ server-streaming RPCs. For unary and short-lived server-streaming RPCs, use
 the [Connect](#connect) or [gRPC-web](#grpc-web) transport.
 
 ```ts
-import { createWebSocketTransport } from "@connectrpc/connect-web";
+import { createConnectWebSocketTransport } from "@connectrpc/connect-web";
 
-const transport = createWebSocketTransport({
+const transport = createConnectWebSocketTransport({
   // WebSockets will connect to <baseUrl>/<package>.<service>/method
   baseUrl: "https://demo.connectrpc.com",
 });
