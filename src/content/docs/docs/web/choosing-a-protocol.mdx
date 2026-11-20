@@ -77,6 +77,30 @@ const transport = createGrpcWebTransport({
 });
 ```
 
+## WebSockets
+
+The function `createConnectHybridTransport()` creates a transport that runs
+unary RPCs like the Connect transport, and runs streaming RPCs over a
+WebSocket instead of the fetch API. It supports client streaming and
+bidirectional streaming, which the other two transports can't offer in a web
+browser. Your server must explicitly enable WebSocket support to use this
+transport.
+
+```ts
+import { createConnectHybridTransport } from "@connectrpc/connect-web";
+
+const transport = createConnectHybridTransport({
+  // Requests will be made to <baseUrl>/<package>.<service>/method, and
+  // WebSockets will connect to the same URL with the scheme ws or wss.
+  baseUrl: "https://demo.connectrpc.com",
+});
+```
+
+It accepts the same options as the Connect transport. See
+[WebSockets](https://www.google.com/search?q=/docs/web/websockets/) for how it differs from the other
+transports.
+
+```
 ## `fetch()`
 
 When creating your transport, you have the option of providing your own custom

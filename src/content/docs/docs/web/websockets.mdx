@@ -1,0 +1,229 @@
+---
+title: WebSockets
+description: "Use client streaming and bidirectional streaming RPCs from the browser with the hybrid Connect transport in connect-web, which streams over WebSockets."
+---
+
+The Fetch API can't stream a request body in most browsers, so the Connect and gRPC-web transports are limited to unary and server-streaming RPCs.
+The hybrid transport removes that limitation.
+It runs unary RPCs over HTTP with the Connect protocol, exactly like the [Connect transport](/docs/web/choosing-a-protocol/#connect), and runs every streaming RPC over a [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket), including client streaming and bidirectional streaming.
+It uses the same generated code and the same clients.
+
+## Creating a transport
+
+The function `createConnectHybridTransport()` from [@connectrpc/connect-web](https://www.npmjs.com/package/@connectrpc/connect-web) creates the transport.
+You create a client with it the same way as with `createConnectTransport()`:
+
+```ts
+import { createClient } from "@connectrpc/connect";
+import { createConnectHybridTransport } from "@connectrpc/connect-web";
+import { ElizaService } from "./gen/eliza_pb";
+
+const transport = createConnectHybridTransport({
+  baseUrl: "[https://example.com](https://example.com)",
+});
+
+const client = createClient(ElizaService, transport);
+```
+
+WebSocket support must be enabled explicitly on the server.
+Without it, unary RPCs still work, but streaming RPCs fail with code `Unavailable` because the WebSocket can't be opened.
+
+If no WebSocket implementation is available, the transport falls back to running streaming RPCs over HTTP and behaves like the Connect transport.
+
+Unary and streaming RPCs share the same base URL.
+Use an `http` or `https` base URL: unary RPCs send requests to it, and streaming RPCs connect to the same URL with the `ws` or `wss` scheme.
+A relative base URL such as `"/"` resolves against the location of the page.
+
+## Streaming from the client
+
+For client-streaming and bidirectional-streaming RPCs, the method on the client takes an async iterable of request messages.
+An async generator is the simplest way to provide one:
+
+```ts
+async function* sentences() {
+  yield { sentence: "Hello" };
+  yield { sentence: "I feel happy." };
+}
+
+for await (const res of client.converse(sentences())) {
+  console.log(res.sentence);
+}
+```
+
+When the iterable finishes, the client tells the server that it has finished sending, and the server can still send responses.
+If the server ends the RPC first, the client stops reading from the iterable.
+
+In an interactive application, requests usually come from user input rather than a fixed sequence.
+`createWritableIterable()` gives you an iterable that you can write to from event handlers:
+
+```ts
+import { createWritableIterable } from "@connectrpc/connect/protocol";
+
+const requests = createWritableIterable<{ sentence: string }>();
+
+sendButton.onclick = () => {
+  void requests.write({ sentence: input.value });
+};
+doneButton.onclick = () => requests.close();
+
+for await (const res of client.converse(requests)) {
+  console.log(res.sentence);
+}
+```
+
+## One WebSocket connection per streaming RPC
+
+Every streaming RPC opens its own WebSocket connection and closes it when the RPC ends.
+RPCs aren't multiplexed over a shared connection.
+
+Each WebSocket requires a full connection and upgrade handshake.
+That overhead is negligible for a long-running stream, but it adds latency to short-lived server-streaming RPCs.
+
+The Connect transport runs server-streaming RPCs over HTTP, where they can reuse HTTP/2 connections.
+If you have short-lived server-streaming RPCs, create both transports and choose per client:
+
+```ts
+import {
+  createConnectHybridTransport,
+  createConnectTransport,
+} from "@connectrpc/connect-web";
+
+const baseUrl = "[https://example.com](https://example.com)";
+
+// For services with short-lived server-streaming RPCs
+const connectTransport = createConnectTransport({ baseUrl });
+
+// For services with RPCs that stream from the client, and
+// long-running server-streaming RPCs
+const hybridTransport = createConnectHybridTransport({ baseUrl });
+```
+
+## Transport options
+
+The hybrid transport accepts the same options as the Connect transport, plus an optional `WebSocket` override.
+Only `baseUrl` is required; the other values shown are the defaults:
+
+```ts
+import { createConnectHybridTransport } from "@connectrpc/connect-web";
+
+const transport = createConnectHybridTransport({
+  // Requests will be made to <baseUrl>/<package>.<service>/<method>, and
+  // WebSockets will connect to the same URL with the scheme ws or wss.
+  baseUrl: "[https://example.com](https://example.com)",
+
+  // By default, this transport uses the JSON format.
+  // Set this option to true to use the binary format. Servers
+  // aren't required to support it for WebSockets.
+  useBinaryFormat: false,
+
+  // Interceptors apply to all calls running through this transport.
+  interceptors: [],
+
+  // By default, unary requests use POST. Set this option to true to use
+  // GET for side-effect-free RPCs.
+  useHttpGet: false,
+
+  // The timeout in milliseconds to apply to all RPCs. It can be
+  // overridden for an individual call with the timeoutMs option.
+  defaultTimeoutMs: undefined,
+
+  // Optional override of the fetch implementation used for unary RPCs.
+  fetch: globalThis.fetch,
+
+  // Optional override of the WebSocket implementation used for
+  // streaming RPCs.
+  WebSocket: globalThis.WebSocket,
+
+  // Options for Protobuf JSON serialization.
+  jsonOptions: {},
+
+  // Options for Protobuf binary serialization.
+  binaryOptions: {},
+});
+```
+
+## Headers and trailers
+
+[Headers and trailers](/docs/web/headers-and-trailers/) work the same as with the other transports.
+You set request headers in the call options, and read response headers and trailers with `onHeader` and `onTrailer`:
+
+```ts
+const res = client.converse(sentences(), {
+  headers: { Authorization: "Bearer AbCdEf123456" },
+  onHeader: (headers) => console.log(headers),
+  onTrailer: (trailers) => console.log(trailers),
+});
+```
+
+Unary RPCs send request headers as HTTP headers.
+For streaming RPCs, browsers don't allow setting custom headers on a WebSocket handshake, so the transport sends your request headers in the first message on the WebSocket.
+The browser still attaches the user's cookies to the handshake.
+
+Because these headers bypass the browser and any proxies, the transport blocks headers that only the browser, a proxy, or the protocol should set.
+If a streaming call includes one, it fails with code `Internal` before opening the WebSocket.
+Blocked headers include `Cookie`, `Host`, `Origin`, and `Content-Type`, proxy headers such as `X-Forwarded-For`, and any header starting with `Connect-` or `Sec-`.
+Header values must be ASCII.
+To send binary data, use a header whose name ends in `-bin` and encode the value with `encodeBinaryHeader()`, as described in [Headers and trailers](/docs/web/headers-and-trailers/).
+
+:::caution
+Proxies and gateways in front of your server won't see request headers for streaming RPCs because they're sent inside the WebSocket rather than on the HTTP handshake. Your Connect service still receives them normally, but a gateway that checks the `Authorization` header will reject the connection.
+:::
+
+## Cancellation and timeouts
+
+You cancel calls and set timeouts as described in [Cancellation and timeouts](/docs/web/cancellation-and-timeouts/).
+If the `AbortSignal` in a streaming RPC's call options triggers, the transport closes the WebSocket and the call fails with a `ConnectError` with code `Canceled`.
+
+For streaming RPCs, a timeout is sent to the server in the `connect-timeout-ms` query parameter of the handshake URL, because the transport can't set a header there.
+Both the client and the server enforce it.
+
+:::note
+A server can limit how long a WebSocket RPC may run, whether or not the client sets a timeout.
+Servers typically default to closing long-lived WebSocket connections after one hour.
+If you need streams to stay open longer, raise the limit on the server and make sure your application can reconnect.
+:::
+
+## Errors
+
+As with all Connect client calls, errors appear as a [ConnectError](/docs/web/errors/) with the code, message, and details sent by the server.
+For streaming RPCs, errors that don't come from your service are reported with these codes:
+
+| Situation | Code |
+|---|---|
+| The WebSocket couldn't be opened | `Unavailable` |
+| The connection was lost before the RPC finished | `Unavailable` |
+| The server is shutting down | `Unavailable` |
+| The timeout expired | `DeadlineExceeded` |
+| The server rejected a message as too large | `ResourceExhausted` |
+| A request header is reserved or isn't ASCII | `Internal` |
+| The server's response doesn't follow the protocol | `Internal` |
+
+## Cross-origin requests
+
+Unary RPCs use the Fetch API, so [CORS](/docs/cors/) applies to them as usual.
+CORS doesn't apply to WebSockets.
+Connect servers reject handshakes from other origins by default.
+If your web application and your API are served from different origins, the server must be configured to allow the application's origin for WebSockets as well.
+
+## Inspecting traffic
+
+With the JSON format, the messages on the WebSocket are fully readable in the browser's network inspector.
+Every message starts with a one-letter marker corresponding to the type of message:
+
+| Marker | Meaning |
+|---|---|
+| `M` | Request/response headers, as a list of `["name", "value"]` pairs |
+| `B` | Request/response message |
+| `C` | The client is done sending |
+| `S` | The end of the RPC, containing trailers and the error, if any |
+
+As an example, a conversation with ELIZA looks like this, with messages from the client marked with ↑ and messages from the server marked with ↓:
+
+```text
+↑ M[]
+↓ M[]
+↑ B{"sentence":"Hello"}
+↓ B{"sentence":"You said Hello"}
+↑ C
+↓ S{}
+```

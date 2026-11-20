@@ -382,7 +382,8 @@ protocol.
 
 The Connect protocol supports _all_ types of streaming RPCs, but web browsers have
 some limitations with regard to client streaming. See the [Connect for Web](/docs/web/getting-started/)
-section for details.
+section for details, and [WebSockets](/docs/web/websockets/) for a transport
+without these limitations.
 
 ### Does generated code affect bundle size?
 
