@@ -1074,12 +1074,9 @@ Standard](https://websockets.spec.whatwg.org/#dom-websocket-close)). A browser
 can set other values itself, but calling `close()` with an out-of-range value
 produces an `InvalidAccessError`.
 
-Values in the range 3000–3999 MUST be registered with IANA. The code `3102` is
-referenced in this RFC. If this RFC is adopted, this value MUST be registered
-with IANA. See the [IANA WebSocket
-registry](https://www.iana.org/assignments/websocket) for registration
-information. If the value cannot be registered, this RFC will move to the code
-`4102`, since the 4000–4999 range does not require registration.
+Values in the range 3000–3999 MUST be registered with IANA and the close code
+`3102`
+referenced in this RFC has been [registered](https://www.iana.org/assignments/websocket).
 
 ## References
 
