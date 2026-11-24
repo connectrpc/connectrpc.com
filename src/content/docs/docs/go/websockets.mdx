@@ -1,0 +1,98 @@
+---
+title: WebSockets
+---
+
+import WebSocketAuth from '../_websocket-auth.mdx';
+
+`connect-go` supports Connect over WebSocket, which carries each RPC over its
+own WebSocket connection. Web browsers can't stream a request body with the
+fetch API, so this is how the [WebSocket transport](/docs/web/websockets/) in
+`connect-web` makes client-streaming and bidirectional-streaming calls. It
+also runs bidirectional streams over HTTP/1.1.
+
+WebSocket support is opt-in on both sides: the server has to enable it, and
+clients have to use a WebSocket transport.
+
+## Enabling WebSockets on a server
+
+Pass `connecthttp.WithWebSocket()` to `connecthttp.Mount`:
+
+```go
+server := connect.NewServer()
+greetv1connect.RegisterGreetServiceHandler(server, greeter)
+mux := http.NewServeMux()
+connecthttp.Mount(mux, server, connecthttp.WithWebSocket())
+```
+
+Each procedure then accepts a WebSocket upgrade on its usual path, alongside
+the Connect, gRPC, and gRPC-Web protocols. Clients that don't upgrade are
+unaffected.
+
+To accept WebSockets only for streaming procedures, enable the option per
+procedure with `connecthttp.WithConditionalOptions`:
+
+```go
+connecthttp.Mount(mux, server, connecthttp.WithConditionalOptions(
+	func(spec connect.Spec) []connecthttp.Option {
+		if spec.StreamType == connect.StreamTypeUnary {
+			return nil
+		}
+		return []connecthttp.Option{connecthttp.WithWebSocket()}
+	},
+))
+```
+
+The WebSocket handshake uses HTTP/1.1. WebSockets over HTTP/2
+([RFC 8441](https://www.rfc-editor.org/rfc/rfc8441)) aren't supported.
+
+## Authentication and HTTP middleware
+
+<WebSocketAuth lang="go" />
+
+## Cross-origin handshakes
+
+[CORS](/docs/cors/) doesn't apply to WebSockets. The server accepts a handshake
+only if the host in its `Origin` header matches the host of the request, and
+rejects other handshakes with HTTP status 403. There's no option to allow other
+origins, so serve your web application and your API from the same origin, for
+example behind one reverse proxy.
+
+## Timeouts and limits
+
+- Clients send their deadline in the `connect-timeout-ms` query parameter of
+  the handshake URL, and the server enforces it like any other deadline.
+- After the upgrade, the server waits up to 10 seconds for the first message.
+- `connecthttp.WithReadMaxBytes` and `connecthttp.WithSendMaxBytes` apply to
+  the messages of WebSocket RPCs as well.
+- The server only answers pings from the client while the handler is receiving.
+  A handler that stops calling `Receive` for longer than the client's idle
+  timeout may lose the connection.
+- `http.Server.Shutdown` doesn't close or wait for WebSocket connections. See
+  the [FAQ](/docs/faq/#should-graceful-shutdown-of-streaming-endpoints-be-manually-handled-in-connect-go)
+  for how to handle graceful shutdown of streams.
+
+## Clients
+
+Go clients can use WebSockets too, which is mostly useful for testing a server.
+Pass the same option to `connecthttp.NewTransport`:
+
+```go
+client := greetv1connect.NewGreetServiceClient(
+	connect.NewClient(
+		connecthttp.NewTransport(
+			http.DefaultClient,
+			"http://localhost:8080",
+			connecthttp.WithWebSocket(),
+		),
+	),
+)
+```
+
+Every RPC on the transport then runs over its own WebSocket connection. To keep
+unary RPCs on plain HTTP, use `connecthttp.WithConditionalOptions` as shown
+above.
+
+The `Timeout` of an `*http.Client` only bounds the handshake. Use a context
+deadline to bound an RPC. Other implementations of `connecthttp.HTTPClient`
+must return the handshake's `101 Switching Protocols` response unchanged, with
+a body that implements `io.ReadWriteCloser`.

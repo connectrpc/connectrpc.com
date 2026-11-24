@@ -1,0 +1,85 @@
+---
+title: WebSockets
+---
+
+import VersionWarning from './_version-warning.mdx';
+import WebSocketAuth from '../_websocket-auth.mdx';
+
+<VersionWarning />
+
+Connect for Python supports Connect over WebSocket in ASGI applications. It carries each RPC over its own
+WebSocket connection. Web browsers can't stream a request body with the fetch API, so this is how the
+[WebSocket transport](/docs/web/websockets/) in `connect-web` makes client-streaming and
+bidirectional-streaming calls.
+
+WebSocket support is opt-in on both sides: the server has to enable it, and clients have to use a WebSocket
+transport. WSGI can't upgrade a connection, so WSGI applications only serve RPCs over HTTP, and the Python
+client doesn't support WebSockets.
+
+## Enabling WebSockets on a server
+
+By default, an ASGI application serves the Connect, gRPC, and gRPC-Web protocols. To accept WebSockets as
+well, add `ProtocolType.CONNECT_WEBSOCKET` to `protocols`:
+
+```python
+from connectrpc.protocol import ProtocolType
+
+app = GreetServiceASGIApplication(
+    Greeter(),
+    protocols=(
+        ProtocolType.CONNECT,
+        ProtocolType.GRPC,
+        ProtocolType.GRPC_WEB,
+        ProtocolType.CONNECT_WEBSOCKET,
+    ),
+)
+```
+
+Each procedure then accepts a WebSocket upgrade on its usual path. Clients that don't upgrade are unaffected.
+A handler can check which protocol an RPC uses with `ctx.protocol`.
+
+The ASGI server has to support WebSockets too:
+
+- [pyvoy](https://pyvoy.dev) needs WebSockets enabled.
+- [uvicorn](https://uvicorn.dev/) needs a WebSocket implementation installed. Use `--ws=websockets-sansio`:
+  the default `wsproto` implementation doesn't send a close frame for some protocol errors, so clients see a
+  lost connection instead of an error.
+
+Turn off per-message compression in the server, since Connect over WebSocket doesn't use it. For uvicorn,
+pass `--ws-per-message-deflate=false`.
+
+## Message size limits
+
+`read_max_bytes` applies to WebSocket messages too, but only after the ASGI server has read a whole message
+into memory. To limit how much a client can make the server buffer, also configure the maximum WebSocket
+message size of the ASGI server, such as `--ws-max-size` for uvicorn. Add one byte to your message size
+limit, for the marker at the start of every message.
+
+## Authentication and HTTP middleware
+
+<WebSocketAuth lang="python" />
+
+## Cross-origin handshakes
+
+[CORS](/docs/cors/) doesn't apply to WebSockets, and browsers attach the user's cookies to the handshake
+without a preflight. By default, the application accepts a handshake only if the host and port in its
+`Origin` header match the `Host` header, and rejects other handshakes with HTTP status 403.
+
+If your web application is served from a different origin, or a proxy in front of the server rewrites
+`Host`, list the hosts to allow with `websocket_allowed_origins`:
+
+```python
+app = GreetServiceASGIApplication(
+    Greeter(),
+    protocols=(ProtocolType.CONNECT, ProtocolType.CONNECT_WEBSOCKET),
+    websocket_allowed_origins=("app.example.com", "*.example.com"),
+)
+```
+
+Each entry is a host with an optional port, without a scheme. `*.example.com` allows any subdomain, and `*`
+allows any origin. Every origin you allow can open streams with the user's cookies.
+
+## Timeouts
+
+Clients send their deadline in the `connect-timeout-ms` query parameter of the handshake URL. The `timeout`
+option of the application applies to WebSocket RPCs as well, and the shorter of the two wins.

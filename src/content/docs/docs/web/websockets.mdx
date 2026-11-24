@@ -39,8 +39,9 @@ const streamingClient = createClient(
 const { sentence } = await client.say({ sentence: "Hello" });
 ```
 
-WebSocket support must be enabled explicitly on the server.
+WebSocket support is opt-in on both sides: the client uses this transport, and the server has to enable WebSocket support explicitly.
 Without it, RPCs on the WebSocket transport fail with code `Unavailable` because the WebSocket can't be opened.
+See WebSockets for [Go](/docs/go/websockets/), [Python](/docs/python/websockets/), and [Rust](/docs/rust/websockets/) to enable it on your server.
 
 An `http` or `https` scheme in the base URL is rewritten to `ws` or `wss`, and a `ws` or `wss` URL is used as-is.
 A relative base URL such as `"/"` resolves against the location of the page.
@@ -119,9 +120,6 @@ const transport = createConnectWebSocketTransport({
   // overridden for an individual call with the timeoutMs option.
   defaultTimeoutMs: undefined,
 
-  // Optional override of the WebSocket implementation used by the transport.
-  WebSocket: globalThis.WebSocket,
-
   // Options for Protobuf JSON serialization.
   jsonOptions: {},
 
@@ -153,7 +151,8 @@ Header values must be ASCII.
 To send binary data, use a header whose name ends in `-bin` and encode the value with `encodeBinaryHeader()`, as described in [Headers and trailers](/docs/web/headers-and-trailers/).
 
 :::caution
-Proxies and gateways in front of your server won't see request headers for WebSocket RPCs because they're sent inside the WebSocket rather than on the HTTP handshake. Your Connect service still receives them normally, but a gateway that checks the `Authorization` header will reject the connection.
+The browser's cookies are on the handshake, so a gateway that authenticates with a session cookie works as usual.
+Request headers that you set in the call options, such as `Authorization`, are sent inside the WebSocket instead: your Connect service receives them normally, but a gateway that checks them on the handshake won't find them and will reject the connection.
 :::
 
 ## Cancellation and timeouts
@@ -166,8 +165,9 @@ Both the client and the server enforce it.
 
 :::note
 A server can limit how long a WebSocket RPC may run, whether or not the client sets a timeout.
-Servers typically default to closing long-lived WebSocket connections after one hour.
-If you need streams to stay open longer, raise the limit on the server and make sure your application can reconnect.
+For example, Connect for Rust ends WebSocket RPCs after one hour by default.
+Proxies and load balancers often close long-lived connections as well.
+If you keep streams open for a long time, make sure your application can reconnect.
 :::
 
 ## Errors
@@ -188,9 +188,10 @@ Errors that don't come from your service are reported with these codes:
 
 ## Cross-origin requests
 
-[CORS](/docs/cors/) doesn't apply to WebSockets.
-Connect servers reject handshakes from other origins by default.
-If your web application and your API are served from different origins, the server must be configured to allow the application's origin for WebSockets, in addition to the CORS configuration for the Connect transport.
+[CORS](/docs/cors/) doesn't apply to WebSockets, and browsers attach the user's cookies to the handshake without a preflight.
+Instead, servers check the `Origin` header of the handshake, and by default only accept handshakes from the same host as the server.
+If your web application and your API are served from different origins, see the documentation of your server:
+Connect for Python and Connect for Rust can allow other origins, and `connect-go` always rejects cross-origin handshakes, so serve your web application and API from the same origin.
 
 ## Inspecting traffic
 

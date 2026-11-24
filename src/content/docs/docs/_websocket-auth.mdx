@@ -1,0 +1,5 @@
+Browsers can't set headers on a WebSocket handshake, so clients send the
+request headers of an RPC in the first message on the WebSocket. HTTP
+middleware only sees the handshake, which carries the browser's cookies but not
+the RPC's request headers. Authenticate WebSocket RPCs in an
+<a href={`/docs/${props.lang}/interceptors/`}>interceptor</a> or in the handler.

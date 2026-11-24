@@ -186,6 +186,7 @@ export default defineConfig({
             { label: "Interceptors", slug: "docs/go/interceptors" },
             { label: "Observability", slug: "docs/go/observability" },
             { label: "Streaming", slug: "docs/go/streaming" },
+            { label: "WebSockets", slug: "docs/go/websockets" },
             { label: "Testing", slug: "docs/go/testing" },
             {
               label: "In-process transport",
@@ -273,6 +274,7 @@ export default defineConfig({
             },
             { label: "Interceptors", slug: "docs/python/interceptors" },
             { label: "Streaming", slug: "docs/python/streaming" },
+            { label: "WebSockets", slug: "docs/python/websockets" },
             { label: "Deployment", slug: "docs/python/deployment" },
             {
               label: "Get Requests and Caching",
@@ -303,6 +305,7 @@ export default defineConfig({
             },
             { label: "Interceptors", slug: "docs/rust/interceptors" },
             { label: "Streaming", slug: "docs/rust/streaming" },
+            { label: "WebSockets", slug: "docs/rust/websockets" },
             { label: "Deployment", slug: "docs/rust/deployment" },
             {
               label: "Get Requests and Caching",

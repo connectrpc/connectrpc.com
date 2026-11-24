@@ -83,7 +83,8 @@ The function `createConnectWebSocketTransport()` creates a transport that
 carries RPCs over a WebSocket instead of the fetch API. It supports client
 streaming and bidirectional streaming, which the other two transports can't
 offer in a web browser. Your server must explicitly enable WebSocket support
-to use this transport.
+to use this transport: see WebSockets for [Go](/docs/go/websockets/),
+[Python](/docs/python/websockets/), and [Rust](/docs/rust/websockets/).
 
 We recommend it only for streaming RPCs that you want to run over a WebSocket.
 For unary RPCs, use a separate client with the [Connect](#connect) transport.

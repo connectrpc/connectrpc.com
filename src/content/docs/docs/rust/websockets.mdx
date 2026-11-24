@@ -1,0 +1,124 @@
+---
+title: WebSockets
+---
+
+import VersionWarning from './_version-warning.mdx';
+import WebSocketAuth from '../_websocket-auth.mdx';
+
+<VersionWarning />
+
+Connect for Rust supports Connect over WebSocket, which carries each RPC over
+its own WebSocket connection. Web browsers can't stream a request body with
+the fetch API, so this is how the [WebSocket transport](/docs/web/websockets/)
+in `connect-web` makes client-streaming and bidirectional-streaming calls. It
+also keeps long-lived streams working through proxies that buffer HTTP bodies.
+
+WebSocket support is opt-in on both sides: the server has to enable it, and
+clients have to use a WebSocket transport. It's behind the `websocket` feature
+of the `connectrpc` crate:
+
+```shellsession
+$ cargo add connectrpc --features server,client,websocket
+```
+
+## Enabling WebSockets on a server
+
+Pass a `WebSocketConfig` to `with_websocket` on the built-in `Server`, or on a
+`ConnectRpcService` if you host the service yourself:
+
+```rust
+use connectrpc::websocket::WebSocketConfig;
+
+Server::new(router)
+    .with_websocket(WebSocketConfig::new())
+    .serve("127.0.0.1:8080".parse()?)
+    .await?;
+```
+
+Every registered procedure then accepts a WebSocket upgrade on its usual path,
+alongside Connect over HTTP. Clients that don't upgrade are unaffected.
+
+The handshake is an HTTP/1.1 upgrade, so the host must support upgrades on
+HTTP/1.1 connections. The built-in `Server`, `server::serve_connection`, and
+`axum::serve` all do. In your own accept loop, serve connections with
+hyper-util's `serve_connection_with_upgrades`, or the handshake fails with
+`500`. An h2c-only listener can't accept a handshake. WebSockets over HTTP/2
+([RFC 8441](https://www.rfc-editor.org/rfc/rfc8441)) aren't supported: the
+built-in `Server` stops advertising them for a service with WebSocket enabled,
+and with `axum::serve` or your own accept loop, use
+`ConnectionConfig::with_http2_extended_connect(false)`.
+
+RPCs over WebSocket run through the same interceptors, `Limits`, and
+`DeadlinePolicy` as RPCs over HTTP. A handler can tell them apart with the
+`WebSocketRpc` request extension:
+
+```rust
+let via_websocket = ctx.extensions().get::<WebSocketRpc>().is_some();
+```
+
+## Authentication and HTTP middleware
+
+<WebSocketAuth lang="rust" />
+
+Clients can't send reserved headers such as `Cookie`, `Host`, `Sec-*`,
+`Forwarded`, and `X-Forwarded-*` in that message. If your infrastructure sets
+other headers that a browser must not forge, list them with
+`with_infrastructure_headers`. The list replaces the default of `Forwarded`,
+`X-Forwarded-*`, and `X-Real-IP`, so include those too.
+
+## Cross-origin handshakes
+
+[CORS](/docs/cors/) doesn't apply to WebSockets, and browsers attach the
+user's cookies to the handshake without a preflight. By default, the server
+accepts a handshake only if the host and port in its `Origin` header match the
+`Host` header, and rejects other handshakes with HTTP status 403.
+
+If your web application is served from a different origin, or a proxy in front
+of the server rewrites `Host`, list the public origins:
+
+```rust
+let config = WebSocketConfig::new()
+    .with_allowed_origins(["https://app.example.com"]);
+```
+
+Every origin you allow can open streams with the user's cookies. To replace the
+rule entirely, use `with_origin_check`.
+
+## Routing WebSockets separately
+
+Some load balancers need WebSocket traffic on its own URL space. With
+`with_path_prefix("ws")`, the server accepts WebSockets only under
+`/ws/{service}/{method}`, and plain HTTP only at the usual paths. WebSocket
+clients put the prefix in their base URL, such as `https://example.com/ws`.
+
+## Timeouts and keep-alive
+
+- Clients send their deadline in the `connect-timeout-ms` query parameter of
+  the handshake URL. The server caps it at `with_max_timeout`, one hour by
+  default, so even streams without a deadline end after an hour.
+- After the upgrade, the server waits up to 30 seconds for the first message
+  (`with_opening_timeout`).
+- The server pings every 30 seconds (`with_keep_alive`), and closes a
+  connection that has been silent for `with_keep_alive_timeout`.
+- When the built-in `Server` shuts down, it ends open WebSocket RPCs with
+  `unavailable` and waits for them to close.
+- Compression isn't supported over WebSockets.
+
+## Clients
+
+With the `client` feature, `WebSocketTransport` is a client transport for
+generated clients. `wss://` needs the `client-tls` feature as well. Point the
+`ClientConfig` at the server's `http://` or `https://` address, and the
+transport switches to `ws://` or `wss://`:
+
+```rust
+use connectrpc::websocket::WebSocketTransport;
+
+let transport = WebSocketTransport::plaintext(); // or ::with_tls(tls_config)
+let config = ClientConfig::new("http://localhost:8080".parse()?);
+let client = GreetServiceClient::new(transport, config);
+```
+
+The transport runs every RPC on its own connection, including unary RPCs. Use
+it for the RPCs where a WebSocket helps, usually bidirectional streaming, and
+an `HttpClient` for the rest.
