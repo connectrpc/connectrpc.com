@@ -575,8 +575,8 @@ after it are that key's values, in order. It is always a text frame:
 ```json
 [
   ["acme-tenant", "tenant-42"],
-  ["authorization", "Bearer ..."],
-  ["accept-language", "en", "fr"]
+  ["x-custom-header", "foo"],
+  ["x-another-header", "bar", "baz"]
 ]
 ```
 
@@ -592,10 +592,8 @@ entry MUST be preserved.
 As in Connect-over-HTTP, and as [RFC 9110
 §5.3](https://datatracker.ietf.org/doc/html/rfc9110#section-5.3) allows for HTTP
 fields, a key's values are equivalent to one value that joins them with `, `. A
-receiver MAY combine them, so `["accept-language", "en", "fr"]` can reach an
-application as `["accept-language", "en, fr"]`. An application MUST NOT rely on
-the boundary between values, and MUST NOT put a comma inside a value it needs to
-read back as one value.
+receiver MAY combine them, so `["x-another-header", "bar", "baz"]` can reach an
+application as `["x-another-header", "bar, baz"]`.
 
 An array is used rather than a JSON object because JSON parsers disagree about
 a repeated object key: some keep the first, some keep the last, and many cannot
