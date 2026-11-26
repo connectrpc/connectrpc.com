@@ -1048,7 +1048,7 @@ MUST NOT report its absence as an error once it has sent `S`.
 ### 13.2 Draining before closing
 
 Whenever a server sends a Close frame, whether after `S` or without it
-[§6.1, §12.1], it SHOULD stop interpreting incoming messages. It MAY then
+([§6.1], [§12.1]), it SHOULD stop interpreting incoming messages. It MAY then
 close the write side of the transport. It SHOULD continue to read incoming
 frames, discarding any data frames, until it receives the client's Close frame
 or a byte limit or a time limit is reached. Only then does it close the
@@ -1085,3 +1085,30 @@ referenced in this RFC has been [registered](https://www.iana.org/assignments/we
 - [RFC 9113: HTTP/2](https://datatracker.ietf.org/doc/html/rfc9113)
 - [WHATWG WebSockets Standard](https://websockets.spec.whatwg.org/)
 - [WHATWG Fetch Standard](https://fetch.spec.whatwg.org/)
+
+[§3.3]: #33-what-this-binding-does-borrow
+[§4]: #4-connection-establishment
+[§4.1]: #41-http-version
+[§4.2]: #42-handshake-uri
+[§4.3]: #43-subprotocol-negotiation
+[§4.4]: #44-origin
+[§4.5]: #45-handshake-failures
+[§5]: #5-message-markers
+[§6]: #6-message-framing
+[§6.1]: #61-text-and-binary
+[§6.2]: #62-message-ordering
+[§7]: #7-metadata
+[§7.3]: #73-leading-metadata-message
+[§7.3.1]: #731-rules-for-keys-and-values-in-a-leading-metadata-message
+[§7.3.2]: #732-reserved-header-names
+[§8]: #8-end-of-client-stream
+[§9]: #9-end-of-server-stream
+[§10]: #10-compression
+[§11]: #11-deadlines
+[§11.1]: #111-what-the-deadline-bounds
+[§12]: #12-size-limits
+[§12.1]: #121-reporting-an-oversized-message
+[§13]: #13-connection-closure
+[§13.1]: #131-closing-without-a-terminal-message
+[§13.2]: #132-draining-before-closing
+[§14]: #14-iana-considerations
