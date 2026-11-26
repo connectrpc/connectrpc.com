@@ -47,7 +47,7 @@ bidirectional transport that works over HTTP/1.1 infrastructure.
 ## 1. Conventions
 
 The key words MUST, MUST NOT, SHOULD, SHOULD NOT, and MAY are to be
-interpreted as described in RFC 2119 and RFC 8174.
+interpreted as described in [RFC 2119] and [RFC 8174].
 
 *Sender* and *receiver* denote the two ends of one RPC. *Client* is the peer
 that initiated the WebSocket handshake; *server* is the peer that accepted it.
@@ -170,9 +170,7 @@ Connect-over-WebSocket.
 An endpoint restricted to Connect-over-HTTP MUST reject a handshake with a
 `400 Bad Request`. An endpoint restricted to Connect-over-WebSocket MUST reject
 any other request with `426 Upgrade Required` and an `Upgrade: websocket`
-header, as [RFC 9110
-§15.5.22](https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.22)
-defines.
+header, as [RFC 9110 §15.5.22] defines.
 
 ### 4.3 Subprotocol negotiation
 
@@ -194,9 +192,8 @@ or as binary [§6.1]. A peer that does not recognize a token ignores it, so a
 client that also offers `connectrpc.1+json` can always connect.
 
 A client MUST offer one or more of these tokens in `Sec-WebSocket-Protocol`,
-most preferred first, using the standard negotiation of [RFC 6455
-§4.1](https://datatracker.ietf.org/doc/html/rfc6455#section-4.1). A client
-MUST NOT offer the same token twice.
+most preferred first, using the standard negotiation of [RFC 6455 §4.1]. A
+client MUST NOT offer the same token twice.
 
 A server MUST support Protobuf JSON and SHOULD support Protobuf binary. A
 server MUST ignore offered tokens it does not recognize, select the first
@@ -293,11 +290,9 @@ messages knowing the client will always be able to parse them.
 
 Either peer MAY send PING frames. A server SHOULD send them at a configurable
 interval, so that intermediaries which close idle connections keep the
-connection open. [RFC 6455
-§5.5.2](https://datatracker.ietf.org/doc/html/rfc6455#section-5.5.2) already
-requires the receiver to answer each PING with a PONG, including after a client
-has sent `C`. Connect-over-WebSocket MUST NOT put application data in PING
-frames.
+connection open. [RFC 6455 §5.5.2] already requires the receiver to answer each
+PING with a PONG, including after a client has sent `C`. Connect-over-WebSocket
+MUST NOT put application data in PING frames.
 
 A peer MAY configure an idle timeout. A peer that receives no frame of any kind
 (a Connect-over-WebSocket message, PING, or PONG) for that period MUST treat the
@@ -365,11 +360,10 @@ message requires.
 Each WebSocket message MUST contain exactly one marker and its payload.
 
 The unit is a WebSocket *message*, not a frame. A sender MAY fragment one
-across continuation frames ([RFC 6455
-§5.4](https://datatracker.ietf.org/doc/html/rfc6455#section-5.4)) and a
-receiver MUST reassemble before interpreting the marker: a marker is not a
-per-frame tag, and a fragment is not a message. Fragmentation is otherwise
-invisible to this binding, which neither requires nor forbids it.
+across continuation frames ([RFC 6455 §5.4]) and a receiver MUST reassemble
+before interpreting the marker: a marker is not a per-frame tag, and a fragment
+is not a message. Fragmentation is otherwise invisible to this binding, which
+neither requires nor forbids it.
 
 ### 6.1 Text and binary
 
@@ -416,15 +410,14 @@ the behavior of Connect-over-HTTP. A server still closes with `1002` and a
 client with `3102`. An `M` or `S` payload that fails to decode is reported as
 `internal`, like any other protocol error.
 
-A text message MUST contain valid UTF-8, which [RFC
-6455](https://datatracker.ietf.org/doc/html/rfc6455) §8.1 requires of every
+A text message MUST contain valid UTF-8, which [RFC 6455 §8.1] requires of every
 text message and which a browser enforces. The four markers are ASCII and JSON
 is UTF-8, so a conforming message satisfies this by construction. A text codec
 MUST produce valid UTF-8.
 
 A receiver MUST validate the UTF-8 encoding of every text message before it
 reads the marker. A receiver that finds invalid UTF-8 MUST fail the connection
-with the close code `1007`, as RFC 6455 §8.1 requires, without sending `S`
+with the close code `1007`, as [RFC 6455 §8.1] requires, without sending `S`
 first. A client that validates UTF-8 itself reports the RPC as failed with the
 code `internal`.
 
@@ -432,10 +425,10 @@ A client built on the WebSocket API, in a browser or in another runtime that
 implements it, cannot report `internal`. The API validates text messages itself
 and fails the connection on invalid UTF-8. Some implementations close with
 `1002` instead of `1007`, and some drop the connection without a Close frame,
-which RFC 6455 §7.1.7 permits and a server sees as `1006`. Either way, the close
-code is `1006`, the same as a dropped connection. A client reports the RPC with
-the code `unavailable`, as it does for any connection that ends without `S`
-[§13.1].
+which [RFC 6455 §7.1.7] permits and a server sees as `1006`. Either way, the
+close code is `1006`, the same as a dropped connection. A client reports the
+RPC with the code `unavailable`, as it does for any connection that ends
+without `S` [§13.1].
 
 ### 6.2 Message ordering
 
@@ -589,11 +582,10 @@ element that is not a string is a protocol error. If there is no metadata,
 The order of entries carries no meaning. The order of the values within an
 entry MUST be preserved.
 
-As in Connect-over-HTTP, and as [RFC 9110
-§5.3](https://datatracker.ietf.org/doc/html/rfc9110#section-5.3) allows for HTTP
-fields, a key's values are equivalent to one value that joins them with `, `. A
-receiver MAY combine them, so `["x-another-header", "bar", "baz"]` can reach an
-application as `["x-another-header", "bar, baz"]`.
+As in Connect-over-HTTP, and as [RFC 9110 §5.3] allows for HTTP fields, a key's
+values are equivalent to one value that joins them with `, `. A receiver MAY
+combine them, so `["x-another-header", "bar", "baz"]` can reach an application
+as `["x-another-header", "bar, baz"]`.
 
 An array is used rather than a JSON object because JSON parsers disagree about
 a repeated object key: some keep the first, some keep the last, and many cannot
@@ -607,19 +599,18 @@ headers.
 **Keys MUST be lower-case.** A key that contains an upper-case character
 (`A`–`Z`) is a protocol error. This matches HTTP/2 and HTTP/3, where a field
 name that contains an upper-case character makes the message malformed ([RFC
-9113 §8.2.1](https://datatracker.ietf.org/doc/html/rfc9113#section-8.2.1)).
-With lower-case keys, comparing two keys is a plain string comparison.
+9113 §8.2.1]). With lower-case keys, comparing two keys is a plain string
+comparison.
 
 **Values MUST be valid HTTP field values.** A value for a key that does not end
-in `-bin` MUST be a field value as [RFC 9110
-§5.5](https://datatracker.ietf.org/doc/html/rfc9110#section-5.5) defines it,
-limited to visible ASCII characters (`0x21`–`0x7E`), space (`0x20`), and
-horizontal tab (`0x09`). RFC 9110 also allows the bytes `0x80`–`0xFF`
-(`obs-text`). This binding does not, because a JSON string cannot represent
-them as bytes. A value that needs any other character MUST be sent
-base64-encoded under a key that ends in `-bin`.
+in `-bin` MUST be a field value as [RFC 9110 §5.5] defines it, limited to
+visible ASCII characters (`0x21`–`0x7E`), space (`0x20`), and horizontal tab
+(`0x09`). RFC 9110 also allows the bytes `0x80`–`0xFF` (`obs-text`). This
+binding does not, because a JSON string cannot represent them as bytes. A value
+that needs any other character MUST be sent base64-encoded under a key that
+ends in `-bin`.
 
-**Leading and trailing whitespace is not part of a value.** As RFC 9110 §5.5
+**Leading and trailing whitespace is not part of a value.** As [RFC 9110 §5.5]
 requires, a receiver MUST remove leading and trailing space and horizontal tab
 from a value before it delivers the value. A sender SHOULD NOT send them.
 Whitespace inside a value is preserved.
@@ -630,11 +621,10 @@ value that holds only spaces and tabs is empty once trimmed.
 
 **Be careful with commas.** When metadata is passed on as HTTP
 headers, a key's values can be joined into one comma-separated field value, as
-[RFC 9110 §5.3](https://datatracker.ietf.org/doc/html/rfc9110#section-5.3)
-allows and as the Fetch `Headers` object does. A receiver then cannot tell a
-comma inside a value from a comma between values. For metadata values that are
-always interpreted as a single value (such as a date), there is no issue using
-commas.
+[RFC 9110 §5.3] allows and as the Fetch `Headers` object does. A receiver then
+cannot tell a comma inside a value from a comma between values. For metadata
+values that are always interpreted as a single value (such as a date), there is
+no issue using commas.
 
 **Every key has at least one value.** An entry that holds only a key, such as
 `["acme-tenant"]`, is a protocol error.
@@ -825,8 +815,8 @@ Compression is performed by the WebSocket layer, using the `permessage-deflate`
 extension ([RFC 7692](https://datatracker.ietf.org/doc/html/rfc7692)).
 
 A server MUST require `no_context_takeover` in both directions, imposing the
-parameter unilaterally under RFC 7692 §7.1.1 if the client did not offer it. A
-compression context shared across messages leaks plaintext across trust
+parameter unilaterally under [RFC 7692 §7.1.1] if the client did not offer it.
+A compression context shared across messages leaks plaintext across trust
 boundaries (the CRIME/BREACH family) whenever attacker-influenced and secret
 data travel on one connection.
 
@@ -972,22 +962,22 @@ the limit and MUST be no more than 123 UTF-8 bytes.
 
 | Condition                                   | Server sends                                | Client sends                          | Section |
 | ------------------------------------------- | ------------------------------------------- | ------------------------------------- | ------- |
-| Normal completion                           | 1000                                        | 1000                                  | §9      |
-| Client cancels before `S`                   | —                                           | 1000                                  | §8      |
-| Page navigates away                         | —                                           | 1001 (sent by the browser)            | §8      |
-| Client deadline expires                     | —                                           | 1000                                  | §11.1   |
-| Server deadline expires                     | 1000 (after `S` with `deadline_exceeded`)   | —                                     | §11.1   |
-| Server shuts down                           | 1001 (after `S` with `unavailable`)         | —                                     | §13     |
-| Protocol error                              | 1002 (after `S`)                            | 3102                                  | §5      |
-| Message in the wrong frame type             | 1002 (after `S`)                            | 3102                                  | §6.1    |
-| Invalid UTF-8                               | 1007 (no `S`)                               | 1007 (browsers: 1002, or no Close)    | §6.1    |
-| Message exceeded size limit                 | 1009 (`S` optional)                         | 1009, or 3102 from browser script     | §12.1   |
-| Compression parameters not acceptable       | —                                           | 3102                                  | §10     |
-| Idle timeout                                | 1011                                        | 3102                                  | §4.6    |
-| Server tried to send a `connect-` key       | 1000 (after `S` with `internal`)            | —                                     | §7.4, §9 |
-| Server could not marshal its `S` message    | 1011                                        | —                                     | §13     |
-| Internal client error                       | —                                           | 3102                                  | §13     |
-| Peer terminated without a closing handshake | (none)                                      | (none)                                | §13.1   |
+| Normal completion                           | 1000                                        | 1000                                  | [§9] |
+| Client cancels before `S`                   | —                                           | 1000                                  | [§8] |
+| Page navigates away                         | —                                           | 1001 (sent by the browser)            | [§8] |
+| Client deadline expires                     | —                                           | 1000                                  | [§11.1] |
+| Server deadline expires                     | 1000 (after `S` with `deadline_exceeded`)   | —                                     | [§11.1] |
+| Server shuts down                           | 1001 (after `S` with `unavailable`)         | —                                     | [§13] |
+| Protocol error                              | 1002 (after `S`)                            | 3102                                  | [§5] |
+| Message in the wrong frame type             | 1002 (after `S`)                            | 3102                                  | [§6.1] |
+| Invalid UTF-8                               | 1007 (no `S`)                               | 1007 (browsers: 1002, or no Close)    | [§6.1] |
+| Message exceeded size limit                 | 1009 (`S` optional)                         | 1009, or 3102 from browser script     | [§12.1] |
+| Compression parameters not acceptable       | —                                           | 3102                                  | [§10] |
+| Idle timeout                                | 1011                                        | 3102                                  | [§4.6] |
+| Server tried to send a `connect-` key       | 1000 (after `S` with `internal`)            | —                                     | [§7.4], [§9] |
+| Server could not marshal its `S` message    | 1011                                        | —                                     | [§13] |
+| Internal client error                       | —                                           | 3102                                  | [§13] |
+| Peer terminated without a closing handshake | (none)                                      | (none)                                | [§13.1] |
 
 Browsers do not allow application-level code to send close codes in the
 1001–2999 range. For any abnormal completion, a browser client sends a `3102`
@@ -1005,9 +995,7 @@ the close code. The exceptions are the two cases that close without `S`: `1007`
 
 A server that shuts down while an RPC is in progress SHOULD send `M` if it has
 not yet sent it, then an `S` with the code `unavailable`, and then close with
-`1001`, which [RFC 6455
-§7.4.1](https://datatracker.ietf.org/doc/html/rfc6455#section-7.4.1) defines
-for an endpoint that is going away.
+`1001`, which [RFC 6455 §7.4.1] defines for an endpoint that is going away.
 
 ### 13.1 Closing without a terminal message
 
@@ -1056,10 +1044,9 @@ connection. A server SHOULD NOT close the connection while unread data can
 remain and neither limit has been reached, because a TCP reset can destroy the
 `S` message, if one was sent, and the Close frame before the peer reads them.
 
-The server closes the TCP connection first, as [RFC 6455
-§7.1.1](https://datatracker.ietf.org/doc/html/rfc6455#section-7.1.1)
-recommends. It does not wait for the client to close it: a client following
-RFC 6455 waits for the server.
+The server closes the TCP connection first, as [RFC 6455 §7.1.1] recommends.
+It does not wait for the client to close it: a client following RFC 6455 waits
+for the server.
 
 After a message that exceeded the size limit, the byte limit is what keeps the
 drain within the bounded margin that [§12] allows.
@@ -1093,6 +1080,7 @@ referenced in this RFC has been [registered](https://www.iana.org/assignments/we
 [§4.3]: #43-subprotocol-negotiation
 [§4.4]: #44-origin
 [§4.5]: #45-handshake-failures
+[§4.6]: #46-pingpong-frames
 [§5]: #5-message-markers
 [§6]: #6-message-framing
 [§6.1]: #61-text-and-binary
@@ -1101,6 +1089,7 @@ referenced in this RFC has been [registered](https://www.iana.org/assignments/we
 [§7.3]: #73-leading-metadata-message
 [§7.3.1]: #731-rules-for-keys-and-values-in-a-leading-metadata-message
 [§7.3.2]: #732-reserved-header-names
+[§7.4]: #74-response-metadata
 [§8]: #8-end-of-client-stream
 [§9]: #9-end-of-server-stream
 [§10]: #10-compression
@@ -1112,3 +1101,18 @@ referenced in this RFC has been [registered](https://www.iana.org/assignments/we
 [§13.1]: #131-closing-without-a-terminal-message
 [§13.2]: #132-draining-before-closing
 [§14]: #14-iana-considerations
+
+[RFC 2119]: https://datatracker.ietf.org/doc/html/rfc2119
+[RFC 6455 §4.1]: https://datatracker.ietf.org/doc/html/rfc6455#section-4.1
+[RFC 6455 §5.4]: https://datatracker.ietf.org/doc/html/rfc6455#section-5.4
+[RFC 6455 §5.5.2]: https://datatracker.ietf.org/doc/html/rfc6455#section-5.5.2
+[RFC 6455 §7.1.1]: https://datatracker.ietf.org/doc/html/rfc6455#section-7.1.1
+[RFC 6455 §7.1.7]: https://datatracker.ietf.org/doc/html/rfc6455#section-7.1.7
+[RFC 6455 §7.4.1]: https://datatracker.ietf.org/doc/html/rfc6455#section-7.4.1
+[RFC 6455 §8.1]: https://datatracker.ietf.org/doc/html/rfc6455#section-8.1
+[RFC 7692 §7.1.1]: https://datatracker.ietf.org/doc/html/rfc7692#section-7.1.1
+[RFC 8174]: https://datatracker.ietf.org/doc/html/rfc8174
+[RFC 9110 §5.3]: https://datatracker.ietf.org/doc/html/rfc9110#section-5.3
+[RFC 9110 §5.5]: https://datatracker.ietf.org/doc/html/rfc9110#section-5.5
+[RFC 9110 §15.5.22]: https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.22
+[RFC 9113 §8.2.1]: https://datatracker.ietf.org/doc/html/rfc9113#section-8.2.1
